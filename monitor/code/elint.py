@@ -196,4 +196,56 @@ def get_txt_name(path,new_json):
 
     return new_json
   
-       
+####################################################################
+def git_pull():
+    """执行 git pull origin develop"""
+    try:
+        result = subprocess.run(
+            ['git', 'pull', 'origin', 'develop'],
+            cwd='/home/xbzhong/Desktop/python/monitor/rd_perf',  # 指定仓库目录
+            capture_output=True,
+            text=True,
+            check=False  # 不自动抛出异常，便于处理错误
+        )
+        
+        if result.returncode == 0:
+            print("✅ 拉取成功")
+            print(result.stdout)
+        else:
+            print("❌ 拉取失败")
+            print(result.stderr)
+            
+        return result
+        
+    except Exception as e:
+        print(f"执行异常: {e}")
+        return None
+
+def read_csv(path):
+    data = {}
+    with open(path, 'r', encoding='utf-8') as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            time = row['Date']
+            time = datetime.strptime(time, "%Y-%m-%d").strftime("%Y%m%d")
+            data[time] = row['comment']
+    
+    return data
+
+
+def get_perf():
+    git_pull()
+    try:
+        mem = read_csv(Path('rd_perf/eda/lint/script/lint_perf_monitor/data/lint_cpu.csv'))
+        cpu = read_csv(Path('rd_perf/eda/lint/script/lint_perf_monitor/data/lint_cpu.csv'))
+        perf = {
+            "mem":mem,
+            "cpu":cpu
+        }
+        return perf
+    except Exception as e:
+        print(f"执行异常: {e}")
+        return {
+            "mem": {},
+            "cpu": {}
+        }

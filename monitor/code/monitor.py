@@ -36,8 +36,8 @@ CONFIG = {
 CASE_CONFIG = {
     'elint': {
         'single': {
-            'original_path': 'C:\\Users\\xbzhong\\Desktop\\lint\\script\\monitor\\develop\\python\\monitor\\data',
-            'json_path': 'C:\\Users\\xbzhong\\Desktop\\lint\\script\\monitor\\develop\\python\\monitor\\data\\total.json'
+            'original_path': 'C:\\Users\\xbzhong\\Desktop\\lint\\script\\monitor\\develop\\monitor\\code\\data',
+            'json_path': 'C:\\Users\\xbzhong\\Desktop\\lint\\script\\monitor\\develop\\monitor\\code\\data\\total.json'
         },
         'multi': {
             'original_path': '/mnt/efs/fs1/jenkins/lint_comparison_results_qor',
@@ -165,13 +165,13 @@ def elint_single():
             'project_name': info['project_name'],
             'description': info['description']
         }
-    save_json("./project_list.json",project_list)
-    save_json("./projects_data_json.json",projects_data_json)
 
+    perf = get_perf()
     return render_template(
         'elint_single.html',
         project_list=project_list,
-        projects_data_json=projects_data_json
+        projects_data_json=projects_data_json,
+        perf=perf
     )
 
 @app.route('/api/refresh', methods=['POST'])
@@ -187,9 +187,8 @@ def api_refresh():
         parsed_projects = {}
         project_list = []
         refresh_parsed_projects(current_projects_data)
-        
-        # project_list, parsed_projects = get_data_main(tool_config.get('original_path', 'N/A'),tool_config.get('json_path', 'N/A'))
 
+        perf = get_perf()
 
         projects_data_json = {}
         for pid, info in parsed_projects.items():
@@ -208,7 +207,8 @@ def api_refresh():
             'data': projects_data_json,
             'project_list': project_list,
             'last_update': last_update,
-            'message': '数据刷新成功'
+            'message': '数据刷新成功',
+            'perf': perf
         })
     except Exception as e:
         return jsonify({'success': False, 'message': str(e)}), 500

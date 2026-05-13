@@ -247,8 +247,12 @@ function renderEChartOptimized(chartType, dataKey, color, yAxisName, yAxisFormat
                 const date = dataPoint.axisValue;
                 let valueText = '';
                 if (dataKey === 'runtimes') {
+                    cpu = perf.cpu
+                    des = cpu[date]
                     valueText = `${value} 秒`;
                 } else if (dataKey === 'memories') {
+                    mem = perf.mem
+                    des = mem[date]
                     valueText = `${value} MB`;
                 } else {
                     valueText = `${value} 核心`;
@@ -256,7 +260,8 @@ function renderEChartOptimized(chartType, dataKey, color, yAxisName, yAxisFormat
                 return `
                     <strong>📅 ${date}</strong><br/>
                     <span style="color: ${color};">${label}: ${valueText}</span><br/>
-                    <span style="color: #94a3b8;">🔧 阶段: ${currentRule}</span>
+                    <span style="color: #94a3b8;">🔧 阶段: ${currentRule}</span><br/>
+                    <span style="color: #94a3b8;">MR更新: ${des}</span>
                 `;
             }
         },

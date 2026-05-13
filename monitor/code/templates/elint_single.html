@@ -92,7 +92,7 @@
 
         // 将 Python 后端传递的变量转换为 JSON 格式 
         const projectsData = {{ projects_data_json | tojson }};
-
+        const perf = {{ perf | tojson }};
         let casename = '{{ project_list[0].id }}';
         // let currentTool = null;
         let currentRule = null;
