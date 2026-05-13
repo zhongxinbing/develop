@@ -1,0 +1,65 @@
+{
+    "openc910-main": {
+        "project_name": "openc910-main",
+        "description": "qor case total.json监控,非FOM",
+        "daily_metrics": {
+            "20260507": {
+                "Analysis": {
+                    "runtime": 1.66,
+                    "memory": 2.77,
+                    "cores": 0
+                },
+                "Elaborate": {
+                    "runtime": 10.57,
+                    "memory": 10.69,
+                    "cores": 0
+                },
+                "DoUniquify": {
+                    "runtime": 30,
+                    "memory": 21.11,
+                    "cores": 0
+                }
+            },
+            "20260508": {
+                "Analysis": {
+                    "runtime": 0,
+                    "memory": 1,
+                    "cores": 0
+                },
+                "Elaborate": {
+                    "runtime": 2,
+                    "memory": 5,
+                    "cores": 0
+                },
+                "DoUniquify": {
+                    "runtime": 3,
+                    "memory": 51,
+                    "cores": 0
+                }
+            }
+        }
+    },
+    "MV": {
+        "project_name": "MV",
+        "description": "qor case total.json监控,非FOM",
+        "daily_metrics": {
+            "20260507": {
+                "Analysis": {
+                    "runtime": 1.66,
+                    "memory": 2.77,
+                    "cores": 0
+                },
+                "Elaborate": {
+                    "runtime": 10.57,
+                    "memory": 10.69,
+                    "cores": 0
+                },
+                "DoUniquify": {
+                    "runtime": 21.09,
+                    "memory": 21.11,
+                    "cores": 0
+                }
+            }
+        }
+    }
+}

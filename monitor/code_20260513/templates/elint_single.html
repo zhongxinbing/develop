@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>elint 工具性能监控</title>
+    <script src="{{ url_for('static', filename='js/echarts.min.js') }}"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/monitor.css') }}">
+</head>
+<body>
+    <div class="container">
+        <!-- 访问信息栏 -->
+        <div class="access-info">
+            <div class="stats-badge" id="projectStats"></div>
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <div class="last-update" id="lastUpdateTime">最后更新: 刚刚</div>
+                <div class="auto-refresh-status" id="autoRefreshStatus">
+                    <span class="refresh-indicator"></span>
+                    自动检测更新
+                </div>
+            </div>
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <button class="refresh-btn" onclick="window.location.href='/lint_perf/index.html'">
+                    📊 打开性能数据表格
+                </button>
+                <button class="refresh-btn compare-btn" onclick="window.open('/compare', '_blank')">
+                    📈 数据对比
+                </button>
+            </div>
+        </div>
+        
+        <!-- 选择器 -->
+        <div class="selector-container">
+            <div class="selector-info">
+                <div class="info-text">qor case:</div> 
+                <select id="caseSelect" class="momitor-select">
+                    {% for case in project_list %}
+                    <option value="{{ case.id }}">{{ case.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="selector-info">
+                <div class="info-text">rule:</div> 
+                <select id="ruleSelect" class="momitor-select">
+                    <option value="Overall" selected>Overall</option>
+                    {% for rule in rules %}
+                    <option value="{{ rule.id }}">{{ rule.name }}&nbsp;</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="rule-search">
+                <input type="text" id="ruleSearch" placeholder="🔍 搜索阶段名称..." autocomplete="off" class="rule-search">
+            </div>
+        </div>
+        
+        <!-- Tab标签 -->
+        <div class="tabs">
+            <button class="tab-btn active" data-tab="runtime">⏱️ Runtime 曲线图</button>
+            <button class="tab-btn" data-tab="memory">💾 Memory 曲线图</button>
+        </div>
+
+        <div id="runtime-tab" class="tab-content">
+            <div class="card">
+                <div id="chart-runtime" class="chart-container"></div>
+                <div id="stats-runtime" class="stats-grid"></div>
+            </div>
+        </div>
+        
+        <div id="memory-tab" class="tab-content hidden">
+            <div class="card">
+                <div id="chart-memory" class="chart-container"></div>
+                <div id="stats-memory" class="stats-grid"></div>
+            </div>
+        </div>
+        
+        <!-- 信息栏 -->
+        <div class="info-bar">
+            <span>📅 数据范围: <strong id="dateRange"></strong></span>
+            <span>📈 数据点数: <strong id="dataPoints"></strong></span>
+            <span>🔧 当前阶段: <strong id="currentRuleName">未选择</strong></span>
+            <span><span class="badge">ECharts绘图</span> 交互式图表库</span>
+            <span><span class="badge">自动刷新</span> 浏览器刷新时更新</span>
+        </div>
+    </div>
+
+    <script>
+        // 后端数据
+        const projectsData = {{ projects_data_json | tojson }};
+        const perf = {{ perf | tojson }};
+        let casename = '{{ project_list[0].id }}';
+        let currentRule = null;
+        let toolSearchTimeout = null;
+        let currentDataVersion = '';
+        let updateCheckInterval = null;
+
+        // ECharts实例
+        let charts = {
+            runtime: null,
+            memory: null,
+            cores: null
+        };
+
+        // 图表颜色配置
+        const chartColors = {
+            runtime: '#3b82f6',
+            runtimeHighlight: '#ef4444',  // 高亮颜色（红色）
+            memory: '#10b981',
+            cores: '#8b5cf6'
+        };
+
+        // 缓存
+        let cachedTools = [];
+        let cachedToolData = {};
+        let lastRenderedDataHash = {
+            runtime: '',
+            memory: '',
+            cores: ''
+        };
+        let mrUpdateDates = {};  // 存储有MR更新的日期
+    </script>
+
+    <script src="{{ url_for('static', filename='js/monitor.js') }}"></script>
+</body>
+</html>

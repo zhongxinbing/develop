@@ -1,0 +1,373 @@
+{% extends "base.html" %}
+
+{% block title %}监控面板 - EDA性能监控{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/monitor.css') }}">
+<script src="{{ url_for('static', filename='js/echarts.min.js') }}"></script>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="access-info">
+        <div class="stats-badge" id="projectStats"></div>
+        <div class="last-update" id="lastUpdateTime">最后更新: --</div>
+        <button id="manualRefreshBtn" class="refresh-btn" style="display:none;">🔄 手动刷新</button>
+    </div>
+
+    <div class="selector-container">
+        <div class="selector-info">
+            <div class="info-text">Case:</div>
+            <select id="caseSelect" class="monitor-select">
+                <option value="">加载中...</option>
+            </select>
+        </div>
+        <div class="selector-info">
+            <div class="info-text">Rule:</div>
+            <select id="ruleSelect" class="monitor-select">
+                <option value="">请选择阶段</option>
+            </select>
+        </div>
+        <div class="rule-search">
+            <input type="text" id="ruleSearch" placeholder="🔍 搜索阶段名称..." autocomplete="off">
+        </div>
+    </div>
+
+    <div class="tabs">
+        <button class="tab-btn active" data-tab="runtime">⏱️ Runtime 曲线图</button>
+        <button class="tab-btn" data-tab="memory">💾 Memory 曲线图</button>
+    </div>
+
+    <div id="runtime-tab" class="tab-content">
+        <div class="card">
+            <div id="chart-runtime" class="chart-container"></div>
+            <div id="stats-runtime" class="stats-grid"></div>
+        </div>
+    </div>
+    
+    <div id="memory-tab" class="tab-content hidden">
+        <div class="card">
+            <div id="chart-memory" class="chart-container"></div>
+            <div id="stats-memory" class="stats-grid"></div>
+        </div>
+    </div>
+
+    <div class="info-bar">
+        <span>📅 数据范围: <strong id="dateRange"></strong></span>
+        <span>📈 数据点数: <strong id="dataPoints"></strong></span>
+        <span>🔧 当前阶段: <strong id="currentRuleName">未选择</strong></span>
+    </div>
+</div>
+
+<script>
+    let projectsData = {};
+    let perfData = {};
+    let currentProject = null;
+    let currentRule = null;
+    let cachedToolData = {};
+    let charts = { runtime: null, memory: null };
+
+    const chartColors = { runtime: '#3b82f6', memory: '#10b981' };
+
+    async function refreshData() {
+        try {
+            const response = await fetch('/api/refresh', { method: 'POST' });
+            const result = await response.json();
+            
+            if (result.success) {
+                projectsData = result.data;
+                perfData = result.perf || { mem: {}, cpu: {} };
+                document.getElementById('lastUpdateTime').innerHTML = `最后更新: ${result.last_update}`;
+                
+                const caseSelect = document.getElementById('caseSelect');
+                const currentVal = caseSelect.value;
+                caseSelect.innerHTML = '';
+                result.project_list.forEach(project => {
+                    const option = document.createElement('option');
+                    option.value = project.id;
+                    option.textContent = project.name;
+                    caseSelect.appendChild(option);
+                });
+                if (currentVal && projectsData[currentVal]) {
+                    caseSelect.value = currentVal;
+                } else if (result.project_list.length > 0) {
+                    caseSelect.value = result.project_list[0].id;
+                }
+                
+                if (caseSelect.value) {
+                    updateProjectData(caseSelect.value);
+                }
+                
+                showNotification('数据刷新成功', false);
+            }
+        } catch (error) {
+            console.error('刷新失败:', error);
+            showNotification('刷新失败: ' + error.message, true);
+        }
+    }
+
+    function updateProjectData(projectId) {
+        currentProject = projectsData[projectId];
+        if (!currentProject) return;
+        
+        updateRuleSelect();
+        updateProjectStats();
+        
+        if (currentRule) {
+            refreshAllCharts();
+        }
+    }
+
+    function updateRuleSelect() {
+        const rules = currentProject.rules || [];
+        const searchText = document.getElementById('ruleSearch').value.toLowerCase();
+        const filteredRules = searchText ? rules.filter(r => r.toLowerCase().includes(searchText)) : rules;
+        
+        const select = document.getElementById('ruleSelect');
+        const currentValue = select.value;
+        
+        select.innerHTML = '<option value="">-- 请选择阶段 --</option>';
+        filteredRules.forEach(rule => {
+            const option = document.createElement('option');
+            option.value = rule;
+            option.textContent = rule;
+            select.appendChild(option);
+        });
+        
+        if (currentValue && filteredRules.includes(currentValue)) {
+            select.value = currentValue;
+            currentRule = currentValue;
+        } else if (filteredRules.length > 0 && !currentRule) {
+            select.value = filteredRules[0];
+            currentRule = filteredRules[0];
+        }
+        
+        document.getElementById('currentRuleName').innerText = currentRule || '未选择';
+        if (currentRule) refreshAllCharts();
+    }
+
+    function updateProjectStats() {
+        const rulesCount = currentProject.rules.length;
+        const datesCount = currentProject.dates.length;
+        document.getElementById('projectStats').innerHTML = `
+            <div class="badge-item"><span>📊</span> 阶段数: ${rulesCount}</div>
+            <div class="badge-item"><span>📅</span> 天数: ${datesCount}</div>
+        `;
+        if (currentProject.dates.length > 0) {
+            document.getElementById('dateRange').innerText = 
+                `${currentProject.dates[0]} 至 ${currentProject.dates[currentProject.dates.length - 1]}`;
+        }
+        document.getElementById('dataPoints').innerText = datesCount;
+    }
+
+    function getCurrentRuleData() {
+        if (!currentRule || !currentProject.rule_data[currentRule]) return null;
+        return currentProject.rule_data[currentRule];
+    }
+
+    function updateStats(containerId, data, unit, label) {
+        const validData = data.filter(v => v !== null && v !== undefined && v > 0);
+        if (validData.length === 0) {
+            document.getElementById(containerId).innerHTML = '<div class="stat-card">暂无数据</div>';
+            return;
+        }
+        const total = validData.reduce((a, b) => a + b, 0);
+        const avg = (total / validData.length).toFixed(1);
+        const max = Math.max(...validData);
+        const min = Math.min(...validData);
+        
+        document.getElementById(containerId).innerHTML = `
+            <div class="stat-card"><div class="stat-label">📊 总${label}</div><div class="stat-value">${total.toFixed(1)}<span class="stat-unit">${unit}</span></div></div>
+            <div class="stat-card"><div class="stat-label">⚡ 平均${label}</div><div class="stat-value">${avg}<span class="stat-unit">${unit}</span></div></div>
+            <div class="stat-card"><div class="stat-label">📈 最大${label}</div><div class="stat-value">${max}<span class="stat-unit">${unit}</span></div></div>
+            <div class="stat-card"><div class="stat-label">📉 最小${label}</div><div class="stat-value">${min}<span class="stat-unit">${unit}</span></div></div>
+        `;
+    }
+
+    function getMRComment(date) {
+        return (perfData.cpu && perfData.cpu[date]) || (perfData.mem && perfData.mem[date]) || undefined;
+    }
+
+    function renderChart(chartType, dataKey, color, yAxisName) {
+        const ruleData = getCurrentRuleData();
+        if (!ruleData) {
+            if (charts[chartType]) charts[chartType].clear();
+            return;
+        }
+        
+        const dates = ruleData.dates;
+        const values = ruleData[dataKey];
+        const validValues = values.filter(v => v !== null && v !== undefined);
+        
+        updateStats(`stats-${chartType}`, values, dataKey === 'runtimes' ? '秒' : 'MB', 
+                    dataKey === 'runtimes' ? 'Runtime' : 'Memory');
+        
+        const avgValue = validValues.length > 0 
+            ? (validValues.reduce((a, b) => a + b, 0) / validValues.length).toFixed(1) : 0;
+        
+        // 构建数据点数组，标记有MR注释的点
+        const dataPoints = values.map((val, idx) => {
+            const date = dates[idx];
+            const mrComment = getMRComment(date);
+            return {
+                value: val,
+                mrComment: mrComment,
+                itemStyle: mrComment ? { color: '#ef4444' } : null
+            };
+        });
+        
+        const option = {
+            backgroundColor: 'transparent',
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: { type: 'shadow' },
+                backgroundColor: 'rgba(15, 23, 42, 0.96)',
+                borderColor: color,
+                borderWidth: 1,
+                textStyle: { color: '#f1f5f9', fontSize: 12 },
+                formatter: function(params) {
+                    if (!params || params.length === 0) return '';
+                    const point = params[0];
+                    const value = point.value;
+                    const date = dates[point.dataIndex];
+                    const mrComment = getMRComment(date);
+                    const valueText = dataKey === 'runtimes' ? `${value} 秒` : `${value} MB`;
+                    const mrHtml = mrComment ? `<br/><span style="color: #f97316;">📝 MR更新: ${mrComment}</span>` : '';
+                    return `<strong>📅 ${date}</strong><br/>
+                            <span style="color: ${color};">${dataKey === 'runtimes' ? 'Runtime' : 'Memory'}: ${valueText}</span>
+                            ${mrHtml}<br/>
+                            <span style="color: #94a3b8;">🔧 阶段: ${currentRule}</span>`;
+                }
+            },
+            grid: {
+                left: '8%', right: '5%', top: '15%', bottom: '10%',
+                containLabel: true, backgroundColor: 'rgba(15, 23, 42, 0.3)'
+            },
+            xAxis: {
+                type: 'category', data: dates,
+                axisLabel: { rotate: dates.length > 10 ? 30 : 0, color: '#94a3b8', fontSize: 11 },
+                axisLine: { lineStyle: { color: '#475569' } }
+            },
+            yAxis: {
+                type: 'value', name: yAxisName,
+                nameTextStyle: { color: '#cbd5e1', fontSize: 12 },
+                axisLabel: { color: '#94a3b8', fontSize: 11 },
+                splitLine: { lineStyle: { color: 'rgba(71, 85, 105, 0.3)', type: 'dashed' } }
+            },
+            series: [
+                {
+                    name: dataKey === 'runtimes' ? 'Runtime' : 'Memory',
+                    type: 'line', data: dataPoints, smooth: false,
+                    symbol: 'circle', symbolSize: 6,
+                    lineStyle: { width: 2, color: color, shadowBlur: 8, shadowColor: color },
+                    areaStyle: { opacity: 0.15, color: color },
+                    emphasis: { focus: 'series' }
+                },
+                {
+                    name: '平均值', type: 'line',
+                    data: new Array(dates.length).fill(parseFloat(avgValue)),
+                    lineStyle: { width: 1.5, color: '#f59e0b', type: 'dashed' },
+                    symbol: 'none'
+                }
+            ],
+            legend: { textStyle: { color: '#cbd5e1' }, right: 10, top: 0 },
+            toolbox: {
+                feature: {
+                    saveAsImage: { title: '保存为图片', backgroundColor: 'rgba(15, 23, 42, 0.8)' },
+                    zoom: { title: { zoom: '区域缩放', back: '还原' } }
+                }
+            }
+        };
+        
+        if (!charts[chartType]) {
+            charts[chartType] = echarts.init(document.getElementById(`chart-${chartType}`));
+        }
+        charts[chartType].setOption(option);
+    }
+
+    function refreshAllCharts() {
+        if (!currentRule) return;
+        renderChart('runtime', 'runtimes', chartColors.runtime, 'Runtime (秒)');
+        renderChart('memory', 'memories', chartColors.memory, 'Memory (MB)');
+    }
+
+    function switchTab(tabId) {
+        document.querySelectorAll('.tab-content').forEach(tab => tab.classList.add('hidden'));
+        document.getElementById(`${tabId}-tab`).classList.remove('hidden');
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        document.querySelector(`.tab-btn[data-tab="${tabId}"]`).classList.add('active');
+        setTimeout(() => {
+            if (charts[tabId]) charts[tabId].resize();
+        }, 100);
+    }
+
+    function showNotification(message, isError) {
+        const notification = document.createElement('div');
+        notification.className = `notification ${isError ? 'error' : ''}`;
+        notification.innerHTML = isError ? '❌ ' + message : '✅ ' + message;
+        document.body.appendChild(notification);
+        setTimeout(() => {
+            notification.style.animation = 'slideIn 0.3s ease reverse';
+            setTimeout(() => notification.remove(), 300);
+        }, 3000);
+    }
+
+    function debounce(func, wait) {
+        let timeout;
+        return function(...args) {
+            clearTimeout(timeout);
+            timeout = setTimeout(() => func.apply(this, args), wait);
+        };
+    }
+
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.addEventListener('click', () => switchTab(btn.dataset.tab));
+    });
+    
+    document.getElementById('caseSelect').addEventListener('change', (e) => {
+        if (e.target.value) {
+            updateProjectData(e.target.value);
+        }
+    });
+    
+    document.getElementById('ruleSelect').addEventListener('change', (e) => {
+        currentRule = e.target.value;
+        document.getElementById('currentRuleName').innerText = currentRule || '未选择';
+        if (currentRule) refreshAllCharts();
+    });
+    
+    const searchInput = document.getElementById('ruleSearch');
+    searchInput.addEventListener('input', debounce(() => updateRuleSelect(), 300));
+    
+    // 页面加载时获取数据
+    fetch('/api/refresh', { method: 'POST' })
+        .then(res => res.json())
+        .then(result => {
+            if (result.success) {
+                projectsData = result.data;
+                perfData = result.perf || { mem: {}, cpu: {} };
+                document.getElementById('lastUpdateTime').innerHTML = `最后更新: ${result.last_update}`;
+                
+                const caseSelect = document.getElementById('caseSelect');
+                result.project_list.forEach(project => {
+                    const option = document.createElement('option');
+                    option.value = project.id;
+                    option.textContent = project.name;
+                    caseSelect.appendChild(option);
+                });
+                if (result.project_list.length > 0) {
+                    caseSelect.value = result.project_list[0].id;
+                    updateProjectData(result.project_list[0].id);
+                }
+            }
+        });
+    
+    // 监听页面刷新和关闭事件
+    window.addEventListener('beforeunload', () => {
+        // 页面关闭时可以在这里做一些清理工作
+    });
+    
+    // 使用浏览器的页面刷新功能，数据会在页面重新加载时自动重新获取
+    // 因为页面重新加载会重新执行上面的 fetch 请求
+</script>
+{% endblock %}

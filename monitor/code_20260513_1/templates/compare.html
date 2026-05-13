@@ -1,0 +1,393 @@
+{% extends "base.html" %}
+
+{% block title %}数据对比 - EDA性能监控{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/monitor.css') }}">
+<style>
+    .compare-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+    .compare-panel {
+        background: rgba(30, 41, 59, 0.95);
+        border-radius: 20px;
+        padding: 20px;
+        margin-bottom: 20px;
+    }
+    .compare-form {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 20px;
+        margin-bottom: 20px;
+    }
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+    .form-group label {
+        color: #94a3b8;
+        font-weight: 600;
+    }
+    .form-group select, .form-group input {
+        background: rgba(15, 23, 42, 0.9);
+        border: 1px solid #3b82f6;
+        color: #f1f5f9;
+        padding: 10px;
+        border-radius: 8px;
+        font-size: 14px;
+    }
+    .btn-compare {
+        background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 12px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        margin-top: 24px;
+    }
+    .results-table {
+        width: 100%;
+        overflow-x: auto;
+    }
+    .results-table table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.85rem;
+    }
+    .results-table th, .results-table td {
+        padding: 10px 8px;
+        text-align: left;
+        border-bottom: 1px solid #475569;
+    }
+    .results-table th {
+        background: rgba(59, 130, 246, 0.2);
+        color: #60a5fa;
+        font-weight: 600;
+    }
+    .results-table tr:hover {
+        background: rgba(59, 130, 246, 0.1);
+    }
+    .significant {
+        color: #ef4444;
+        font-weight: bold;
+    }
+    .diff-positive {
+        color: #ef4444;
+    }
+    .diff-negative {
+        color: #10b981;
+    }
+    .summary-card {
+        background: rgba(15, 23, 42, 0.8);
+        border-radius: 12px;
+        padding: 16px;
+        margin-bottom: 20px;
+    }
+    .summary-stats {
+        display: flex;
+        gap: 20px;
+        flex-wrap: wrap;
+    }
+    .summary-item {
+        background: rgba(59, 130, 246, 0.15);
+        border-radius: 8px;
+        padding: 12px 20px;
+    }
+    .export-buttons {
+        display: flex;
+        gap: 12px;
+        margin-top: 20px;
+    }
+    .btn-export {
+        background: #10b981;
+        border: none;
+        color: white;
+        padding: 8px 16px;
+        border-radius: 8px;
+        cursor: pointer;
+    }
+    .loading {
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        border: 3px solid #f3f3f3;
+        border-top: 3px solid #3b82f6;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="compare-container">
+    <div class="compare-panel">
+        <h2 style="color: #f1f5f9; margin-bottom: 20px;">📊 数据对比分析</h2>
+        
+        <div class="compare-form">
+            <div class="form-group">
+                <label>选择项目</label>
+                <select id="projectSelect">
+                    <option value="">加载中...</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>基准日期 (Date 1)</label>
+                <select id="date1Select">
+                    <option value="">请先选择项目</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>对比日期 (Date 2)</label>
+                <select id="date2Select">
+                    <option value="">请先选择项目</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Runtime 误差阈值 (秒)</label>
+                <input type="number" id="runtimeTolerance" value="0" step="0.1" placeholder="超过此值标红">
+            </div>
+            <div class="form-group">
+                <label>Memory 误差阈值 (MB)</label>
+                <input type="number" id="memoryTolerance" value="0" step="1" placeholder="超过此值标红">
+            </div>
+        </div>
+        
+        <button class="btn-compare" id="compareBtn">🔍 开始对比</button>
+    </div>
+
+    <div id="resultsPanel" style="display: none;">
+        <div class="summary-card">
+            <h3 style="color: #f1f5f9; margin-bottom: 12px;">📈 对比摘要</h3>
+            <div class="summary-stats" id="summaryStats"></div>
+        </div>
+        
+        <div class="compare-panel">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                <h3 style="color: #f1f5f9;">📋 详细对比结果</h3>
+                <div class="export-buttons">
+                    <button class="btn-export" id="exportCSV">📄 导出CSV</button>
+                </div>
+            </div>
+            <div class="results-table" id="resultsTable">
+                <table>
+                    <thead>
+                        <tr><th>Stage/Rule</th><th>Date1 Runtime</th><th>Date2 Runtime</th><th>Runtime Diff</th><th>Date1 Memory</th><th>Date2 Memory</th><th>Memory Diff</th></tr>
+                    </thead>
+                    <tbody id="resultsBody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let projectsData = {};
+    let projectList = [];
+    let compareResults = [];
+    let currentCSVContent = '';
+
+    async function loadProjects() {
+        try {
+            const response = await fetch('/api/projects');
+            projectList = await response.json();
+            const select = document.getElementById('projectSelect');
+            select.innerHTML = '<option value="">请选择项目</option>';
+            projectList.forEach(project => {
+                const option = document.createElement('option');
+                option.value = project.id;
+                option.textContent = project.name;
+                select.appendChild(option);
+            });
+        } catch (error) {
+            console.error('加载项目失败:', error);
+        }
+    }
+
+    async function loadDates(projectId) {
+        try {
+            const response = await fetch(`/api/dates/${projectId}`);
+            const data = await response.json();
+            const dates = data.dates || [];
+            
+            const date1Select = document.getElementById('date1Select');
+            const date2Select = document.getElementById('date2Select');
+            
+            date1Select.innerHTML = '<option value="">请选择日期</option>';
+            date2Select.innerHTML = '<option value="">请选择日期</option>';
+            
+            dates.forEach(date => {
+                const opt1 = document.createElement('option');
+                opt1.value = date;
+                opt1.textContent = date;
+                date1Select.appendChild(opt1);
+                
+                const opt2 = document.createElement('option');
+                opt2.value = date;
+                opt2.textContent = date;
+                date2Select.appendChild(opt2);
+            });
+        } catch (error) {
+            console.error('加载日期失败:', error);
+        }
+    }
+
+    async function performCompare() {
+        const projectId = document.getElementById('projectSelect').value;
+        const date1 = document.getElementById('date1Select').value;
+        const date2 = document.getElementById('date2Select').value;
+        const runtimeTolerance = parseFloat(document.getElementById('runtimeTolerance').value) || 0;
+        const memoryTolerance = parseFloat(document.getElementById('memoryTolerance').value) || 0;
+        
+        if (!projectId || !date1 || !date2) {
+            alert('请完整填写对比条件');
+            return;
+        }
+        
+        const compareBtn = document.getElementById('compareBtn');
+        const originalText = compareBtn.innerHTML;
+        compareBtn.innerHTML = '<span class="loading"></span> 对比中...';
+        compareBtn.disabled = true;
+        
+        try {
+            const response = await fetch('/api/compare', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    project_id: projectId,
+                    date1: date1,
+                    date2: date2,
+                    runtime_tolerance: runtimeTolerance,
+                    memory_tolerance: memoryTolerance
+                })
+            });
+            
+            const result = await response.json();
+            
+            if (result.success) {
+                compareResults = result.results;
+                currentCSVContent = result.csv_content;
+                displayResults(result, date1, date2);
+                document.getElementById('resultsPanel').style.display = 'block';
+            } else {
+                alert('对比失败: ' + (result.error || '未知错误'));
+            }
+        } catch (error) {
+            alert('对比失败: ' + error.message);
+        } finally {
+            compareBtn.innerHTML = originalText;
+            compareBtn.disabled = false;
+        }
+    }
+
+    function displayResults(result, date1, date2) {
+        const results = result.results;
+        const significantDiffs = result.significant_diffs;
+        
+        // 更新摘要
+        const summaryStats = document.getElementById('summaryStats');
+        const runtimeDiffs = results.filter(r => r.runtime_diff !== null).map(r => Math.abs(r.runtime_diff));
+        const memoryDiffs = results.filter(r => r.memory_diff !== null).map(r => Math.abs(r.memory_diff));
+        
+        const avgRuntimeDiff = runtimeDiffs.length > 0 
+            ? (runtimeDiffs.reduce((a, b) => a + b, 0) / runtimeDiffs.length).toFixed(2) : 0;
+        const avgMemoryDiff = memoryDiffs.length > 0 
+            ? (memoryDiffs.reduce((a, b) => a + b, 0) / memoryDiffs.length).toFixed(2) : 0;
+        
+        summaryStats.innerHTML = `
+            <div class="summary-item">📅 对比日期: ${date1} → ${date2}</div>
+            <div class="summary-item">📊 对比项数: ${results.length}</div>
+            <div class="summary-item">⚠️ 显著变化: ${significantDiffs.length}</div>
+            <div class="summary-item">⏱️ 平均Runtime变化: ${avgRuntimeDiff} 秒</div>
+            <div class="summary-item">💾 平均Memory变化: ${avgMemoryDiff} MB</div>
+        `;
+        
+        // 更新表格
+        const tbody = document.getElementById('resultsBody');
+        tbody.innerHTML = '';
+        
+        results.forEach(r => {
+            const row = tbody.insertRow();
+            
+            // Rule名称
+            row.insertCell(0).textContent = r.rule;
+            
+            // Runtime Date1
+            row.insertCell(1).textContent = r.runtime1 !== null ? r.runtime1 : 'N/A';
+            
+            // Runtime Date2
+            row.insertCell(2).textContent = r.runtime2 !== null ? r.runtime2 : 'N/A';
+            
+            // Runtime Diff
+            const runtimeCell = row.insertCell(3);
+            if (r.runtime_diff !== null) {
+                runtimeCell.textContent = `${r.runtime_diff >= 0 ? '+' : ''}${r.runtime_diff}`;
+                if (Math.abs(r.runtime_diff) > parseFloat(document.getElementById('runtimeTolerance').value || 0)) {
+                    runtimeCell.className = r.runtime_diff > 0 ? 'diff-positive significant' : 'diff-negative significant';
+                } else {
+                    runtimeCell.className = r.runtime_diff > 0 ? 'diff-positive' : 'diff-negative';
+                }
+            } else {
+                runtimeCell.textContent = 'N/A';
+            }
+            
+            // Memory Date1
+            row.insertCell(4).textContent = r.memory1 !== null ? r.memory1 : 'N/A';
+            
+            // Memory Date2
+            row.insertCell(5).textContent = r.memory2 !== null ? r.memory2 : 'N/A';
+            
+            // Memory Diff
+            const memoryCell = row.insertCell(6);
+            if (r.memory_diff !== null) {
+                memoryCell.textContent = `${r.memory_diff >= 0 ? '+' : ''}${r.memory_diff}`;
+                if (Math.abs(r.memory_diff) > parseFloat(document.getElementById('memoryTolerance').value || 0)) {
+                    memoryCell.className = r.memory_diff > 0 ? 'diff-positive significant' : 'diff-negative significant';
+                } else {
+                    memoryCell.className = r.memory_diff > 0 ? 'diff-positive' : 'diff-negative';
+                }
+            } else {
+                memoryCell.textContent = 'N/A';
+            }
+        });
+    }
+
+    function exportToCSV() {
+        if (!currentCSVContent) {
+            alert('没有可导出的数据');
+            return;
+        }
+        
+        const blob = new Blob([currentCSVContent], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        const url = URL.createObjectURL(blob);
+        link.setAttribute('href', url);
+        link.setAttribute('download', `compare_${new Date().toISOString().slice(0, 19)}.csv`);
+        link.style.display = 'none';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+    }
+
+    document.getElementById('projectSelect').addEventListener('change', (e) => {
+        if (e.target.value) {
+            loadDates(e.target.value);
+        }
+    });
+    
+    document.getElementById('compareBtn').addEventListener('click', performCompare);
+    document.getElementById('exportCSV').addEventListener('click', exportToCSV);
+    
+    // 初始化
+    loadProjects();
+</script>
+{% endblock %}

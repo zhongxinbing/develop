@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+
+{% block title %}工具选择 - EDA性能监控{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h1>🛠️ 工具与线程模式选择</h1>
+    <div class="sub">选择工具和线程模式开始监控</div>
+
+    <div class="input-group">
+        <label>🔧 工具选择</label>
+        <select id="toolSelect">
+            <option value="">请选择工具</option>
+            {% for tool in tools %}
+            <option value="{{ tool }}">{{ tool|upper }}</option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <div class="input-group">
+        <label>⚡ 线程模式</label>
+        <select id="threadSelect">
+            <option value="">请先选择工具</option>
+        </select>
+    </div>
+
+    <button class="btn-confirm" id="submitBtn">
+        🚀 开始监控
+    </button>
+
+    <div class="info-panel">
+        <p>📌 <strong>当前选择</strong></p>
+        <p>🔹 工具: <span id="previewTool" class="badge">未选择</span></p>
+        <p>🔹 线程模式: <span id="previewThread" class="badge">未选择</span></p>
+        <div id="statusArea">
+            <p id="statusMsg">✨ 选择工具和线程模式后点击按钮</p>
+        </div>
+    </div>
+</div>
+
+<script>
+    const toolConfig = {{ tool_config | tojson }};
+
+    function updatePreview() {
+        const tool = document.getElementById('toolSelect').value;
+        const thread = document.getElementById('threadSelect').value;
+        
+        let toolText = '未选择';
+        if (tool === 'elint') toolText = 'ELINT';
+        if (tool === 'ecdc') toolText = 'ECDC';
+        
+        let threadText = '未选择';
+        if (thread === 'single') threadText = '单线程';
+        if (thread === 'multi') threadText = '多线程';
+        
+        document.getElementById('previewTool').textContent = toolText;
+        document.getElementById('previewThread').textContent = threadText;
+    }
+
+    function updateThreadSelect() {
+        const tool = document.getElementById('toolSelect').value;
+        const threadSelect = document.getElementById('threadSelect');
+        
+        if (tool && toolConfig[tool]) {
+            const threads = toolConfig[tool].thread;
+            const options = Object.entries(threads)
+                .map(([value, text]) => `<option value="${value}">${text}</option>`)
+                .join('');
+            threadSelect.innerHTML = `<option value="">请选择线程模式</option>${options}`;
+        } else {
+            threadSelect.innerHTML = '<option value="">请先选择工具</option>';
+        }
+        updatePreview();
+    }
+
+    async function submitAndNavigate() {
+        const tool = document.getElementById('toolSelect').value;
+        const thread = document.getElementById('threadSelect').value;
+        const statusMsg = document.getElementById('statusMsg');
+        
+        if (!tool || !thread) {
+            statusMsg.innerHTML = '❌ 请完整选择工具和线程模式';
+            statusMsg.className = 'error';
+            return;
+        }
+        
+        statusMsg.innerHTML = '<span class="loading"></span> 正在加载数据...';
+        statusMsg.className = '';
+        
+        try {
+            const response = await fetch('/api/init', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ tool: tool, thread: thread })
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                statusMsg.innerHTML = '✅ 数据加载成功！即将跳转到监控页面...';
+                statusMsg.className = 'success';
+                setTimeout(() => {
+                    window.location.href = '/monitor';
+                }, 1000);
+            } else {
+                throw new Error(data.error || '加载失败');
+            }
+        } catch (error) {
+            statusMsg.innerHTML = `❌ 加载失败: ${error.message}`;
+            statusMsg.className = 'error';
+        }
+    }
+
+    document.getElementById('toolSelect').addEventListener('change', updateThreadSelect);
+    document.getElementById('threadSelect').addEventListener('change', updatePreview);
+    document.getElementById('submitBtn').addEventListener('click', (e) => {
+        e.preventDefault();
+        submitAndNavigate();
+    });
+    
+    updateThreadSelect();
+</script>
+{% endblock %}
