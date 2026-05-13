@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>工具与线程模式选择器 - ELINT/ECDC</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+</head>
+<body>
+<div class="card">
+    <h1>🛠️ 工具与线程模式选择</h1>
+    <div class="sub">选择工具和线程模式</div>
+
+    <div class="input-group">
+        <label>🔧 工具选择</label>
+        <select id="toolSelect">
+            <option value="">请选择工具</option>
+            {% for tool in tools %}
+            <option value="{{ tool }}">{{ tool }}&nbsp;</option>
+            {% endfor %}
+            <!-- <option value="elint">ELINT</option> -->
+            <!-- <option value="ecdc">ECDC</option> -->
+        </select>
+    </div>
+
+    <div class="input-group">
+        <label>⚡ 线程模式</label>
+        <select id="threadSelect">
+            <option value="">请选择线程模式</option>
+            <option value="single">单线程</option>
+            <option value="multi">多线程</option>
+        </select>
+    </div>
+
+    <button class="btn-confirm" id="submitBtn">
+        🚀 获取数据并跳转
+    </button>
+
+    <div class="info-panel">
+        <p>📌 <strong>当前选择</strong></p>
+        <p>🔹 工具: <span id="previewTool" class="badge">未选择</span></p>
+        <p>🔹 线程模式: <span id="previewThread" class="badge">未选择</span></p>
+        <div id="statusArea">
+            <p id="statusMsg">✨ 选择工具和线程模式后点击按钮</p>
+        </div>
+    </div>
+
+    <div class="target-info" id="targetInfo" style="display:none;">
+        <strong>🎯 目标页面:</strong> <span id="targetPage"></span>
+    </div>
+</div>
+<script>
+    const toolConfig = {{tool_config | tojson}}
+</script>
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+
+</body>
+</html>
