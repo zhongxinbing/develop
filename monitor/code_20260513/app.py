@@ -12,6 +12,7 @@ import webbrowser
 import threading
 import time
 import socket
+import json
 from datetime import datetime
 from pathlib import Path
 
@@ -40,9 +41,9 @@ CASE_CONFIG = {
     'elint': {
         'single': {
             'original_path': 'C:\\Users\\xbzhong\\Desktop\\lint\\script\\monitor\\develop\\monitor\\code\\data',
-            'json_path': 'C:\\Users\\xbzhong\\Desktop\\lint\\script\\monitor\\develop\\monitor\\code_20260513\\data\\total.json',
-            'mem': './data/lint_mem.csv',
-            'cpu': './data/lint_cpu.csv'
+            'json_path': '/home/xbzhong/develop/monitor/code_20260513/data/total.json',
+            'mem': '/home/xbzhong/develop/monitor/code_20260513/data/lint_mem.csv',
+            'cpu': '/home/xbzhong/develop/monitor/code_20260513/data/lint_cpu.csv'
         },
         'multi': {
             'original_path': '/mnt/efs/fs1/jenkins/lint_comparison_results_qor',
@@ -52,6 +53,38 @@ CASE_CONFIG = {
         }
     }
 }
+
+COMPARE_CONFIG_FILE = Path('./static/uploads/compare_config.json')
+COMPARE_CONFIG_FILE.parent.mkdir(parents=True, exist_ok=True)
+
+
+def load_compare_config():
+    if not COMPARE_CONFIG_FILE.exists():
+        return {}
+    try:
+        with open(COMPARE_CONFIG_FILE, 'r', encoding='utf-8') as f:
+            return json.load(f)
+    except Exception:
+        return {}
+
+
+def save_compare_config(config_data):
+    try:
+        with open(COMPARE_CONFIG_FILE, 'w', encoding='utf-8') as f:
+            json.dump(config_data, f, ensure_ascii=False, indent=4)
+    except Exception as e:
+        log(f"保存对比配置失败: {e}")
+
+
+def get_compare_config(project_id: str):
+    configs = load_compare_config()
+    return configs.get(project_id, {})
+
+
+def update_compare_config(project_id: str, config: dict):
+    configs = load_compare_config()
+    configs[project_id] = config
+    save_compare_config(configs)
 
 
 # ==================================================
@@ -390,6 +423,20 @@ def api_compare():
             tolerance_mode=tolerance_mode
         )
         
+        compare_result['tolerance_mode'] = tolerance_mode
+
+        update_compare_config(project_id, {
+            'project_id': project_id,
+            'rule_name': rule_name,
+            'date1': date1,
+            'date2': date2,
+            'tolerance_runtime': tolerance_runtime,
+            'tolerance_memory': tolerance_memory,
+            'tolerance_mode': tolerance_mode,
+            'timestamp': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+            'summary': compare_result.get('summary', {})
+        })
+        
         log(f"对比完成: mode={compare_result.get('mode')}, rules_comparison数量={len(compare_result.get('rules_comparison', []))}")
         
         return jsonify({
@@ -402,6 +449,83 @@ def api_compare():
         traceback.print_exc()
         return jsonify({'success': False, 'error': str(e)}), 500
     
+@app.route('/api/compare_config', methods=['GET', 'POST'])
+def api_compare_config():
+    """获取或保存上一次的对比配置"""
+    try:
+        if request.method == 'GET':
+            project_id = request.args.get('project_id', '')
+            if not project_id:
+                return jsonify({'success': False, 'error': 'project_id 参数缺失'}), 400
+            config = get_compare_config(project_id)
+            return jsonify({'success': True, 'config': config})
+        else:
+            data = request.get_json() or {}
+            project_id = data.get('project_id')
+            if not project_id:
+                return jsonify({'success': False, 'error': 'project_id 参数缺失'}), 400
+            update_compare_config(project_id, data)
+            return jsonify({'success': True, 'message': '配置保存成功'})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+@app.route('/api/thread_compare_structure', methods=['POST'])
+def api_thread_compare_structure():
+    """返回多线程对比的 JSON 结构示例"""
+    try:
+        data = request.get_json() or {}
+        project_id = data.get('project_id')
+        rule_name = data.get('rule_name')
+        date1 = data.get('date1')
+        date2 = data.get('date2')
+
+        if not project_id or project_id not in parsed_projects:
+            return jsonify({'success': False, 'error': '项目不存在或未加载'}), 404
+
+        project_info = parsed_projects[project_id]
+        if not rule_name:
+            rule_name = project_info['rules'][0] if project_info['rules'] else None
+
+        rule_data = project_info['rule_data'].get(rule_name, {})
+        if not rule_data:
+            return jsonify({'success': False, 'error': '指定阶段不存在'}), 400
+
+        dates = [d for d in [date1, date2] if d]
+        if not dates:
+            dates = project_info.get('available_dates', project_info['dates'])[-2:]
+
+        thread_map = {}
+        for idx, date in enumerate(rule_data.get('dates', [])):
+            cores = rule_data.get('cores', [])[idx]
+            if cores is None:
+                continue
+            key = f"thread_{cores}"
+            thread_map.setdefault(key, {'thread': key, 'runtime': {}, 'memory': {}})
+            thread_map[key]['runtime'][date] = rule_data.get('runtimes', [])[idx]
+            thread_map[key]['memory'][date] = rule_data.get('memories', [])[idx]
+
+        series = []
+        for thread_name, values in thread_map.items():
+            series.append({
+                'thread': thread_name,
+                'runtime': [values['runtime'].get(d) for d in dates],
+                'memory': [values['memory'].get(d) for d in dates]
+            })
+
+        return jsonify({
+            'success': True,
+            'project_id': project_id,
+            'rule_name': rule_name,
+            'dates': dates,
+            'threads': list(thread_map.keys()),
+            'series': series,
+            'description': '多线程对比数据结构示例，适用于各线程之间的曲线对比'
+        })
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
 @app.route('/api/export_compare', methods=['POST'])
 def api_export_compare():
     """导出对比结果到CSV"""

@@ -233,11 +233,11 @@ def read_csv(path):
     return data
 
 
-def get_perf():
+def get_perf(mem,cpu):
     git_pull()
     try:
-        mem = read_csv(Path('rd_perf/eda/lint/script/lint_perf_monitor/data/lint_cpu.csv'))
-        cpu = read_csv(Path('rd_perf/eda/lint/script/lint_perf_monitor/data/lint_cpu.csv'))
+        mem = read_csv(Path(mem))
+        cpu = read_csv(Path(cpu))
         perf = {
             "mem":mem,
             "cpu":cpu

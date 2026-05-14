@@ -52,6 +52,42 @@
                 <input type="text" id="ruleSearch" placeholder="🔍 搜索阶段名称..." autocomplete="off" class="rule-search">
             </div>
         </div>
+        <div class="date-filter-container" style="display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 18px; align-items: flex-end;">
+            <div class="selector-info" style="flex: 1 1 400px; min-width: 280px;">
+                <div class="info-text">📅 显示日期 (仅 original_path 存在日期)</div>
+                <button class="refresh-btn" id="openDatePickerBtn" style="width: 100%; justify-content: center;">
+                    📅 选择显示日期
+                </button>
+                <div style="margin-top: 10px; color: #cbd5e1; font-size: 0.95rem;">
+                    当前已选：<span id="selectedDateSummary">最近 51 条</span>
+                </div>
+            </div>
+            <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
+                <button class="refresh-btn" id="selectRecentBtn">显示最近 51 条</button>
+                <button class="refresh-btn" id="selectAllDatesBtn">显示所有可用</button>
+            </div>
+        </div>
+
+        <div id="datePickerModal" class="modal hidden">
+            <div class="modal-overlay" id="datePickerOverlay"></div>
+            <div class="modal-dialog">
+                <div class="modal-header">
+                    <h2>选择要显示的日期</h2>
+                    <button class="modal-close-btn" id="closeDatePickerBtn">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="modal-info">可多选，支持输入筛选日期，选择后点击“确认应用”。</div>
+                    <input id="dateFilterInput" type="text" class="date-filter-input" placeholder="输入日期关键字筛选，例如 2026-05" autocomplete="off" />
+                    <div id="dateOptionsContainer" class="date-options-container"></div>
+                </div>
+                <div class="modal-actions">
+                    <button class="refresh-btn" id="confirmDateSelectionBtn">确认应用</button>
+                    <button class="refresh-btn compare-btn" id="cancelDateSelectionBtn">取消</button>
+                    <button class="refresh-btn" id="modalRecentBtn">最近 51 条</button>
+                    <button class="refresh-btn compare-btn" id="modalAllDatesBtn">显示所有可用</button>
+                </div>
+            </div>
+        </div>
         
         <!-- Tab标签 -->
         <div class="tabs">

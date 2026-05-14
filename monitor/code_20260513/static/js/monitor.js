@@ -41,6 +41,151 @@ function buildMrUpdateMap(perfData) {
     return mrMap;
 }
 
+let selectedDates = [];
+let pendingSelectedDates = [];
+let availableDates = [];
+const MAX_DEFAULT_POINTS = 51;
+
+function updateDateSelectionInfo() {
+    const current = selectedDates.length ? selectedDates : availableDates.slice(-MAX_DEFAULT_POINTS);
+    const summaryEl = document.getElementById('selectedDateSummary');
+    if (current.length > 0) {
+        document.getElementById('dateRange').innerText = `${current[0]} 至 ${current[current.length - 1]}`;
+        document.getElementById('dataPoints').innerText = current.length;
+        if (summaryEl) {
+            summaryEl.innerText = current.length === availableDates.length ? '全部可用日期' : `${current.length} 条已选`;
+        }
+    } else {
+        const projectData = getCurrentProjectData();
+        document.getElementById('dateRange').innerText = projectData.dates.length ? `${projectData.dates[0]} 至 ${projectData.dates[projectData.dates.length - 1]}` : '无';
+        document.getElementById('dataPoints').innerText = projectData.dates.length;
+        if (summaryEl) {
+            summaryEl.innerText = '未选择日期';
+        }
+    }
+}
+
+function getFilteredToolData(toolData) {
+    const filterSet = new Set(selectedDates.length ? selectedDates : availableDates.slice(-MAX_DEFAULT_POINTS));
+    const filtered = {
+        dates: [],
+        runtimes: [],
+        memories: [],
+        cores: []
+    };
+
+    toolData.dates.forEach((date, index) => {
+        if (filterSet.has(date)) {
+            filtered.dates.push(date);
+            filtered.runtimes.push(toolData.runtimes[index]);
+            filtered.memories.push(toolData.memories[index]);
+            filtered.cores.push(toolData.cores[index]);
+        }
+    });
+
+    return filtered;
+}
+
+function filterAvailableDates(filterText) {
+    const lower = String(filterText || '').trim().toLowerCase();
+    if (!lower) return [...availableDates];
+    return availableDates.filter(date => date.toLowerCase().includes(lower));
+}
+
+function buildDateSelect(usePending = false) {
+    const container = document.getElementById('dateOptionsContainer');
+    if (!container) return;
+
+    const projectData = getCurrentProjectData();
+    availableDates = projectData.available_dates && projectData.available_dates.length ? projectData.available_dates : projectData.dates;
+
+    if (!selectedDates.length) {
+        selectedDates = availableDates.slice(-MAX_DEFAULT_POINTS);
+    }
+
+    const currentSelection = usePending ? (pendingSelectedDates.length ? pendingSelectedDates : selectedDates.slice(-MAX_DEFAULT_POINTS)) : selectedDates;
+    const filterText = document.getElementById('dateFilterInput')?.value || '';
+    const filteredDates = filterAvailableDates(filterText);
+
+    container.innerHTML = '';
+    filteredDates.forEach(date => {
+        const row = document.createElement('div');
+        row.className = 'date-option-row';
+
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.id = `checkbox-${date}`;
+        checkbox.value = date;
+        checkbox.checked = currentSelection.includes(date);
+
+        checkbox.addEventListener('change', (e) => {
+            if (e.target.checked) {
+                if (!pendingSelectedDates.includes(date)) {
+                    pendingSelectedDates.push(date);
+                }
+            } else {
+                pendingSelectedDates = pendingSelectedDates.filter(item => item !== date);
+            }
+        });
+
+        const label = document.createElement('label');
+        label.htmlFor = checkbox.id;
+        label.textContent = date;
+
+        row.appendChild(checkbox);
+        row.appendChild(label);
+        row.addEventListener('click', (e) => {
+            if (e.target.tagName.toLowerCase() !== 'input') {
+                checkbox.checked = !checkbox.checked;
+                checkbox.dispatchEvent(new Event('change'));
+            }
+        });
+        container.appendChild(row);
+    });
+
+    updateDateSelectionInfo();
+}
+
+function openDatePickerModal() {
+    pendingSelectedDates = selectedDates.length ? [...selectedDates] : availableDates.slice(-MAX_DEFAULT_POINTS);
+    const filterInput = document.getElementById('dateFilterInput');
+    if (filterInput) {
+        filterInput.value = '';
+    }
+    buildDateSelect(true);
+    document.getElementById('datePickerModal')?.classList.remove('hidden');
+}
+
+function closeDatePickerModal() {
+    document.getElementById('datePickerModal')?.classList.add('hidden');
+    buildDateSelect();
+}
+
+function confirmDatePickerSelection() {
+    if (!pendingSelectedDates.length) {
+        pendingSelectedDates = availableDates.slice(-MAX_DEFAULT_POINTS);
+    }
+    selectedDates = [...pendingSelectedDates];
+    updateDateSelectionInfo();
+    debouncedRenderCharts();
+    closeDatePickerModal();
+}
+
+function resetDateSelection(useAll = false) {
+    selectedDates = useAll ? [...availableDates] : availableDates.slice(-MAX_DEFAULT_POINTS);
+    pendingSelectedDates = [...selectedDates];
+    const filterInput = document.getElementById('dateFilterInput');
+    if (filterInput) {
+        filterInput.value = '';
+    }
+    const modalVisible = !document.getElementById('datePickerModal')?.classList.contains('hidden');
+    if (modalVisible) {
+        buildDateSelect(true);
+    }
+    updateDateSelectionInfo();
+    debouncedRenderCharts();
+}
+
 // 更新阶段选择器
 function updateRuleSelect() {
     const caseData = getCurrentProjectData();
@@ -86,6 +231,7 @@ function updateRuleSelect() {
     
     if (currentRule) {
         document.getElementById('currentRuleName').innerText = currentRule;
+        buildDateSelect();
         debouncedRenderCharts();
     } else {
         document.getElementById('currentRuleName').innerText = '未选择';
@@ -172,10 +318,11 @@ function renderEChartOptimized(chartType, dataKey, color, highlightColor, yAxisN
         return;
     }
     
-    const dates = toolData.dates;
-    const values = toolData[dataKey];
+    const filteredData = getFilteredToolData(toolData);
+    const dates = filteredData.dates;
+    const values = filteredData[dataKey];
     
-    const dataHash = simpleHash(JSON.stringify({dates, values, currentRule, mrUpdateDates}));
+    const dataHash = simpleHash(JSON.stringify({dates, values, currentRule, mrUpdateDates, selectedDates}));
     if (lastRenderedDataHash[chartType] === dataHash && charts[chartType] && !charts[chartType].isDisposed()) {
         return;
     }
@@ -186,6 +333,7 @@ function renderEChartOptimized(chartType, dataKey, color, highlightColor, yAxisN
     let unit = dataKey === 'runtimes' ? '秒' : (dataKey === 'memories' ? 'MB' : '核心');
     let label = dataKey === 'runtimes' ? 'Runtime' : (dataKey === 'memories' ? 'Memory' : 'CPU核心数');
     updateStats(`stats-${chartType}`, values, unit, label);
+    updateDateSelectionInfo();
     
     const avgValue = validValues.length > 0 
         ? (validValues.reduce((a, b) => a + b, 0) / validValues.length).toFixed(1)
@@ -527,8 +675,7 @@ function updateProjectStats() {
         <div class="badge-item"><span>📅</span> 天数: ${datesCount}</div>
         <div class="badge-item"><span>⏱️</span> 平均Runtime: ${avgRuntime} min</div>
     `;
-    document.getElementById('dateRange').innerText = projectData.dates[0] + ' 至 ' + projectData.dates[projectData.dates.length - 1];
-    document.getElementById('dataPoints').innerText = projectData.dates.length;
+    updateDateSelectionInfo();
 }
 
 function setupSearchListener() {
@@ -608,7 +755,86 @@ if (caseSelect) {
             cores: ''
         };
         updateRuleSelect();
+        buildDateSelect();
         updateProjectStats();
+    });
+}
+
+const dateFilterInput = document.getElementById('dateFilterInput');
+if (dateFilterInput) {
+    dateFilterInput.addEventListener('input', debounce(() => {
+        buildDateSelect(true);
+    }, 150));
+}
+
+const openDatePickerBtn = document.getElementById('openDatePickerBtn');
+if (openDatePickerBtn) {
+    openDatePickerBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        openDatePickerModal();
+    });
+}
+
+const closeDatePickerBtn = document.getElementById('closeDatePickerBtn');
+if (closeDatePickerBtn) {
+    closeDatePickerBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        closeDatePickerModal();
+    });
+}
+
+const cancelDateSelectionBtn = document.getElementById('cancelDateSelectionBtn');
+if (cancelDateSelectionBtn) {
+    cancelDateSelectionBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        closeDatePickerModal();
+    });
+}
+
+const confirmDateSelectionBtn = document.getElementById('confirmDateSelectionBtn');
+if (confirmDateSelectionBtn) {
+    confirmDateSelectionBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        confirmDatePickerSelection();
+    });
+}
+
+const datePickerOverlay = document.getElementById('datePickerOverlay');
+if (datePickerOverlay) {
+    datePickerOverlay.addEventListener('click', () => closeDatePickerModal());
+}
+
+const modalRecentBtn = document.getElementById('modalRecentBtn');
+if (modalRecentBtn) {
+    modalRecentBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        pendingSelectedDates = availableDates.slice(-MAX_DEFAULT_POINTS);
+        buildDateSelect(true);
+    });
+}
+
+const modalAllDatesBtn = document.getElementById('modalAllDatesBtn');
+if (modalAllDatesBtn) {
+    modalAllDatesBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        pendingSelectedDates = [...availableDates];
+        buildDateSelect(true);
+    });
+}
+
+const selectRecentBtn = document.getElementById('selectRecentBtn');
+if (selectRecentBtn) {
+    selectRecentBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        resetDateSelection(false);
+    });
+}
+
+const selectAllDatesBtn = document.getElementById('selectAllDatesBtn');
+if (selectAllDatesBtn) {
+    selectAllDatesBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        resetDateSelection(true);
     });
 }
 

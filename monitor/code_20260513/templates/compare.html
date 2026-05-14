@@ -363,18 +363,30 @@
         <div class="form-group">
             <div class="tolerance-group">
                 <div class="input-field">
-                    <label>⏱️ Runtime误差范围 (秒)</label>
+                    <label>⏱️ Runtime误差范围</label>
                     <input type="number" id="toleranceRuntime" value="0" step="0.1" placeholder="0">
                 </div>
                 <div class="input-field">
-                    <label>💾 Memory误差范围 (MB)</label>
+                    <label>💾 Memory误差范围</label>
                     <input type="number" id="toleranceMemory" value="0" step="10" placeholder="0">
+                </div>
+                <div class="input-field" style="min-width: 220px;">
+                    <label>⚙️ 误差模式</label>
+                    <div class="radio-group" style="justify-content: space-between;">
+                        <label><input type="radio" name="toleranceMode" value="absolute" checked> 绝对值</label>
+                        <label><input type="radio" name="toleranceMode" value="percentage"> 百分比</label>
+                    </div>
                 </div>
             </div>
             <button class="btn" id="compareBtn">🔍 执行对比</button>
         </div>
         
         <div class="form-group" style="margin-top: 5px;">
+            <div class="input-field" style="flex:1 1 100%;">
+                <label>📝 上次保存的误差配置</label>
+                <div id="lastConfigInfo" style="color: #cbd5e1; min-height: 42px; padding: 12px 14px; background: rgba(15,23,42,0.6); border-radius: 12px; border: 1px solid rgba(71,85,105,0.5);">暂无历史配置</div>
+            </div>
+        </div>
             <div class="info-text" style="color: #64748b; font-size: 0.7rem;">
                 💡 提示：
                 <span id="modeHint">选择"单阶段对比"可查看单个阶段的详细数据点变化；选择"全阶段对比"可查看所有阶段的汇总对比。</span>
@@ -533,12 +545,60 @@
                     option2.textContent = date;
                     date2Select.appendChild(option2);
                 });
+                loadCompareConfig(projectId);
             } else {
                 document.getElementById('date1Select').innerHTML = '<option value="">暂无日期数据</option>';
                 document.getElementById('date2Select').innerHTML = '<option value="">暂无日期数据</option>';
             }
         } catch (error) {
             console.error('加载日期失败:', error);
+        }
+    }
+
+    async function loadCompareConfig(projectId) {
+        if (!projectId) {
+            document.getElementById('lastConfigInfo').textContent = '暂无历史配置';
+            return;
+        }
+        try {
+            const response = await fetch(`/api/compare_config?project_id=${encodeURIComponent(projectId)}`);
+            const result = await response.json();
+            if (result.success && result.config) {
+                const config = result.config;
+                if (config.tolerance_runtime !== undefined) {
+                    document.getElementById('toleranceRuntime').value = config.tolerance_runtime;
+                }
+                if (config.tolerance_memory !== undefined) {
+                    document.getElementById('toleranceMemory').value = config.tolerance_memory;
+                }
+                if (config.tolerance_mode) {
+                    document.querySelector(`input[name="toleranceMode"][value="${config.tolerance_mode}"]`).checked = true;
+                }
+                if (config.date1) {
+                    document.getElementById('date1Select').value = config.date1;
+                }
+                if (config.date2) {
+                    document.getElementById('date2Select').value = config.date2;
+                }
+                document.getElementById('lastConfigInfo').innerHTML = `最近一次保存: ${config.timestamp || '未知时间'}<br>模式: ${config.tolerance_mode || 'absolute'}，Runtime: ${config.tolerance_runtime || 0}，Memory: ${config.tolerance_memory || 0}<br>日期: ${config.date1 || 'N/A'} vs ${config.date2 || 'N/A'}`;
+            } else {
+                document.getElementById('lastConfigInfo').textContent = '暂无历史配置';
+            }
+        } catch (error) {
+            console.error('加载对比配置失败:', error);
+            document.getElementById('lastConfigInfo').textContent = '加载历史配置失败';
+        }
+    }
+
+    async function saveCompareConfig(config) {
+        try {
+            await fetch('/api/compare_config', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(config)
+            });
+        } catch (error) {
+            console.error('保存对比配置失败:', error);
         }
     }
     
@@ -569,13 +629,14 @@
         const date2 = document.getElementById('date2Select').value;
         const toleranceRuntime = parseFloat(document.getElementById('toleranceRuntime').value) || 0;
         const toleranceMemory = parseFloat(document.getElementById('toleranceMemory').value) || 0;
+        const toleranceMode = document.querySelector('input[name="toleranceMode"]:checked')?.value || 'absolute';
         
         // 全阶段模式强制使用 'all'
         if (currentCompareMode === 'all') {
             ruleName = 'all';
         }
         
-        console.log('对比参数:', { projectId, ruleName, date1, date2, currentCompareMode });
+        console.log('对比参数:', { projectId, ruleName, date1, date2, toleranceMode, currentCompareMode });
         
         if (!projectId) {
             alert('请选择项目');
@@ -608,7 +669,8 @@
                     date1: date1,
                     date2: date2,
                     tolerance_runtime: toleranceRuntime,
-                    tolerance_memory: toleranceMemory
+                    tolerance_memory: toleranceMemory,
+                    tolerance_mode: toleranceMode
                 })
             });
             
@@ -619,6 +681,18 @@
                 currentCompareResult = result.result;
                 displayResult(result.result);
                 document.getElementById('resultArea').style.display = 'block';
+                
+                saveCompareConfig({
+                    project_id: projectId,
+                    rule_name: ruleName,
+                    date1: date1,
+                    date2: date2,
+                    tolerance_runtime: toleranceRuntime,
+                    tolerance_memory: toleranceMemory,
+                    tolerance_mode: toleranceMode,
+                    timestamp: new Date().toISOString()
+                });
+                loadCompareConfig(projectId);
                 
                 // 滚动到结果区域
                 document.getElementById('resultArea').scrollIntoView({ behavior: 'smooth' });
@@ -961,6 +1035,7 @@
             document.getElementById('ruleSelect').innerHTML = '<option value="all">📊 所有阶段 (请先选择项目)</option>';
             document.getElementById('date1Select').innerHTML = '<option value="">请先选择项目</option>';
             document.getElementById('date2Select').innerHTML = '<option value="">请先选择项目</option>';
+            document.getElementById('lastConfigInfo').textContent = '暂无历史配置';
         }
     });
     

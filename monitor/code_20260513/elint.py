@@ -1,6 +1,8 @@
 import os
 import re
 import json
+import csv
+import subprocess
 from datetime import datetime
 from pathlib import Path
 from datetime import date
@@ -152,18 +154,37 @@ def get_json_data(tool,original_path,data_path):
 
     # 获取数据原始路径
     original_files = get_target_items(original_path,"folder")
+    available_dates = []
+    for f in original_files:
+        try:
+            date_str = Path(f).name
+            available_dates.append(datetime.strptime(date_str, "%Y-%m-%d-%H").strftime("%Y%m%d"))
+        except Exception:
+            continue
+    available_dates = sorted(set(available_dates))
+
     if len(original_files) == 0:
+        for case_data in total_json.values():
+            case_data['available_dates'] = sorted(set(total_json.get(next(iter(total_json)), {}).get('daily_metrics', {}).keys())) if total_json else []
         save_json(total_json_file,total_json)
         return total_json
+
     for f in original_files:
-        # 获取文件加的名字
-        date_str = Path(f).name
-        date_str = datetime.strptime(date_str, "%Y-%m-%d-%H").strftime("%Y%m%d")
+        # 获取文件夹的名字
+        try:
+            date_str = Path(f).name
+            date_str = datetime.strptime(date_str, "%Y-%m-%d-%H").strftime("%Y%m%d")
+        except Exception:
+            continue
         # 将对应日期的数据添加到新的json中
         new_total_json = add_json(new_total_json,total_json,date_str,thread,f)
-    
+
     # 判断是否有遗漏的 case
     new_total_json = get_txt_name(original_path, new_total_json)
+
+    # 为所有case补充 available_dates 信息
+    for case_data in new_total_json.values():
+        case_data['available_dates'] = available_dates if available_dates else sorted(set(case_data.get('daily_metrics', {}).keys()))
 
     # 判断两个json是否相同
     if new_total_json == total_json:

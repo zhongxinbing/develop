@@ -37,11 +37,15 @@ CASE_CONFIG = {
     'elint': {
         'single': {
             'original_path': 'C:\\Users\\xbzhong\\Desktop\\lint\\script\\monitor\\develop\\monitor\\code\\data',
-            'json_path': 'C:\\Users\\xbzhong\\Desktop\\lint\\script\\monitor\\develop\\monitor\\code\\data\\total.json'
+            'json_path': 'C:\\Users\\xbzhong\\Desktop\\lint\\script\\monitor\\develop\\monitor\\code\\data\\total.json',
+            'mem':'/home/xbzhong/develop/monitor/code/data/lint_mem.csv',
+            'cpu':'/home/xbzhong/develop/monitor/code/data/lint_cpu.csv'
         },
         'multi': {
             'original_path': '/mnt/efs/fs1/jenkins/lint_comparison_results_qor',
-            'json_path': '/mnt/efs/fs1/reg_test_data/CN/lint/pv/other/monitor/json/elint/multi'
+            'json_path': '/mnt/efs/fs1/reg_test_data/CN/lint/pv/other/monitor/json/elint/multi',
+            'mem':'/home/xbzhong/develop/monitor/code/data/lint_mem.csv',
+            'cpu':'/home/xbzhong/develop/monitor/code/data/lint_cpu.csv'
         }
     }
 }
@@ -166,7 +170,7 @@ def elint_single():
             'description': info['description']
         }
 
-    perf = get_perf()
+    perf = get_perf(CASE_CONFIG['elint']['single']['mem'],CASE_CONFIG['elint']['single']['cpu'])
     return render_template(
         'elint_single.html',
         project_list=project_list,
@@ -188,7 +192,7 @@ def api_refresh():
         project_list = []
         refresh_parsed_projects(current_projects_data)
 
-        perf = get_perf()
+        perf = get_perf(CASE_CONFIG['elint']['single']['mem'],CASE_CONFIG['elint']['single']['cpu'])
 
         projects_data_json = {}
         for pid, info in parsed_projects.items():

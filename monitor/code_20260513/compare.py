@@ -25,7 +25,8 @@ class DataComparator:
         data2: Dict,
         project_id: str,
         tolerance_runtime: float = 0.0,
-        tolerance_memory: float = 0.0
+        tolerance_memory: float = 0.0,
+        tolerance_mode: str = 'absolute'
     ) -> Dict:
         """
         对比所有阶段的数据
@@ -45,6 +46,7 @@ class DataComparator:
             "date1": None,
             "date2": None,
             "mode": "all_rules",
+            "tolerance_mode": tolerance_mode,
             "rules_comparison": [],
             "summary": {
                 "total_rules": 0,
@@ -115,8 +117,8 @@ class DataComparator:
             if has_data:
                 runtime_diff = runtime2 - runtime1
                 runtime_change_pct = (runtime_diff / runtime1 * 100) if runtime1 != 0 else 0
-                runtime_status = self._get_status(runtime_diff, tolerance_runtime)
-                
+                runtime_status = self._get_status(runtime_diff, tolerance_runtime, tolerance_mode, runtime1)
+
                 memory_diff = None
                 memory_change_pct = None
                 memory_status = "N/A"
@@ -124,17 +126,17 @@ class DataComparator:
                 if memory1 is not None and memory2 is not None:
                     memory_diff = memory2 - memory1
                     memory_change_pct = (memory_diff / memory1 * 100) if memory1 != 0 else 0
-                    memory_status = self._get_status(memory_diff, tolerance_memory)
-                
+                    memory_status = self._get_status(memory_diff, tolerance_memory, tolerance_mode, memory1)
+
                 rule_comparison.update({
                     "runtime_diff": round(runtime_diff, 2),
                     "runtime_change_pct": round(runtime_change_pct, 2),
                     "runtime_status": runtime_status,
-                    "runtime_significant": abs(runtime_diff) > tolerance_runtime,
+                    "runtime_significant": self._is_significant(runtime_diff, tolerance_runtime, tolerance_mode, runtime1),
                     "memory_diff": round(memory_diff, 2) if memory_diff is not None else None,
                     "memory_change_pct": round(memory_change_pct, 2) if memory_change_pct is not None else None,
                     "memory_status": memory_status,
-                    "memory_significant": abs(memory_diff) > tolerance_memory if memory_diff is not None else False
+                    "memory_significant": self._is_significant(memory_diff, tolerance_memory, tolerance_mode, memory1) if memory_diff is not None else False
                 })
                 
                 # 收集变化率用于统计
@@ -143,10 +145,11 @@ class DataComparator:
                     memory_changes_pct.append(abs(memory_change_pct))
                 
                 # 统计增减
-                if runtime_change_pct > tolerance_runtime:
-                    result["summary"]["runtime"]["total_increase"] += 1
-                elif runtime_change_pct < -tolerance_runtime:
-                    result["summary"]["runtime"]["total_decrease"] += 1
+                if self._is_significant(runtime_diff, tolerance_runtime, tolerance_mode, runtime1):
+                    if runtime_diff > 0:
+                        result["summary"]["runtime"]["total_increase"] += 1
+                    else:
+                        result["summary"]["runtime"]["total_decrease"] += 1
                 
                 # 记录最大变化
                 if runtime_change_pct > result["summary"]["runtime"]["max_increase_pct"]:
@@ -159,10 +162,11 @@ class DataComparator:
                 
                 # Memory统计
                 if memory_change_pct is not None:
-                    if memory_change_pct > tolerance_memory:
-                        result["summary"]["memory"]["total_increase"] += 1
-                    elif memory_change_pct < -tolerance_memory:
-                        result["summary"]["memory"]["total_decrease"] += 1
+                    if self._is_significant(memory_diff, tolerance_memory, tolerance_mode, memory1):
+                        if memory_diff > 0:
+                            result["summary"]["memory"]["total_increase"] += 1
+                        else:
+                            result["summary"]["memory"]["total_decrease"] += 1
                     
                     if memory_change_pct > result["summary"]["memory"]["max_increase_pct"]:
                         result["summary"]["memory"]["max_increase_pct"] = memory_change_pct
@@ -215,7 +219,8 @@ class DataComparator:
         project_id: str,
         rule_name: str,
         tolerance_runtime: float = 0.0,
-        tolerance_memory: float = 0.0
+        tolerance_memory: float = 0.0,
+        tolerance_mode: str = 'absolute'
     ) -> Dict:
         """
         对比单个阶段的数据（原有功能）
@@ -226,6 +231,7 @@ class DataComparator:
             "date1": None,
             "date2": None,
             "mode": "single_rule",
+            "tolerance_mode": tolerance_mode,
             "comparisons": [],
             "summary": {
                 "total": 0,
@@ -270,22 +276,22 @@ class DataComparator:
             runtime2 = runtimes2[i] if i < len(runtimes2) else None
             memory1 = memories1[i] if i < len(memories1) else None
             memory2 = memories2[i] if i < len(memories2) else None
-            
+
             if runtime1 is None or runtime2 is None:
                 continue
-            
+
             runtime_diff = runtime2 - runtime1
             runtime_change_pct = (runtime_diff / runtime1 * 100) if runtime1 != 0 else 0
-            
-            memory_diff = 0
-            memory_change_pct = 0
+
+            memory_diff = None
+            memory_change_pct = None
             if memory1 is not None and memory2 is not None:
                 memory_diff = memory2 - memory1
                 memory_change_pct = (memory_diff / memory1 * 100) if memory1 != 0 else 0
-            
-            runtime_significant = abs(runtime_diff) > tolerance_runtime
-            memory_significant = abs(memory_diff) > tolerance_memory
-            
+
+            runtime_significant = self._is_significant(runtime_diff, tolerance_runtime, tolerance_mode, runtime1)
+            memory_significant = self._is_significant(memory_diff, tolerance_memory, tolerance_mode, memory1) if memory_diff is not None else False
+
             comparison = {
                 "index": i,
                 "date": dates1[i] if i < len(dates1) else f"Day{i+1}",
@@ -293,35 +299,38 @@ class DataComparator:
                 "runtime2": round(runtime2, 2),
                 "runtime_diff": round(runtime_diff, 2),
                 "runtime_change_pct": round(runtime_change_pct, 2),
-                "runtime_status": self._get_status(runtime_diff, tolerance_runtime),
+                "runtime_status": self._get_status(runtime_diff, tolerance_runtime, tolerance_mode, runtime1),
                 "runtime_significant": runtime_significant,
                 "memory1": round(memory1, 2) if memory1 is not None else None,
                 "memory2": round(memory2, 2) if memory2 is not None else None,
                 "memory_diff": round(memory_diff, 2) if memory_diff is not None else None,
                 "memory_change_pct": round(memory_change_pct, 2) if memory_change_pct is not None else None,
-                "memory_status": self._get_status(memory_diff, tolerance_memory) if memory_diff is not None else "N/A",
+                "memory_status": self._get_status(memory_diff, tolerance_memory, tolerance_mode, memory1) if memory_diff is not None else "N/A",
                 "memory_significant": memory_significant
             }
-            
+
             result["comparisons"].append(comparison)
-            
-            if runtime_diff > tolerance_runtime:
-                result["summary"]["runtime_increased"] += 1
-            elif runtime_diff < -tolerance_runtime:
-                result["summary"]["runtime_decreased"] += 1
+
+            if self._is_significant(runtime_diff, tolerance_runtime, tolerance_mode, runtime1):
+                if runtime_diff > 0:
+                    result["summary"]["runtime_increased"] += 1
+                else:
+                    result["summary"]["runtime_decreased"] += 1
             else:
                 result["summary"]["runtime_unchanged"] += 1
-            
+
             if memory_diff is not None:
-                if memory_diff > tolerance_memory:
-                    result["summary"]["memory_increased"] += 1
-                elif memory_diff < -tolerance_memory:
-                    result["summary"]["memory_decreased"] += 1
+                if self._is_significant(memory_diff, tolerance_memory, tolerance_mode, memory1):
+                    if memory_diff > 0:
+                        result["summary"]["memory_increased"] += 1
+                    else:
+                        result["summary"]["memory_decreased"] += 1
                 else:
                     result["summary"]["memory_unchanged"] += 1
-            
+
             runtime_changes.append(abs(runtime_change_pct))
-            memory_changes.append(abs(memory_change_pct))
+            if memory_change_pct is not None:
+                memory_changes.append(abs(memory_change_pct))
         
         result["summary"]["total"] = len(result["comparisons"])
         
@@ -342,23 +351,33 @@ class DataComparator:
         project_id: str,
         rule_name: str = None,
         tolerance_runtime: float = 0.0,
-        tolerance_memory: float = 0.0
+        tolerance_memory: float = 0.0,
+        tolerance_mode: str = 'absolute'
     ) -> Dict:
         """
         统一对比入口
         如果 rule_name 为 "all" 或 None，则对比所有阶段
         """
         if rule_name == "all" or rule_name is None:
-            return self.compare_all_rules(data1, data2, project_id, tolerance_runtime, tolerance_memory)
+            return self.compare_all_rules(data1, data2, project_id, tolerance_runtime, tolerance_memory, tolerance_mode)
         else:
-            return self.compare_single_rule(data1, data2, project_id, rule_name, tolerance_runtime, tolerance_memory)
+            return self.compare_single_rule(data1, data2, project_id, rule_name, tolerance_runtime, tolerance_memory, tolerance_mode)
     
-    def _get_status(self, diff: float, tolerance: float) -> str:
+    def _is_significant(self, diff: float, tolerance: float, mode: str = 'absolute', base_value: float = None) -> bool:
+        """根据误差模式判断是否超出容差"""
+        if mode == 'percentage' and base_value is not None and base_value != 0:
+            return abs(diff / base_value * 100) > tolerance
+        return abs(diff) > tolerance
+
+    def _get_status(self, diff: float, tolerance: float, mode: str = 'absolute', base_value: float = None) -> str:
         """获取变化状态"""
-        if diff > tolerance:
-            return "increase"
-        elif diff < -tolerance:
-            return "decrease"
+        if mode == 'percentage' and base_value is not None and base_value != 0:
+            actual = abs(diff / base_value * 100)
+        else:
+            actual = abs(diff)
+
+        if actual > tolerance:
+            return "increase" if diff > 0 else "decrease"
         return "unchanged"
     
     def export_to_csv(
