@@ -40,7 +40,7 @@ CONFIG = {
 CASE_CONFIG = {
     'elint': {
         'single': {
-            'original_path': 'C:\\Users\\xbzhong\\Desktop\\lint\\script\\monitor\\develop\\monitor\\code\\data',
+            'original_path': '/home/xbzhong/develop/monitor/code_20260513/data/original',
             'json_path': '/home/xbzhong/develop/monitor/code_20260513/data/total.json',
             'mem': '/home/xbzhong/develop/monitor/code_20260513/data/lint_mem.csv',
             'cpu': '/home/xbzhong/develop/monitor/code_20260513/data/lint_cpu.csv'
@@ -91,26 +91,33 @@ def update_compare_config(project_id: str, config: dict):
 # 数据解析函数
 # ==================================================
 
+def normalize_thread_key(cores):
+    try:
+        return str(int(cores))
+    except Exception:
+        return '0'
+
+
 def parse_project_data(project_data, project_id):
     """
     解析项目数据，支持三层结构：日期 -> 阶段 -> 指标
-    
+    支持多线程线程数数据：thread_metrics 字段
     返回:
         dates: 日期列表
         rules: 所有阶段名称列表（已排序）
-        rule_data: {tool_name: {'dates': [], 'runtimes': [], 'memories': [], 'cores': []}}
+        rule_data: {rule_name: {'dates': [], 'thread_metrics': {...}, 'thread_counts': [], 'runtimes': [], 'memories': [], 'cores': []}}
     """
     if 'daily_metrics' in project_data:
         daily_metrics = project_data['daily_metrics']
     else:
         daily_metrics = project_data
-    
+
     # 收集所有阶段名称
     all_rules = set()
     for date, tools_dict in daily_metrics.items():
         all_rules.update(tools_dict.keys())
     all_rules = sorted(list(all_rules))
-    
+
     # 按日期排序
     sorted_dates = sorted(daily_metrics.keys())
     available_dates = sorted(set(project_data.get('available_dates', sorted_dates)))
@@ -120,23 +127,84 @@ def parse_project_data(project_data, project_id):
     for rule in all_rules:
         rule_data[rule] = {
             'dates': [],
+            'thread_metrics': {},
+            'thread_counts': [],
             'runtimes': [],
             'memories': [],
             'cores': []
         }
-        for date in sorted_dates:
-            if date in daily_metrics and rule in daily_metrics[date]:
-                rule_info = daily_metrics[date][rule]
-                rule_data[rule]['dates'].append(date)
-                rule_data[rule]['runtimes'].append(rule_info.get('runtime', 0))
-                rule_data[rule]['memories'].append(rule_info.get('memory', 0))
-                rule_data[rule]['cores'].append(rule_info.get('cores', 1))
+
+        for idx, date in enumerate(sorted_dates):
+            rule_data[rule]['dates'].append(date)
+            rule_info = daily_metrics.get(date, {}).get(rule)
+
+            # 确保所有已知线程数据行在每个日期都有占位符
+            current_threads = set(rule_data[rule]['thread_metrics'].keys())
+            new_threads = set()
+            if rule_info and isinstance(rule_info, dict):
+                if 'thread_metrics' in rule_info and isinstance(rule_info['thread_metrics'], dict):
+                    new_threads = set(str(k) for k in rule_info['thread_metrics'].keys())
+                else:
+                    new_threads = {normalize_thread_key(rule_info.get('cores', 0))}
+
+            for thread_key in current_threads | new_threads:
+                if thread_key not in rule_data[rule]['thread_metrics']:
+                    rule_data[rule]['thread_metrics'][thread_key] = {
+                        'runtimes': [None] * idx,
+                        'memories': [None] * idx,
+                        'cores': [None] * idx
+                    }
+
+            for thread_key, thread_info in rule_data[rule]['thread_metrics'].items():
+                if len(thread_info['runtimes']) <= idx:
+                    thread_info['runtimes'].append(None)
+                    thread_info['memories'].append(None)
+                    thread_info['cores'].append(None)
+
+            if not rule_info:
+                continue
+
+            if 'thread_metrics' in rule_info and isinstance(rule_info['thread_metrics'], dict):
+                for thread_key, thread_values in rule_info['thread_metrics'].items():
+                    thread_key = str(thread_key)
+                    if thread_key not in rule_data[rule]['thread_metrics']:
+                        rule_data[rule]['thread_metrics'][thread_key] = {
+                            'runtimes': [None] * idx,
+                            'memories': [None] * idx,
+                            'cores': [None] * idx
+                        }
+                    rule_data[rule]['thread_metrics'][thread_key]['runtimes'][idx] = thread_values.get('runtime')
+                    rule_data[rule]['thread_metrics'][thread_key]['memories'][idx] = thread_values.get('memory')
+                    rule_data[rule]['thread_metrics'][thread_key]['cores'][idx] = thread_values.get('cores')
             else:
-                rule_data[rule]['dates'].append(date)
-                rule_data[rule]['runtimes'].append(None)
-                rule_data[rule]['memories'].append(None)
-                rule_data[rule]['cores'].append(None)
-    
+                thread_key = normalize_thread_key(rule_info.get('cores', 0))
+                if thread_key not in rule_data[rule]['thread_metrics']:
+                    rule_data[rule]['thread_metrics'][thread_key] = {
+                        'runtimes': [None] * idx,
+                        'memories': [None] * idx,
+                        'cores': [None] * idx
+                    }
+                rule_data[rule]['thread_metrics'][thread_key]['runtimes'][idx] = rule_info.get('runtime')
+                rule_data[rule]['thread_metrics'][thread_key]['memories'][idx] = rule_info.get('memory')
+                rule_data[rule]['thread_metrics'][thread_key]['cores'][idx] = int(thread_key)
+
+        thread_counts = sorted(
+            [int(k) for k in rule_data[rule]['thread_metrics'].keys()],
+            key=lambda x: x
+        )
+        thread_counts = [str(x) for x in thread_counts]
+        rule_data[rule]['thread_counts'] = thread_counts
+
+        default_thread = '0' if '0' in rule_data[rule]['thread_metrics'] else (thread_counts[0] if thread_counts else None)
+        if default_thread:
+            rule_data[rule]['runtimes'] = rule_data[rule]['thread_metrics'][default_thread]['runtimes']
+            rule_data[rule]['memories'] = rule_data[rule]['thread_metrics'][default_thread]['memories']
+            rule_data[rule]['cores'] = rule_data[rule]['thread_metrics'][default_thread]['cores']
+        else:
+            rule_data[rule]['runtimes'] = [None] * len(sorted_dates)
+            rule_data[rule]['memories'] = [None] * len(sorted_dates)
+            rule_data[rule]['cores'] = [None] * len(sorted_dates)
+
     return {
         'dates': sorted_dates,
         'available_dates': available_dates,
@@ -212,6 +280,7 @@ def elint_single():
         }
     
     perf = get_perf(CASE_CONFIG['elint']['single']['mem'], CASE_CONFIG['elint']['single']['cpu'])
+    print("project_list:", project_list)
     return render_template(
         'elint_single.html',
         project_list=project_list,
@@ -235,6 +304,7 @@ def elint_multi():
         }
 
     perf = get_perf(CASE_CONFIG['elint']['multi']['mem'], CASE_CONFIG['elint']['multi']['cpu'])
+    print(project_list)
     return render_template(
         'elint_single.html',
         project_list=project_list,

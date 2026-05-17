@@ -41,9 +41,18 @@ function buildMrUpdateMap(perfData) {
     return mrMap;
 }
 
+function getSelectedThreadCounts() {
+    if (selectedThreads && selectedThreads.length) {
+        return selectedThreads;
+    }
+    return ['0'];
+}
+
 let selectedDates = [];
 let pendingSelectedDates = [];
 let availableDates = [];
+let selectedThreads = ['0'];
+const AVAILABLE_THREAD_OPTIONS = ['0', '2', '4', '6', '8', '16', '24', '32', '64', '128'];
 const MAX_DEFAULT_POINTS = 51;
 
 function updateDateSelectionInfo() {
@@ -308,7 +317,7 @@ function updateStats(containerId, data, unit, label) {
     `;
 }
 
-// 优化版图表渲染 - 支持MR更新高亮
+// 优化版图表渲染 - 支持多线程曲线与MR更新高亮
 function renderEChartOptimized(chartType, dataKey, color, highlightColor, yAxisName, yAxisFormatter = null) {
     const toolData = getCurrentToolDataOptimized();
     if (!toolData) {
@@ -317,45 +326,87 @@ function renderEChartOptimized(chartType, dataKey, color, highlightColor, yAxisN
         }
         return;
     }
-    
+
     const filteredData = getFilteredToolData(toolData);
     const dates = filteredData.dates;
-    const values = filteredData[dataKey];
-    
-    const dataHash = simpleHash(JSON.stringify({dates, values, currentRule, mrUpdateDates, selectedDates}));
-    if (lastRenderedDataHash[chartType] === dataHash && charts[chartType] && !charts[chartType].isDisposed()) {
-        return;
+
+    const threadMetrics = toolData.thread_metrics || {};
+    if (!threadMetrics['0'] && filteredData.runtimes && filteredData.runtimes.length) {
+        threadMetrics['0'] = {
+            runtimes: filteredData.runtimes,
+            memories: filteredData.memories,
+            cores: filteredData.cores
+        };
     }
-    lastRenderedDataHash[chartType] = dataHash;
-    
-    const validValues = values.filter(v => v !== null && v !== undefined);
-    
-    let unit = dataKey === 'runtimes' ? '秒' : (dataKey === 'memories' ? 'MB' : '核心');
-    let label = dataKey === 'runtimes' ? 'Runtime' : (dataKey === 'memories' ? 'Memory' : 'CPU核心数');
-    updateStats(`stats-${chartType}`, values, unit, label);
-    updateDateSelectionInfo();
-    
-    const avgValue = validValues.length > 0 
-        ? (validValues.reduce((a, b) => a + b, 0) / validValues.length).toFixed(1)
-        : 0;
-    
-    // 构建数据点样式 - 有MR更新的点用红色
-    const seriesData = values.map((value, index) => {
-        const date = dates[index];
-        const hasMrUpdate = mrUpdateDates[date] && mrUpdateDates[date] !== 'undefined';
-        
+
+    const threadIds = Object.keys(threadMetrics);
+    if (!threadIds.includes('0')) {
+        threadIds.unshift('0');
+    }
+    threadIds.sort((a, b) => parseInt(a, 10) - parseInt(b, 10));
+
+    const selectedThreadCounts = getSelectedThreadCounts();
+    const legendSelectedMap = {};
+    threadIds.forEach(threadId => {
+        legendSelectedMap[`线程 ${threadId}`] = selectedThreadCounts.includes(threadId);
+    });
+
+    const seriesList = threadIds.map((threadId, index) => {
+        const threadInfo = threadMetrics[threadId] || {
+            runtimes: new Array(dates.length).fill(null),
+            memories: new Array(dates.length).fill(null),
+            cores: new Array(dates.length).fill(null)
+        };
+        const values = threadInfo[dataKey] || new Array(dates.length).fill(null);
+        const colorIndex = index % 8;
+        const palette = ['#3b82f6', '#f97316', '#10b981', '#8b5cf6', '#eab308', '#06b6d4', '#fb7185', '#a855f7'];
+        const seriesColor = palette[colorIndex];
+
         return {
-            value: value,
-            itemStyle: hasMrUpdate ? {
-                color: highlightColor,
-                borderColor: '#fff',
-                borderWidth: 2
-            } : undefined,
-            symbol: hasMrUpdate ? 'circle' : 'circle',
-            symbolSize: hasMrUpdate ? 10 : 6
+            name: `线程 ${threadId}`,
+            type: 'line',
+            data: values.map((value, idx) => {
+                const date = dates[idx];
+                const hasMrUpdate = mrUpdateDates[date] && mrUpdateDates[date] !== 'undefined';
+                return {
+                    value: value,
+                    itemStyle: hasMrUpdate ? {
+                        color: highlightColor,
+                        borderColor: '#fff',
+                        borderWidth: 2
+                    } : undefined,
+                    symbol: 'circle',
+                    symbolSize: hasMrUpdate ? 10 : 6
+                };
+            }),
+            smooth: false,
+            lineStyle: {
+                width: 2,
+                color: seriesColor,
+                shadowBlur: 8,
+                shadowColor: seriesColor
+            },
+            areaStyle: {
+                opacity: 0.08,
+                color: seriesColor
+            },
+            connectNulls: false,
+            animation: false,
+            showSymbol: false
         };
     });
-    
+
+    const allValues = seriesList
+        .filter(series => selectedThreadCounts.includes(series.name.replace('线程 ', '')))
+        .flatMap(series => series.data.map(item => item.value))
+        .filter(v => v !== null && v !== undefined && v > 0);
+    let unit = dataKey === 'runtimes' ? '秒' : (dataKey === 'memories' ? 'MB' : '核心');
+    let label = dataKey === 'runtimes' ? 'Runtime' : (dataKey === 'memories' ? 'Memory' : 'CPU核心数');
+    updateStats(`stats-${chartType}`, allValues, unit, label);
+    updateDateSelectionInfo();
+
+    const avgValue = allValues.length > 0 ? (allValues.reduce((a, b) => a + b, 0) / allValues.length).toFixed(1) : 0;
+
     const option = {
         backgroundColor: 'transparent',
         tooltip: {
@@ -367,26 +418,27 @@ function renderEChartOptimized(chartType, dataKey, color, highlightColor, yAxisN
             textStyle: { color: '#f1f5f9', fontSize: 12, fontFamily: 'monospace' },
             formatter: function(params) {
                 if (!params || params.length === 0) return '';
-                const dataPoint = params[0];
-                const value = dataPoint.value;
-                const date = dataPoint.axisValue;
-                let valueText = '';
-                let mrComment = mrUpdateDates[date] || '';
-                
-                if (dataKey === 'runtimes') {
-                    valueText = `${value} 秒`;
-                } else if (dataKey === 'memories') {
-                    valueText = `${value} MB`;
-                } else {
-                    valueText = `${value} 核心`;
-                }
-                
+                const rows = params.map(point => {
+                    const value = point.value;
+                    const date = point.axisValue;
+                    const threadName = point.seriesName;
+                    let valueText = '';
+                    if (dataKey === 'runtimes') {
+                        valueText = `${value} 秒`;
+                    } else if (dataKey === 'memories') {
+                        valueText = `${value} MB`;
+                    } else {
+                        valueText = `${value} 核心`;
+                    }
+                    return `<div style="margin-bottom:4px;"><strong>${threadName}</strong> ${valueText}</div>`;
+                }).join('');
+                const date = params[0].axisValue;
+                const mrComment = mrUpdateDates[date] || '';
                 const hasMr = mrComment && mrComment !== 'undefined';
                 const mrStyle = hasMr ? 'color: #ef4444; font-weight: bold;' : 'color: #94a3b8;';
-                
                 return `
                     <strong>📅 ${date}</strong><br/>
-                    <span style="color: ${color};">${label}: ${valueText}</span><br/>
+                    ${rows}
                     <span style="${mrStyle}">🔧 MR更新: ${mrComment || '无'}</span><br/>
                     <span style="color: #94a3b8;">📊 阶段: ${currentRule}</span>
                 `;
@@ -426,24 +478,7 @@ function renderEChartOptimized(chartType, dataKey, color, highlightColor, yAxisN
             splitLine: { lineStyle: { color: 'rgba(71, 85, 105, 0.3)', type: 'dashed' } }
         },
         series: [
-            {
-                name: label,
-                type: 'line',
-                data: seriesData,
-                smooth: false,
-                lineStyle: { 
-                    width: 2, 
-                    color: color, 
-                    shadowBlur: 8, 
-                    shadowColor: color 
-                },
-                areaStyle: {
-                    opacity: 0.15,
-                    color: color
-                },
-                connectNulls: false,
-                animation: false
-            },
+            ...seriesList,
             {
                 name: '平均值',
                 type: 'line',
@@ -461,11 +496,15 @@ function renderEChartOptimized(chartType, dataKey, color, highlightColor, yAxisN
             }
         ],
         legend: {
+            data: seriesList.map(s => s.name),
+            selected: legendSelectedMap,
+            selectedMode: 'multiple',
             textStyle: { color: '#cbd5e1', fontSize: 11 },
             right: 10,
-            top: 0,
+            top: '8%',
             itemWidth: 25,
-            itemHeight: 12
+            itemHeight: 12,
+            formatter: name => name.replace('线程 ', '')
         },
         toolbox: {
             feature: {
@@ -476,7 +515,13 @@ function renderEChartOptimized(chartType, dataKey, color, highlightColor, yAxisN
             emphasis: { iconStyle: { borderColor: color } }
         }
     };
-    
+
+    const newHash = simpleHash(JSON.stringify({dates, selectedThreads, currentRule, mrUpdateDates, chartType, dataKey, allValues}));
+    if (lastRenderedDataHash[chartType] === newHash && charts[chartType] && !charts[chartType].isDisposed()) {
+        return;
+    }
+    lastRenderedDataHash[chartType] = newHash;
+
     if (charts[chartType] && !charts[chartType].isDisposed()) {
         charts[chartType].setOption(option, {
             notMerge: false,
@@ -525,6 +570,26 @@ function initCharts() {
             useDirtyRect: false
         });
     }
+
+    function attachLegendSync(chart) {
+        if (!chart || chart._legendSyncAttached) return;
+        chart.on('legendselectchanged', (params) => {
+            const selectedThreadNames = Object.entries(params.selected)
+                .filter(([name, selected]) => selected && name.startsWith('线程 '))
+                .map(([name]) => name.replace('线程 ', ''));
+            const normalizedThreads = selectedThreadNames.length ? selectedThreadNames : ['0'];
+            const sortedOld = [...selectedThreads].sort();
+            const sortedNew = [...normalizedThreads].sort();
+            if (sortedOld.join(',') !== sortedNew.join(',')) {
+                selectedThreads = normalizedThreads;
+                refreshAllCharts();
+            }
+        });
+        chart._legendSyncAttached = true;
+    }
+
+    attachLegendSync(charts.runtime);
+    attachLegendSync(charts.memory);
     
     const resizeHandler = debounce(() => {
         Object.values(charts).forEach(chart => {

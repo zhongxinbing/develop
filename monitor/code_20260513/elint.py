@@ -10,33 +10,50 @@ from find import *
 from common import *
 
 #  通过 正则表达式获取数据并保存
+
+def normalize_thread_key(cores):
+    try:
+        return str(int(cores))
+    except Exception:
+        return '0'
+
+
 def get_data_info(datafile):
-    daily_metrie={}
-    cores = re.findall(r'.*/thread_([0-9]+)/.*',datafile)
+    daily_metrie = {}
+    normalized_path = datafile.replace('\\', '/')
+    cores = re.findall(r'thread_([0-9]+)', normalized_path)
     if len(cores) == 0:
         cores = 0
     else:
         cores = cores[0]
+    thread_key = normalize_thread_key(cores)
+
     with open(datafile, "r", encoding="utf-8") as f:
         for line in f:
             if "#" in line or line == "\n" or line == "":
                 continue
-            # log(line.strip())
-            datas=re.findall(r'dict set\s(\d+)\s+([^\s]+)\s+\{([0-9.]*)\s+[0-9.]+\s+([0-9.]*).*', line.strip())
+            datas = re.findall(r'dict set\s(\d+)\s+([^\s]+)\s+\{([0-9.]*)\s+[0-9.]+\s+([0-9.]*).*', line.strip())
+            if not datas:
+                continue
 
             data = datas[0][0]
             stage = datas[0][1]
+            runtime = float("{:.2f}".format(float(datas[0][2])))
+            memory = float("{:.2f}".format(float(datas[0][3])))
 
-            # 👇 必须先初始化嵌套字典，否则必报 KeyError
             if data not in daily_metrie:
-                daily_metrie[data] = {}  # 第一层：日期
+                daily_metrie[data] = {}
             if stage not in daily_metrie[data]:
-                daily_metrie[data][stage] = {}  # 第二层：stage
+                daily_metrie[data][stage] = {'thread_metrics': {}}
+            if 'thread_metrics' not in daily_metrie[data][stage]:
+                daily_metrie[data][stage] = {'thread_metrics': {}}
 
-            # 现在才能安全赋值
-            daily_metrie[data][stage]['runtime'] = float("{:.2f}".format(float(datas[0][2])))
-            daily_metrie[data][stage]['memory'] = float("{:.2f}".format(float(datas[0][3])))
-            daily_metrie[data][stage]['cores'] = cores
+            daily_metrie[data][stage]['thread_metrics'][thread_key] = {
+                'runtime': runtime,
+                'memory': memory,
+                'cores': int(thread_key)
+            }
+
     return daily_metrie
 
 def save_json(json_path,data):
@@ -45,19 +62,58 @@ def save_json(json_path,data):
         json.dump(data, f, ensure_ascii=False, indent=4) 
 
 # 获取目录下的数据
-def get_data_from(path,depth,pattern,name):
-    log(f"正在获取数据...")
-    projects_data={}
-    # 获取数据并生存json数据
-    for txt in find_files(root_dir=path,max_depth=depth,target_pattern=pattern, path_patterns=name):
+def merge_stage_info(existing_stage, new_stage):
+    if existing_stage is None:
+        return new_stage
 
-        casename=re.findall(r'.*/[0-9]+_(.*).txt', txt)[0]
+    if 'thread_metrics' not in existing_stage:
+        existing_thread = normalize_thread_key(existing_stage.get('cores', 0))
+        existing_stage = {
+            'thread_metrics': {
+                existing_thread: {
+                    'runtime': existing_stage.get('runtime'),
+                    'memory': existing_stage.get('memory'),
+                    'cores': int(existing_thread)
+                }
+            }
+        }
+
+    if 'thread_metrics' in new_stage:
+        for thread_key, thread_info in new_stage['thread_metrics'].items():
+            existing_stage['thread_metrics'][thread_key] = thread_info
+    else:
+        thread_key = normalize_thread_key(new_stage.get('cores', 0))
+        existing_stage['thread_metrics'][thread_key] = {
+            'runtime': new_stage.get('runtime'),
+            'memory': new_stage.get('memory'),
+            'cores': int(thread_key)
+        }
+
+    return existing_stage
+
+
+def get_data_from(path, depth, pattern, name):
+    log(f"正在获取数据...")
+    projects_data = {}
+    # 获取数据并生存json数据
+    for txt in find_files(root_dir=path, max_depth=depth, target_pattern=pattern, path_patterns=name):
+        normalized_txt = txt.replace('\\', '/')
+        casename = re.findall(r'/[0-9]+_(.*)\.txt', normalized_txt)
+        casename = casename[0] if casename else Path(txt).stem
         if casename not in projects_data:
-            projects_data[casename]={}
-            projects_data[casename]['project_name']=casename
-            projects_data[casename]['description']='qor case 单线程监控,非FOM'
-            projects_data[casename]['daily_metrics'] = {}
-        projects_data[casename]['daily_metrics'].update(get_data_info(txt))
+            projects_data[casename] = {
+                'project_name': casename,
+                'description': 'qor case 单线程监控,非FOM',
+                'daily_metrics': {}
+            }
+
+        new_data = get_data_info(txt)
+        for date, stage_info in new_data.items():
+            if date not in projects_data[casename]['daily_metrics']:
+                projects_data[casename]['daily_metrics'][date] = {}
+            for stage, stage_data in stage_info.items():
+                existing_stage = projects_data[casename]['daily_metrics'][date].get(stage)
+                projects_data[casename]['daily_metrics'][date][stage] = merge_stage_info(existing_stage, stage_data)
 
     return projects_data
 
@@ -119,6 +175,7 @@ def add_json(new_json,old_json,date,thread,original_path):
                     new_json[case]["daily_metrics"][date] = new_date_data[case]["daily_metrics"][date]
         else:
             # 将对应日期的数据放在新的 json 中
+            print(f"old_json[case]['daily_metrics']: {old_json[case]['daily_metrics']}")
             if date in old_json[case]["daily_metrics"]:
                 new_json[case]={
                     "project_name": case,
@@ -154,6 +211,7 @@ def get_json_data(tool,original_path,data_path):
 
     # 获取数据原始路径
     original_files = get_target_items(original_path,"folder")
+    print(f"original_files: {original_files}")
     available_dates = []
     for f in original_files:
         try:
@@ -170,6 +228,7 @@ def get_json_data(tool,original_path,data_path):
         return total_json
 
     for f in original_files:
+        print(f"正在处理文件: {f} ...")
         # 获取文件夹的名字
         try:
             date_str = Path(f).name
@@ -185,7 +244,7 @@ def get_json_data(tool,original_path,data_path):
     # 为所有case补充 available_dates 信息
     for case_data in new_total_json.values():
         case_data['available_dates'] = available_dates if available_dates else sorted(set(case_data.get('daily_metrics', {}).keys()))
-
+    
     # 判断两个json是否相同
     if new_total_json == total_json:
         log("没有数据需要更新")
@@ -255,7 +314,7 @@ def read_csv(path):
 
 
 def get_perf(mem,cpu):
-    git_pull()
+    # git_pull()
     try:
         mem = read_csv(Path(mem))
         cpu = read_csv(Path(cpu))
