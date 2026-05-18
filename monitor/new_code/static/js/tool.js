@@ -1109,6 +1109,11 @@ async function init() {
         }
     } else if (initialMode === 'compare') {
         switchView('compare');
+        // 自动加载当前项目的对比日期和规则，避免用户需要切换一次项目才显示日期
+        if (currentProjectId) {
+            await loadCompareDates(currentProjectId);
+            await loadCompareRules(currentProjectId);
+        }
     }
     
     // 启动自动刷新检查（每30秒）
