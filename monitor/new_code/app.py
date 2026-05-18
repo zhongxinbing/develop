@@ -47,7 +47,7 @@ CASE_CONFIG = {
             'original_path': '/home/xbzhong/develop/monitor/code_20260513/data/original',
             'json_path': './data/total.json',
             'mem': './data/lint_mem.csv',
-            'cpu': './lint_cpu.csv'
+            'cpu': './data/lint_cpu.csv'
         },
         'multi': {
             'original_path': '/mnt/efs/fs1/jenkins/lint_comparison_results_qor',

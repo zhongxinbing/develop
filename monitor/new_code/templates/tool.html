@@ -340,6 +340,56 @@
             flex-wrap: wrap;
         }
 
+        .chart-type-buttons {
+            display: flex;
+            gap: 0.5rem;
+            flex: 1;
+            min-width: 0;
+        }
+
+        .chart-type-buttons .btn {
+            flex: 1;
+        }
+
+        .chart-thread-info {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            white-space: nowrap;
+        }
+
+        .thread-chip {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.25rem 0.65rem;
+            border-radius: 999px;
+            border: 1px solid rgba(148, 163, 184, 0.4);
+            background: rgba(15, 23, 42, 0.75);
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: var(--transition);
+        }
+
+        .thread-chip.active {
+            border-color: rgba(99, 102, 241, 0.8);
+            color: var(--primary-light);
+            background: rgba(99, 102, 241, 0.16);
+        }
+
+        .chart-card.hidden {
+            display: none;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
         /* ==================================================
            图表容器
         ================================================== */
@@ -609,31 +659,29 @@
                         </div>
                     </div>
                     
-                    <!-- 线程过滤器 -->
-                    <div class="thread-filters" id="threadFilters">
-                        <!-- 动态填充线程选项 -->
+                </div>
+
+                <!-- 曲线类型切换（仅保留两个按钮） -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="chart-type-buttons" id="chartTypeButtons">
+                            <button class="btn btn-primary chart-type-btn" data-type="runtime">⏱️ Runtime</button>
+                            <button class="btn btn-secondary chart-type-btn" data-type="memory">💾 Memory</button>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Runtime 曲线图 -->
+                <!-- 曲线图区域 -->
                 <div class="card">
                     <div class="card-header">
-                        <div class="card-title">⏱️ Runtime 性能曲线</div>
+                        <div class="card-title" id="chartCardTitle">⏱️ Runtime 性能曲线</div>
                         <span class="tooltip" data-tip="MR更新日期会高亮显示">ℹ️</span>
                     </div>
-                    <div id="chart-runtime" class="chart-container"></div>
-                    <div class="stats-grid" id="stats-runtime">
-                        <!-- 动态填充统计 -->
+                    <div class="chart-wrapper">
+                        <div id="chart-runtime" class="chart-container"></div>
+                        <div id="chart-memory" class="chart-container hidden"></div>
                     </div>
-                </div>
-
-                <!-- Memory 曲线图 -->
-                <div class="card">
-                    <div class="card-header">
-                        <div class="card-title">💾 Memory 使用曲线</div>
-                    </div>
-                    <div id="chart-memory" class="chart-container"></div>
-                    <div class="stats-grid" id="stats-memory">
+                    <div class="stats-grid" id="stats-main">
                         <!-- 动态填充统计 -->
                     </div>
                 </div>
@@ -823,6 +871,7 @@
         let selectedDates = [];
         let availableDates = [];
         let selectedThreads = ['0'];
+        let currentChartType = 'runtime';
         let charts = {};
         let cachedToolData = {};
         let mrUpdateDates = {};

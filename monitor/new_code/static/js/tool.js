@@ -148,43 +148,7 @@ function updateRuleSelect() {
         document.getElementById('currentRuleName').innerText = currentRule;
         updateDateSelectionInfo();
         refreshTimelineCharts();
-        updateThreadFilters();
     }
-}
-
-/**
- * 更新线程过滤器
- */
-function updateThreadFilters() {
-    const projectData = getCurrentProjectData();
-    if (!projectData || !currentRule) return;
-    
-    const ruleData = projectData.rule_data[currentRule];
-    const threadCounts = ruleData?.thread_counts || ['0'];
-    
-    const container = document.getElementById('threadFilters');
-    if (!container) return;
-    
-    container.innerHTML = threadCounts.map(thread => `
-        <div class="thread-filter-btn ${selectedThreads.includes(thread) ? 'active' : ''}" data-thread="${thread}">
-            ${thread === '0' ? '默认线程' : `${thread} 线程`}
-        </div>
-    `).join('');
-    
-    // 绑定线程过滤事件
-    container.querySelectorAll('.thread-filter-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            const thread = btn.dataset.thread;
-            if (selectedThreads.includes(thread)) {
-                selectedThreads = selectedThreads.filter(t => t !== thread);
-                if (selectedThreads.length === 0) selectedThreads = ['0'];
-            } else {
-                selectedThreads.push(thread);
-            }
-            refreshTimelineCharts();
-            updateThreadFilters();
-        });
-    });
 }
 
 /**
@@ -208,6 +172,44 @@ function updateDateSelectionInfo() {
     if (summaryEl) {
         summaryEl.innerText = selectedDates.length === availableDates.length ? '全部可用日期' : `${selectedDates.length} 条已选`;
     }
+}
+
+/**
+ * 更新曲线类型按钮状态并显示对应图表
+ */
+function updateChartTypeButtons() {
+    document.querySelectorAll('.chart-type-btn').forEach(btn => {
+        const type = btn.dataset.type;
+        btn.classList.toggle('btn-primary', type === currentChartType);
+        btn.classList.toggle('btn-secondary', type !== currentChartType);
+    });
+
+    const runtimeContainer = document.getElementById('chart-runtime');
+    const memoryContainer = document.getElementById('chart-memory');
+    if (runtimeContainer && memoryContainer) {
+        runtimeContainer.classList.toggle('hidden', currentChartType !== 'runtime');
+        memoryContainer.classList.toggle('hidden', currentChartType !== 'memory');
+    }
+
+    const titleEl = document.getElementById('chartCardTitle');
+    if (titleEl) {
+        titleEl.innerText = currentChartType === 'runtime' ? '⏱️ Runtime 性能曲线' : '💾 Memory 使用曲线';
+    }
+    
+    if (currentChartType === 'runtime') {
+        charts.runtime?.resize();
+    } else {
+        charts.memory?.resize();
+    }
+}
+
+/**
+ * 选择曲线类型并刷新图表
+ */
+function selectChartType(type) {
+    currentChartType = type;
+    updateChartTypeButtons();
+    refreshTimelineCharts();
 }
 
 /**
@@ -279,6 +281,70 @@ function updateStats(containerId, data, unit, label) {
 }
 
 /**
+ * 处理图例选择变化事件
+ */
+function handleLegendSelectionChanged(params) {
+    const newSelectedThreads = [];
+    Object.entries(params.selected).forEach(([name, isSelected]) => {
+        if (isSelected) {
+            if (name === 'e线程0') {
+                newSelectedThreads.push('0');
+            } else if (name.startsWith('其他线程')) {
+                const threadId = name.replace('其他线程', '');
+                newSelectedThreads.push(threadId);
+            }
+        }
+    });
+    selectedThreads = newSelectedThreads;
+}
+
+/**
+ * 全选所有线程
+ */
+function selectAllThreads() {
+    const chart = charts[currentChartType];
+    if (chart) {
+        const option = chart.getOption();
+        const legendData = option.legend[0].data;
+        const newSelected = {};
+        legendData.forEach(name => {
+            newSelected[name] = true;
+        });
+        chart.setOption({ legend: { selected: newSelected } });
+        // 同步更新 selectedThreads
+        selectedThreads = legendData.map(name => {
+            if (name === 'e线程0') return '0';
+            if (name.startsWith('其他线程')) return name.replace('其他线程', '');
+            return null;
+        }).filter(t => t);
+        showNotification('已全选所有线程');
+    }
+}
+
+/**
+ * 反选所有线程
+ */
+function inverseSelectThreads() {
+    const chart = charts[currentChartType];
+    if (chart) {
+        const option = chart.getOption();
+        const legendSelected = option.legend[0].selected || {};
+        const newSelected = {};
+        const newThreads = [];
+        Object.entries(legendSelected).forEach(([name, isSelected]) => {
+            newSelected[name] = !isSelected;
+            if (!isSelected) {
+                if (name === 'e线程0') newThreads.push('0');
+                else if (name.startsWith('其他线程')) newThreads.push(name.replace('其他线程', ''));
+            }
+        });
+        chart.setOption({ legend: { selected: newSelected } });
+        selectedThreads = newThreads;
+        showNotification('已反选线程');
+    }
+}
+
+/**
  * 渲染时序曲线图
  */
 function renderTimelineChart(chartType, dataKey, color, yAxisName, yAxisFormatter = null) {
@@ -309,9 +375,11 @@ function renderTimelineChart(chartType, dataKey, color, yAxisName, yAxisFormatte
         const values = threadInfo?.[dataKey] || new Array(dates.length).fill(null);
         const palette = ['#6366f1', '#f59e0b', '#10b981', '#ef4444', '#06b6d4', '#8b5cf6', '#ec4899', '#84cc16'];
         const seriesColor = palette[index % palette.length];
+        const threadLabel = threadId === '0' ? 'e线程0' : `其他线程${threadId}`;
         
         return {
-            name: `线程 ${threadId}`,
+            threadId,
+            name: threadLabel,
             type: 'line',
             data: values.map((value, idx) => {
                 const date = dates[idx];
@@ -335,22 +403,29 @@ function renderTimelineChart(chartType, dataKey, color, yAxisName, yAxisFormatte
         };
     });
     
-    // 过滤显示的系列
-    const visibleSeries = seriesList.filter(series => 
-        selectedThreads.includes(series.name.replace('线程 ', ''))
-    );
-    
     // 计算统计数据
-    const allValues = visibleSeries
+    const allValues = seriesList
         .flatMap(series => series.data.map(item => item.value))
         .filter(v => v !== null && v !== undefined && v > 0);
     
     const unit = dataKey === 'runtimes' ? '秒' : 'MB';
     const label = dataKey === 'runtimes' ? 'Runtime' : 'Memory';
-    updateStats(`stats-${chartType}`, allValues, unit, label);
+    if (chartType === currentChartType) {
+        updateStats('stats-main', allValues, unit, label);
+    }
     
     // 计算平均值
     const avgValue = allValues.length > 0 ? (allValues.reduce((a, b) => a + b, 0) / allValues.length).toFixed(1) : 0;
+    
+    // 构建图例选择的默认状态 - 默认只显示线程0
+    const legendSelected = {};
+    threadIds.forEach(threadId => {
+        const seriesName = threadId === '0' ? 'e线程0' : `其他线程${threadId}`;
+        legendSelected[seriesName] = (threadId === '0');
+    });
+    
+    // 更新 selectedThreads 变量
+    selectedThreads = threadIds.filter(threadId => legendSelected[threadId === '0' ? 'e线程0' : `其他线程${threadId}`]);
     
     const option = {
         backgroundColor: 'transparent',
@@ -369,7 +444,7 @@ function renderTimelineChart(chartType, dataKey, color, yAxisName, yAxisFormatte
                 return `<strong>📅 ${date}</strong>${rows}<span style="${mrStyle}">🔧 ${mrComment || '无MR更新'}</span>`;
             }
         },
-        grid: { left: '8%', right: '5%', top: '15%', bottom: '10%', containLabel: true },
+        grid: { left: '8%', right: '8%', top: '18%', bottom: '10%', containLabel: true },
         xAxis: {
             type: 'category',
             data: dates,
@@ -384,7 +459,7 @@ function renderTimelineChart(chartType, dataKey, color, yAxisName, yAxisFormatte
             splitLine: { lineStyle: { color: 'rgba(71, 85, 105, 0.3)', type: 'dashed' } }
         },
         series: [
-            ...visibleSeries,
+            ...seriesList,
             {
                 name: '平均值',
                 type: 'line',
@@ -395,18 +470,25 @@ function renderTimelineChart(chartType, dataKey, color, yAxisName, yAxisFormatte
             }
         ],
         legend: {
-            data: visibleSeries.map(s => s.name),
+            data: seriesList.map(s => s.name),
+            selected: legendSelected,
             textStyle: { color: '#cbd5e1', fontSize: 11 },
+            orient: 'horizontal',
             right: 10,
-            top: 8,
+            top: 0,
             itemWidth: 25,
-            itemHeight: 12
+            itemHeight: 12,
+            selector: false
         },
         toolbox: {
             feature: {
                 saveAsImage: { title: '保存为图片' },
-                zoom: { title: { zoom: '区域缩放', back: '还原' } }
-            }
+                zoom: { title: { zoom: '区域缩放', back: '还原' } },
+                restore: { title: '重置' }
+            },
+            iconStyle: { borderColor: '#94a3b8' },
+            right: 10,
+            bottom: 10
         }
     };
     
@@ -426,6 +508,12 @@ function refreshTimelineCharts() {
         if (value >= 1024) return (value / 1024).toFixed(1) + ' GB';
         return value + ' MB';
     });
+    updateChartTypeButtons();
+    
+    // 图表重新渲染后，重新添加控制按钮
+    setTimeout(() => {
+        addControlButtonsToLegend();
+    }, 100);
 }
 
 /**
@@ -441,6 +529,110 @@ function updateProjectStats() {
         <div class="stat-item"><div class="stat-value">${projectData.dates?.length || 0}</div><div class="stat-label">天数</div></div>
         <div class="stat-item"><div class="stat-value">-</div><div class="stat-label">平均Runtime</div></div>
     `;
+}
+
+/**
+ * 将控制按钮添加到图例区域
+ */
+function addControlButtonsToLegend() {
+    // 查找 ECharts 图例容器
+    const legendContainer = document.querySelector('.chart-container .echarts-legend');
+    if (!legendContainer) return;
+    
+    // 检查是否已存在按钮
+    if (document.getElementById('legendControlButtons')) return;
+    
+    // 创建按钮容器
+    const buttonContainer = document.createElement('div');
+    buttonContainer.id = 'legendControlButtons';
+    buttonContainer.style.cssText = `
+        display: inline-flex;
+        gap: 6px;
+        margin-left: 12px;
+        vertical-align: middle;
+    `;
+    
+    // 全选按钮
+    const selectAllBtn = document.createElement('button');
+    selectAllBtn.textContent = '☑ 全选';
+    selectAllBtn.style.cssText = `
+        background: rgba(99, 102, 241, 0.2);
+        border: 1px solid #6366f1;
+        color: #a5b4fc;
+        padding: 2px 8px;
+        border-radius: 12px;
+        font-size: 11px;
+        cursor: pointer;
+        transition: all 0.2s;
+        font-family: inherit;
+    `;
+    selectAllBtn.onmouseenter = () => {
+        selectAllBtn.style.background = '#6366f1';
+        selectAllBtn.style.color = 'white';
+    };
+    selectAllBtn.onmouseleave = () => {
+        selectAllBtn.style.background = 'rgba(99, 102, 241, 0.2)';
+        selectAllBtn.style.color = '#a5b4fc';
+    };
+    selectAllBtn.onclick = (e) => {
+        e.stopPropagation();
+        selectAllThreads();
+    };
+    
+    // 反选按钮
+    const inverseBtn = document.createElement('button');
+    inverseBtn.textContent = '🔄 反选';
+    inverseBtn.style.cssText = `
+        background: rgba(99, 102, 241, 0.2);
+        border: 1px solid #6366f1;
+        color: #a5b4fc;
+        padding: 2px 8px;
+        border-radius: 12px;
+        font-size: 11px;
+        cursor: pointer;
+        transition: all 0.2s;
+        font-family: inherit;
+    `;
+    inverseBtn.onmouseenter = () => {
+        inverseBtn.style.background = '#6366f1';
+        inverseBtn.style.color = 'white';
+    };
+    inverseBtn.onmouseleave = () => {
+        inverseBtn.style.background = 'rgba(99, 102, 241, 0.2)';
+        inverseBtn.style.color = '#a5b4fc';
+    };
+    inverseBtn.onclick = (e) => {
+        e.stopPropagation();
+        inverseSelectThreads();
+    };
+    
+    buttonContainer.appendChild(selectAllBtn);
+    buttonContainer.appendChild(inverseBtn);
+    
+    // 将按钮添加到图例容器
+    legendContainer.appendChild(buttonContainer);
+}
+
+/**
+ * 监听图表渲染完成，添加控制按钮
+ */
+function observeChartRendering() {
+    // 使用 MutationObserver 监听图表容器变化
+    const runtimeChart = document.getElementById('chart-runtime');
+    if (runtimeChart) {
+        const observer = new MutationObserver(() => {
+            addControlButtonsToLegend();
+        });
+        observer.observe(runtimeChart, { attributes: true, childList: true, subtree: true });
+    }
+    
+    const memoryChart = document.getElementById('chart-memory');
+    if (memoryChart) {
+        const observer = new MutationObserver(() => {
+            addControlButtonsToLegend();
+        });
+        observer.observe(memoryChart, { attributes: true, childList: true, subtree: true });
+    }
 }
 
 // ==================================================
@@ -689,7 +881,6 @@ function displayCompareResult(result) {
     const summary = result.summary;
     
     if (isAllRules) {
-        // 显示全阶段对比汇总（格式化数值并展示更完整的列）
         document.getElementById('compareSummary').innerHTML = `
             <div class="stat-item"><div class="stat-value">${summary.total_rules || 0}</div><div class="stat-label">总阶段数</div></div>
             <div class="stat-item"><div class="stat-value">${summary.rules_with_data || 0}</div><div class="stat-label">有效数据</div></div>
@@ -698,18 +889,7 @@ function displayCompareResult(result) {
             <div class="stat-item"><div class="stat-value">${summary.memory?.total_increase || 0}</div><div class="stat-label">Memory增加</div></div>
             <div class="stat-item"><div class="stat-value">${summary.memory?.total_decrease || 0}</div><div class="stat-label">Memory减少</div></div>
         `;
-
-        // 辅助格式化函数
-        const fmtNum = (v) => (v === null || v === undefined) ? 'N/A' : (typeof v === 'number' ? v : parseFloat(v)).toFixed ? (Number(v).toFixed(2)) : v;
-        const fmtPct = (v) => (v === null || v === undefined) ? 'N/A' : (Number(v).toFixed(2) + '%');
-        const statusText = (rule) => {
-            if (!rule.has_data) return '无数据';
-            if (rule.runtime_status === 'increase') return '⬆️ 增加';
-            if (rule.runtime_status === 'decrease') return '⬇️ 减少';
-            return '➖ 不变';
-        };
-
-        // 渲染更详细的表格，确保列与数据严格对应
+        
         const thead = document.getElementById('compareTableHeader');
         thead.innerHTML = `<tr>
                 <th>阶段名称</th>
@@ -723,117 +903,29 @@ function displayCompareResult(result) {
                 <th>Memory变化率(%)</th>
                 <th>状态</th>
             </tr>`;
-
+        
         const tbody = document.getElementById('compareTableBody');
-        tbody.innerHTML = (result.rules_comparison || []).map(rule => `
-            <tr>
+        tbody.innerHTML = (result.rules_comparison || []).map(rule => {
+            const statusText = () => {
+                if (!rule.has_data) return '无数据';
+                if (rule.runtime_status === 'increase') return '⬆️ 增加';
+                if (rule.runtime_status === 'decrease') return '⬇️ 减少';
+                return '➖ 不变';
+            };
+            return `<tr>
                 <td>${rule.rule_name}</td>
-                <td>${rule.runtime1 !== null && rule.runtime1 !== undefined ? Number(rule.runtime1).toFixed(2) : 'N/A'}</td>
-                <td>${rule.runtime2 !== null && rule.runtime2 !== undefined ? Number(rule.runtime2).toFixed(2) : 'N/A'}</td>
-                <td>${rule.runtime_diff !== null && rule.runtime_diff !== undefined ? Number(rule.runtime_diff).toFixed(2) : 'N/A'}</td>
-                <td class="${(rule.runtime_change_pct !== null && rule.runtime_change_pct !== undefined) ? (rule.runtime_change_pct > 0 ? 'status-increase' : (rule.runtime_change_pct < 0 ? 'status-decrease' : '')) : ''}">${fmtPct(rule.runtime_change_pct)}</td>
-                <td>${rule.memory1 !== null && rule.memory1 !== undefined ? Number(rule.memory1).toFixed(2) : 'N/A'}</td>
-                <td>${rule.memory2 !== null && rule.memory2 !== undefined ? Number(rule.memory2).toFixed(2) : 'N/A'}</td>
-                <td>${rule.memory_diff !== null && rule.memory_diff !== undefined ? Number(rule.memory_diff).toFixed(2) : 'N/A'}</td>
-                <td class="${(rule.memory_change_pct !== null && rule.memory_change_pct !== undefined) ? (rule.memory_change_pct > 0 ? 'status-increase' : (rule.memory_change_pct < 0 ? 'status-decrease' : '')) : ''}">${fmtPct(rule.memory_change_pct)}</td>
-                <td>${statusText(rule)}</td>
-            </tr>
-        `).join('');
-
-        // 增加 hover 显示 top10 的交互：构建 tooltip 元素并注册事件
-        const rules = result.rules_comparison || [];
-        const topByRuntime = rules
-            .filter(r => r.runtime_change_pct !== null && r.runtime_change_pct !== undefined)
-            .slice().sort((a, b) => Math.abs(b.runtime_change_pct) - Math.abs(a.runtime_change_pct))
-            .slice(0, 10)
-            .map(r => `${r.rule_name} (${Number(r.runtime_change_pct).toFixed(2)}%)`);
-        const topByMemory = rules
-            .filter(r => r.memory_change_pct !== null && r.memory_change_pct !== undefined)
-            .slice().sort((a, b) => Math.abs(b.memory_change_pct) - Math.abs(a.memory_change_pct))
-            .slice(0, 10)
-            .map(r => `${r.rule_name} (${Number(r.memory_change_pct).toFixed(2)}%)`);
-
-        // 在 summary cards 中加入额外的统计卡片（平均/最大/最小/平均变化）并绑定 data-top 属性
-        const summaryContainer = document.getElementById('compareSummary');
-        // 附加运行与内存额外卡片
-        const extraHtml = `
-            <div class="stat-item hover-card" data-top="runtime_top" style="cursor:help;">
-                <div class="stat-value">${(summary.runtime?.avg_change_pct || 0)}%</div>
-                <div class="stat-label">Runtime平均变化</div>
-            </div>
-            <div class="stat-item hover-card" data-top="runtime_max_inc" style="cursor:help;">
-                <div class="stat-value">${summary.runtime?.max_increase_rule || 'N/A'}</div>
-                <div class="stat-label">Runtime最大增加</div>
-            </div>
-            <div class="stat-item hover-card" data-top="runtime_max_dec" style="cursor:help;">
-                <div class="stat-value">${summary.runtime?.max_decrease_rule || 'N/A'}</div>
-                <div class="stat-label">Runtime最大减少</div>
-            </div>
-            <div class="stat-item hover-card" data-top="memory_top" style="cursor:help;">
-                <div class="stat-value">${(summary.memory?.avg_change_pct || 0)}%</div>
-                <div class="stat-label">Memory平均变化</div>
-            </div>
-            <div class="stat-item hover-card" data-top="memory_max_inc" style="cursor:help;">
-                <div class="stat-value">${summary.memory?.max_increase_rule || 'N/A'}</div>
-                <div class="stat-label">Memory最大增加</div>
-            </div>
-            <div class="stat-item hover-card" data-top="memory_max_dec" style="cursor:help;">
-                <div class="stat-value">${summary.memory?.max_decrease_rule || 'N/A'}</div>
-                <div class="stat-label">Memory最大减少</div>
-            </div>
-        `;
-        summaryContainer.insertAdjacentHTML('beforeend', extraHtml);
-
-        // 创建 tooltip 元素
-        let tooltip = document.getElementById('compareMetricTooltip');
-        if (!tooltip) {
-            tooltip = document.createElement('div');
-            tooltip.id = 'compareMetricTooltip';
-            tooltip.style.position = 'fixed';
-            tooltip.style.zIndex = 2000;
-            tooltip.style.background = 'rgba(30,41,59,0.95)';
-            tooltip.style.color = '#fff';
-            tooltip.style.padding = '8px 10px';
-            tooltip.style.borderRadius = '6px';
-            tooltip.style.boxShadow = '0 4px 12px rgba(0,0,0,0.25)';
-            tooltip.style.fontSize = '12px';
-            tooltip.style.display = 'none';
-            tooltip.style.maxWidth = '320px';
-            tooltip.style.whiteSpace = 'pre-wrap';
-            document.body.appendChild(tooltip);
-        }
-
-        // 绑定 hover 事件
-        document.querySelectorAll('#compareSummary .hover-card').forEach(card => {
-            card.addEventListener('mouseenter', (e) => {
-                const key = card.getAttribute('data-top');
-                let text = '';
-                if (key === 'runtime_top') text = 'Runtime 按变化率排序前10:\n' + topByRuntime.join('\n');
-                else if (key === 'memory_top') text = 'Memory 按变化率排序前10:\n' + topByMemory.join('\n');
-                else if (key === 'runtime_max_inc') text = 'Runtime 最大增加: ' + (summary.runtime?.max_increase_rule || 'N/A') + ' (' + (summary.runtime?.max_increase_pct ? Number(summary.runtime.max_increase_pct).toFixed(2) + '%' : 'N/A') + ')';
-                else if (key === 'runtime_max_dec') text = 'Runtime 最大减少: ' + (summary.runtime?.max_decrease_rule || 'N/A') + ' (' + (summary.runtime?.max_decrease_pct ? Number(summary.runtime.max_decrease_pct).toFixed(2) + '%' : 'N/A') + ')';
-                else if (key === 'memory_max_inc') text = 'Memory 最大增加: ' + (summary.memory?.max_increase_rule || 'N/A') + ' (' + (summary.memory?.max_increase_pct ? Number(summary.memory.max_increase_pct).toFixed(2) + '%' : 'N/A') + ')';
-                else if (key === 'memory_max_dec') text = 'Memory 最大减少: ' + (summary.memory?.max_decrease_rule || 'N/A') + ' (' + (summary.memory?.max_decrease_pct ? Number(summary.memory.max_decrease_pct).toFixed(2) + '%' : 'N/A') + ')';
-
-                tooltip.textContent = text;
-                tooltip.style.left = (e.clientX + 12) + 'px';
-                tooltip.style.top = (e.clientY + 12) + 'px';
-                tooltip.style.display = 'block';
-            });
-            card.addEventListener('mousemove', (e) => {
-                const tooltip = document.getElementById('compareMetricTooltip');
-                if (tooltip.style.display !== 'none') {
-                    tooltip.style.left = (e.clientX + 12) + 'px';
-                    tooltip.style.top = (e.clientY + 12) + 'px';
-                }
-            });
-            card.addEventListener('mouseleave', () => {
-                const tooltip = document.getElementById('compareMetricTooltip');
-                tooltip.style.display = 'none';
-            });
-        });
+                <td>${rule.runtime1 !== null ? rule.runtime1.toFixed(2) : 'N/A'}</td>
+                <td>${rule.runtime2 !== null ? rule.runtime2.toFixed(2) : 'N/A'}</td>
+                <td>${rule.runtime_diff !== null ? rule.runtime_diff.toFixed(2) : 'N/A'}</td>
+                <td class="${rule.runtime_change_pct > 0 ? 'status-increase' : (rule.runtime_change_pct < 0 ? 'status-decrease' : '')}">${rule.runtime_change_pct !== null ? rule.runtime_change_pct.toFixed(2) + '%' : 'N/A'}</td>
+                <td>${rule.memory1 !== null ? rule.memory1.toFixed(2) : 'N/A'}</td>
+                <td>${rule.memory2 !== null ? rule.memory2.toFixed(2) : 'N/A'}</td>
+                <td>${rule.memory_diff !== null ? rule.memory_diff.toFixed(2) : 'N/A'}</td>
+                <td class="${rule.memory_change_pct > 0 ? 'status-increase' : (rule.memory_change_pct < 0 ? 'status-decrease' : '')}">${rule.memory_change_pct !== null ? rule.memory_change_pct.toFixed(2) + '%' : 'N/A'}</td>
+                <td>${statusText()}</td>
+            </tr>`;
+        }).join('');
     } else {
-        // 单阶段对比
         document.getElementById('compareSummary').innerHTML = `
             <div class="stat-item"><div class="stat-value">${summary.total || 0}</div><div class="stat-label">数据点数</div></div>
             <div class="stat-item"><div class="stat-value">${summary.runtime_increased || 0}</div><div class="stat-label">Runtime增加</div></div>
@@ -841,18 +933,17 @@ function displayCompareResult(result) {
             <div class="stat-item"><div class="stat-value">${summary.runtime_avg_change || 0}%</div><div class="stat-label">平均变化率</div></div>
         `;
         
-        const fmt = (v) => (v === null || v === undefined) ? 'N/A' : (Number(v).toFixed ? Number(v).toFixed(2) : v);
         const thead = document.getElementById('compareTableHeader');
         thead.innerHTML = `<tr><th>序号</th><th>日期</th><th>Runtime(基准)</th><th>Runtime(对比)</th><th>变化率(%)</th><th>状态</th></tr>`;
-
+        
         const tbody = document.getElementById('compareTableBody');
         tbody.innerHTML = (result.comparisons || []).map(comp => `
             <tr>
                 <td>${comp.index + 1}</td>
                 <td>${comp.date || 'N/A'}</td>
-                <td>${fmt(comp.runtime1)}</td>
-                <td>${fmt(comp.runtime2)}</td>
-                <td class="${(comp.runtime_change_pct !== null && comp.runtime_change_pct !== undefined) ? (comp.runtime_change_pct > 0 ? 'status-increase' : (comp.runtime_change_pct < 0 ? 'status-decrease' : '')) : ''}">${comp.runtime_change_pct !== null && comp.runtime_change_pct !== undefined ? Number(comp.runtime_change_pct).toFixed(2) + '%' : 'N/A'}</td>
+                <td>${comp.runtime1.toFixed(2)}</td>
+                <td>${comp.runtime2.toFixed(2)}</td>
+                <td class="${comp.runtime_change_pct > 0 ? 'status-increase' : (comp.runtime_change_pct < 0 ? 'status-decrease' : '')}">${comp.runtime_change_pct.toFixed(2)}%</td>
                 <td>${comp.runtime_status === 'increase' ? '⬆️ 增加' : (comp.runtime_status === 'decrease' ? '⬇️ 减少' : '➖ 不变')}</td>
             </tr>
         `).join('');
@@ -1071,8 +1162,14 @@ function initCharts() {
     const runtimeDom = document.getElementById('chart-runtime');
     const memoryDom = document.getElementById('chart-memory');
     
-    if (runtimeDom) charts.runtime = echarts.init(runtimeDom);
-    if (memoryDom) charts.memory = echarts.init(memoryDom);
+    if (runtimeDom) {
+        charts.runtime = echarts.init(runtimeDom);
+        charts.runtime.on('legendselectchanged', handleLegendSelectionChanged);
+    }
+    if (memoryDom) {
+        charts.memory = echarts.init(memoryDom);
+        charts.memory.on('legendselectchanged', handleLegendSelectionChanged);
+    }
     
     // 多线程图表
     const multiRuntimeDom = document.getElementById('chart-multi-runtime');
@@ -1085,6 +1182,12 @@ function initCharts() {
     window.addEventListener('resize', () => {
         Object.values(charts).forEach(chart => chart?.resize());
     });
+    
+    // 监听图表渲染，添加控制按钮
+    observeChartRendering();
+    setTimeout(() => {
+        addControlButtonsToLegend();
+    }, 500);
 }
 
 // ==================================================
@@ -1112,7 +1215,6 @@ function bindEvents() {
         if (currentRule) {
             document.getElementById('currentRuleName').innerText = currentRule;
             refreshTimelineCharts();
-            updateThreadFilters();
         }
     });
     
@@ -1120,6 +1222,11 @@ function bindEvents() {
     document.getElementById('ruleSearch').addEventListener('input', debounce(() => {
         updateRuleSelect();
     }, 300));
+    
+    // 曲线类型按钮
+    document.querySelectorAll('.chart-type-btn').forEach(btn => {
+        btn.addEventListener('click', () => selectChartType(btn.dataset.type));
+    });
     
     // 刷新按钮
     document.getElementById('refreshDataBtn').addEventListener('click', refreshAllData);
@@ -1213,6 +1320,7 @@ async function init() {
         updateRuleSelect();
         updateProjectStats();
         updateDateSelectionInfo();
+        updateChartTypeButtons();
     }
     
     // 根据URL参数切换视图

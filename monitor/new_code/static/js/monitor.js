@@ -388,6 +388,17 @@ function renderEChartOptimized(chartType, dataKey, color, highlightColor, yAxisN
         };
     });
     
+    const legendSelected = {};
+    threadIds.forEach((threadId) => {
+        const seriesName = `${threadId} 线程`;
+        legendSelected[seriesName] = selectedThreads.includes(threadId);
+    });
+    if (!Object.values(legendSelected).includes(true) && threadIds.length) {
+        const defaultThread = threadIds.includes('0') ? '0' : threadIds[0];
+        legendSelected[`${defaultThread} 线程`] = true;
+        selectedThreads = [defaultThread];
+    }
+    
     const allValues = seriesList
         .filter(series => selectedThreads.includes(series.name.replace(' 线程', '')))
         .flatMap(series => series.data.map(item => item.value))
@@ -457,6 +468,7 @@ function renderEChartOptimized(chartType, dataKey, color, highlightColor, yAxisN
         ],
         legend: {
             data: seriesList.map(s => s.name),
+            selected: legendSelected,
             textStyle: { color: '#94a3b8' },
             right: 10,
             top: 0,
@@ -490,6 +502,46 @@ function renderEChartOptimized(chartType, dataKey, color, highlightColor, yAxisN
     if (charts[chartType] && !charts[chartType].isDisposed()) {
         charts[chartType].setOption(option, { notMerge: false, lazyUpdate: true });
     }
+}
+
+function refreshStatsOnly() {
+    if (!currentRule) return;
+    const toolData = getCurrentToolDataOptimized();
+    if (!toolData) return;
+
+    const filteredData = getFilteredToolData(toolData);
+    const threadMetrics = toolData.thread_metrics || {};
+    const threadIds = Object.keys(threadMetrics).sort((a, b) => parseInt(a) - parseInt(b));
+
+    const runtimeValues = [];
+    const memoryValues = [];
+    threadIds.forEach(threadId => {
+        if (!selectedThreads.includes(threadId)) return;
+        const threadInfo = threadMetrics[threadId] || {};
+        const values = threadInfo.runtimes || [];
+        const memory = threadInfo.memories || [];
+        values.forEach((value, idx) => {
+            if (filteredData.dates[idx] && value !== null && value !== undefined && value > 0) runtimeValues.push(value);
+        });
+        memory.forEach((value, idx) => {
+            if (filteredData.dates[idx] && value !== null && value !== undefined && value > 0) memoryValues.push(value);
+        });
+    });
+
+    updateStats('stats-runtime', runtimeValues, '秒', 'Runtime');
+    updateStats('stats-memory', memoryValues, 'MB', 'Memory');
+}
+
+function handleLegendSelectionChange(event) {
+    if (!event || !event.selected) return;
+
+    const selected = Object.entries(event.selected)
+        .filter(([name, isSelected]) => isSelected && name.endsWith(' 线程'))
+        .map(([name]) => name.replace(' 线程', ''));
+
+    selectedThreads = selected.length ? selected : ['0'];
+    updateThreadSummary();
+    refreshAllCharts();
 }
 
 function refreshAllCharts() {
@@ -593,6 +645,12 @@ async function refreshData() {
     }
 }
 
+function updateThreadSummary() {
+    const threadSummaryEl = document.getElementById('threadSummary');
+    if (!threadSummaryEl) return;
+    threadSummaryEl.innerText = selectedThreads.length ? selectedThreads.join(', ') : '0';
+}
+
 function updateProjectStats() {
     const projectData = getCurrentProjectData();
     if (!projectData) return;
@@ -603,9 +661,9 @@ function updateProjectStats() {
     statsEl.innerHTML = `
         <div class="badge-item"><span>📊</span> 阶段数: ${projectData.rules.length}</div>
         <div class="badge-item"><span>📅</span> 天数: ${projectData.dates.length}</div>
-        <div class="badge-item"><span>🔄</span> 线程数: ${selectedThreads.join(', ')}</div>
     `;
     updateDateSelectionInfo();
+    updateThreadSummary();
 }
 
 // ============================================
@@ -618,9 +676,11 @@ function initCharts() {
     
     if (runtimeChartDom && !charts.runtime) {
         charts.runtime = echarts.init(runtimeChartDom);
+        charts.runtime.on('legendselectchanged', handleLegendSelectionChange);
     }
     if (memoryChartDom && !charts.memory) {
         charts.memory = echarts.init(memoryChartDom);
+        charts.memory.on('legendselectchanged', handleLegendSelectionChange);
     }
     
     const resizeHandler = debounce(() => {
@@ -682,6 +742,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (currentRuleNameEl) currentRuleNameEl.innerText = currentRule || '未选择';
             if (currentRule) debouncedRenderCharts();
             else clearCharts();
+            updateThreadSummary();
         });
     }
     
