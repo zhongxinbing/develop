@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>数据对比 - 性能监控系统</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}">
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>📊 性能数据对比工具</h1>
+        <div class="sub">选择项目、对比模式和日期进行性能对比分析</div>
+    </div>
+    
+    <div class="card">
+        <!-- 对比模式选择 -->
+        <div class="comparison-mode">
+            <span class="info-text">📌 对比模式：</span>
+            <label class="radio-option">
+                <input type="radio" name="compareMode" value="single" checked> 
+                <span>🎯 单阶段对比</span>
+            </label>
+            <label class="radio-option">
+                <input type="radio" name="compareMode" value="all"> 
+                <span>📊 全阶段对比</span>
+            </label>
+            <span class="mode-badge" id="modeBadge">单阶段模式</span>
+        </div>
+        
+        <div class="form-group">
+            <div class="input-field">
+                <label>📁 选择项目</label>
+                <select id="projectSelect">
+                    <option value="">加载中...</option>
+                </select>
+            </div>
+            <div class="input-field" id="ruleField">
+                <label>🔧 选择阶段 <span id="ruleHint" class="hint-text"></span></label>
+                <select id="ruleSelect">
+                    <option value="all">📊 所有阶段 (对比全部)</option>
+                </select>
+            </div>
+            <div class="input-field">
+                <label>📅 日期1 (基准)</label>
+                <select id="date1Select">
+                    <option value="">请先选择项目</option>
+                </select>
+            </div>
+            <div class="input-field">
+                <label>📅 日期2 (对比)</label>
+                <select id="date2Select">
+                    <option value="">请先选择项目</option>
+                </select>
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <div class="tolerance-group">
+                <div class="input-field">
+                    <label>⏱️ Runtime误差范围</label>
+                    <input type="number" id="toleranceRuntime" value="0" step="0.1" placeholder="0">
+                </div>
+                <div class="input-field">
+                    <label>💾 Memory误差范围</label>
+                    <input type="number" id="toleranceMemory" value="0" step="10" placeholder="0">
+                </div>
+                <div class="input-field wide-field">
+                    <label>⚙️ 误差模式</label>
+                    <div class="radio-group justify-between">
+                        <label><input type="radio" name="toleranceMode" value="absolute" checked> 绝对值</label>
+                        <label><input type="radio" name="toleranceMode" value="percentage"> 百分比</label>
+                    </div>
+                </div>
+            </div>
+            <button class="btn" id="compareBtn">🔍 执行对比</button>
+        </div>
+        
+        <div class="form-group top-group">
+            <div class="input-field full-width">
+                <label>📝 上次保存的误差配置</label>
+                <div id="lastConfigInfo" class="history-box">暂无历史配置</div>
+            </div>
+        </div>
+            <div class="info-text tip-text">
+                💡 提示：
+                <span id="modeHint">选择"单阶段对比"可查看单个阶段的详细数据点变化；选择"全阶段对比"可查看所有阶段的汇总对比。</span>
+            </div>
+        </div>
+    </div>
+    
+    <div id="resultArea" class="hidden">
+        <div class="card">
+            <div class="result-header">
+                <h3 id="resultTitle">📈 对比结果</h3>
+                <div>
+                    <button class="btn btn-secondary back-btn" onclick="window.location.reload()">🔄 新对比</button>
+                    <button class="btn export-btn" id="exportBtn">💾 导出CSV</button>
+                </div>
+            </div>
+            
+            <!-- 汇总卡片区域 -->
+            <div id="summaryContainer" class="summary-grid"></div>
+            
+            <!-- 表格容器 -->
+            <div class="table-container">
+                <table class="result-table" id="resultTable">
+                    <thead id="tableHeader"></thead>
+                    <tbody id="resultBody"></tbody>
+                </table>
+            </div>
+            
+            <div id="emptyResult" class="empty-result hidden">
+                ⚠️ 没有找到可对比的数据，请检查选择的日期是否有数据
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let currentCompareResult = null;
+    let currentCompareMode = 'single';
+    let allRulesList = [];
+    
+    // 监听对比模式切换
+    document.querySelectorAll('input[name="compareMode"]').forEach(radio => {
+        radio.addEventListener('change', (e) => {
+            currentCompareMode = e.target.value;
+            const ruleSelect = document.getElementById('ruleSelect');
+            const ruleHint = document.getElementById('ruleHint');
+            const modeBadge = document.getElementById('modeBadge');
+            const modeHint = document.getElementById('modeHint');
+            
+            if (currentCompareMode === 'all') {
+                // 全阶段模式：设置默认选项
+                ruleSelect.innerHTML = '<option value="all" selected>📊 所有阶段 (共 ' + allRulesList.length + ' 个)</option>';
+                ruleSelect.disabled = true;
+                ruleHint.textContent = '(将对比所有阶段)';
+                modeBadge.textContent = '全阶段模式';
+                modeBadge.style.background = '#f59e0b';
+                modeHint.textContent = '全阶段模式将对比所有阶段的性能数据，生成汇总统计报告。';
+            } else {
+                // 单阶段模式：恢复阶段选择
+                ruleSelect.disabled = false;
+                ruleHint.textContent = '';
+                modeBadge.textContent = '单阶段模式';
+                modeBadge.style.background = '#8b5cf6';
+                modeHint.textContent = '单阶段模式可查看单个阶段的详细数据点变化。';
+                
+                // 重新加载规则列表
+                const projectId = document.getElementById('projectSelect').value;
+                if (projectId) {
+                    loadRules(projectId);
+                } else {
+                    ruleSelect.innerHTML = '<option value="all">📊 所有阶段 (请先选择项目)</option>';
+                }
+            }
+        });
+    });
+    
+    // 获取项目列表
+    async function loadProjects() {
+        try {
+            const response = await fetch('/api/projects');
+            const projects = await response.json();
+            
+            const select = document.getElementById('projectSelect');
+            select.innerHTML = '<option value="">请选择项目</option>';
+            
+            if (projects && projects.length > 0) {
+                projects.forEach(project => {
+                    const option = document.createElement('option');
+                    option.value = project.id;
+                    option.textContent = project.name;
+                    select.appendChild(option);
+                });
+            } else {
+                select.innerHTML = '<option value="">暂无项目数据</option>';
+            }
+        } catch (error) {
+            console.error('加载项目失败:', error);
+            document.getElementById('projectSelect').innerHTML = '<option value="">加载失败，请刷新页面</option>';
+        }
+    }
+    
+    // 加载规则列表
+    async function loadRules(projectId) {
+        try {
+            const response = await fetch(`/api/project/${projectId}`);
+            const data = await response.json();
+            
+            const ruleSelect = document.getElementById('ruleSelect');
+            
+            if (data && data.rules && data.rules.length > 0) {
+                allRulesList = data.rules.filter(r => r !== 'Overall');
+                
+                ruleSelect.innerHTML = '<option value="all">📊 所有阶段 (共 ' + allRulesList.length + ' 个)</option>';
+                
+                allRulesList.forEach(rule => {
+                    const option = document.createElement('option');
+                    option.value = rule;
+                    option.textContent = rule;
+                    ruleSelect.appendChild(option);
+                });
+            } else {
+                ruleSelect.innerHTML = '<option value="all">📊 所有阶段 (无数据)</option>';
+                allRulesList = [];
+            }
+        } catch (error) {
+            console.error('加载规则失败:', error);
+            document.getElementById('ruleSelect').innerHTML = '<option value="all">加载失败</option>';
+        }
+    }
+    
+    // 加载日期列表
+    async function loadDates(projectId) {
+        try {
+            const response = await fetch('/api/get_dates', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ project_id: projectId })
+            });
+            const data = await response.json();
+            
+            if (data.success && data.dates && data.dates.length > 0) {
+                const date1Select = document.getElementById('date1Select');
+                const date2Select = document.getElementById('date2Select');
+                
+                date1Select.innerHTML = '<option value="">请选择日期</option>';
+                date2Select.innerHTML = '<option value="">请选择日期</option>';
+                
+                data.dates.forEach(date => {
+                    const option1 = document.createElement('option');
+                    option1.value = date;
+                    option1.textContent = date;
+                    date1Select.appendChild(option1);
+                    
+                    const option2 = document.createElement('option');
+                    option2.value = date;
+                    option2.textContent = date;
+                    date2Select.appendChild(option2);
+                });
+                loadCompareConfig(projectId);
+            } else {
+                document.getElementById('date1Select').innerHTML = '<option value="">暂无日期数据</option>';
+                document.getElementById('date2Select').innerHTML = '<option value="">暂无日期数据</option>';
+            }
+        } catch (error) {
+            console.error('加载日期失败:', error);
+        }
+    }
+
+    async function loadCompareConfig(projectId) {
+        if (!projectId) {
+            document.getElementById('lastConfigInfo').textContent = '暂无历史配置';
+            return;
+        }
+        try {
+            const response = await fetch(`/api/compare_config?project_id=${encodeURIComponent(projectId)}`);
+            const result = await response.json();
+            if (result.success && result.config) {
+                const config = result.config;
+                if (config.tolerance_runtime !== undefined) {
+                    document.getElementById('toleranceRuntime').value = config.tolerance_runtime;
+                }
+                if (config.tolerance_memory !== undefined) {
+                    document.getElementById('toleranceMemory').value = config.tolerance_memory;
+                }
+                if (config.tolerance_mode) {
+                    document.querySelector(`input[name="toleranceMode"][value="${config.tolerance_mode}"]`).checked = true;
+                }
+                if (config.date1) {
+                    document.getElementById('date1Select').value = config.date1;
+                }
+                if (config.date2) {
+                    document.getElementById('date2Select').value = config.date2;
+                }
+                document.getElementById('lastConfigInfo').innerHTML = `最近一次保存: ${config.timestamp || '未知时间'}<br>模式: ${config.tolerance_mode || 'absolute'}，Runtime: ${config.tolerance_runtime || 0}，Memory: ${config.tolerance_memory || 0}<br>日期: ${config.date1 || 'N/A'} vs ${config.date2 || 'N/A'}`;
+            } else {
+                document.getElementById('lastConfigInfo').textContent = '暂无历史配置';
+            }
+        } catch (error) {
+            console.error('加载对比配置失败:', error);
+            document.getElementById('lastConfigInfo').textContent = '加载历史配置失败';
+        }
+    }
+
+    async function saveCompareConfig(config) {
+        try {
+            await fetch('/api/compare_config', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(config)
+            });
+        } catch (error) {
+            console.error('保存对比配置失败:', error);
+        }
+    }
+    
+    // 显示加载状态
+    function showLoading() {
+        let overlay = document.querySelector('.loading-overlay');
+        if (!overlay) {
+            overlay = document.createElement('div');
+            overlay.className = 'loading-overlay';
+            overlay.innerHTML = '<div class="spinner"></div>';
+            document.body.appendChild(overlay);
+        }
+        overlay.style.display = 'flex';
+    }
+    
+    function hideLoading() {
+        const overlay = document.querySelector('.loading-overlay');
+        if (overlay) {
+            overlay.style.display = 'none';
+        }
+    }
+    
+    // 执行对比
+    async function performCompare() {
+        const projectId = document.getElementById('projectSelect').value;
+        let ruleName = document.getElementById('ruleSelect').value;
+        const date1 = document.getElementById('date1Select').value;
+        const date2 = document.getElementById('date2Select').value;
+        const toleranceRuntime = parseFloat(document.getElementById('toleranceRuntime').value) || 0;
+        const toleranceMemory = parseFloat(document.getElementById('toleranceMemory').value) || 0;
+        const toleranceMode = document.querySelector('input[name="toleranceMode"]:checked')?.value || 'absolute';
+        
+        // 全阶段模式强制使用 'all'
+        if (currentCompareMode === 'all') {
+            ruleName = 'all';
+        }
+        
+        console.log('对比参数:', { projectId, ruleName, date1, date2, toleranceMode, currentCompareMode });
+        
+        if (!projectId) {
+            alert('请选择项目');
+            return;
+        }
+        
+        if (!date1 || !date2) {
+            alert('请选择两个日期');
+            return;
+        }
+        
+        if (date1 === date2) {
+            alert('请选择两个不同的日期');
+            return;
+        }
+        
+        const compareBtn = document.getElementById('compareBtn');
+        const originalText = compareBtn.innerHTML;
+        compareBtn.innerHTML = '<span class="loading"></span> 对比中...';
+        compareBtn.disabled = true;
+        showLoading();
+        
+        try {
+            const response = await fetch('/api/compare', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    project_id: projectId,
+                    rule_name: ruleName,
+                    date1: date1,
+                    date2: date2,
+                    tolerance_runtime: toleranceRuntime,
+                    tolerance_memory: toleranceMemory,
+                    tolerance_mode: toleranceMode
+                })
+            });
+            
+            const result = await response.json();
+            console.log('对比结果:', result);
+            
+            if (result.success && result.result) {
+                currentCompareResult = result.result;
+                displayResult(result.result);
+                document.getElementById('resultArea').style.display = 'block';
+                
+                saveCompareConfig({
+                    project_id: projectId,
+                    rule_name: ruleName,
+                    date1: date1,
+                    date2: date2,
+                    tolerance_runtime: toleranceRuntime,
+                    tolerance_memory: toleranceMemory,
+                    tolerance_mode: toleranceMode,
+                    timestamp: new Date().toISOString()
+                });
+                loadCompareConfig(projectId);
+                
+                // 滚动到结果区域
+                document.getElementById('resultArea').scrollIntoView({ behavior: 'smooth' });
+            } else {
+                alert('对比失败: ' + (result.error || '未知错误'));
+            }
+        } catch (error) {
+            console.error('对比失败:', error);
+            alert('对比失败: ' + error.message);
+        } finally {
+            compareBtn.innerHTML = originalText;
+            compareBtn.disabled = false;
+            hideLoading();
+        }
+    }
+    
+    // 显示结果
+    function displayResult(result) {
+        const mode = result.mode;
+        const title = document.getElementById('resultTitle');
+        const emptyDiv = document.getElementById('emptyResult');
+        
+        console.log('显示结果, mode:', mode, 'result:', result);
+        
+        if (mode === 'all_rules') {
+            title.innerHTML = '📈 全阶段对比结果';
+            if (result.rules_comparison && result.rules_comparison.length > 0) {
+                displayAllRulesResult(result);
+                emptyDiv.style.display = 'none';
+            } else {
+                emptyDiv.style.display = 'block';
+                document.getElementById('summaryContainer').innerHTML = '';
+                document.getElementById('tableHeader').innerHTML = '';
+                document.getElementById('resultBody').innerHTML = '';
+            }
+        } else {
+            title.innerHTML = `📈 单阶段对比结果 - ${result.rule_name || '未知阶段'}`;
+            if (result.comparisons && result.comparisons.length > 0) {
+                displaySingleRuleResult(result);
+                emptyDiv.style.display = 'none';
+            } else {
+                emptyDiv.style.display = 'block';
+                document.getElementById('summaryContainer').innerHTML = '';
+                document.getElementById('tableHeader').innerHTML = '';
+                document.getElementById('resultBody').innerHTML = '';
+            }
+        }
+    }
+    
+    // 显示所有阶段对比结果
+    function displayAllRulesResult(result) {
+        const summary = result.summary;
+        
+        // 显示汇总卡片
+        const summaryContainer = document.getElementById('summaryContainer');
+        summaryContainer.innerHTML = `
+            <div class="summary-card">
+                <div class="label">📊 总阶段数</div>
+                <div class="value">${summary.total_rules || 0}</div>
+            </div>
+            <div class="summary-card">
+                <div class="label">✅ 有效数据阶段</div>
+                <div class="value value-positive">${summary.rules_with_data || 0}</div>
+            </div>
+            <div class="summary-card">
+                <div class="label">⚠️ 无数据阶段</div>
+                <div class="value value-warning">${summary.rules_without_data || 0}</div>
+            </div>
+            <div class="summary-card">
+                <div class="label">⬆️ Runtime增加</div>
+                <div class="value increase">${summary.runtime?.total_increase || 0}</div>
+            </div>
+            <div class="summary-card">
+                <div class="label">⬇️ Runtime减少</div>
+                <div class="value decrease">${summary.runtime?.total_decrease || 0}</div>
+            </div>
+            <div class="summary-card">
+                <div class="label">📈 Runtime平均变化</div>
+                <div class="value">${summary.runtime?.avg_change_pct || 0}%</div>
+            </div>
+            <div class="summary-card">
+                <div class="label">⬆️ Memory增加</div>
+                <div class="value increase">${summary.memory?.total_increase || 0}</div>
+            </div>
+            <div class="summary-card">
+                <div class="label">⬇️ Memory减少</div>
+                <div class="value decrease">${summary.memory?.total_decrease || 0}</div>
+            </div>
+            <div class="summary-card">
+                <div class="label">📈 Memory平均变化</div>
+                <div class="value">${summary.memory?.avg_change_pct || 0}%</div>
+            </div>
+            <div class="summary-card">
+                <div class="label">🏆 Runtime最大增加</div>
+                <div class="value increase">${summary.runtime?.max_increase_rule || 'N/A'}<br><small>${Math.abs(summary.runtime?.max_increase_pct || 0).toFixed(2)}%</small></div>
+            </div>
+            <div class="summary-card">
+                <div class="label">📉 Runtime最大减少</div>
+                <div class="value decrease">${summary.runtime?.max_decrease_rule || 'N/A'}<br><small>${Math.abs(summary.runtime?.max_decrease_pct || 0).toFixed(2)}%</small></div>
+            </div>
+        `;
+        
+        // 构建表格
+        const thead = document.getElementById('tableHeader');
+        thead.innerHTML = `
+            <tr>
+                <th>阶段名称</th>
+                <th>状态</th>
+                <th>Runtime(基准)</th>
+                <th>Runtime(对比)</th>
+                <th>Runtime差值</th>
+                <th>变化率(%)</th>
+                <th>Memory(基准)</th>
+                <th>Memory(对比)</th>
+                <th>Memory差值</th>
+                <th>变化率(%)</th>
+            </tr>
+        `;
+        
+        const tbody = document.getElementById('resultBody');
+        tbody.innerHTML = '';
+        
+        if (!result.rules_comparison || result.rules_comparison.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="10" class="text-center">暂无对比数据</td></tr>';
+            return;
+        }
+        
+        result.rules_comparison.forEach(rule => {
+            const row = tbody.insertRow();
+            
+            // 阶段名称
+            row.insertCell(0).textContent = rule.rule_name;
+            
+            // 状态
+            const statusCell = row.insertCell(1);
+            if (!rule.has_data) {
+                statusCell.textContent = '无数据';
+                statusCell.className = 'status-no-data';
+            } else {
+                const status = rule.runtime_status;
+                statusCell.textContent = status === 'increase' ? '⬆️ 增加' : (status === 'decrease' ? '⬇️ 减少' : '➖ 不变');
+                statusCell.className = `status-${status}`;
+            }
+            
+            // Runtime数据
+            row.insertCell(2).textContent = rule.runtime1 !== null ? rule.runtime1 : 'N/A';
+            row.insertCell(3).textContent = rule.runtime2 !== null ? rule.runtime2 : 'N/A';
+            row.insertCell(4).textContent = rule.runtime_diff !== null ? rule.runtime_diff : 'N/A';
+            
+            const runtimePctCell = row.insertCell(5);
+            if (rule.runtime_change_pct !== null) {
+                runtimePctCell.textContent = rule.runtime_change_pct;
+                runtimePctCell.className = `status-${rule.runtime_status}`;
+            } else {
+                runtimePctCell.textContent = 'N/A';
+            }
+            
+            // Memory数据
+            row.insertCell(6).textContent = rule.memory1 !== null ? rule.memory1 : 'N/A';
+            row.insertCell(7).textContent = rule.memory2 !== null ? rule.memory2 : 'N/A';
+            row.insertCell(8).textContent = rule.memory_diff !== null ? rule.memory_diff : 'N/A';
+            
+            const memoryPctCell = row.insertCell(9);
+            if (rule.memory_change_pct !== null) {
+                memoryPctCell.textContent = rule.memory_change_pct;
+                memoryPctCell.className = `status-${rule.memory_status}`;
+            } else {
+                memoryPctCell.textContent = 'N/A';
+            }
+        });
+        
+        // 按变化率排序显示
+        const rows = Array.from(tbody.rows);
+        rows.sort((a, b) => {
+            const pctA = parseFloat(a.cells[5].textContent) || 0;
+            const pctB = parseFloat(b.cells[5].textContent) || 0;
+            return Math.abs(pctB) - Math.abs(pctA);
+        });
+        rows.forEach(row => tbody.appendChild(row));
+    }
+    
+    // 显示单阶段对比结果
+    function displaySingleRuleResult(result) {
+        const summary = result.summary;
+        
+        // 显示汇总卡片
+        const summaryContainer = document.getElementById('summaryContainer');
+        summaryContainer.innerHTML = `
+            <div class="summary-card">
+                <div class="label">📊 总数据点数</div>
+                <div class="value">${summary.total || 0}</div>
+            </div>
+            <div class="summary-card">
+                <div class="label">⬆️ Runtime增加</div>
+                <div class="value increase">${summary.runtime_increased || 0}</div>
+            </div>
+            <div class="summary-card">
+                <div class="label">⬇️ Runtime减少</div>
+                <div class="value decrease">${summary.runtime_decreased || 0}</div>
+            </div>
+            <div class="summary-card">
+                <div class="label">📈 Runtime最大变化</div>
+                <div class="value">${summary.runtime_max_change || 0}%</div>
+            </div>
+            <div class="summary-card">
+                <div class="label">📊 Runtime平均变化</div>
+                <div class="value">${summary.runtime_avg_change || 0}%</div>
+            </div>
+            <div class="summary-card">
+                <div class="label">⬆️ Memory增加</div>
+                <div class="value increase">${summary.memory_increased || 0}</div>
+            </div>
+            <div class="summary-card">
+                <div class="label">⬇️ Memory减少</div>
+                <div class="value decrease">${summary.memory_decreased || 0}</div>
+            </div>
+            <div class="summary-card">
+                <div class="label">📈 Memory最大变化</div>
+                <div class="value">${summary.memory_max_change || 0}%</div>
+            </div>
+            <div class="summary-card">
+                <div class="label">📊 Memory平均变化</div>
+                <div class="value">${summary.memory_avg_change || 0}%</div>
+            </div>
+        `;
+        
+        // 构建表格
+        const thead = document.getElementById('tableHeader');
+        thead.innerHTML = `
+            <tr>
+                <th>序号</th>
+                <th>日期</th>
+                <th>Runtime(基准)</th>
+                <th>Runtime(对比)</th>
+                <th>差值</th>
+                <th>变化率(%)</th>
+                <th>状态</th>
+                <th>Memory(基准)</th>
+                <th>Memory(对比)</th>
+                <th>差值</th>
+                <th>变化率(%)</th>
+                <th>状态</th>
+            </tr>
+        `;
+        
+        const tbody = document.getElementById('resultBody');
+        tbody.innerHTML = '';
+        
+        if (!result.comparisons || result.comparisons.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="12" class="text-center">暂无对比数据</td></tr>';
+            return;
+        }
+        
+        result.comparisons.forEach(comp => {
+            const row = tbody.insertRow();
+            
+            row.insertCell(0).textContent = comp.index + 1;
+            row.insertCell(1).textContent = comp.date;
+            row.insertCell(2).textContent = comp.runtime1;
+            row.insertCell(3).textContent = comp.runtime2;
+            row.insertCell(4).textContent = comp.runtime_diff;
+            row.insertCell(5).textContent = comp.runtime_change_pct;
+            
+            const runtimeStatusCell = row.insertCell(6);
+            runtimeStatusCell.textContent = getStatusText(comp.runtime_status);
+            runtimeStatusCell.className = `status-${comp.runtime_status}`;
+            
+            row.insertCell(7).textContent = comp.memory1 !== null ? comp.memory1 : 'N/A';
+            row.insertCell(8).textContent = comp.memory2 !== null ? comp.memory2 : 'N/A';
+            row.insertCell(9).textContent = comp.memory_diff !== null ? comp.memory_diff : 'N/A';
+            row.insertCell(10).textContent = comp.memory_change_pct !== null ? comp.memory_change_pct : 'N/A';
+            
+            const memoryStatusCell = row.insertCell(11);
+            memoryStatusCell.textContent = getStatusText(comp.memory_status);
+            memoryStatusCell.className = `status-${comp.memory_status}`;
+        });
+    }
+    
+    function getStatusText(status) {
+        switch(status) {
+            case 'increase': return '⬆️ 增加';
+            case 'decrease': return '⬇️ 减少';
+            case 'no_data': return '无数据';
+            default: return '➖ 不变';
+        }
+    }
+    
+    // 导出CSV
+    async function exportCSV() {
+        if (!currentCompareResult) {
+            alert('没有可导出的对比结果');
+            return;
+        }
+        
+        const exportBtn = document.getElementById('exportBtn');
+        const originalText = exportBtn.innerHTML;
+        exportBtn.innerHTML = '<span class="loading"></span> 导出中...';
+        exportBtn.disabled = true;
+        
+        try {
+            const response = await fetch('/api/export_compare', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ result: currentCompareResult })
+            });
+            
+            const result = await response.json();
+            
+            if (result.success) {
+                // 创建下载链接
+                const link = document.createElement('a');
+                link.href = result.download_url;
+                link.download = result.filename;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                
+                setTimeout(() => {
+                    alert('导出成功！');
+                }, 500);
+            } else {
+                alert('导出失败: ' + (result.error || '未知错误'));
+            }
+        } catch (error) {
+            console.error('导出失败:', error);
+            alert('导出失败: ' + error.message);
+        } finally {
+            exportBtn.innerHTML = originalText;
+            exportBtn.disabled = false;
+        }
+    }
+    
+    // 事件绑定
+    document.getElementById('projectSelect').addEventListener('change', (e) => {
+        const projectId = e.target.value;
+        if (projectId) {
+            loadRules(projectId);
+            loadDates(projectId);
+        } else {
+            document.getElementById('ruleSelect').innerHTML = '<option value="all">📊 所有阶段 (请先选择项目)</option>';
+            document.getElementById('date1Select').innerHTML = '<option value="">请先选择项目</option>';
+            document.getElementById('date2Select').innerHTML = '<option value="">请先选择项目</option>';
+            document.getElementById('lastConfigInfo').textContent = '暂无历史配置';
+        }
+    });
+    
+    document.getElementById('compareBtn').addEventListener('click', performCompare);
+    document.getElementById('exportBtn').addEventListener('click', exportCSV);
+    
+    // 初始化
+    loadProjects();
+</script>
+</body>
+</html>
