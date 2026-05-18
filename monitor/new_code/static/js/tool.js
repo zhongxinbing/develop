@@ -739,6 +739,99 @@ function displayCompareResult(result) {
                 <td>${statusText(rule)}</td>
             </tr>
         `).join('');
+
+        // 增加 hover 显示 top10 的交互：构建 tooltip 元素并注册事件
+        const rules = result.rules_comparison || [];
+        const topByRuntime = rules
+            .filter(r => r.runtime_change_pct !== null && r.runtime_change_pct !== undefined)
+            .slice().sort((a, b) => Math.abs(b.runtime_change_pct) - Math.abs(a.runtime_change_pct))
+            .slice(0, 10)
+            .map(r => `${r.rule_name} (${Number(r.runtime_change_pct).toFixed(2)}%)`);
+        const topByMemory = rules
+            .filter(r => r.memory_change_pct !== null && r.memory_change_pct !== undefined)
+            .slice().sort((a, b) => Math.abs(b.memory_change_pct) - Math.abs(a.memory_change_pct))
+            .slice(0, 10)
+            .map(r => `${r.rule_name} (${Number(r.memory_change_pct).toFixed(2)}%)`);
+
+        // 在 summary cards 中加入额外的统计卡片（平均/最大/最小/平均变化）并绑定 data-top 属性
+        const summaryContainer = document.getElementById('compareSummary');
+        // 附加运行与内存额外卡片
+        const extraHtml = `
+            <div class="stat-item hover-card" data-top="runtime_top" style="cursor:help;">
+                <div class="stat-value">${(summary.runtime?.avg_change_pct || 0)}%</div>
+                <div class="stat-label">Runtime平均变化</div>
+            </div>
+            <div class="stat-item hover-card" data-top="runtime_max_inc" style="cursor:help;">
+                <div class="stat-value">${summary.runtime?.max_increase_rule || 'N/A'}</div>
+                <div class="stat-label">Runtime最大增加</div>
+            </div>
+            <div class="stat-item hover-card" data-top="runtime_max_dec" style="cursor:help;">
+                <div class="stat-value">${summary.runtime?.max_decrease_rule || 'N/A'}</div>
+                <div class="stat-label">Runtime最大减少</div>
+            </div>
+            <div class="stat-item hover-card" data-top="memory_top" style="cursor:help;">
+                <div class="stat-value">${(summary.memory?.avg_change_pct || 0)}%</div>
+                <div class="stat-label">Memory平均变化</div>
+            </div>
+            <div class="stat-item hover-card" data-top="memory_max_inc" style="cursor:help;">
+                <div class="stat-value">${summary.memory?.max_increase_rule || 'N/A'}</div>
+                <div class="stat-label">Memory最大增加</div>
+            </div>
+            <div class="stat-item hover-card" data-top="memory_max_dec" style="cursor:help;">
+                <div class="stat-value">${summary.memory?.max_decrease_rule || 'N/A'}</div>
+                <div class="stat-label">Memory最大减少</div>
+            </div>
+        `;
+        summaryContainer.insertAdjacentHTML('beforeend', extraHtml);
+
+        // 创建 tooltip 元素
+        let tooltip = document.getElementById('compareMetricTooltip');
+        if (!tooltip) {
+            tooltip = document.createElement('div');
+            tooltip.id = 'compareMetricTooltip';
+            tooltip.style.position = 'fixed';
+            tooltip.style.zIndex = 2000;
+            tooltip.style.background = 'rgba(30,41,59,0.95)';
+            tooltip.style.color = '#fff';
+            tooltip.style.padding = '8px 10px';
+            tooltip.style.borderRadius = '6px';
+            tooltip.style.boxShadow = '0 4px 12px rgba(0,0,0,0.25)';
+            tooltip.style.fontSize = '12px';
+            tooltip.style.display = 'none';
+            tooltip.style.maxWidth = '320px';
+            tooltip.style.whiteSpace = 'pre-wrap';
+            document.body.appendChild(tooltip);
+        }
+
+        // 绑定 hover 事件
+        document.querySelectorAll('#compareSummary .hover-card').forEach(card => {
+            card.addEventListener('mouseenter', (e) => {
+                const key = card.getAttribute('data-top');
+                let text = '';
+                if (key === 'runtime_top') text = 'Runtime 按变化率排序前10:\n' + topByRuntime.join('\n');
+                else if (key === 'memory_top') text = 'Memory 按变化率排序前10:\n' + topByMemory.join('\n');
+                else if (key === 'runtime_max_inc') text = 'Runtime 最大增加: ' + (summary.runtime?.max_increase_rule || 'N/A') + ' (' + (summary.runtime?.max_increase_pct ? Number(summary.runtime.max_increase_pct).toFixed(2) + '%' : 'N/A') + ')';
+                else if (key === 'runtime_max_dec') text = 'Runtime 最大减少: ' + (summary.runtime?.max_decrease_rule || 'N/A') + ' (' + (summary.runtime?.max_decrease_pct ? Number(summary.runtime.max_decrease_pct).toFixed(2) + '%' : 'N/A') + ')';
+                else if (key === 'memory_max_inc') text = 'Memory 最大增加: ' + (summary.memory?.max_increase_rule || 'N/A') + ' (' + (summary.memory?.max_increase_pct ? Number(summary.memory.max_increase_pct).toFixed(2) + '%' : 'N/A') + ')';
+                else if (key === 'memory_max_dec') text = 'Memory 最大减少: ' + (summary.memory?.max_decrease_rule || 'N/A') + ' (' + (summary.memory?.max_decrease_pct ? Number(summary.memory.max_decrease_pct).toFixed(2) + '%' : 'N/A') + ')';
+
+                tooltip.textContent = text;
+                tooltip.style.left = (e.clientX + 12) + 'px';
+                tooltip.style.top = (e.clientY + 12) + 'px';
+                tooltip.style.display = 'block';
+            });
+            card.addEventListener('mousemove', (e) => {
+                const tooltip = document.getElementById('compareMetricTooltip');
+                if (tooltip.style.display !== 'none') {
+                    tooltip.style.left = (e.clientX + 12) + 'px';
+                    tooltip.style.top = (e.clientY + 12) + 'px';
+                }
+            });
+            card.addEventListener('mouseleave', () => {
+                const tooltip = document.getElementById('compareMetricTooltip');
+                tooltip.style.display = 'none';
+            });
+        });
     } else {
         // 单阶段对比
         document.getElementById('compareSummary').innerHTML = `
