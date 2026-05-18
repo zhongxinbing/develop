@@ -689,7 +689,7 @@ function displayCompareResult(result) {
     const summary = result.summary;
     
     if (isAllRules) {
-        // 显示全阶段对比汇总
+        // 显示全阶段对比汇总（格式化数值并展示更完整的列）
         document.getElementById('compareSummary').innerHTML = `
             <div class="stat-item"><div class="stat-value">${summary.total_rules || 0}</div><div class="stat-label">总阶段数</div></div>
             <div class="stat-item"><div class="stat-value">${summary.rules_with_data || 0}</div><div class="stat-label">有效数据</div></div>
@@ -698,22 +698,45 @@ function displayCompareResult(result) {
             <div class="stat-item"><div class="stat-value">${summary.memory?.total_increase || 0}</div><div class="stat-label">Memory增加</div></div>
             <div class="stat-item"><div class="stat-value">${summary.memory?.total_decrease || 0}</div><div class="stat-label">Memory减少</div></div>
         `;
-        
-        // 渲染表格
+
+        // 辅助格式化函数
+        const fmtNum = (v) => (v === null || v === undefined) ? 'N/A' : (typeof v === 'number' ? v : parseFloat(v)).toFixed ? (Number(v).toFixed(2)) : v;
+        const fmtPct = (v) => (v === null || v === undefined) ? 'N/A' : (Number(v).toFixed(2) + '%');
+        const statusText = (rule) => {
+            if (!rule.has_data) return '无数据';
+            if (rule.runtime_status === 'increase') return '⬆️ 增加';
+            if (rule.runtime_status === 'decrease') return '⬇️ 减少';
+            return '➖ 不变';
+        };
+
+        // 渲染更详细的表格，确保列与数据严格对应
         const thead = document.getElementById('compareTableHeader');
-        thead.innerHTML = `<tr><th>阶段名称</th><th>Runtime变化率(%)</th><th>Memory变化率(%)</th><th>状态</th></tr>`;
-        
+        thead.innerHTML = `<tr>
+                <th>阶段名称</th>
+                <th>Runtime(基准)</th>
+                <th>Runtime(对比)</th>
+                <th>Runtime差值</th>
+                <th>Runtime变化率(%)</th>
+                <th>Memory(基准)</th>
+                <th>Memory(对比)</th>
+                <th>Memory差值</th>
+                <th>Memory变化率(%)</th>
+                <th>状态</th>
+            </tr>`;
+
         const tbody = document.getElementById('compareTableBody');
         tbody.innerHTML = (result.rules_comparison || []).map(rule => `
             <tr>
                 <td>${rule.rule_name}</td>
-                <td class="${rule.runtime_change_pct > 0 ? 'status-increase' : (rule.runtime_change_pct < 0 ? 'status-decrease' : '')}">
-                    ${rule.runtime_change_pct !== null ? rule.runtime_change_pct.toFixed(2) + '%' : 'N/A'}
-                </td>
-                <td class="${rule.memory_change_pct > 0 ? 'status-increase' : (rule.memory_change_pct < 0 ? 'status-decrease' : '')}">
-                    ${rule.memory_change_pct !== null ? rule.memory_change_pct.toFixed(2) + '%' : 'N/A'}
-                </td>
-                <td>${rule.has_data ? (rule.runtime_status === 'increase' ? '⬆️ 增加' : (rule.runtime_status === 'decrease' ? '⬇️ 减少' : '➖ 不变')) : '无数据'}</td>
+                <td>${rule.runtime1 !== null && rule.runtime1 !== undefined ? Number(rule.runtime1).toFixed(2) : 'N/A'}</td>
+                <td>${rule.runtime2 !== null && rule.runtime2 !== undefined ? Number(rule.runtime2).toFixed(2) : 'N/A'}</td>
+                <td>${rule.runtime_diff !== null && rule.runtime_diff !== undefined ? Number(rule.runtime_diff).toFixed(2) : 'N/A'}</td>
+                <td class="${(rule.runtime_change_pct !== null && rule.runtime_change_pct !== undefined) ? (rule.runtime_change_pct > 0 ? 'status-increase' : (rule.runtime_change_pct < 0 ? 'status-decrease' : '')) : ''}">${fmtPct(rule.runtime_change_pct)}</td>
+                <td>${rule.memory1 !== null && rule.memory1 !== undefined ? Number(rule.memory1).toFixed(2) : 'N/A'}</td>
+                <td>${rule.memory2 !== null && rule.memory2 !== undefined ? Number(rule.memory2).toFixed(2) : 'N/A'}</td>
+                <td>${rule.memory_diff !== null && rule.memory_diff !== undefined ? Number(rule.memory_diff).toFixed(2) : 'N/A'}</td>
+                <td class="${(rule.memory_change_pct !== null && rule.memory_change_pct !== undefined) ? (rule.memory_change_pct > 0 ? 'status-increase' : (rule.memory_change_pct < 0 ? 'status-decrease' : '')) : ''}">${fmtPct(rule.memory_change_pct)}</td>
+                <td>${statusText(rule)}</td>
             </tr>
         `).join('');
     } else {
@@ -725,19 +748,18 @@ function displayCompareResult(result) {
             <div class="stat-item"><div class="stat-value">${summary.runtime_avg_change || 0}%</div><div class="stat-label">平均变化率</div></div>
         `;
         
+        const fmt = (v) => (v === null || v === undefined) ? 'N/A' : (Number(v).toFixed ? Number(v).toFixed(2) : v);
         const thead = document.getElementById('compareTableHeader');
         thead.innerHTML = `<tr><th>序号</th><th>日期</th><th>Runtime(基准)</th><th>Runtime(对比)</th><th>变化率(%)</th><th>状态</th></tr>`;
-        
+
         const tbody = document.getElementById('compareTableBody');
         tbody.innerHTML = (result.comparisons || []).map(comp => `
             <tr>
                 <td>${comp.index + 1}</td>
-                <td>${comp.date}</td>
-                <td>${comp.runtime1}</td>
-                <td>${comp.runtime2}</td>
-                <td class="${comp.runtime_change_pct > 0 ? 'status-increase' : (comp.runtime_change_pct < 0 ? 'status-decrease' : '')}">
-                    ${comp.runtime_change_pct}%
-                </td>
+                <td>${comp.date || 'N/A'}</td>
+                <td>${fmt(comp.runtime1)}</td>
+                <td>${fmt(comp.runtime2)}</td>
+                <td class="${(comp.runtime_change_pct !== null && comp.runtime_change_pct !== undefined) ? (comp.runtime_change_pct > 0 ? 'status-increase' : (comp.runtime_change_pct < 0 ? 'status-decrease' : '')) : ''}">${comp.runtime_change_pct !== null && comp.runtime_change_pct !== undefined ? Number(comp.runtime_change_pct).toFixed(2) + '%' : 'N/A'}</td>
                 <td>${comp.runtime_status === 'increase' ? '⬆️ 增加' : (comp.runtime_status === 'decrease' ? '⬇️ 减少' : '➖ 不变')}</td>
             </tr>
         `).join('');
@@ -1109,8 +1131,11 @@ async function init() {
         }
     } else if (initialMode === 'compare') {
         switchView('compare');
-        // 自动加载当前项目的对比日期和规则，避免用户需要切换一次项目才显示日期
-        if (currentProjectId) {
+        // 初始为 compare 视图时，从 compareCaseSelect 读取项目（优先），再加载日期和规则
+        const compareSelect = document.getElementById('compareCaseSelect');
+        const projId = compareSelect?.value || currentProjectId;
+        if (projId) {
+            currentProjectId = projId;
             await loadCompareDates(currentProjectId);
             await loadCompareRules(currentProjectId);
         }
