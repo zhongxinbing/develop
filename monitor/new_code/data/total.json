@@ -105,11 +105,56 @@
                         }
                     }
                 }
+            },
+            "20260509": {
+                "Analysis": {
+                    "thread_metrics": {
+                        "0": {
+                            "runtime": 1.66,
+                            "memory": 2.77,
+                            "cores": 0
+                        },
+                        "2": {
+                            "runtime": 1.2,
+                            "memory": 3.1,
+                            "cores": 2
+                        }
+                    }
+                },
+                "Elaborate": {
+                    "thread_metrics": {
+                        "0": {
+                            "runtime": 10.57,
+                            "memory": 10.69,
+                            "cores": 0
+                        },
+                        "4": {
+                            "runtime": 6.2,
+                            "memory": 12.5,
+                            "cores": 4
+                        }
+                    }
+                },
+                "DoUniquify": {
+                    "thread_metrics": {
+                        "0": {
+                            "runtime": 30,
+                            "memory": 21.11,
+                            "cores": 0
+                        },
+                        "8": {
+                            "runtime": 18.5,
+                            "memory": 25.0,
+                            "cores": 8
+                        }
+                    }
+                }
             }
         },
         "available_dates": [
             "20260507",
-            "20260508"
+            "20260508",
+            "20260509"
         ]
     },
     "MV": {
@@ -163,7 +208,8 @@
         },
         "available_dates": [
             "20260507",
-            "20260508"
+            "20260508",
+            "20260509"
         ]
     }
 }

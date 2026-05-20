@@ -8,9 +8,6 @@
 // 工具函数
 // ==================================================
 
-/**
- * 防抖函数
- */
 function debounce(func, wait) {
     let timeout;
     return function executedFunction(...args) {
@@ -23,9 +20,6 @@ function debounce(func, wait) {
     };
 }
 
-/**
- * 简单哈希函数（用于缓存比较）
- */
 function simpleHash(str) {
     let hash = 0;
     for (let i = 0; i < str.length; i++) {
@@ -36,9 +30,6 @@ function simpleHash(str) {
     return hash.toString();
 }
 
-/**
- * 显示通知消息
- */
 function showNotification(message, isError = false) {
     const notification = document.createElement('div');
     notification.className = `notification ${isError ? 'error' : 'success'}`;
@@ -58,9 +49,6 @@ function showNotification(message, isError = false) {
     setTimeout(() => notification.remove(), 3000);
 }
 
-/**
- * 显示/隐藏加载状态
- */
 function showLoading(show) {
     const overlay = document.getElementById('loadingOverlay');
     if (overlay) {
@@ -68,14 +56,10 @@ function showLoading(show) {
     }
 }
 
-/**
- * 更新最后更新时间显示
- */
 function updateLastUpdateTime() {
     const now = new Date();
     const timeStr = now.toLocaleString('zh-CN');
     document.getElementById('lastUpdateText').innerHTML = `最后更新: ${timeStr}`;
-    
     const statusDot = document.getElementById('statusDot');
     if (statusDot) {
         statusDot.classList.add('updating');
@@ -83,9 +67,6 @@ function updateLastUpdateTime() {
     }
 }
 
-/**
- * 构建MR更新日期映射
- */
 function buildMrUpdateMap(perfData) {
     const mrMap = {};
     if (perfData && perfData.cpu) {
@@ -96,23 +77,132 @@ function buildMrUpdateMap(perfData) {
             }
         });
     }
+    if (perfData && perfData.mem) {
+        Object.keys(perfData.mem).forEach(date => {
+            const comment = perfData.mem[date];
+            if (comment && comment !== 'undefined' && comment !== '' && comment !== 'None') {
+                if (!mrMap[date]) mrMap[date] = '';
+                mrMap[date] += (mrMap[date] ? ' | ' : '') + comment;
+            }
+        });
+    }
     return mrMap;
 }
+
+/**
+ * 格式化 tooltip 内容 - 显示前10个阶段及其变化率
+ * @param {Array} items - 阶段数据列表 [{rule, change_pct}]
+ * @param {string} title - 标题
+ * @returns {string} 格式化后的 HTML 字符串
+ */
+function formatTooltipListHtml(items, title) {
+    if (!items || items.length === 0) return title;
+    const top10 = items.slice(0, 10);
+    const itemsHtml = top10.map((item, i) => {
+        const changeColor = item.change_pct > 0 ? '#ef4444' : '#10b981';
+        const arrow = item.change_pct > 0 ? '⬆️' : '⬇️';
+        return `<div style="display: flex; justify-content: space-between; gap: 20px; padding: 4px 0;">
+                    <span style="color: #94a3b8;">${i+1}. ${item.rule}</span>
+                    <span style="color: ${changeColor}; font-weight: 600;">${arrow} ${Math.abs(item.change_pct).toFixed(2)}%</span>
+                </div>`;
+    }).join('');
+    
+    return `<div style="min-width: 280px;">
+                <div style="font-weight: 600; margin-bottom: 8px; padding-bottom: 6px; border-bottom: 1px solid #334155;">📊 ${title}</div>
+                ${itemsHtml}
+                ${items.length > 10 ? `<div style="margin-top: 6px; padding-top: 4px; border-top: 1px solid #334155; color: #64748b; font-size: 11px;">... 共 ${items.length} 项，仅显示前10</div>` : ''}
+            </div>`;
+}
+
+/**
+ * 为统计卡片添加 tooltip 功能
+ * @param {HTMLElement} element - 卡片元素
+ * @param {string} tooltipHtml - tooltip HTML 内容
+ */
+function addStatCardTooltip(element, tooltipHtml) {
+    if (!element) return;
+    
+    element.removeEventListener('mouseenter', element._tooltipHandler);
+    element.removeEventListener('mouseleave', element._tooltipHandlerLeave);
+    
+    let tooltipEl = null;
+    
+    const showTooltip = (e) => {
+        tooltipEl = document.createElement('div');
+        tooltipEl.className = 'stat-card-tooltip';
+        tooltipEl.innerHTML = tooltipHtml;
+        tooltipEl.style.cssText = `
+            position: fixed;
+            background: #1e293b;
+            border: 1px solid #6366f1;
+            border-radius: 8px;
+            padding: 10px 14px;
+            font-size: 12px;
+            color: #f1f5f9;
+            z-index: 10000;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5), 0 0 20px rgba(99, 102, 241, 0.3);
+            backdrop-filter: blur(4px);
+            max-width: 350px;
+            pointer-events: none;
+            font-family: monospace;
+            line-height: 1.5;
+        `;
+        document.body.appendChild(tooltipEl);
+        
+        const rect = element.getBoundingClientRect();
+        let left = rect.right + 10;
+        let top = rect.top;
+        
+        if (left + 350 > window.innerWidth) {
+            left = rect.left - 360;
+        }
+        if (top + 300 > window.innerHeight) {
+            top = window.innerHeight - 310;
+        }
+        if (top < 0) top = 10;
+        
+        tooltipEl.style.left = left + 'px';
+        tooltipEl.style.top = top + 'px';
+        tooltipEl.style.animation = 'tooltipFadeIn 0.15s ease-out';
+    };
+    
+    const hideTooltip = () => {
+        if (tooltipEl) {
+            tooltipEl.remove();
+            tooltipEl = null;
+        }
+    };
+    
+    element._tooltipHandler = showTooltip;
+    element._tooltipHandlerLeave = hideTooltip;
+    
+    element.addEventListener('mouseenter', showTooltip);
+    element.addEventListener('mouseleave', hideTooltip);
+}
+
+const tooltipStyle = document.createElement('style');
+tooltipStyle.textContent = `
+    @keyframes tooltipFadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(-5px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+`;
+document.head.appendChild(tooltipStyle);
 
 // ==================================================
 // 时序曲线图模块
 // ==================================================
 
-/**
- * 获取当前选中的项目数据
- */
 function getCurrentProjectData() {
     return projectsData[currentProjectId];
 }
 
-/**
- * 更新阶段选择器
- */
 function updateRuleSelect() {
     const projectData = getCurrentProjectData();
     if (!projectData) return;
@@ -151,9 +241,6 @@ function updateRuleSelect() {
     }
 }
 
-/**
- * 更新日期选择信息
- */
 function updateDateSelectionInfo() {
     const projectData = getCurrentProjectData();
     if (!projectData) return;
@@ -174,9 +261,6 @@ function updateDateSelectionInfo() {
     }
 }
 
-/**
- * 更新曲线类型按钮状态并显示对应图表
- */
 function updateChartTypeButtons() {
     document.querySelectorAll('.chart-type-btn').forEach(btn => {
         const type = btn.dataset.type;
@@ -203,9 +287,6 @@ function updateChartTypeButtons() {
     }
 }
 
-/**
- * 选择曲线类型并刷新图表
- */
 function selectChartType(type) {
     currentChartType = type;
     updateChartTypeButtons();
@@ -213,10 +294,15 @@ function selectChartType(type) {
 }
 
 /**
- * 获取过滤后的工具数据
+ * 过滤工具数据 - 只保留选中的日期
+ * 关键修复：确保日期和对应的数据值一一对应，且过滤后顺序正确
  */
 function getFilteredToolData(toolData) {
+    if (!toolData || !toolData.dates) return null;
+    
+    // 使用 Map 提高查找效率
     const filterSet = new Set(selectedDates);
+    
     const filtered = {
         dates: [],
         runtimes: [],
@@ -224,21 +310,19 @@ function getFilteredToolData(toolData) {
         cores: []
     };
     
+    // 按日期顺序遍历原始数据
     toolData.dates.forEach((date, index) => {
         if (filterSet.has(date)) {
             filtered.dates.push(date);
-            filtered.runtimes.push(toolData.runtimes[index]);
-            filtered.memories.push(toolData.memories[index]);
-            filtered.cores.push(toolData.cores[index]);
+            filtered.runtimes.push(toolData.runtimes?.[index] ?? null);
+            filtered.memories.push(toolData.memories?.[index] ?? null);
+            filtered.cores.push(toolData.cores?.[index] ?? null);
         }
     });
     
     return filtered;
 }
 
-/**
- * 获取当前工具数据（带缓存）
- */
 function getCurrentToolData() {
     if (!currentRule) return null;
     
@@ -258,8 +342,24 @@ function getCurrentToolData() {
 }
 
 /**
- * 更新统计信息
+ * 检查某个日期是否有MR更新（用于数据点高亮）
+ * @param {string} date - 日期字符串
+ * @returns {boolean} 是否有MR更新
  */
+function hasMrUpdate(date) {
+    const comment = mrUpdateDates[date];
+    return comment && comment !== 'undefined' && comment !== '' && comment !== 'None';
+}
+
+/**
+ * 获取MR更新的注释文本
+ * @param {string} date - 日期字符串
+ * @returns {string} MR更新注释
+ */
+function getMrComment(date) {
+    return mrUpdateDates[date] || '';
+}
+
 function updateStats(containerId, data, unit, label) {
     const validData = data.filter(v => v !== null && v !== undefined && v > 0);
     if (validData.length === 0) {
@@ -280,9 +380,6 @@ function updateStats(containerId, data, unit, label) {
     `;
 }
 
-/**
- * 处理图例选择变化事件
- */
 function handleLegendSelectionChanged(params) {
     const newSelectedThreads = [];
     Object.entries(params.selected).forEach(([name, isSelected]) => {
@@ -298,9 +395,6 @@ function handleLegendSelectionChanged(params) {
     selectedThreads = newSelectedThreads;
 }
 
-/**
- * 全选所有线程
- */
 function selectAllThreads() {
     const chart = charts[currentChartType];
     if (chart) {
@@ -311,7 +405,6 @@ function selectAllThreads() {
             newSelected[name] = true;
         });
         chart.setOption({ legend: { selected: newSelected } });
-        // 同步更新 selectedThreads
         selectedThreads = legendData.map(name => {
             if (name === 'e线程0') return '0';
             if (name.startsWith('其他线程')) return name.replace('其他线程', '');
@@ -321,9 +414,6 @@ function selectAllThreads() {
     }
 }
 
-/**
- * 反选所有线程
- */
 function inverseSelectThreads() {
     const chart = charts[currentChartType];
     if (chart) {
@@ -345,7 +435,11 @@ function inverseSelectThreads() {
 }
 
 /**
- * 渲染时序曲线图
+ * 渲染时序曲线图 - 核心函数
+ * MR更新日期的数据点会标红显示
+ * 
+ * 关键修复：当日期范围选择后，最后一个数据点之后不再画线
+ * 通过使用 connectNulls: false 并确保没有后续数据点来实现
  */
 function renderTimelineChart(chartType, dataKey, color, yAxisName, yAxisFormatter = null) {
     const toolData = getCurrentToolData();
@@ -354,10 +448,15 @@ function renderTimelineChart(chartType, dataKey, color, yAxisName, yAxisFormatte
         return;
     }
     
+    // 获取过滤后的数据（只包含选中的日期）
     const filteredData = getFilteredToolData(toolData);
+    if (!filteredData || filteredData.dates.length === 0) {
+        if (charts[chartType]) charts[chartType].clear();
+        return;
+    }
+    
     const dates = filteredData.dates;
     
-    // 获取多线程数据
     const threadMetrics = toolData.thread_metrics || {};
     if (!threadMetrics['0'] && filteredData.runtimes?.length) {
         threadMetrics['0'] = {
@@ -372,38 +471,58 @@ function renderTimelineChart(chartType, dataKey, color, yAxisName, yAxisFormatte
     // 构建系列数据
     const seriesList = threadIds.map((threadId, index) => {
         const threadInfo = threadMetrics[threadId];
-        const values = threadInfo?.[dataKey] || new Array(dates.length).fill(null);
+        // 获取当前线程在该指标下的值数组
+        let values = threadInfo?.[dataKey] || [];
+        
+        // 重要：需要根据选中的日期重新映射值
+        // 因为 threadInfo 中的值是按原始日期顺序的
+        const mappedValues = [];
+        const originalDates = toolData.dates || [];
+        
+        dates.forEach(selectedDate => {
+            const dateIndex = originalDates.indexOf(selectedDate);
+            if (dateIndex !== -1 && values[dateIndex] !== undefined) {
+                mappedValues.push(values[dateIndex]);
+            } else {
+                mappedValues.push(null);
+            }
+        });
+        
         const palette = ['#6366f1', '#f59e0b', '#10b981', '#ef4444', '#06b6d4', '#8b5cf6', '#ec4899', '#84cc16'];
         const seriesColor = palette[index % palette.length];
         const threadLabel = threadId === '0' ? 'e线程0' : `其他线程${threadId}`;
+        
+        // 构建数据点，包含MR更新高亮
+        const seriesData = mappedValues.map((value, idx) => {
+            const date = dates[idx];
+            const hasMr = hasMrUpdate(date);
+            return {
+                value: value,
+                itemStyle: hasMr ? {
+                    color: '#ef4444',
+                    borderColor: '#ffffff',
+                    borderWidth: 2
+                } : undefined,
+                symbol: 'circle',
+                symbolSize: hasMr ? 10 : 6
+            };
+        });
         
         return {
             threadId,
             name: threadLabel,
             type: 'line',
-            data: values.map((value, idx) => {
-                const date = dates[idx];
-                const hasMrUpdate = mrUpdateDates[date] && mrUpdateDates[date] !== 'undefined';
-                return {
-                    value: value,
-                    itemStyle: hasMrUpdate ? {
-                        color: '#ef4444',
-                        borderColor: '#fff',
-                        borderWidth: 2
-                    } : undefined,
-                    symbol: 'circle',
-                    symbolSize: hasMrUpdate ? 10 : 6
-                };
-            }),
+            data: seriesData,
             smooth: false,
             lineStyle: { width: 2, color: seriesColor },
             areaStyle: { opacity: 0.08, color: seriesColor },
-            connectNulls: false,
-            showSymbol: false
+            connectNulls: false,  // 关键：不连接空值，确保最后一个有效数据点后断开
+            showSymbol: true,
+            step: false
         };
     });
     
-    // 计算统计数据
+    // 计算统计值（只使用有效数据）
     const allValues = seriesList
         .flatMap(series => series.data.map(item => item.value))
         .filter(v => v !== null && v !== undefined && v > 0);
@@ -414,18 +533,28 @@ function renderTimelineChart(chartType, dataKey, color, yAxisName, yAxisFormatte
         updateStats('stats-main', allValues, unit, label);
     }
     
-    // 计算平均值
     const avgValue = allValues.length > 0 ? (allValues.reduce((a, b) => a + b, 0) / allValues.length).toFixed(1) : 0;
     
-    // 构建图例选择的默认状态 - 默认只显示线程0
+    // 图例默认选中状态
     const legendSelected = {};
     threadIds.forEach(threadId => {
         const seriesName = threadId === '0' ? 'e线程0' : `其他线程${threadId}`;
         legendSelected[seriesName] = (threadId === '0');
     });
     
-    // 更新 selectedThreads 变量
     selectedThreads = threadIds.filter(threadId => legendSelected[threadId === '0' ? 'e线程0' : `其他线程${threadId}`]);
+    
+    // 构建tooltip显示MR更新信息
+    const tooltipFormatter = function(params) {
+        if (!params?.length) return '';
+        const date = params[0].axisValue;
+        const rows = params.map(p => `<div>${p.seriesName}: ${p.value} ${unit}</div>`).join('');
+        const mrComment = getMrComment(date);
+        const hasMr = mrComment !== '';
+        const mrStyle = hasMr ? 'color: #ef4444; font-weight: bold;' : 'color: #94a3b8;';
+        const mrIcon = hasMr ? '🔴' : '⚪';
+        return `<strong>📅 ${date}</strong>${rows}<div style="margin-top: 6px; padding-top: 4px; border-top: 1px solid #334155;"><span style="${mrStyle}">${mrIcon} ${hasMr ? mrComment : '无MR更新'}</span></div>`;
+    };
     
     const option = {
         backgroundColor: 'transparent',
@@ -435,21 +564,16 @@ function renderTimelineChart(chartType, dataKey, color, yAxisName, yAxisFormatte
             borderColor: color,
             borderWidth: 1,
             textStyle: { color: '#f1f5f9', fontSize: 12 },
-            formatter: function(params) {
-                if (!params?.length) return '';
-                const date = params[0].axisValue;
-                const rows = params.map(p => `<div>${p.seriesName}: ${p.value} ${unit}</div>`).join('');
-                const mrComment = mrUpdateDates[date] || '';
-                const mrStyle = mrComment ? 'color: #ef4444;' : 'color: #94a3b8;';
-                return `<strong>📅 ${date}</strong>${rows}<span style="${mrStyle}">🔧 ${mrComment || '无MR更新'}</span>`;
-            }
+            formatter: tooltipFormatter
         },
         grid: { left: '8%', right: '8%', top: '18%', bottom: '10%', containLabel: true },
         xAxis: {
             type: 'category',
             data: dates,
             axisLabel: { rotate: dates.length > 10 ? 30 : 0, color: '#94a3b8', fontSize: 11 },
-            axisLine: { lineStyle: { color: '#475569' } }
+            axisLine: { lineStyle: { color: '#475569' } },
+            // 确保X轴只显示选中的日期
+            boundaryGap: false
         },
         yAxis: {
             type: 'value',
@@ -466,7 +590,8 @@ function renderTimelineChart(chartType, dataKey, color, yAxisName, yAxisFormatte
                 data: new Array(dates.length).fill(parseFloat(avgValue)),
                 lineStyle: { width: 1.5, color: '#f59e0b', type: 'dashed' },
                 symbol: 'none',
-                tooltip: { show: false }
+                tooltip: { show: false },
+                connectNulls: false
             }
         ],
         legend: {
@@ -497,9 +622,6 @@ function renderTimelineChart(chartType, dataKey, color, yAxisName, yAxisFormatte
     }
 }
 
-/**
- * 刷新所有时序图表
- */
 function refreshTimelineCharts() {
     if (!currentRule) return;
     
@@ -510,15 +632,11 @@ function refreshTimelineCharts() {
     });
     updateChartTypeButtons();
     
-    // 图表重新渲染后，重新添加控制按钮
     setTimeout(() => {
         addControlButtonsToLegend();
     }, 100);
 }
 
-/**
- * 更新项目统计
- */
 function updateProjectStats() {
     const projectData = getCurrentProjectData();
     if (!projectData) return;
@@ -531,18 +649,12 @@ function updateProjectStats() {
     `;
 }
 
-/**
- * 将控制按钮添加到图例区域
- */
 function addControlButtonsToLegend() {
-    // 查找 ECharts 图例容器
     const legendContainer = document.querySelector('.chart-container .echarts-legend');
     if (!legendContainer) return;
     
-    // 检查是否已存在按钮
     if (document.getElementById('legendControlButtons')) return;
     
-    // 创建按钮容器
     const buttonContainer = document.createElement('div');
     buttonContainer.id = 'legendControlButtons';
     buttonContainer.style.cssText = `
@@ -552,7 +664,6 @@ function addControlButtonsToLegend() {
         vertical-align: middle;
     `;
     
-    // 全选按钮
     const selectAllBtn = document.createElement('button');
     selectAllBtn.textContent = '☑ 全选';
     selectAllBtn.style.cssText = `
@@ -579,7 +690,6 @@ function addControlButtonsToLegend() {
         selectAllThreads();
     };
     
-    // 反选按钮
     const inverseBtn = document.createElement('button');
     inverseBtn.textContent = '🔄 反选';
     inverseBtn.style.cssText = `
@@ -609,15 +719,10 @@ function addControlButtonsToLegend() {
     buttonContainer.appendChild(selectAllBtn);
     buttonContainer.appendChild(inverseBtn);
     
-    // 将按钮添加到图例容器
     legendContainer.appendChild(buttonContainer);
 }
 
-/**
- * 监听图表渲染完成，添加控制按钮
- */
 function observeChartRendering() {
-    // 使用 MutationObserver 监听图表容器变化
     const runtimeChart = document.getElementById('chart-runtime');
     if (runtimeChart) {
         const observer = new MutationObserver(() => {
@@ -639,9 +744,8 @@ function observeChartRendering() {
 // 多线程对比模块
 // ==================================================
 
-/**
- * 加载多线程阶段的规则列表
- */
+let currentMultiChartType = 'runtime';
+
 async function loadMultiRules(projectId) {
     try {
         const response = await fetch(`/api/project/${projectId}`);
@@ -651,15 +755,20 @@ async function loadMultiRules(projectId) {
         if (data?.rules?.length) {
             ruleSelect.innerHTML = '<option value="">-- 请选择阶段 --</option>' + 
                 data.rules.map(rule => `<option value="${rule}">${rule}</option>`).join('');
+            
+            // 自动选择第一个规则
+            if (data.rules.length > 0 && !currentMultiRule) {
+                const firstRule = data.rules[0];
+                ruleSelect.value = firstRule;
+                currentMultiRule = firstRule;
+                loadMultiDates(projectId, firstRule);
+            }
         }
     } catch (error) {
         console.error('加载规则失败:', error);
     }
 }
 
-/**
- * 加载多线程日期列表
- */
 async function loadMultiDates(projectId, ruleName) {
     if (!ruleName) return;
     
@@ -680,9 +789,6 @@ async function loadMultiDates(projectId, ruleName) {
     }
 }
 
-/**
- * 加载多线程数据
- */
 async function loadMultiThreadData(projectId, ruleName, date) {
     showLoading(true);
     
@@ -707,38 +813,49 @@ async function loadMultiThreadData(projectId, ruleName, date) {
     }
 }
 
-/**
- * 渲染多线程图表
- */
 function renderMultiThreadCharts(threadsData) {
     const threads = threadsData.map(d => d.threads);
     const runtimes = threadsData.map(d => d.runtime);
     const memories = threadsData.map(d => d.memory);
     
-    // Runtime 图表
-    if (charts.multiRuntime) {
-        charts.multiRuntime.setOption({
-            tooltip: { trigger: 'axis', formatter: (params) => `${params[0].axisValue} 线程: ${params[0].value} 秒` },
-            xAxis: { type: 'category', name: '线程数', data: threads },
-            yAxis: { type: 'value', name: 'Runtime (秒)' },
-            series: [{ type: 'line', data: runtimes, smooth: true, lineStyle: { width: 3, color: '#6366f1' }, symbolSize: 8 }]
-        });
-    }
+    const commonOption = {
+        tooltip: { 
+            trigger: 'axis', 
+            formatter: (params) => {
+                if (!params?.length) return '';
+                const unit = currentMultiChartType === 'runtime' ? '秒' : 'MB';
+                return `${params[0].axisValue} 线程: ${params[0].value} ${unit}`;
+            }
+        },
+        xAxis: { type: 'category', name: '线程数', data: threads },
+        yAxis: { 
+            type: 'value', 
+            name: currentMultiChartType === 'runtime' ? 'Runtime (秒)' : 'Memory (MB)',
+            axisLabel: currentMultiChartType === 'memory' ? 
+                { formatter: (value) => value >= 1024 ? (value / 1024).toFixed(1) + ' GB' : value + ' MB' } : 
+                undefined
+        },
+        series: [{ 
+            type: 'line', 
+            data: currentMultiChartType === 'runtime' ? runtimes : memories,
+            smooth: true, 
+            lineStyle: { width: 3, color: currentMultiChartType === 'runtime' ? '#6366f1' : '#10b981' }, 
+            symbolSize: 8,
+            areaStyle: { opacity: 0.1, color: currentMultiChartType === 'runtime' ? '#6366f1' : '#10b981' },
+            connectNulls: false
+        }],
+        grid: { top: 50, bottom: 30, left: 60, right: 40 }
+    };
     
-    // Memory 图表
-    if (charts.multiMemory) {
-        charts.multiMemory.setOption({
-            tooltip: { trigger: 'axis', formatter: (params) => `${params[0].axisValue} 线程: ${params[0].value} MB` },
-            xAxis: { type: 'category', name: '线程数', data: threads },
-            yAxis: { type: 'value', name: 'Memory (MB)' },
-            series: [{ type: 'line', data: memories, smooth: true, lineStyle: { width: 3, color: '#10b981' }, symbolSize: 8 }]
-        });
+    if (currentMultiChartType === 'runtime' && charts.multiRuntime) {
+        charts.multiRuntime.setOption(commonOption);
+        charts.multiRuntime.resize();
+    } else if (currentMultiChartType !== 'runtime' && charts.multiMemory) {
+        charts.multiMemory.setOption(commonOption);
+        charts.multiMemory.resize();
     }
 }
 
-/**
- * 更新多线程统计
- */
 function updateMultiStats(threadsData) {
     const runtimes = threadsData.map(d => d.runtime).filter(v => v !== null);
     const memories = threadsData.map(d => d.memory).filter(v => v !== null);
@@ -753,15 +870,97 @@ function updateMultiStats(threadsData) {
     `;
 }
 
+/**
+ * 为多线程对比添加切换按钮（与时序曲线图一致）
+ */
+function addMultiChartToggleButtons() {
+    const multiView = document.getElementById('multithreadView');
+    if (!multiView) return;
+    
+    if (document.getElementById('multiChartToggleButtons')) return;
+    
+    // 查找图表卡片
+    const chartCard = multiView.querySelector('.multi-chart-card');
+    if (!chartCard) return;
+    
+    // 创建按钮容器
+    const buttonContainer = document.createElement('div');
+    buttonContainer.id = 'multiChartToggleButtons';
+    buttonContainer.className = 'chart-type-buttons';
+    buttonContainer.style.cssText = 'display: flex; gap: 0.5rem; margin-bottom: 1rem;';
+    
+    buttonContainer.innerHTML = `
+        <button id="multiChartRuntimeBtn" class="btn btn-primary chart-type-btn" data-type="runtime">⏱️ Runtime</button>
+        <button id="multiChartMemoryBtn" class="btn btn-secondary chart-type-btn" data-type="memory">💾 Memory</button>
+    `;
+    
+    // 插入到卡片头部之后
+    const cardHeader = chartCard.querySelector('.card-header');
+    if (cardHeader) {
+        cardHeader.insertAdjacentElement('afterend', buttonContainer);
+    } else {
+        chartCard.prepend(buttonContainer);
+    }
+    
+    // 绑定事件
+    const runtimeBtn = document.getElementById('multiChartRuntimeBtn');
+    const memoryBtn = document.getElementById('multiChartMemoryBtn');
+    
+    if (runtimeBtn) {
+        runtimeBtn.addEventListener('click', () => {
+            currentMultiChartType = 'runtime';
+            updateMultiChartTypeButtons();
+            if (currentMultiRule && currentMultiDate) {
+                loadMultiThreadData(currentProjectId, currentMultiRule, currentMultiDate);
+            }
+        });
+    }
+    
+    if (memoryBtn) {
+        memoryBtn.addEventListener('click', () => {
+            currentMultiChartType = 'memory';
+            updateMultiChartTypeButtons();
+            if (currentMultiRule && currentMultiDate) {
+                loadMultiThreadData(currentProjectId, currentMultiRule, currentMultiDate);
+            }
+        });
+    }
+}
+
+function updateMultiChartTypeButtons() {
+    const runtimeBtn = document.getElementById('multiChartRuntimeBtn');
+    const memoryBtn = document.getElementById('multiChartMemoryBtn');
+    
+    if (runtimeBtn) {
+        runtimeBtn.classList.toggle('btn-primary', currentMultiChartType === 'runtime');
+        runtimeBtn.classList.toggle('btn-secondary', currentMultiChartType !== 'runtime');
+    }
+    if (memoryBtn) {
+        memoryBtn.classList.toggle('btn-primary', currentMultiChartType === 'memory');
+        memoryBtn.classList.toggle('btn-secondary', currentMultiChartType !== 'memory');
+    }
+    
+    const runtimeContainer = document.getElementById('multi-runtime-container');
+    const memoryContainer = document.getElementById('multi-memory-container');
+    
+    if (runtimeContainer && memoryContainer) {
+        runtimeContainer.style.display = currentMultiChartType === 'runtime' ? 'block' : 'none';
+        memoryContainer.style.display = currentMultiChartType === 'memory' ? 'block' : 'none';
+    }
+    
+    const titleEl = document.getElementById('multiChartCardTitle');
+    if (titleEl) {
+        titleEl.innerText = currentMultiChartType === 'runtime' ? '⏱️ Runtime 性能曲线' : '💾 Memory 使用曲线';
+    }
+}
+
 // ==================================================
 // 数据对比模块
 // ==================================================
 
 let currentCompareResult = null;
+let currentFilteredData = [];
 
-/**
- * 加载对比页面的日期列表
- */
 async function loadCompareDates(projectId) {
     try {
         const response = await fetch('/api/get_dates', {
@@ -783,7 +982,6 @@ async function loadCompareDates(projectId) {
                 date2Select.appendChild(new Option(date, date));
             });
             
-            // 默认选择最近两天
             if (data.dates.length >= 2) {
                 date1Select.value = data.dates[data.dates.length - 2];
                 date2Select.value = data.dates[data.dates.length - 1];
@@ -794,9 +992,6 @@ async function loadCompareDates(projectId) {
     }
 }
 
-/**
- * 加载对比页面的规则列表
- */
 async function loadCompareRules(projectId) {
     try {
         const response = await fetch(`/api/project/${projectId}`);
@@ -813,8 +1008,27 @@ async function loadCompareRules(projectId) {
 }
 
 /**
- * 执行数据对比
+ * 构建排序列表用于 tooltip
+ * @param {Array} rulesComparison - 对比结果数组
+ * @param {string} type - 'runtime' 或 'memory'
+ * @param {boolean} isIncrease - true: 增加, false: 减少
+ * @returns {Array} 排序后的列表 [{rule, change_pct}]
  */
+function buildSortedList(rulesComparison, type, isIncrease) {
+    if (!rulesComparison || rulesComparison.length === 0) return [];
+    
+    const list = rulesComparison
+        .filter(r => r.has_data && r[`${type}_change_pct`] !== null)
+        .filter(r => isIncrease ? r[`${type}_change_pct`] > 0 : r[`${type}_change_pct`] < 0)
+        .map(r => ({
+            rule: r.rule_name,
+            change_pct: isIncrease ? r[`${type}_change_pct`] : Math.abs(r[`${type}_change_pct`])
+        }))
+        .sort((a, b) => b.change_pct - a.change_pct);
+    
+    return list;
+}
+
 async function executeCompare() {
     const projectId = document.getElementById('compareCaseSelect').value;
     const compareMode = document.getElementById('compareModeSelect').value;
@@ -871,8 +1085,183 @@ async function executeCompare() {
 }
 
 /**
- * 显示对比结果
+ * 为对比表格添加筛选输入框
  */
+function addTableFilter() {
+    const compareResultArea = document.getElementById('compareResultArea');
+    if (!compareResultArea) return;
+    
+    if (document.getElementById('tableFilterInput')) return;
+    
+    const tableContainer = compareResultArea.querySelector('.table-container');
+    if (!tableContainer) return;
+    
+    const filterBar = document.createElement('div');
+    filterBar.className = 'table-filter-bar';
+    filterBar.style.cssText = `
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1rem;
+        padding: 0.75rem 1rem;
+        background: rgba(15, 23, 42, 0.6);
+        border-radius: var(--radius-lg);
+        flex-wrap: wrap;
+    `;
+    
+    filterBar.innerHTML = `
+        <div style="display: flex; align-items: center; gap: 0.5rem;">
+            <span>🔍</span>
+            <input type="text" id="tableFilterInput" placeholder="筛选阶段名称..." 
+                   style="width: 250px; padding: 0.5rem 0.75rem; background: rgba(0,0,0,0.3); border: 1px solid var(--border); border-radius: var(--radius-md); color: var(--text-primary);">
+        </div>
+        <div style="display: flex; align-items: center; gap: 0.5rem;">
+            <span>📊 显示:</span>
+            <select id="filterStatusSelect" style="padding: 0.5rem 0.75rem; background: rgba(0,0,0,0.3); border: 1px solid var(--border); border-radius: var(--radius-md); color: var(--text-primary);">
+                <option value="all">全部阶段</option>
+                <option value="increase">仅显示增加</option>
+                <option value="decrease">仅显示减少</option>
+                <option value="no_data">仅显示无数据</option>
+            </select>
+        </div>
+        <div style="display: flex; align-items: center; gap: 0.5rem;">
+            <span>📈 排序:</span>
+            <select id="filterSortSelect" style="padding: 0.5rem 0.75rem; background: rgba(0,0,0,0.3); border: 1px solid var(--border); border-radius: var(--radius-md); color: var(--text-primary);">
+                <option value="none">无排序</option>
+                <option value="runtime_inc">Runtime 增加最多</option>
+                <option value="runtime_dec">Runtime 减少最多</option>
+                <option value="memory_inc">Memory 增加最多</option>
+                <option value="memory_dec">Memory 减少最多</option>
+            </select>
+        </div>
+        <button id="clearTableFilterBtn" class="btn btn-secondary" style="padding: 0.5rem 1rem;">清除筛选</button>
+        <span id="filterResultCount" style="color: var(--text-muted); font-size: 0.75rem;">共 0 条</span>
+    `;
+    
+    tableContainer.parentNode.insertBefore(filterBar, tableContainer);
+    
+    const filterInput = document.getElementById('tableFilterInput');
+    const statusSelect = document.getElementById('filterStatusSelect');
+    const sortSelect = document.getElementById('filterSortSelect');
+    const clearBtn = document.getElementById('clearTableFilterBtn');
+    
+    if (filterInput) {
+        filterInput.addEventListener('input', debounce(() => {
+            currentFilterText = filterInput.value;
+            applyTableFilter();
+        }, 300));
+    }
+    
+    if (statusSelect) {
+        statusSelect.addEventListener('change', () => {
+            applyTableFilter();
+        });
+    }
+    
+    if (sortSelect) {
+        sortSelect.addEventListener('change', () => {
+            applyTableFilter();
+        });
+    }
+    
+    if (clearBtn) {
+        clearBtn.addEventListener('click', () => {
+            if (filterInput) filterInput.value = '';
+            if (statusSelect) statusSelect.value = 'all';
+            if (sortSelect) sortSelect.value = 'none';
+            currentFilterText = '';
+            applyTableFilter();
+        });
+    }
+}
+
+let currentFilterText = '';
+
+/**
+ * 应用表格筛选
+ */
+function applyTableFilter() {
+    if (!currentFilteredData.length) return;
+    
+    const filterText = currentFilterText.toLowerCase();
+    const statusFilter = document.getElementById('filterStatusSelect')?.value || 'all';
+    const sortBy = document.getElementById('filterSortSelect')?.value || 'none';
+    
+    let filtered = [...currentFilteredData];
+    
+    if (filterText) {
+        filtered = filtered.filter(rule => 
+            rule.rule_name && rule.rule_name.toLowerCase().includes(filterText)
+        );
+    }
+    
+    if (statusFilter !== 'all') {
+        filtered = filtered.filter(rule => {
+            if (statusFilter === 'increase') {
+                return rule.runtime_change_pct > 0;
+            } else if (statusFilter === 'decrease') {
+                return rule.runtime_change_pct < 0;
+            } else if (statusFilter === 'no_data') {
+                return !rule.has_data;
+            }
+            return true;
+        });
+    }
+    
+    if (sortBy !== 'none') {
+        filtered.sort((a, b) => {
+            switch (sortBy) {
+                case 'runtime_inc':
+                    return (b.runtime_change_pct || -Infinity) - (a.runtime_change_pct || -Infinity);
+                case 'runtime_dec':
+                    return (a.runtime_change_pct || Infinity) - (b.runtime_change_pct || Infinity);
+                case 'memory_inc':
+                    return (b.memory_change_pct || -Infinity) - (a.memory_change_pct || -Infinity);
+                case 'memory_dec':
+                    return (a.memory_change_pct || Infinity) - (b.memory_change_pct || Infinity);
+                default:
+                    return 0;
+            }
+        });
+    }
+    
+    renderFilteredTable(filtered);
+    
+    const countSpan = document.getElementById('filterResultCount');
+    if (countSpan) {
+        countSpan.textContent = `共 ${filtered.length} 条`;
+    }
+}
+
+/**
+ * 渲染筛选后的表格
+ */
+function renderFilteredTable(filteredData) {
+    const tbody = document.getElementById('compareTableBody');
+    if (!tbody) return;
+    
+    tbody.innerHTML = filteredData.map(rule => {
+        const statusText = () => {
+            if (!rule.has_data) return '无数据';
+            if (rule.runtime_status === 'increase') return '⬆️ 增加';
+            if (rule.runtime_status === 'decrease') return '⬇️ 减少';
+            return '➖ 不变';
+        };
+        return `<tr>
+            <td style="text-align:left; font-weight:500;">${rule.rule_name}</td>
+            <td>${rule.runtime1 !== null ? rule.runtime1.toFixed(2) : 'N/A'}</td>
+            <td>${rule.runtime2 !== null ? rule.runtime2.toFixed(2) : 'N/A'}</td>
+            <td>${rule.runtime_diff !== null ? rule.runtime_diff.toFixed(2) : 'N/A'}</td>
+            <td class="${rule.runtime_change_pct > 0 ? 'status-increase' : (rule.runtime_change_pct < 0 ? 'status-decrease' : '')}">${rule.runtime_change_pct !== null ? rule.runtime_change_pct.toFixed(2) + '%' : 'N/A'}</td>
+            <td>${rule.memory1 !== null ? rule.memory1.toFixed(2) : 'N/A'}</td>
+            <td>${rule.memory2 !== null ? rule.memory2.toFixed(2) : 'N/A'}</td>
+            <td>${rule.memory_diff !== null ? rule.memory_diff.toFixed(2) : 'N/A'}</td>
+            <td class="${rule.memory_change_pct > 0 ? 'status-increase' : (rule.memory_change_pct < 0 ? 'status-decrease' : '')}">${rule.memory_change_pct !== null ? rule.memory_change_pct.toFixed(2) + '%' : 'N/A'}</td>
+            <td>${statusText()}</td>
+        </tr>`;
+    }).join('');
+}
+
 function displayCompareResult(result) {
     const isAllRules = result.mode === 'all_rules';
     document.getElementById('compareResultTitle').innerHTML = 
@@ -881,14 +1270,85 @@ function displayCompareResult(result) {
     const summary = result.summary;
     
     if (isAllRules) {
+        const runtimeSummary = summary.runtime || {};
+        const memorySummary = summary.memory || {};
+        const rulesComparison = result.rules_comparison || [];
+        
+        currentFilteredData = rulesComparison;
+        
+        const runtimeIncreaseList = buildSortedList(rulesComparison, 'runtime', true);
+        const runtimeDecreaseList = buildSortedList(rulesComparison, 'runtime', false);
+        const memoryIncreaseList = buildSortedList(rulesComparison, 'memory', true);
+        const memoryDecreaseList = buildSortedList(rulesComparison, 'memory', false);
+        
+        const runtimeIncreaseTooltip = formatTooltipListHtml(runtimeIncreaseList, 'Runtime 增加排行 (前10)');
+        const runtimeDecreaseTooltip = formatTooltipListHtml(runtimeDecreaseList, 'Runtime 减少排行 (前10)');
+        const memoryIncreaseTooltip = formatTooltipListHtml(memoryIncreaseList, 'Memory 增加排行 (前10)');
+        const memoryDecreaseTooltip = formatTooltipListHtml(memoryDecreaseList, 'Memory 减少排行 (前10)');
+        
         document.getElementById('compareSummary').innerHTML = `
-            <div class="stat-item"><div class="stat-value">${summary.total_rules || 0}</div><div class="stat-label">总阶段数</div></div>
-            <div class="stat-item"><div class="stat-value">${summary.rules_with_data || 0}</div><div class="stat-label">有效数据</div></div>
-            <div class="stat-item"><div class="stat-value">${summary.runtime?.total_increase || 0}</div><div class="stat-label">Runtime增加</div></div>
-            <div class="stat-item"><div class="stat-value">${summary.runtime?.total_decrease || 0}</div><div class="stat-label">Runtime减少</div></div>
-            <div class="stat-item"><div class="stat-value">${summary.memory?.total_increase || 0}</div><div class="stat-label">Memory增加</div></div>
-            <div class="stat-item"><div class="stat-value">${summary.memory?.total_decrease || 0}</div><div class="stat-label">Memory减少</div></div>
+            <div class="stat-item" id="statRuntimeIncrease">
+                <div class="stat-value status-increase">${runtimeSummary.total_increase || 0}</div>
+                <div class="stat-label">Runtime增加阶段</div>
+            </div>
+            <div class="stat-item" id="statRuntimeDecrease">
+                <div class="stat-value status-decrease">${runtimeSummary.total_decrease || 0}</div>
+                <div class="stat-label">Runtime减少阶段</div>
+            </div>
+            <div class="stat-item" id="statMemoryIncrease">
+                <div class="stat-value status-increase">${memorySummary.total_increase || 0}</div>
+                <div class="stat-label">Memory增加阶段</div>
+            </div>
+            <div class="stat-item" id="statMemoryDecrease">
+                <div class="stat-value status-decrease">${memorySummary.total_decrease || 0}</div>
+                <div class="stat-label">Memory减少阶段</div>
+            </div>
+            <div class="stat-item" id="statRuntimeAvg">
+                <div class="stat-value">${runtimeSummary.avg_change_pct || 0}%</div>
+                <div class="stat-label">Runtime平均变化率</div>
+            </div>
+            <div class="stat-item" id="statMemoryAvg">
+                <div class="stat-value">${memorySummary.avg_change_pct || 0}%</div>
+                <div class="stat-label">Memory平均变化率</div>
+            </div>
+            <div class="stat-item" id="statRuntimeMaxInc">
+                <div class="stat-value">${runtimeSummary.max_increase_pct.toFixed(2) || 0}%</div>
+                <div class="stat-label">Runtime最大增加</div>
+            </div>
+            <div class="stat-item" id="statRuntimeMaxDec">
+                <div class="stat-value">${runtimeSummary.max_decrease_pct.toFixed(2) || 0}%</div>
+                <div class="stat-label">Runtime最大减少</div>
+            </div>
+            <div class="stat-item" id="statMemoryMaxInc">
+                <div class="stat-value">${memorySummary.max_increase_pct.toFixed(2) || 0}%</div>
+                <div class="stat-label">Memory最大增加</div>
+            </div>
+            <div class="stat-item" id="statMemoryMaxDec">
+                <div class="stat-value">${memorySummary.max_decrease_pct.toFixed(2) || 0}%</div>
+                <div class="stat-label">Memory最大减少</div>
+            </div>
         `;
+        
+        addStatCardTooltip(document.getElementById('statRuntimeIncrease'), runtimeIncreaseTooltip);
+        addStatCardTooltip(document.getElementById('statRuntimeDecrease'), runtimeDecreaseTooltip);
+        addStatCardTooltip(document.getElementById('statMemoryIncrease'), memoryIncreaseTooltip);
+        addStatCardTooltip(document.getElementById('statMemoryDecrease'), memoryDecreaseTooltip);
+        
+        const avgRuntimeList = rulesComparison
+            .filter(r => r.has_data && r.runtime_change_pct !== null)
+            .map(r => ({ rule: r.rule_name, change_pct: Math.abs(r.runtime_change_pct) }))
+            .sort((a, b) => b.change_pct - a.change_pct);
+        const avgMemoryList = rulesComparison
+            .filter(r => r.has_data && r.memory_change_pct !== null)
+            .map(r => ({ rule: r.rule_name, change_pct: Math.abs(r.memory_change_pct) }))
+            .sort((a, b) => b.change_pct - a.change_pct);
+        
+        addStatCardTooltip(document.getElementById('statRuntimeAvg'), formatTooltipListHtml(avgRuntimeList, 'Runtime 变化率排行 (前10)'));
+        addStatCardTooltip(document.getElementById('statMemoryAvg'), formatTooltipListHtml(avgMemoryList, 'Memory 变化率排行 (前10)'));
+        addStatCardTooltip(document.getElementById('statRuntimeMaxInc'), formatTooltipListHtml(runtimeIncreaseList, 'Runtime 增加排行 (前10)'));
+        addStatCardTooltip(document.getElementById('statRuntimeMaxDec'), formatTooltipListHtml(runtimeDecreaseList, 'Runtime 减少排行 (前10)'));
+        addStatCardTooltip(document.getElementById('statMemoryMaxInc'), formatTooltipListHtml(memoryIncreaseList, 'Memory 增加排行 (前10)'));
+        addStatCardTooltip(document.getElementById('statMemoryMaxDec'), formatTooltipListHtml(memoryDecreaseList, 'Memory 减少排行 (前10)'));
         
         const thead = document.getElementById('compareTableHeader');
         thead.innerHTML = `<tr>
@@ -902,36 +1362,38 @@ function displayCompareResult(result) {
                 <th>Memory差值</th>
                 <th>Memory变化率(%)</th>
                 <th>状态</th>
-            </tr>`;
+             </tr>`;
         
-        const tbody = document.getElementById('compareTableBody');
-        tbody.innerHTML = (result.rules_comparison || []).map(rule => {
-            const statusText = () => {
-                if (!rule.has_data) return '无数据';
-                if (rule.runtime_status === 'increase') return '⬆️ 增加';
-                if (rule.runtime_status === 'decrease') return '⬇️ 减少';
-                return '➖ 不变';
-            };
-            return `<tr>
-                <td>${rule.rule_name}</td>
-                <td>${rule.runtime1 !== null ? rule.runtime1.toFixed(2) : 'N/A'}</td>
-                <td>${rule.runtime2 !== null ? rule.runtime2.toFixed(2) : 'N/A'}</td>
-                <td>${rule.runtime_diff !== null ? rule.runtime_diff.toFixed(2) : 'N/A'}</td>
-                <td class="${rule.runtime_change_pct > 0 ? 'status-increase' : (rule.runtime_change_pct < 0 ? 'status-decrease' : '')}">${rule.runtime_change_pct !== null ? rule.runtime_change_pct.toFixed(2) + '%' : 'N/A'}</td>
-                <td>${rule.memory1 !== null ? rule.memory1.toFixed(2) : 'N/A'}</td>
-                <td>${rule.memory2 !== null ? rule.memory2.toFixed(2) : 'N/A'}</td>
-                <td>${rule.memory_diff !== null ? rule.memory_diff.toFixed(2) : 'N/A'}</td>
-                <td class="${rule.memory_change_pct > 0 ? 'status-increase' : (rule.memory_change_pct < 0 ? 'status-decrease' : '')}">${rule.memory_change_pct !== null ? rule.memory_change_pct.toFixed(2) + '%' : 'N/A'}</td>
-                <td>${statusText()}</td>
-            </tr>`;
-        }).join('');
+        addTableFilter();
+        applyTableFilter();
+        
     } else {
+        const comparisons = result.comparisons || [];
+        const runtimeChangeList = comparisons
+            .filter(c => c.runtime_change_pct !== null)
+            .map(c => ({ rule: c.date || `数据点${c.index + 1}`, change_pct: Math.abs(c.runtime_change_pct) }))
+            .sort((a, b) => b.change_pct - a.change_pct);
+        
         document.getElementById('compareSummary').innerHTML = `
-            <div class="stat-item"><div class="stat-value">${summary.total || 0}</div><div class="stat-label">数据点数</div></div>
-            <div class="stat-item"><div class="stat-value">${summary.runtime_increased || 0}</div><div class="stat-label">Runtime增加</div></div>
-            <div class="stat-item"><div class="stat-value">${summary.runtime_decreased || 0}</div><div class="stat-label">Runtime减少</div></div>
-            <div class="stat-item"><div class="stat-value">${summary.runtime_avg_change || 0}%</div><div class="stat-label">平均变化率</div></div>
+            <div class="stat-item" id="statTotalPoints">
+                <div class="stat-value">${summary.total || 0}</div>
+                <div class="stat-label">数据点数</div>
+            </div>
+            <div class="stat-item" id="statRuntimeInc">
+                <div class="stat-value status-increase">${summary.runtime_increased || 0}</div>
+                <div class="stat-label">Runtime增加</div>
+            </div>
+            <div class="stat-item" id="statRuntimeDec">
+                <div class="stat-value status-decrease">${summary.runtime_decreased || 0}</div>
+                <div class="stat-label">Runtime减少</div>
+            </div>
+            <div class="stat-item" id="statRuntimeAvgChange">
+                <div class="stat-value">${summary.runtime_avg_change || 0}%</div>
+                <div class="stat-label">平均变化率</div>
+            </div>
         `;
+        
+        addStatCardTooltip(document.getElementById('statRuntimeAvgChange'), formatTooltipListHtml(runtimeChangeList, '变化率排行 (前10)'));
         
         const thead = document.getElementById('compareTableHeader');
         thead.innerHTML = `<tr><th>序号</th><th>日期</th><th>Runtime(基准)</th><th>Runtime(对比)</th><th>变化率(%)</th><th>状态</th></tr>`;
@@ -950,9 +1412,6 @@ function displayCompareResult(result) {
     }
 }
 
-/**
- * 导出对比结果
- */
 async function exportCompareResult() {
     if (!currentCompareResult) {
         showNotification('没有可导出的对比结果', true);
@@ -989,9 +1448,6 @@ async function exportCompareResult() {
 
 let pendingSelectedDates = [];
 
-/**
- * 构建日期选择器
- */
 function buildDatePicker(usePending = false) {
     const container = document.getElementById('dateOptionsContainer');
     if (!container) return;
@@ -1007,7 +1463,6 @@ function buildDatePicker(usePending = false) {
         </label>
     `).join('');
     
-    // 绑定事件
     container.querySelectorAll('input[type="checkbox"]').forEach(cb => {
         cb.addEventListener('change', (e) => {
             const date = e.target.value;
@@ -1020,25 +1475,16 @@ function buildDatePicker(usePending = false) {
     });
 }
 
-/**
- * 打开日期选择模态框
- */
 function openDatePickerModal() {
     pendingSelectedDates = [...selectedDates];
     buildDatePicker(true);
     document.getElementById('datePickerModal').classList.remove('hidden');
 }
 
-/**
- * 关闭日期选择模态框
- */
 function closeDatePickerModal() {
     document.getElementById('datePickerModal').classList.add('hidden');
 }
 
-/**
- * 确认日期选择
- */
 function confirmDateSelection() {
     if (pendingSelectedDates.length === 0) {
         pendingSelectedDates = availableDates.slice(-51);
@@ -1049,9 +1495,6 @@ function confirmDateSelection() {
     closeDatePickerModal();
 }
 
-/**
- * 重置日期选择
- */
 function resetDateSelection(useAll = false) {
     selectedDates = useAll ? [...availableDates] : availableDates.slice(-51);
     updateDateSelectionInfo();
@@ -1062,9 +1505,6 @@ function resetDateSelection(useAll = false) {
 // 数据刷新模块
 // ==================================================
 
-/**
- * 刷新所有数据
- */
 async function refreshAllData() {
     showLoading(true);
     
@@ -1078,13 +1518,11 @@ async function refreshAllData() {
         const result = await response.json();
         
         if (result.success) {
-            // 更新全局数据
             Object.assign(projectsData, result.data);
             mrUpdateDates = buildMrUpdateMap(result.perf);
             currentDataVersion = result.version;
             cachedToolData = {};
             
-            // 更新项目列表
             if (result.project_list?.length) {
                 const caseSelect = document.getElementById('caseSelect');
                 const currentVal = caseSelect.value;
@@ -1092,9 +1530,23 @@ async function refreshAllData() {
                 if (result.project_list.some(p => p.id === currentVal)) {
                     caseSelect.value = currentVal;
                 }
+                
+                // 同时更新多线程和对比模块的项目选择框
+                const multiCaseSelect = document.getElementById('multiCaseSelect');
+                if (multiCaseSelect) {
+                    multiCaseSelect.innerHTML = result.project_list.map(p => `<option value="${p.id}">${p.name}</option>`).join('');
+                    if (result.project_list.some(p => p.id === currentVal)) {
+                        multiCaseSelect.value = currentVal;
+                    }
+                }
+                
+                const compareCaseSelect = document.getElementById('compareCaseSelect');
+                if (compareCaseSelect) {
+                    compareCaseSelect.innerHTML = '<option value="">-- 请选择case --</option>' + 
+                        result.project_list.map(p => `<option value="${p.id}">${p.name}</option>`).join('');
+                }
             }
             
-            // 刷新界面
             if (currentProjectId) {
                 updateRuleSelect();
                 updateProjectStats();
@@ -1118,17 +1570,12 @@ async function refreshAllData() {
 // 视图切换
 // ==================================================
 
-/**
- * 切换视图
- */
 function switchView(viewId) {
-    // 隐藏所有视图
     document.querySelectorAll('.view-container').forEach(view => {
         view.classList.remove('active');
     });
     document.getElementById(`${viewId}View`).classList.add('active');
     
-    // 更新侧边栏激活状态
     document.querySelectorAll('.nav-item').forEach(item => {
         item.classList.remove('active');
         if (item.dataset.view === viewId) {
@@ -1136,7 +1583,6 @@ function switchView(viewId) {
         }
     });
     
-    // 视图特定初始化
     if (viewId === 'multithread') {
         setTimeout(() => {
             if (charts.multiRuntime) charts.multiRuntime.resize();
@@ -1151,14 +1597,18 @@ function switchView(viewId) {
 }
 
 // ==================================================
+// 返回主页
+// ==================================================
+
+function backToHome() {
+    window.location.href = '/';
+}
+
+// ==================================================
 // 初始化 ECharts
 // ==================================================
 
-/**
- * 初始化所有图表
- */
 function initCharts() {
-    // 时序图表
     const runtimeDom = document.getElementById('chart-runtime');
     const memoryDom = document.getElementById('chart-memory');
     
@@ -1171,19 +1621,16 @@ function initCharts() {
         charts.memory.on('legendselectchanged', handleLegendSelectionChanged);
     }
     
-    // 多线程图表
     const multiRuntimeDom = document.getElementById('chart-multi-runtime');
     const multiMemoryDom = document.getElementById('chart-multi-memory');
     
     if (multiRuntimeDom) charts.multiRuntime = echarts.init(multiRuntimeDom);
     if (multiMemoryDom) charts.multiMemory = echarts.init(multiMemoryDom);
     
-    // 窗口大小自适应
     window.addEventListener('resize', () => {
         Object.values(charts).forEach(chart => chart?.resize());
     });
     
-    // 监听图表渲染，添加控制按钮
     observeChartRendering();
     setTimeout(() => {
         addControlButtonsToLegend();
@@ -1194,11 +1641,7 @@ function initCharts() {
 // 事件绑定
 // ==================================================
 
-/**
- * 绑定所有事件监听器
- */
 function bindEvents() {
-    // 项目选择变化
     document.getElementById('caseSelect').addEventListener('change', (e) => {
         currentProjectId = e.target.value;
         currentRule = null;
@@ -1209,7 +1652,6 @@ function bindEvents() {
         updateDateSelectionInfo();
     });
     
-    // 阶段选择变化
     document.getElementById('ruleSelect').addEventListener('change', (e) => {
         currentRule = e.target.value;
         if (currentRule) {
@@ -1218,50 +1660,56 @@ function bindEvents() {
         }
     });
     
-    // 阶段搜索
     document.getElementById('ruleSearch').addEventListener('input', debounce(() => {
         updateRuleSelect();
     }, 300));
     
-    // 曲线类型按钮
     document.querySelectorAll('.chart-type-btn').forEach(btn => {
         btn.addEventListener('click', () => selectChartType(btn.dataset.type));
     });
     
-    // 刷新按钮
     document.getElementById('refreshDataBtn').addEventListener('click', refreshAllData);
     
-    // 日期选择
     document.getElementById('openDatePickerBtn')?.addEventListener('click', openDatePickerModal);
     document.getElementById('closeDateModalBtn')?.addEventListener('click', closeDatePickerModal);
     document.getElementById('confirmDateBtn')?.addEventListener('click', confirmDateSelection);
     document.getElementById('selectRecentBtn')?.addEventListener('click', () => resetDateSelection(false));
     document.getElementById('selectAllDatesBtn')?.addEventListener('click', () => resetDateSelection(true));
     
-    // 日期筛选输入
     document.getElementById('dateFilterInput')?.addEventListener('input', debounce(() => {
         buildDatePicker(true);
     }, 150));
     
-    // 多线程相关事件
-    document.getElementById('multiCaseSelect')?.addEventListener('change', (e) => {
-        currentProjectId = e.target.value;
-        loadMultiRules(currentProjectId);
-    });
+    // 多线程模块事件绑定
+    const multiCaseSelect = document.getElementById('multiCaseSelect');
+    if (multiCaseSelect) {
+        multiCaseSelect.addEventListener('change', (e) => {
+            currentProjectId = e.target.value;
+            // 重置当前选中的规则
+            currentMultiRule = null;
+            loadMultiRules(currentProjectId);
+        });
+    }
     
-    document.getElementById('multiRuleSelect')?.addEventListener('change', (e) => {
-        currentMultiRule = e.target.value;
-        if (currentMultiRule) {
-            loadMultiDates(currentProjectId, currentMultiRule);
-        }
-    });
+    const multiRuleSelect = document.getElementById('multiRuleSelect');
+    if (multiRuleSelect) {
+        multiRuleSelect.addEventListener('change', (e) => {
+            currentMultiRule = e.target.value;
+            if (currentMultiRule) {
+                loadMultiDates(currentProjectId, currentMultiRule);
+            }
+        });
+    }
     
-    document.getElementById('multiDateSelect')?.addEventListener('change', (e) => {
-        currentMultiDate = e.target.value;
-        if (currentMultiRule && currentMultiDate) {
-            loadMultiThreadData(currentProjectId, currentMultiRule, currentMultiDate);
-        }
-    });
+    const multiDateSelect = document.getElementById('multiDateSelect');
+    if (multiDateSelect) {
+        multiDateSelect.addEventListener('change', (e) => {
+            currentMultiDate = e.target.value;
+            if (currentMultiRule && currentMultiDate) {
+                loadMultiThreadData(currentProjectId, currentMultiRule, currentMultiDate);
+            }
+        });
+    }
     
     document.getElementById('multiRefreshBtn')?.addEventListener('click', () => {
         if (currentMultiRule && currentMultiDate) {
@@ -1269,7 +1717,7 @@ function bindEvents() {
         }
     });
     
-    // 对比相关事件
+    // 对比模块事件绑定
     document.getElementById('compareCaseSelect')?.addEventListener('change', (e) => {
         const projectId = e.target.value;
         if (projectId) {
@@ -1290,32 +1738,27 @@ function bindEvents() {
     document.getElementById('executeCompareBtn')?.addEventListener('click', executeCompare);
     document.getElementById('exportCompareBtn')?.addEventListener('click', exportCompareResult);
     
-    // 侧边栏导航
     document.querySelectorAll('.nav-item').forEach(item => {
         item.addEventListener('click', () => switchView(item.dataset.view));
     });
+    
+    document.getElementById('backToHomeBtn')?.addEventListener('click', backToHome);
 }
 
 // ==================================================
 // 初始化应用
 // ==================================================
 
-/**
- * 应用初始化
- */
 async function init() {
-    // 初始化图表
     initCharts();
-    
-    // 绑定事件
     bindEvents();
     
-    // 初始化MR映射
-    mrUpdateDates = buildMrUpdateMap(perf);
+    // 检测浏览器刷新并自动获取最新数据
+    await autoRefreshOnLoad();
     
-    // 设置初始项目
+    // 设置初始项目ID
     const caseSelect = document.getElementById('caseSelect');
-    if (caseSelect.options.length > 0) {
+    if (caseSelect && caseSelect.options.length > 0) {
         currentProjectId = caseSelect.value;
         updateRuleSelect();
         updateProjectStats();
@@ -1323,16 +1766,18 @@ async function init() {
         updateChartTypeButtons();
     }
     
-    // 根据URL参数切换视图
+    // 多线程对比模块初始化 - 自动加载第一个case的数据
+    const multiCaseSelect = document.getElementById('multiCaseSelect');
+    if (multiCaseSelect && multiCaseSelect.options.length > 0) {
+        currentProjectId = multiCaseSelect.value;
+        // 加载第一个case的规则列表，会自动选择第一个规则并加载数据
+        await loadMultiRules(currentProjectId);
+    }
+    
     if (initialMode === 'multi') {
         switchView('multithread');
-        // 初始化多线程数据
-        if (caseSelect.options.length > 0) {
-            await loadMultiRules(currentProjectId);
-        }
     } else if (initialMode === 'compare') {
         switchView('compare');
-        // 初始为 compare 视图时，从 compareCaseSelect 读取项目（优先），再加载日期和规则
         const compareSelect = document.getElementById('compareCaseSelect');
         const projId = compareSelect?.value || currentProjectId;
         if (projId) {
@@ -1342,9 +1787,8 @@ async function init() {
         }
     }
     
-    // 启动自动刷新检查（每30秒）
+    // 设置定时检查更新
     setInterval(() => {
-        // 静默检查更新
         fetch('/api/check_update', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -1358,7 +1802,119 @@ async function init() {
     }, 30000);
     
     updateLastUpdateTime();
+    
+    // 添加多线程图表切换按钮
+    setTimeout(() => {
+        addMultiChartToggleButtons();
+    }, 500);
 }
+
+// ==================================================
+        // 检测是否为浏览器刷新（包括 F5、Ctrl+R、浏览器刷新按钮）
+        // ==================================================
+        function isBrowserRefresh() {
+            // 方法1: 使用 PerformanceNavigationTiming API (现代浏览器)
+            if (performance && performance.getEntriesByType) {
+                const navigationEntries = performance.getEntriesByType('navigation');
+                if (navigationEntries.length > 0) {
+                    const nav = navigationEntries[0];
+                    // type: 'navigate' (正常导航), 'reload' (刷新), 'back_forward' (前进/后退)
+                    if (nav.type === 'reload') {
+                        return true;
+                    }
+                }
+            }
+            
+            // 方法2: 使用旧的 performance.navigation API (兼容旧浏览器)
+            if (performance && performance.navigation) {
+                if (performance.navigation.type === performance.navigation.TYPE_RELOAD) {
+                    return true;
+                }
+            }
+            
+            // 方法3: 检查 URL 参数或 sessionStorage 标记
+            // 如果是通过链接点击进入，不是刷新
+            const isInitialLoad = sessionStorage.getItem(`page_loaded_${toolId}`);
+            if (!isInitialLoad) {
+                // 首次加载，设置标记
+                sessionStorage.setItem(`page_loaded_${toolId}`, 'true');
+                return false;
+            }
+            
+            // 如果有标记且没有通过 navigation API 检测到，可能是后退/前进
+            // 为了安全，也刷新一下数据
+            return true;
+        }
+        
+        // ==================================================
+        // 页面初始化时自动刷新数据
+        // ==================================================
+        async function autoRefreshOnLoad() {
+            const isRefresh = isBrowserRefresh();
+            
+            if (isRefresh) {
+                console.log('检测到浏览器刷新，正在更新数据...');
+                showNotification('检测到页面刷新，正在获取最新数据...');
+                
+                try {
+                    // 调用刷新API获取最新数据
+                    const response = await fetch('/api/refresh', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ tool: toolId, mode: 'single' })
+                    });
+                    
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        // 更新全局数据
+                        Object.assign(projectsData, result.data);
+                        mrUpdateDates = buildMrUpdateMap(result.perf);
+                        currentDataVersion = result.version;
+                        cachedToolData = {};
+                        
+                        // 更新项目列表
+                        if (result.project_list && result.project_list.length) {
+                            const caseSelect = document.getElementById('caseSelect');
+                            const currentVal = caseSelect.value;
+                            caseSelect.innerHTML = result.project_list.map(p => `<option value="${p.id}">${p.name}</option>`).join('');
+                            if (result.project_list.some(p => p.id === currentVal)) {
+                                caseSelect.value = currentVal;
+                            }
+                            
+                            // 同时更新多线程和对比模块的项目选择框
+                            const multiCaseSelect = document.getElementById('multiCaseSelect');
+                            if (multiCaseSelect) {
+                                multiCaseSelect.innerHTML = result.project_list.map(p => `<option value="${p.id}">${p.name}</option>`).join('');
+                                if (result.project_list.some(p => p.id === currentVal)) {
+                                    multiCaseSelect.value = currentVal;
+                                }
+                            }
+                            
+                            const compareCaseSelect = document.getElementById('compareCaseSelect');
+                            if (compareCaseSelect) {
+                                compareCaseSelect.innerHTML = '<option value="">-- 请选择case --</option>' + 
+                                    result.project_list.map(p => `<option value="${p.id}">${p.name}</option>`).join('');
+                            }
+                        }
+                        
+                        updateLastUpdateTime();
+                        showNotification('数据已更新到最新版本');
+                    } else {
+                        console.warn('刷新失败:', result.message);
+                        showNotification('数据更新失败，使用缓存数据', true);
+                    }
+                } catch (error) {
+                    console.error('自动刷新失败:', error);
+                    showNotification('自动刷新失败，使用缓存数据', true);
+                }
+            } else {
+                console.log('正常页面加载，使用服务端数据');
+                // 正常加载时也更新MR映射
+                mrUpdateDates = buildMrUpdateMap(perf);
+            }
+        }
+    
 
 // 启动应用
 init();

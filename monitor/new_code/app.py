@@ -45,7 +45,7 @@ CASE_CONFIG = {
         'icon': '🔍',
         'single': {
             'original_path': '/home/xbzhong/develop/monitor/code_20260513/data/original',
-            'json_path': './data/total.json',
+            'json_path': 'C:\\Users\\xbzhong\\Desktop\\lint\\script\\monitor\\develop\\monitor\\new_code\\data\\total.json',
             'mem': './data/lint_mem.csv',
             'cpu': './data/lint_cpu.csv'
         },
@@ -55,7 +55,7 @@ CASE_CONFIG = {
             'mem': './data/lint_mem.csv',
             'cpu': './data/lint_cpu.csv'
         }
-    }
+    },
     # 可以在这里添加更多工具，主页面卡片会自动生成
     # 'ecdc': {
     #     'name': 'ECDC',

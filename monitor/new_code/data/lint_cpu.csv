@@ -1,4 +1,8 @@
 Date,comment
-2026-05-13,ChenJun:add E00145
-2026-05-12,ChenJun:add E00145
-2026-05-11,ChenJun:add E00145
+2026-02-07,LiLong:AlwaysAnalyzer optimization
+2026-02-12,ChengJun: ltUtExpression mv utRUsage into debug.
+2026-02-13,JunYi: E0268 adds ltUtExpression evalue cache
+2026-02-14,JunYi and all : Add dataflow for ltUtExpression parameter evalue
+2026-03-06,ChengXietian:E0091 change the string comparison method from calling the general library function to prefix tree comparison
+2026-03-10,LiLong:E0084 change async rs check to ast
+2026-05-07,LiLong:LtUtData which E0253 and E0236 use is changed the visit

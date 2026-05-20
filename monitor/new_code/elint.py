@@ -322,6 +322,7 @@ def get_perf(mem,cpu):
             "mem":mem,
             "cpu":cpu
         }
+        print(perf)
         return perf
     except Exception as e:
         print(f"执行异常: {e}")

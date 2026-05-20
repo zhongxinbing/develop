@@ -5,583 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>{{ tool_name }} 性能监控系统</title>
     <script src="{{ url_for('static', filename='js/echarts.min.js') }}"></script>
-    <style>
-        /* ==================================================
-           现代化侧边栏布局样式 - Flexbox + Grid 混合布局
-        ================================================== */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/tool.css') }}">
 
-        :root {
-            /* 主色调 */
-            --primary: #6366f1;
-            --primary-dark: #4f46e5;
-            --primary-light: #818cf8;
-            --secondary: #06b6d4;
-            --accent: #f59e0b;
-            --success: #10b981;
-            --danger: #ef4444;
-            
-            /* 背景色 */
-            --bg-dark: #0f172a;
-            --bg-card: #1e293b;
-            --bg-card-hover: #2d3a5e;
-            --bg-sidebar: #0f172a;
-            --bg-main: #0b1120;
-            
-            /* 文字颜色 */
-            --text-primary: #f1f5f9;
-            --text-secondary: #94a3b8;
-            --text-muted: #64748b;
-            
-            /* 边框 */
-            --border: #334155;
-            
-            /* 阴影 */
-            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
-            --glow: 0 0 20px rgba(99, 102, 241, 0.3);
-            
-            /* 圆角 */
-            --radius-md: 0.75rem;
-            --radius-lg: 1rem;
-            --radius-xl: 1.5rem;
-            
-            /* 过渡 */
-            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        body {
-            font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-            background: var(--bg-main);
-            color: var(--text-primary);
-            min-height: 100vh;
-            overflow-x: hidden;
-        }
-
-        /* ==================================================
-           App 容器 - Flexbox 侧边栏 + 主内容布局
-        ================================================== */
-        .app-container {
-            display: flex;
-            min-height: 100vh;
-        }
-
-        /* ==================================================
-           侧边栏样式 - 固定宽度，垂直导航
-        ================================================== */
-        .sidebar {
-            width: 280px;
-            background: var(--bg-sidebar);
-            border-right: 1px solid var(--border);
-            display: flex;
-            flex-direction: column;
-            position: fixed;
-            top: 0;
-            left: 0;
-            bottom: 0;
-            z-index: 100;
-            transition: var(--transition);
-            overflow-y: auto;
-        }
-
-        /* 侧边栏头部 */
-        .sidebar-header {
-            padding: 1.5rem;
-            border-bottom: 1px solid var(--border);
-            margin-bottom: 1rem;
-        }
-
-        .sidebar-header h1 {
-            font-size: 1.25rem;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .sidebar-header .tool-icon {
-            font-size: 1.5rem;
-        }
-
-        .sidebar-header .tool-name {
-            background: linear-gradient(135deg, var(--primary-light), var(--secondary));
-            background-clip: text;
-            -webkit-background-clip: text;
-            color: transparent;
-        }
-
-        .sidebar-header .version {
-            font-size: 0.75rem;
-            color: var(--text-muted);
-            margin-top: 0.5rem;
-        }
-
-        /* 侧边栏导航菜单 */
-        .nav-menu {
-            flex: 1;
-            padding: 0 0.75rem;
-        }
-
-        .nav-item {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            padding: 0.875rem 1rem;
-            margin-bottom: 0.25rem;
-            border-radius: var(--radius-md);
-            cursor: pointer;
-            transition: var(--transition);
-            color: var(--text-secondary);
-        }
-
-        .nav-item:hover {
-            background: rgba(99, 102, 241, 0.1);
-            color: var(--text-primary);
-        }
-
-        .nav-item.active {
-            background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(6, 182, 212, 0.1));
-            color: var(--primary-light);
-            border-left: 3px solid var(--primary);
-        }
-
-        .nav-item .nav-icon {
-            font-size: 1.25rem;
-            width: 28px;
-            text-align: center;
-        }
-
-        .nav-item .nav-label {
-            font-size: 0.875rem;
-            font-weight: 500;
-        }
-
-        /* 侧边栏底部信息 */
-        .sidebar-footer {
-            padding: 1rem 1.5rem;
-            border-top: 1px solid var(--border);
-            font-size: 0.75rem;
-            color: var(--text-muted);
-        }
-
-        .refresh-status {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            margin-top: 0.5rem;
-        }
-
-        .status-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: var(--success);
-        }
-
-        .status-dot.updating {
-            animation: pulse 1s infinite;
-        }
-
-        /* ==================================================
-           主内容区域 - 占据剩余空间
-        ================================================== */
-        .main-content {
-            flex: 1;
-            margin-left: 280px;
-            padding: 1.5rem;
-            min-height: 100vh;
-        }
-
-        /* ==================================================
-           页面容器 - 每个视图的独立容器
-        ================================================== */
-        .view-container {
-            display: none;
-            animation: fadeIn 0.3s ease-out;
-        }
-
-        .view-container.active {
-            display: block;
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* ==================================================
-           卡片样式
-        ================================================== */
-        .card {
-            background: var(--bg-card);
-            border-radius: var(--radius-xl);
-            border: 1px solid var(--border);
-            padding: 1.5rem;
-            margin-bottom: 1.5rem;
-            transition: var(--transition);
-        }
-
-        .card:hover {
-            border-color: rgba(99, 102, 241, 0.3);
-        }
-
-        .card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1rem;
-            flex-wrap: wrap;
-            gap: 1rem;
-        }
-
-        .card-title {
-            font-size: 1.125rem;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        /* ==================================================
-           控制栏样式 - 选择器组合
-        ================================================== */
-        .control-bar {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 1rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .control-group {
-            flex: 1;
-            min-width: 180px;
-        }
-
-        .control-label {
-            font-size: 0.75rem;
-            color: var(--text-muted);
-            margin-bottom: 0.25rem;
-            display: block;
-        }
-
-        select, input {
-            width: 100%;
-            padding: 0.625rem 0.875rem;
-            background: rgba(15, 23, 42, 0.8);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-md);
-            color: var(--text-primary);
-            font-size: 0.875rem;
-            transition: var(--transition);
-        }
-
-        select:focus, input:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
-        }
-
-        /* 搜索框 */
-        .search-input {
-            width: 100%;
-            padding: 0.625rem 0.875rem;
-            background: rgba(15, 23, 42, 0.8);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-md);
-            color: var(--text-primary);
-        }
-
-        /* 按钮样式 */
-        .btn {
-            padding: 0.625rem 1.25rem;
-            border-radius: var(--radius-md);
-            font-weight: 500;
-            font-size: 0.875rem;
-            cursor: pointer;
-            transition: var(--transition);
-            border: none;
-            background: rgba(99, 102, 241, 0.15);
-            color: var(--text-primary);
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            color: white;
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-1px);
-            box-shadow: var(--glow);
-        }
-
-        .btn-secondary {
-            background: rgba(6, 182, 212, 0.15);
-            border: 1px solid var(--secondary);
-            color: var(--secondary);
-        }
-
-        .btn-secondary:hover {
-            background: var(--secondary);
-            color: white;
-        }
-
-        .btn-group {
-            display: flex;
-            gap: 0.5rem;
-            flex-wrap: wrap;
-        }
-
-        .chart-type-buttons {
-            display: flex;
-            gap: 0.5rem;
-            flex: 1;
-            min-width: 0;
-        }
-
-        .chart-type-buttons .btn {
-            flex: 1;
-        }
-
-        .chart-thread-info {
-            margin-left: auto;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            flex-wrap: wrap;
-            color: var(--text-secondary);
-            font-size: 0.85rem;
-            white-space: nowrap;
-        }
-
-        .thread-chip {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            padding: 0.25rem 0.65rem;
-            border-radius: 999px;
-            border: 1px solid rgba(148, 163, 184, 0.4);
-            background: rgba(15, 23, 42, 0.75);
-            color: var(--text-secondary);
-            cursor: pointer;
-            font-size: 0.8rem;
-            transition: var(--transition);
-        }
-
-        .thread-chip.active {
-            border-color: rgba(99, 102, 241, 0.8);
-            color: var(--primary-light);
-            background: rgba(99, 102, 241, 0.16);
-        }
-
-        .chart-card.hidden {
-            display: none;
-        }
-
-        .hidden {
-            display: none !important;
-        }
-
-        /* ==================================================
-           图表容器
-        ================================================== */
-        .chart-container {
-            width: 100%;
-            height: 450px;
-            border-radius: var(--radius-lg);
-            background: rgba(15, 23, 42, 0.5);
-        }
-
-        /* 统计网格 - CSS Grid */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1rem;
-            margin-top: 1rem;
-        }
-
-        .stat-item {
-            background: rgba(15, 23, 42, 0.6);
-            border-radius: var(--radius-lg);
-            padding: 1rem;
-            text-align: center;
-            transition: var(--transition);
-        }
-
-        .stat-item:hover {
-            background: rgba(99, 102, 241, 0.1);
-            transform: translateY(-2px);
-        }
-
-        .stat-value {
-            font-size: 1.75rem;
-            font-weight: 700;
-            color: var(--primary-light);
-        }
-
-        .stat-label {
-            font-size: 0.75rem;
-            color: var(--text-muted);
-            margin-top: 0.25rem;
-        }
-
-        /* 日期选择器模态框 */
-        .modal {
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(8px);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-        }
-
-        .modal.hidden {
-            display: none;
-        }
-
-        .modal-content {
-            background: var(--bg-card);
-            border-radius: var(--radius-xl);
-            width: 90%;
-            max-width: 600px;
-            max-height: 80vh;
-            overflow: auto;
-            padding: 1.5rem;
-        }
-
-        .date-options {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-            gap: 0.5rem;
-            margin: 1rem 0;
-            max-height: 300px;
-            overflow-y: auto;
-        }
-
-        .date-option {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.5rem;
-            border-radius: var(--radius-md);
-            cursor: pointer;
-        }
-
-        .date-option:hover {
-            background: rgba(99, 102, 241, 0.1);
-        }
-
-        /* 多线程图表容器 - 双图表布局 */
-        .multi-charts {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1.5rem;
-        }
-
-        @media (max-width: 1024px) {
-            .multi-charts {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        /* 响应式设计 */
-        @media (max-width: 768px) {
-            .sidebar {
-                width: 70px;
-            }
-            
-            .sidebar-header h1 span:not(.tool-icon),
-            .nav-label,
-            .sidebar-footer {
-                display: none;
-            }
-            
-            .main-content {
-                margin-left: 70px;
-            }
-            
-            .control-bar {
-                flex-direction: column;
-            }
-        }
-
-        /* 工具提示 */
-        .tooltip {
-            position: relative;
-            cursor: help;
-        }
-        
-        .tooltip:hover::after {
-            content: attr(data-tip);
-            position: absolute;
-            bottom: 100%;
-            left: 50%;
-            transform: translateX(-50%);
-            background: var(--bg-card);
-            padding: 0.25rem 0.5rem;
-            border-radius: var(--radius-sm);
-            font-size: 0.75rem;
-            white-space: nowrap;
-            z-index: 1000;
-        }
-
-        /* 动画 */
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-
-        /* 线程过滤器 */
-        .thread-filters {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-            margin-top: 0.5rem;
-        }
-
-        .thread-filter-btn {
-            padding: 0.25rem 0.75rem;
-            border-radius: 20px;
-            font-size: 0.75rem;
-            background: rgba(99, 102, 241, 0.1);
-            cursor: pointer;
-            transition: var(--transition);
-        }
-
-        .thread-filter-btn.active {
-            background: var(--primary);
-            color: white;
-        }
-
-        /* 信息栏 */
-        .info-bar {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 1rem;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0.75rem 1rem;
-            background: rgba(15, 23, 42, 0.6);
-            border-radius: var(--radius-lg);
-            margin-top: 1rem;
-        }
-    </style>
 </head>
 <body>
     <div class="app-container">
         <!-- 侧边栏导航 -->
         <aside class="sidebar">
-            <div class="sidebar-header">
+            <div class="sidebar-header" id="backToHomeBtn">
                 <h1>
                     <span class="tool-icon">{{ tool_icon }}</span>
                     <span class="tool-name">{{ tool_name }}</span>
@@ -618,25 +49,16 @@
         <!-- 主内容区域 -->
         <main class="main-content">
             <!-- ==================================================
-                 视图1: 时序曲线图（单线程/默认视图）
+                 视图1: 时序曲线图
             ================================================== -->
             <div id="timelineView" class="view-container active">
-                <!-- 统计卡片 -->
                 <div class="card">
                     <div class="card-header">
                         <div class="card-title">📊 项目概览</div>
-                        <div class="btn-group">
-                            <button class="btn btn-secondary" id="openDatePickerBtn">📅 选择日期范围</button>
-                            <button class="btn btn-secondary" id="selectRecentBtn">🕐 最近51条</button>
-                            <button class="btn btn-secondary" id="selectAllDatesBtn">📆 显示全部</button>
-                        </div>
                     </div>
-                    <div class="stats-grid" id="projectStats">
-                        <!-- 动态填充统计信息 -->
-                    </div>
+                    <div class="stats-grid" id="projectStats"></div>
                 </div>
 
-                <!-- 控制栏 -->
                 <div class="card">
                     <div class="control-bar">
                         <div class="control-group">
@@ -650,6 +72,7 @@
                         <div class="control-group">
                             <label class="control-label">🔧 阶段/Rule</label>
                             <select id="ruleSelect">
+                                <option selected>Overall</option>
                                 <option value="">加载中...</option>
                             </select>
                         </div>
@@ -658,35 +81,46 @@
                             <input type="text" id="ruleSearch" placeholder="输入阶段名称..." class="search-input">
                         </div>
                     </div>
-                    
                 </div>
 
-                <!-- 曲线类型切换（仅保留两个按钮） -->
-                <div class="card">
+                <!-- <div class="card">
                     <div class="card-header">
                         <div class="chart-type-buttons" id="chartTypeButtons">
                             <button class="btn btn-primary chart-type-btn" data-type="runtime">⏱️ Runtime</button>
                             <button class="btn btn-secondary chart-type-btn" data-type="memory">💾 Memory</button>
                         </div>
                     </div>
-                </div>
+                </div> -->
 
-                <!-- 曲线图区域 -->
                 <div class="card">
                     <div class="card-header">
+                        <div class="chart-type-buttons" id="chartTypeButtons">
+                            <button class="btn btn-primary chart-type-btn" data-type="runtime">⏱️ Runtime</button>
+                            <button class="btn btn-secondary chart-type-btn" data-type="memory">💾 Memory</button>
+                        </div>
+                        <div class="btn-group">
+                            <button class="btn btn-secondary" id="openDatePickerBtn">📅 选择日期范围</button>
+                            <button class="btn btn-secondary" id="selectRecentBtn">🕐 最近51条</button>
+                            <button class="btn btn-secondary" id="selectAllDatesBtn">📆 显示全部</button>
+                        </div>
+                            <span class="tooltip" data-tip="MR更新日期会高亮显示">ℹ️</span>
+                    </div>
+                    <div class="card-header">
                         <div class="card-title" id="chartCardTitle">⏱️ Runtime 性能曲线</div>
-                        <span class="tooltip" data-tip="MR更新日期会高亮显示">ℹ️</span>
+                        <!-- <div class="btn-group">
+                            <button class="btn btn-secondary" id="openDatePickerBtn">📅 选择日期范围</button>
+                            <button class="btn btn-secondary" id="selectRecentBtn">🕐 最近51条</button>
+                            <button class="btn btn-secondary" id="selectAllDatesBtn">📆 显示全部</button>
+                            <span class="tooltip" data-tip="MR更新日期会高亮显示">ℹ️</span>
+                        </div> -->
                     </div>
                     <div class="chart-wrapper">
                         <div id="chart-runtime" class="chart-container"></div>
                         <div id="chart-memory" class="chart-container hidden"></div>
                     </div>
-                    <div class="stats-grid" id="stats-main">
-                        <!-- 动态填充统计 -->
-                    </div>
+                    <div class="stats-grid" id="stats-main"></div>
                 </div>
 
-                <!-- 信息栏 -->
                 <div class="info-bar">
                     <span>📅 数据范围: <strong id="dateRange">-</strong></span>
                     <span>📈 数据点数: <strong id="dataPoints">0</strong></span>
@@ -696,19 +130,17 @@
             </div>
 
             <!-- ==================================================
-                 视图2: 多线程对比图
+                视图2: 多线程对比 - 与时序曲线图一致的切换按钮
             ================================================== -->
             <div id="multithreadView" class="view-container">
                 <div class="card">
                     <div class="card-header">
-                        <div class="card-title">🔄 多线程性能对比</div>
-                        <div class="btn-group">
+                        <div class="card-title">📊 项目概览</div>
+                        <!-- <div class="btn-group">
                             <button class="btn btn-secondary" id="multiRefreshBtn">🔄 刷新数据</button>
-                        </div>
+                        </div> -->
                     </div>
-                    <div class="stats-grid" id="multiStats">
-                        <!-- 动态填充统计信息 -->
-                    </div>
+                    <div class="stats-grid" id="multiStats"></div>
                 </div>
 
                 <div class="card">
@@ -724,7 +156,7 @@
                         <div class="control-group">
                             <label class="control-label">🔧 阶段/Rule</label>
                             <select id="multiRuleSelect">
-                                <option value="">加载中...</option>
+                                <option value="">请先选择项目</option>
                             </select>
                         </div>
                         <div class="control-group">
@@ -734,18 +166,24 @@
                             </select>
                         </div>
                     </div>
-                    
-                    <!-- 多线程图表区 - Grid 双列布局 -->
-                    <div class="multi-charts">
-                        <div>
-                            <div class="card-title" style="margin-bottom: 0.75rem;">⏱️ Runtime vs 线程数</div>
-                            <div id="chart-multi-runtime" class="chart-container" style="height: 350px;"></div>
-                        </div>
-                        <div>
-                            <div class="card-title" style="margin-bottom: 0.75rem;">💾 Memory vs 线程数</div>
-                            <div id="chart-multi-memory" class="chart-container" style="height: 350px;"></div>
-                        </div>
+                </div>
+
+                <!-- 合并后的图表卡片（带切换按钮） -->
+                <div class="multi-chart-card">
+                    <div class="card-header">
+                        <div class="card-title" id="multiChartCardTitle">⏱️ Runtime 性能曲线</div>
                     </div>
+                    <div id="multi-runtime-container" style="height: 400px; width: 100%;">
+                        <div id="chart-multi-runtime" style="height: 100%; width: 100%;"></div>
+                    </div>
+                    <div id="multi-memory-container" style="height: 400px; width: 100%; display: none;">
+                        <div id="chart-multi-memory" style="height: 100%; width: 100%;"></div>
+                    </div>
+                </div>
+
+                <div class="info-bar">
+                    <span>📊 多线程性能对比分析</span>
+                    <span>🎨 ECharts 交互式图表</span>
                 </div>
             </div>
 
@@ -765,6 +203,7 @@
                         <div class="control-group">
                             <label class="control-label">📁 QOR Case</label>
                             <select id="compareCaseSelect">
+                                <option value="">-- 请选择case --</option>
                                 {% for project in project_list %}
                                 <option value="{{ project.id }}">{{ project.name }}</option>
                                 {% endfor %}
@@ -804,6 +243,14 @@
                                 <option value="absolute">绝对值</option>
                                 <option value="percentage">百分比</option>
                             </select>
+                            <div class="control-group">
+                                <label class="control-label">📊 对比维度</label>
+                                <select id="compareDimensionSelect">
+                                    <option value="both">📈 全部 (Runtime + Memory)</option>
+                                    <option value="runtime">⏱️ 仅 Runtime</option>
+                                    <option value="memory">💾 仅 Memory</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
                     
@@ -828,8 +275,8 @@
                         <div class="card-title" id="compareResultTitle">📈 对比结果</div>
                     </div>
                     <div id="compareSummary" class="stats-grid"></div>
-                    <div class="table-container" style="overflow-x: auto; margin-top: 1rem;">
-                        <table class="result-table" id="compareResultTable" style="width: 100%; border-collapse: collapse;">
+                    <div class="table-container">
+                        <table class="result-table" id="compareResultTable">
                             <thead id="compareTableHeader"></thead>
                             <tbody id="compareTableBody"></tbody>
                         </table>
@@ -858,14 +305,12 @@
     </div>
 
     <script>
-        // 后端数据注入
         const projectsData = {{ projects_data_json | tojson }};
         const perf = {{ perf | tojson }};
         const toolId = '{{ tool_id }}';
         const toolName = '{{ tool_name }}';
         const initialMode = '{{ request.args.get("mode", "single") }}';
         
-        // 全局变量
         let currentProjectId = null;
         let currentRule = null;
         let selectedDates = [];
@@ -879,7 +324,6 @@
         let currentMultiRule = null;
         let currentMultiDate = null;
         
-        // 初始化函数将在 tool.js 中定义
     </script>
     
     <script src="{{ url_for('static', filename='js/tool.js') }}"></script>

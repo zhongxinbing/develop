@@ -1,6 +1,10 @@
 """
+==================================================
 数据缓存模块 - LRU缓存 + 数据版本管理
+提供线程安全的LRU缓存和数据变化检测功能
+==================================================
 """
+
 import json
 import hashlib
 from datetime import datetime
@@ -13,40 +17,71 @@ from common import log
 
 
 class DataCache:
-    """线程安全的LRU数据缓存"""
+    """
+    线程安全的LRU数据缓存类
+    使用OrderedDict实现最近最少使用(LRU)淘汰策略
+    """
     
     def __init__(self, max_size: int = 100):
-        self._cache: OrderedDict = OrderedDict()
-        self._max_size = max_size
-        self._lock = Lock()
-        self._version = 1
+        """
+        初始化缓存
+        
+        参数:
+            max_size: int - 最大缓存条目数，默认100
+        """
+        self._cache: OrderedDict = OrderedDict()  # 有序字典存储缓存数据
+        self._max_size = max_size                  # 最大缓存容量
+        self._lock = Lock()                        # 线程锁，保证线程安全
+        self._version = 1                          # 缓存版本号
     
     def get(self, key: str) -> Optional[Any]:
-        """获取缓存数据"""
+        """
+        获取缓存数据
+        命中后将条目移动到末尾（表示最近使用）
+        
+        参数:
+            key: str - 缓存键
+        
+        返回:
+            Any: 缓存的值，不存在则返回None
+        """
         with self._lock:
             if key in self._cache:
-                self._cache.move_to_end(key)
+                self._cache.move_to_end(key)   # 移动到末尾，表示最近使用
                 return self._cache[key]
             return None
     
     def set(self, key: str, value: Any) -> None:
-        """设置缓存数据"""
+        """
+        设置缓存数据
+        如果缓存已满，淘汰最久未使用的条目
+        
+        参数:
+            key: str - 缓存键
+            value: Any - 缓存值
+        """
         with self._lock:
             if key in self._cache:
-                self._cache.move_to_end(key)
+                self._cache.move_to_end(key)   # 更新已有条目
             self._cache[key] = value
             
+            # 超出容量时淘汰最久未使用的（第一个条目）
             if len(self._cache) > self._max_size:
                 self._cache.popitem(last=False)
     
     def invalidate(self, key: str = None) -> None:
-        """使缓存失效"""
+        """
+        使缓存失效
+        
+        参数:
+            key: str - 可选，指定键则只清除该条目，否则清空全部
+        """
         with self._lock:
             if key:
-                self._cache.pop(key, None)
+                self._cache.pop(key, None)     # 清除指定键
             else:
-                self._cache.clear()
-                self._version += 1
+                self._cache.clear()            # 清空全部
+                self._version += 1             # 版本号递增
     
     def get_version(self) -> int:
         """获取缓存版本号"""
@@ -54,18 +89,30 @@ class DataCache:
 
 
 class DataVersionManager:
-    """数据版本管理器 - 用于检测数据变化"""
+    """
+    数据版本管理器
+    用于检测数据变化，通过计算文件哈希值判断是否需要更新
+    """
     
     def __init__(self):
-        self._file_hashes: Dict[str, str] = {}
-        self._lock = Lock()
+        self._file_hashes: Dict[str, str] = {}  # 存储文件哈希值
+        self._lock = Lock()                     # 线程锁
     
     def _compute_file_hash(self, file_path: str) -> str:
-        """计算文件哈希值"""
+        """
+        计算单个文件的哈希值
+        使用文件大小和修改时间作为快速哈希，避免读取大文件内容
+        
+        参数:
+            file_path: str - 文件路径
+        
+        返回:
+            str: 8位MD5哈希值
+        """
         try:
             path = Path(file_path)
             if not path.exists():
-                return ""
+                return ""                      # 文件不存在
             
             # 使用文件大小和修改时间作为快速哈希
             stat = path.stat()
@@ -75,7 +122,17 @@ class DataVersionManager:
             return ""
     
     def _compute_dir_hash(self, dir_path: str, pattern: str = "*.json") -> str:
-        """计算目录哈希值"""
+        """
+        计算目录的哈希值
+        遍历目录下所有匹配模式的文件，组合计算哈希
+        
+        参数:
+            dir_path: str - 目录路径
+            pattern: str - 文件匹配模式，默认 "*.json"
+        
+        返回:
+            str: 8位MD5哈希值
+        """
         try:
             path = Path(dir_path)
             if not path.exists():
@@ -92,7 +149,16 @@ class DataVersionManager:
             return ""
     
     def check_changes(self, config: Dict[str, Any]) -> bool:
-        """检查数据是否有变化"""
+        """
+        检查数据是否有变化
+        比较当前文件哈希值与之前保存的哈希值
+        
+        参数:
+            config: dict - 配置字典，包含文件路径信息
+        
+        返回:
+            bool: True表示有变化，False表示无变化
+        """
         with self._lock:
             current_hashes = {}
             
@@ -122,7 +188,16 @@ class DataVersionManager:
             return has_changed
     
     def get_data_signature(self, config: Dict[str, Any]) -> str:
-        """获取数据签名"""
+        """
+        获取数据签名
+        用于前端检测数据是否有更新
+        
+        参数:
+            config: dict - 配置字典
+        
+        返回:
+            str: 16位数据签名
+        """
         with self._lock:
             hashes = []
             
@@ -137,5 +212,5 @@ class DataVersionManager:
 
 
 # 全局缓存实例
-data_cache = DataCache(max_size=50)
-version_manager = DataVersionManager()
+data_cache = DataCache(max_size=50)       # 数据缓存实例
+version_manager = DataVersionManager()    # 版本管理器实例
