@@ -193,66 +193,69 @@ def add_json(new_json,old_json,date,thread,original_path):
 # original_path 原始路径
 # data_path 保存 json 文件的路径
 def get_json_data(tool,original_path,data_path):
+    try:
+        thread =  Path(data_path).name
+        log(f"获取html需要的数据中\n\ttool:{tool}\n\tthread:{thread}")
+        # 获取json文件及其数据
+        total_json_file=Path(data_path)
 
-    thread =  Path(data_path).name
-    log(f"获取html需要的数据中\n\ttool:{tool}\n\tthread:{thread}")
-    # 获取json文件及其数据
-    total_json_file=Path(data_path)
+        new_total_json={}
+        # 如果不存在 json 文件;则直接重新获取数据并保存
+        if not total_json_file.exists():
+            new_total_json = get_data_from(original_path,2,"*.txt",[f"{date.today().year}"+"*","performance*"])
+            save_json(total_json_file,new_total_json)
+            return new_total_json
+        
+        # 存在total.josn文件
+        total_json=load_json(total_json_file)
 
-    new_total_json={}
-    # 如果不存在 json 文件;则直接重新获取数据并保存
-    if not total_json_file.exists():
-        new_total_json = get_data_from(original_path,2,"*.txt",[f"{date.today().year}"+"*","performance*"])
-        save_json(total_json_file,new_total_json)
-        return new_total_json
-    
-    # 存在total.josn文件
-    total_json=load_json(total_json_file)
+        # 获取数据原始路径
+        original_files = get_target_items(original_path,"folder")
 
-    # 获取数据原始路径
-    original_files = get_target_items(original_path,"folder")
+        available_dates = []
+        for f in original_files:
+            try:
+                date_str = Path(f).name
+                available_dates.append(datetime.strptime(date_str, "%Y-%m-%d-%H").strftime("%Y%m%d"))
+            except Exception:
+                continue
+        available_dates = sorted(set(available_dates))
 
-    available_dates = []
-    for f in original_files:
-        try:
-            date_str = Path(f).name
-            available_dates.append(datetime.strptime(date_str, "%Y-%m-%d-%H").strftime("%Y%m%d"))
-        except Exception:
-            continue
-    available_dates = sorted(set(available_dates))
+        if len(original_files) == 0:
+            for case_data in total_json.values():
+                case_data['available_dates'] = sorted(set(total_json.get(next(iter(total_json)), {}).get('daily_metrics', {}).keys())) if total_json else []
+            save_json(total_json_file,total_json)
+            return total_json
 
-    if len(original_files) == 0:
-        for case_data in total_json.values():
-            case_data['available_dates'] = sorted(set(total_json.get(next(iter(total_json)), {}).get('daily_metrics', {}).keys())) if total_json else []
-        save_json(total_json_file,total_json)
-        return total_json
+        for f in original_files:
+            print(f"正在处理文件: {f} ...")
+            # 获取文件夹的名字
+            try:
+                date_str = Path(f).name
+                date_str = datetime.strptime(date_str, "%Y-%m-%d-%H").strftime("%Y%m%d")
+            except Exception:
+                continue
+            # 将对应日期的数据添加到新的json中
+            new_total_json = add_json(new_total_json,total_json,date_str,thread,f)
 
-    for f in original_files:
-        print(f"正在处理文件: {f} ...")
-        # 获取文件夹的名字
-        try:
-            date_str = Path(f).name
-            date_str = datetime.strptime(date_str, "%Y-%m-%d-%H").strftime("%Y%m%d")
-        except Exception:
-            continue
-        # 将对应日期的数据添加到新的json中
-        new_total_json = add_json(new_total_json,total_json,date_str,thread,f)
+        # 判断是否有遗漏的 case
+        new_total_json = get_txt_name(original_path, new_total_json)
 
-    # 判断是否有遗漏的 case
-    new_total_json = get_txt_name(original_path, new_total_json)
-
-    # 为所有case补充 available_dates 信息
-    for case_data in new_total_json.values():
-        case_data['available_dates'] = available_dates if available_dates else sorted(set(case_data.get('daily_metrics', {}).keys()))
-    
-    # 判断两个json是否相同
-    if new_total_json == total_json:
-        log("没有数据需要更新")
-        return new_total_json
-    else:
-        log("数据更新并重新保存")
-        save_json(total_json_file,new_total_json)
-        return new_total_json
+        # 为所有case补充 available_dates 信息
+        for case_data in new_total_json.values():
+            case_data['available_dates'] = available_dates if available_dates else sorted(set(case_data.get('daily_metrics', {}).keys()))
+        
+        # 判断两个json是否相同
+        if new_total_json == total_json:
+            log("没有数据需要更新")
+            return new_total_json
+        else:
+            log("数据更新并重新保存")
+            save_json(total_json_file,new_total_json)
+            return new_total_json
+    except Exception as e:
+        log(f"获取数据发生异常: {e}")
+        return {}
 
 def get_txt_name(path,new_json):
     all_txt = find_files(root_dir=path,max_depth=2,target_pattern="*.txt", path_patterns=[f"{date.today().year}"+"*","performance*"])

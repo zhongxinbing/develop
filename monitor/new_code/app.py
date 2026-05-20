@@ -19,7 +19,7 @@ from datetime import datetime
 from pathlib import Path
 
 from common import log
-from elint import get_json_data, get_perf
+from elint import *
 from data_cache import data_cache, version_manager
 from compare import comparator
 
@@ -39,33 +39,7 @@ CONFIG = {
 }
 
 # 配置数据映射 - 工具配置，用于主页面卡片动态生成
-CASE_CONFIG = {
-    'elint': {
-        'name': 'ELINT',
-        'description': 'EDA Lint工具性能监控',
-        'icon': '🔍',
-        'single': {
-            'original_path': '/home/xbzhong/develop/monitor/code_20260513/data/original',
-            'json_path': 'C:\\Users\\xbzhong\\Desktop\\lint\\script\\monitor\\develop\\monitor\\new_code\\data\\total.json',
-            'mem': 'C:\\Users\\xbzhong\\Desktop\\lint\\script\\monitor\\develop\\monitor\\new_code\\data\\lint_mem.csv',
-            'cpu': 'C:\\Users\\xbzhong\\Desktop\\lint\\script\\monitor\\develop\\monitor\\new_code\\data\\lint_cpu.csv'
-        },
-        'multi': {
-            'original_path': '/mnt/efs/fs1/jenkins/lint_comparison_results_qor',
-            'json_path': '/mnt/efs/fs1/reg_test_data/CN/lint/pv/other/monitor/json/elint/multi',
-            'mem': './data/lint_mem.csv',
-            'cpu': './data/lint_cpu.csv'
-        }
-    },
-    # 可以在这里添加更多工具，主页面卡片会自动生成
-    # 'ecdc': {
-    #     'name': 'ECDC',
-    #     'description': 'EDA CDC工具性能监控',
-    #     'icon': '⚡',
-    #     'single': {...},
-    #     'multi': {...}
-    # }
-}
+CASE_CONFIG = load_json(r'C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\new_code\data\config\tool_config.json')
 
 # 数据目录配置
 DATA_DIR = Path('./data')
@@ -413,7 +387,10 @@ def tool_page(tool_id):
 def api_refresh():
     """刷新数据API接口 - 优化版"""
     log("刷新数据中...")
+    global CASE_CONFIG
     try:
+        CASE_CONFIG = load_json(r'C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\new_code\data\config\tool_config.json')
+
         data = request.get_json()
         tool = data.get('tool', 'elint')
         mode = data.get('mode', 'single')  # single 或 multi
