@@ -5,8 +5,103 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>{{ tool_name }} 性能监控系统</title>
     <script src="{{ url_for('static', filename='js/echarts.min.js') }}"></script>
-        <link rel="stylesheet" href="{{ url_for('static', filename='css/tool.css') }}">
-
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/tool.css') }}">
+    <style>
+        /* 线程选择器样式 */
+        .thread-selector {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+        
+        .thread-checkbox-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            max-height: 300px;
+            overflow-y: auto;
+            padding: 0.5rem;
+            background: rgba(15, 23, 42, 0.6);
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border);
+        }
+        
+        .thread-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.25rem 0.6rem;
+            background: rgba(99, 102, 241, 0.1);
+            border-radius: 16px;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 0.75rem;
+        }
+        
+        .thread-checkbox:hover {
+            background: rgba(99, 102, 241, 0.2);
+        }
+        
+        .thread-checkbox input {
+            margin: 0;
+            width: auto;
+            cursor: pointer;
+        }
+        
+        .thread-checkbox.selected {
+            background: rgba(99, 102, 241, 0.3);
+            border: 1px solid var(--primary);
+        }
+        
+        .info-bar-multi {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            background: rgba(15, 23, 42, 0.6);
+            border-radius: var(--radius-lg);
+            margin-top: 1rem;
+        }
+        
+        .thread-select-btn {
+            padding: 0.5rem 1rem;
+            background: rgba(99, 102, 241, 0.15);
+            border: 1px solid var(--primary);
+            border-radius: var(--radius-md);
+            color: var(--primary-light);
+            cursor: pointer;
+            font-size: 0.75rem;
+            transition: var(--transition);
+        }
+        
+        .thread-select-btn:hover {
+            background: var(--primary);
+            color: white;
+        }
+        
+        /* 模态框内容样式 */
+        .modal-content {
+            max-width: 500px;
+            width: 90%;
+        }
+        
+        /* 加载动画 */
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid var(--border);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+    </style>
 </head>
 <body>
     <div class="app-container">
@@ -72,7 +167,6 @@
                         <div class="control-group">
                             <label class="control-label">🔧 阶段/Rule</label>
                             <select id="ruleSelect">
-                                <option selected>Overall</option>
                                 <option value="">加载中...</option>
                             </select>
                         </div>
@@ -82,15 +176,6 @@
                         </div>
                     </div>
                 </div>
-
-                <!-- <div class="card">
-                    <div class="card-header">
-                        <div class="chart-type-buttons" id="chartTypeButtons">
-                            <button class="btn btn-primary chart-type-btn" data-type="runtime">⏱️ Runtime</button>
-                            <button class="btn btn-secondary chart-type-btn" data-type="memory">💾 Memory</button>
-                        </div>
-                    </div>
-                </div> -->
 
                 <div class="card">
                     <div class="card-header">
@@ -103,16 +188,10 @@
                             <button class="btn btn-secondary" id="selectRecentBtn">🕐 最近51条</button>
                             <button class="btn btn-secondary" id="selectAllDatesBtn">📆 显示全部</button>
                         </div>
-                            <span class="tooltip" data-tip="MR更新日期会高亮显示">ℹ️</span>
+                        <span class="tooltip" data-tip="MR更新日期会高亮显示">ℹ️</span>
                     </div>
                     <div class="card-header">
                         <div class="card-title" id="chartCardTitle">⏱️ Runtime 性能曲线</div>
-                        <!-- <div class="btn-group">
-                            <button class="btn btn-secondary" id="openDatePickerBtn">📅 选择日期范围</button>
-                            <button class="btn btn-secondary" id="selectRecentBtn">🕐 最近51条</button>
-                            <button class="btn btn-secondary" id="selectAllDatesBtn">📆 显示全部</button>
-                            <span class="tooltip" data-tip="MR更新日期会高亮显示">ℹ️</span>
-                        </div> -->
                     </div>
                     <div class="chart-wrapper">
                         <div id="chart-runtime" class="chart-container"></div>
@@ -130,15 +209,12 @@
             </div>
 
             <!-- ==================================================
-                视图2: 多线程对比 - 与时序曲线图一致的切换按钮
+                 视图2: 多线程对比 - 重构版
             ================================================== -->
             <div id="multithreadView" class="view-container">
                 <div class="card">
                     <div class="card-header">
                         <div class="card-title">📊 项目概览</div>
-                        <!-- <div class="btn-group">
-                            <button class="btn btn-secondary" id="multiRefreshBtn">🔄 刷新数据</button>
-                        </div> -->
                     </div>
                     <div class="stats-grid" id="multiStats"></div>
                 </div>
@@ -160,30 +236,41 @@
                             </select>
                         </div>
                         <div class="control-group">
-                            <label class="control-label">📅 日期</label>
-                            <select id="multiDateSelect">
-                                <option value="">请先选择阶段</option>
-                            </select>
+                            <label class="control-label">🔍 搜索阶段</label>
+                            <input type="text" id="multiRuleSearch" placeholder="输入阶段名称..." class="search-input">
                         </div>
                     </div>
                 </div>
 
-                <!-- 合并后的图表卡片（带切换按钮） -->
-                <div class="multi-chart-card">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="chart-type-buttons">
+                            <button class="btn btn-primary" id="multiChartRuntimeBtn" onclick="window.selectMultiChartType('runtime')">⏱️ Runtime</button>
+                            <button class="btn btn-secondary" id="multiChartMemoryBtn" onclick="window.selectMultiChartType('memory')">💾 Memory</button>
+                        </div>
+                        <div class="btn-group">
+                            <button class="btn btn-secondary" id="multiOpenDatePickerBtn">📅 选择日期</button>
+                            <button class="btn btn-secondary" id="multiSelectRecentBtn">🕐 最新日期</button>
+                        </div>
+                    </div>
+                    
                     <div class="card-header">
                         <div class="card-title" id="multiChartCardTitle">⏱️ Runtime 性能曲线</div>
+                        <button class="thread-select-btn" id="multiThreadSelectBtn" onclick="window.openThreadSelectorModal()">🧵 选择线程</button>
                     </div>
-                    <div id="multi-runtime-container" style="height: 400px; width: 100%;">
-                        <div id="chart-multi-runtime" style="height: 100%; width: 100%;"></div>
+                    
+                    <div class="chart-wrapper">
+                        <div id="chart-multi-runtime" class="chart-container" style="height: 450px;"></div>
+                        <div id="chart-multi-memory" class="chart-container hidden" style="height: 450px;"></div>
                     </div>
-                    <div id="multi-memory-container" style="height: 400px; width: 100%; display: none;">
-                        <div id="chart-multi-memory" style="height: 100%; width: 100%;"></div>
-                    </div>
+                                        
+                    <div class="stats-grid" id="multiStatsDetail"></div>
                 </div>
 
-                <div class="info-bar">
+                <div class="info-bar-multi">
                     <span>📊 多线程性能对比分析</span>
-                    <span>🎨 ECharts 交互式图表</span>
+                    <span>📅 当前日期: <strong id="multiCurrentDate">-</strong></span>
+                    <span>🎨 ECharts 交互式图表 | 点击选择线程可筛选</span>
                 </div>
             </div>
 
@@ -243,14 +330,14 @@
                                 <option value="absolute">绝对值</option>
                                 <option value="percentage">百分比</option>
                             </select>
-                            <div class="control-group">
-                                <label class="control-label">📊 对比维度</label>
-                                <select id="compareDimensionSelect">
-                                    <option value="both">📈 全部 (Runtime + Memory)</option>
-                                    <option value="runtime">⏱️ 仅 Runtime</option>
-                                    <option value="memory">💾 仅 Memory</option>
-                                </select>
-                            </div>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label">📊 对比维度</label>
+                            <select id="compareDimensionSelect">
+                                <option value="both">📈 全部 (Runtime + Memory)</option>
+                                <option value="runtime">⏱️ 仅 Runtime</option>
+                                <option value="memory">💾 仅 Memory</option>
+                            </select>
                         </div>
                     </div>
                     
@@ -269,7 +356,6 @@
                     </div>
                 </div>
 
-                <!-- 对比结果区域 -->
                 <div id="compareResultArea" class="card" style="display: none;">
                     <div class="card-header">
                         <div class="card-title" id="compareResultTitle">📈 对比结果</div>
@@ -299,9 +385,36 @@
         </div>
     </div>
 
+    <!-- 多线程日期选择模态框 -->
+    <div id="multiDatePickerModal" class="modal hidden">
+        <div class="modal-content">
+            <h3 style="margin-bottom: 1rem;">📅 选择要显示的日期</h3>
+            <input type="text" id="multiDateFilterInput" placeholder="筛选日期..." style="width: 100%; margin-bottom: 1rem;">
+            <div id="multiDateOptionsContainer" class="date-options"></div>
+            <div class="btn-group" style="margin-top: 1rem;">
+                <button class="btn btn-primary" id="multiConfirmDateBtn">确认应用</button>
+                <button class="btn btn-secondary" id="multiCloseDateModalBtn">取消</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 线程选择模态框 -->
+    <div id="threadSelectorModal" class="modal hidden">
+        <div class="modal-content">
+            <h3 style="margin-bottom: 1rem;">🧵 选择要显示的线程</h3>
+            <div id="threadSelectorModalContent" style="min-height: 200px;">
+                <!-- 动态内容 -->
+            </div>
+            <div class="btn-group" style="margin-top: 1rem;">
+                <button class="btn btn-primary" id="confirmThreadBtn" onclick="window.confirmThreadSelection()">确认应用</button>
+                <button class="btn btn-secondary" id="closeThreadModalBtn" onclick="window.closeThreadSelectorModal()">取消</button>
+            </div>
+        </div>
+    </div>
+
     <!-- 加载遮罩 -->
-    <div id="loadingOverlay" class="modal hidden" style="background: rgba(0,0,0,0.7);">
-        <div class="loading-spinner" style="width: 50px; height: 50px; border: 3px solid var(--border); border-top-color: var(--primary); border-radius: 50%; animation: spin 1s linear infinite;"></div>
+    <div id="loadingOverlay" class="modal hidden" style="background: rgba(0,0,0,0.7); z-index: 10000;">
+        <div class="loading-spinner"></div>
     </div>
 
     <script>
@@ -323,7 +436,15 @@
         let currentDataVersion = '';
         let currentMultiRule = null;
         let currentMultiDate = null;
-        
+        let currentMultiChartType = 'runtime';
+        let selectedMultiThreads = [];
+        let availableThreads = [];
+        let multiAvailableDates = [];
+        let pendingMultiSelectedDates = [];
+        let currentMultiThreadData = [];
+        let currentFilterText = '';
+        let currentCompareResult = null;
+        let currentFilteredData = [];
     </script>
     
     <script src="{{ url_for('static', filename='js/tool.js') }}"></script>
