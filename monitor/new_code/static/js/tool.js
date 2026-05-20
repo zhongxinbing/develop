@@ -188,146 +188,6 @@ tooltipStyle.textContent = `
 document.head.appendChild(tooltipStyle);
 
 // ==================================================
-// 数据对比配置存储模块 - 按 QOR Case 分别保存
-// ==================================================
-
-const COMPARE_CONFIG_STORAGE_KEY = 'eda_compare_tolerance_config';
-
-/**
- * 保存容差配置到 localStorage（按项目分别存储）
- * @param {string} projectId - 项目ID (QOR Case名称)
- * @param {Object} config - 配置对象
- */
-function saveToleranceConfig(projectId, config) {
-    if (!projectId) return;
-    
-    try {
-        // 获取现有配置
-        const allConfigs = JSON.parse(localStorage.getItem(COMPARE_CONFIG_STORAGE_KEY) || '{}');
-        
-        // 更新指定项目的配置
-        allConfigs[projectId] = {
-            tolerance_runtime: config.tolerance_runtime,
-            tolerance_memory: config.tolerance_memory,
-            tolerance_mode: config.tolerance_mode,
-            compare_dimension: config.compare_dimension,
-            compare_mode: config.compare_mode,
-            last_update: new Date().toISOString()
-        };
-        
-        localStorage.setItem(COMPARE_CONFIG_STORAGE_KEY, JSON.stringify(allConfigs));
-        console.log('容差配置已保存:', projectId, config);
-        return true;
-    } catch (error) {
-        console.error('保存容差配置失败:', error);
-        return false;
-    }
-}
-
-/**
- * 加载容差配置从 localStorage（按项目分别加载）
- * @param {string} projectId - 项目ID (QOR Case名称)
- * @returns {Object|null} 配置对象或null
- */
-function loadToleranceConfig(projectId) {
-    if (!projectId) return null;
-    
-    try {
-        const allConfigs = JSON.parse(localStorage.getItem(COMPARE_CONFIG_STORAGE_KEY) || '{}');
-        const config = allConfigs[projectId];
-        
-        if (config) {
-            console.log('加载容差配置:', projectId, config);
-            return config;
-        }
-    } catch (error) {
-        console.error('加载容差配置失败:', error);
-    }
-    return null;
-}
-
-/**
- * 应用容差配置到表单
- * @param {Object} config - 配置对象
- */
-function applyToleranceConfigToForm(config) {
-    if (!config) return;
-    
-    const runtimeInput = document.getElementById('toleranceRuntime');
-    const memoryInput = document.getElementById('toleranceMemory');
-    const modeSelect = document.getElementById('toleranceMode');
-    const dimensionSelect = document.getElementById('compareDimensionSelect');
-    const modeSelectCompare = document.getElementById('compareModeSelect');
-    
-    if (runtimeInput && config.tolerance_runtime !== undefined) {
-        runtimeInput.value = config.tolerance_runtime;
-    }
-    if (memoryInput && config.tolerance_memory !== undefined) {
-        memoryInput.value = config.tolerance_memory;
-    }
-    if (modeSelect && config.tolerance_mode !== undefined) {
-        modeSelect.value = config.tolerance_mode;
-    }
-    if (dimensionSelect && config.compare_dimension !== undefined) {
-        dimensionSelect.value = config.compare_dimension;
-    }
-    if (modeSelectCompare && config.compare_mode !== undefined) {
-        modeSelectCompare.value = config.compare_mode;
-        // 触发对比模式变化事件，显示/隐藏规则选择
-        const event = new Event('change');
-        modeSelectCompare.dispatchEvent(event);
-    }
-    
-    console.log('已应用配置到表单:', config);
-}
-
-/**
- * 从表单获取容差配置
- * @returns {Object}
- */
-function getToleranceConfigFromForm() {
-    const runtimeInput = document.getElementById('toleranceRuntime');
-    const memoryInput = document.getElementById('toleranceMemory');
-    const modeSelect = document.getElementById('toleranceMode');
-    const dimensionSelect = document.getElementById('compareDimensionSelect');
-    const modeSelectCompare = document.getElementById('compareModeSelect');
-    
-    return {
-        tolerance_runtime: parseFloat(runtimeInput?.value) || 0,
-        tolerance_memory: parseFloat(memoryInput?.value) || 0,
-        tolerance_mode: modeSelect?.value || 'absolute',
-        compare_dimension: dimensionSelect?.value || 'both',
-        compare_mode: modeSelectCompare?.value || 'single'
-    };
-}
-
-/**
- * 保存最后选择的项目ID（用于页面加载时恢复）
- * @param {string} projectId - 项目ID
- */
-function saveLastCompareProject(projectId) {
-    if (!projectId) return;
-    try {
-        localStorage.setItem('eda_compare_last_project', projectId);
-    } catch (error) {
-        console.error('保存最后项目失败:', error);
-    }
-}
-
-/**
- * 获取最后选择的项目ID
- * @returns {string|null}
- */
-function getLastCompareProject() {
-    try {
-        return localStorage.getItem('eda_compare_last_project');
-    } catch (error) {
-        console.error('获取最后项目失败:', error);
-    }
-    return null;
-}
-
-// ==================================================
 // 时序曲线图模块
 // ==================================================
 
@@ -1228,10 +1088,11 @@ async function loadMultiThreadData(projectId, ruleName, date) {
             
             if (selectedMultiThreads.length === 0) {
                 selectedMultiThreads = [...availableThreads];
-                console.log('多线程首次加载，默认全选所有线程:', selectedMultiThreads);
             } else {
-                const validThreads = selectedMultiThreads.filter(t => availableThreads.includes(t));
-                selectedMultiThreads = validThreads.length > 0 ? validThreads : [...availableThreads];
+                selectedMultiThreads = selectedMultiThreads.filter(t => availableThreads.includes(t));
+                if (selectedMultiThreads.length === 0) {
+                    selectedMultiThreads = [...availableThreads];
+                }
             }
             
             if (!charts.multiRuntime || !charts.multiMemory) {
@@ -1401,6 +1262,9 @@ function updateMultiStats(threadsData) {
 // 数据对比模块
 // ==================================================
 
+/**
+ * 加载对比日期列表
+ */
 async function loadCompareDates(projectId) {
     try {
         const response = await fetch('/api/get_dates', {
@@ -1413,18 +1277,29 @@ async function loadCompareDates(projectId) {
         if (data.success && data.dates?.length) {
             const date1Select = document.getElementById('compareDate1');
             const date2Select = document.getElementById('compareDate2');
+            const currentDate1 = date1Select?.value;
+            const currentDate2 = date2Select?.value;
             
-            if (date1Select) date1Select.innerHTML = '<option value="">请选择日期</option>';
-            if (date2Select) date2Select.innerHTML = '<option value="">请选择日期</option>';
+            if (date1Select) {
+                date1Select.innerHTML = '<option value="">请选择日期</option>';
+                data.dates.forEach(date => {
+                    date1Select.appendChild(new Option(date, date));
+                });
+                // 恢复之前选中的日期
+                if (currentDate1 && data.dates.includes(currentDate1)) {
+                    date1Select.value = currentDate1;
+                }
+            }
             
-            data.dates.forEach(date => {
-                if (date1Select) date1Select.appendChild(new Option(date, date));
-                if (date2Select) date2Select.appendChild(new Option(date, date));
-            });
-            
-            if (data.dates.length >= 2) {
-                if (date1Select) date1Select.value = data.dates[data.dates.length - 2];
-                if (date2Select) date2Select.value = data.dates[data.dates.length - 1];
+            if (date2Select) {
+                date2Select.innerHTML = '<option value="">请选择日期</option>';
+                data.dates.forEach(date => {
+                    date2Select.appendChild(new Option(date, date));
+                });
+                // 恢复之前选中的日期
+                if (currentDate2 && data.dates.includes(currentDate2)) {
+                    date2Select.value = currentDate2;
+                }
             }
         }
     } catch (error) {
@@ -1432,19 +1307,156 @@ async function loadCompareDates(projectId) {
     }
 }
 
+/**
+ * 加载对比规则列表
+ */
 async function loadCompareRules(projectId) {
     try {
         const response = await fetch(`/api/project/${projectId}`);
         const data = await response.json();
         
         const ruleSelect = document.getElementById('compareRuleSelect');
+        const currentValue = ruleSelect?.value;
+        
         if (ruleSelect && data?.rules?.length) {
             ruleSelect.innerHTML = '<option value="all">📊 所有阶段</option>' + 
                 data.rules.map(rule => `<option value="${rule}">${rule}</option>`).join('');
+            
+            // 恢复之前选中的规则
+            if (currentValue && (currentValue === 'all' || data.rules.includes(currentValue))) {
+                ruleSelect.value = currentValue;
+            }
         }
     } catch (error) {
         console.error('加载规则失败:', error);
     }
+}
+
+/**
+ * 保存对比配置到服务器
+ * @param {string} projectId - 项目ID
+ * @param {object} config - 配置对象（只包含 tolerance_runtime, tolerance_memory）
+ */
+async function saveCompareConfig(projectId, config) {
+    if (!projectId) return false;
+    
+    try {
+        const response = await fetch('/api/compare_config', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                project_id: projectId,
+                config: {
+                    tolerance_runtime: config.tolerance_runtime,
+                    tolerance_memory: config.tolerance_memory
+                }
+            })
+        });
+        
+        const result = await response.json();
+        if (result.success) {
+            console.log(`对比配置已保存: ${projectId}`);
+            return true;
+        }
+    } catch (error) {
+        console.error('保存对比配置失败:', error);
+    }
+    return false;
+}
+
+/**
+ * 加载对比配置
+ * @param {string} projectId - 项目ID
+ * @returns {Promise<object>} 配置对象
+ */
+async function loadCompareConfig(projectId) {
+    if (!projectId) return {};
+    
+    try {
+        const url = `/api/compare_config?project_id=${encodeURIComponent(projectId)}`;
+        const response = await fetch(url);
+        const result = await response.json();
+        
+        if (result.success && result.config) {
+            return result.config;
+        }
+    } catch (error) {
+        console.error('加载对比配置失败:', error);
+    }
+    return {};
+}
+
+/**
+ * 应用配置到表单
+ * @param {object} config - 配置对象
+ */
+function applyCompareConfigToForm(config) {
+    if (!config || Object.keys(config).length === 0) return false;
+    
+    let applied = false;
+    
+    // 应用 Runtime 容差
+    if (config.tolerance_runtime !== undefined && !isNaN(config.tolerance_runtime)) {
+        const runtimeInput = document.getElementById('toleranceRuntime');
+        if (runtimeInput) {
+            runtimeInput.value = config.tolerance_runtime;
+            applied = true;
+        }
+    }
+    
+    // 应用 Memory 容差
+    if (config.tolerance_memory !== undefined && !isNaN(config.tolerance_memory)) {
+        const memoryInput = document.getElementById('toleranceMemory');
+        if (memoryInput) {
+            memoryInput.value = config.tolerance_memory;
+            applied = true;
+        }
+    }
+    
+    if (applied && config.tolerance_runtime !== undefined && config.tolerance_memory !== undefined) {
+        console.log(`已加载对比配置: runtime=${config.tolerance_runtime}, memory=${config.tolerance_memory}`);
+    }
+    
+    return applied;
+}
+
+/**
+ * 获取当前表单配置
+ */
+function getCurrentCompareConfig() {
+    return {
+        tolerance_runtime: parseFloat(document.getElementById('toleranceRuntime').value) || 0,
+        tolerance_memory: parseFloat(document.getElementById('toleranceMemory').value) || 0,
+        tolerance_mode: document.getElementById('toleranceMode').value,
+        compare_dimension: document.getElementById('compareDimensionSelect').value,
+        date1: document.getElementById('compareDate1').value,
+        date2: document.getElementById('compareDate2').value,
+        last_updated: new Date().toISOString()
+    };
+}
+
+/**
+ * 项目切换时加载配置
+ */
+async function onCompareProjectChange(projectId) {
+    if (!projectId) return;
+    
+    await loadCompareDates(projectId);
+    await loadCompareRules(projectId);
+    
+    // 加载项目配置并应用到表单
+    const config = await loadCompareConfig(projectId);
+    applyCompareConfigToForm(config);
+}
+
+/**
+ * 规则切换时加载配置
+ */
+async function onCompareRuleChange(projectId, ruleName) {
+    if (!projectId || !ruleName || ruleName === 'all') return;
+    
+    const config = await loadCompareConfig(projectId, ruleName);
+    applyCompareConfigToForm(config);
 }
 
 function buildSortedList(rulesComparison, type, isIncrease) {
@@ -1462,6 +1474,9 @@ function buildSortedList(rulesComparison, type, isIncrease) {
     return list;
 }
 
+/**
+ * 执行对比 - 修改后保存配置
+ */
 async function executeCompare() {
     const projectId = document.getElementById('compareCaseSelect').value;
     const compareMode = document.getElementById('compareModeSelect').value;
@@ -1485,17 +1500,6 @@ async function executeCompare() {
         return;
     }
     
-    // 保存当前配置到对应的 QOR Case
-    const currentConfig = {
-        tolerance_runtime: toleranceRuntime,
-        tolerance_memory: toleranceMemory,
-        tolerance_mode: toleranceMode,
-        compare_dimension: compareDimension,
-        compare_mode: compareMode
-    };
-    saveToleranceConfig(projectId, currentConfig);
-    saveLastCompareProject(projectId);
-    
     showLoading(true);
     
     try {
@@ -1509,7 +1513,8 @@ async function executeCompare() {
                 tolerance_runtime: toleranceRuntime,
                 tolerance_memory: toleranceMemory,
                 tolerance_mode: toleranceMode,
-                compare_dimension: compareDimension
+                compare_dimension: compareDimension,
+                save_config: true  // 保存配置
             })
         });
         
@@ -1520,6 +1525,14 @@ async function executeCompare() {
             displayCompareResult(result.result);
             const compareResultArea = document.getElementById('compareResultArea');
             if (compareResultArea) compareResultArea.style.display = 'block';
+            
+            // 保存配置到服务器（只保存项目的 runtime 和 memory 容差）
+            const configToSave = {
+                tolerance_runtime: toleranceRuntime,
+                tolerance_memory: toleranceMemory
+            };
+            await saveCompareConfig(projectId, configToSave);
+            showNotification('对比配置已保存');
         } else {
             showNotification('对比失败: ' + (result.error || '未知错误'), true);
         }
@@ -1530,6 +1543,7 @@ async function executeCompare() {
         showLoading(false);
     }
 }
+
 
 function addTableFilter() {
     const compareResultArea = document.getElementById('compareResultArea');
@@ -1995,31 +2009,20 @@ async function refreshAllData() {
                 }
                 
                 const compareCaseSelect = document.getElementById('compareCaseSelect');
+                const oldCompareValue = compareCaseSelect?.value;
                 if (compareCaseSelect) {
                     compareCaseSelect.innerHTML = '<option value="">-- 请选择case --</option>' + 
                         result.project_list.map(p => `<option value="${p.id}">${p.name}</option>`).join('');
                     
-                    // 加载上次选择的项目并恢复容差配置
-                    const lastProject = getLastCompareProject();
-                    if (lastProject && result.project_list.some(p => p.id === lastProject)) {
-                        compareCaseSelect.value = lastProject;
-                        currentProjectId = lastProject;
-                        
-                        // 加载该 QOR Case 保存的容差配置
-                        const savedConfig = loadToleranceConfig(lastProject);
-                        if (savedConfig) {
-                            applyToleranceConfigToForm(savedConfig);
-                            showNotification(`已加载项目 "${lastProject}" 的保存配置`);
-                        }
-                        
-                        await loadCompareDates(lastProject);
-                        await loadCompareRules(lastProject);
-                    } else if (result.project_list.length > 0 && !compareCaseSelect.value) {
-                        // 如果没有保存的项目，选择第一个
+                    if (oldCompareValue && result.project_list.some(p => p.id === oldCompareValue)) {
+                        compareCaseSelect.value = oldCompareValue;
+                    } else if (result.project_list.length > 0) {
                         compareCaseSelect.value = result.project_list[0].id;
-                        currentProjectId = result.project_list[0].id;
-                        await loadCompareDates(currentProjectId);
-                        await loadCompareRules(currentProjectId);
+                    }
+                    
+                    // 刷新后重新加载配置
+                    if (compareCaseSelect.value) {
+                        await onCompareProjectChange(compareCaseSelect.value);
                     }
                 }
             }
@@ -2225,28 +2228,15 @@ function bindEvents() {
     if (compareCaseSelect) {
         compareCaseSelect.addEventListener('change', async (e) => {
             const projId = e.target.value;
-            currentProjectId = projId;
-            
             if (projId) {
-                // 加载该 QOR Case 保存的容差配置
-                const savedConfig = loadToleranceConfig(projId);
-                if (savedConfig) {
-                    applyToleranceConfigToForm(savedConfig);
-                    showNotification(`已加载项目 "${projId}" 的保存配置`);
-                } else {
-                    console.log('未找到保存的配置，使用默认值');
-                }
-                
-                await loadCompareDates(projId);
-                await loadCompareRules(projId);
-                saveLastCompareProject(projId);
+                await onCompareProjectChange(projId);
             }
         });
     }
     
     const compareModeSelect = document.getElementById('compareModeSelect');
     if (compareModeSelect) {
-        compareModeSelect.addEventListener('change', (e) => {
+        compareModeSelect.addEventListener('change', async (e) => {
             const ruleGroup = document.getElementById('compareRuleGroup');
             if (ruleGroup) {
                 if (e.target.value === 'all') {
@@ -2254,6 +2244,27 @@ function bindEvents() {
                 } else {
                     ruleGroup.style.display = 'block';
                 }
+            }
+            // 切换模式后重新加载配置
+            const projectId = document.getElementById('compareCaseSelect').value;
+            const ruleSelect = document.getElementById('compareRuleSelect');
+            const ruleName = ruleSelect?.value;
+            if (projectId && e.target.value !== 'all' && ruleName && ruleName !== 'all') {
+                const config = await loadCompareConfig(projectId, ruleName);
+                applyCompareConfigToForm(config);
+            }
+        });
+    }
+    
+    const compareRuleSelect = document.getElementById('compareRuleSelect');
+    if (compareRuleSelect) {
+        compareRuleSelect.addEventListener('change', async (e) => {
+            const projectId = document.getElementById('compareCaseSelect').value;
+            const ruleName = e.target.value;
+            const compareMode = document.getElementById('compareModeSelect').value;
+            
+            if (projectId && compareMode !== 'all' && ruleName && ruleName !== 'all') {
+                await onCompareRuleChange(projectId, ruleName);
             }
         });
     }
@@ -2271,32 +2282,10 @@ function bindEvents() {
     
     const backToHomeBtn = document.getElementById('backToHomeBtn');
     if (backToHomeBtn) backToHomeBtn.addEventListener('click', backToHome);
-    
-    // 监听容差输入框变化，自动保存配置到当前 QOR Case
-    const toleranceRuntime = document.getElementById('toleranceRuntime');
-    const toleranceMemory = document.getElementById('toleranceMemory');
-    const toleranceMode = document.getElementById('toleranceMode');
-    const compareDimensionSelect = document.getElementById('compareDimensionSelect');
-    const compareModeSelectAuto = document.getElementById('compareModeSelect');
-    
-    const autoSaveConfig = debounce(() => {
-        const projectId = document.getElementById('compareCaseSelect')?.value;
-        if (projectId) {
-            const config = getToleranceConfigFromForm();
-            saveToleranceConfig(projectId, config);
-            console.log('自动保存容差配置到项目:', projectId, config);
-        }
-    }, 500);
-    
-    if (toleranceRuntime) toleranceRuntime.addEventListener('input', autoSaveConfig);
-    if (toleranceMemory) toleranceMemory.addEventListener('input', autoSaveConfig);
-    if (toleranceMode) toleranceMode.addEventListener('change', autoSaveConfig);
-    if (compareDimensionSelect) compareDimensionSelect.addEventListener('change', autoSaveConfig);
-    if (compareModeSelectAuto) compareModeSelectAuto.addEventListener('change', autoSaveConfig);
 }
 
 // ==================================================
-// 将关键函数挂载到 window 对象，供 HTML onclick 调用
+// 将关键函数挂载到 window 对象
 // ==================================================
 
 window.selectMultiChartType = selectMultiChartType;
@@ -2329,6 +2318,15 @@ async function init() {
         await loadMultiRules(currentProjectId);
     }
     
+    // 初始化对比配置
+    const compareSelect = document.getElementById('compareCaseSelect');
+    if (compareSelect && compareSelect.options.length > 0) {
+        compareSelect.value = compareSelect.options[0]?.value || '';
+        if (compareSelect.value) {
+            await onCompareProjectChange(compareSelect.value);
+        }
+    }
+    
     if (initialMode === 'multi') {
         switchView('multithread');
     } else if (initialMode === 'compare') {
@@ -2337,15 +2335,7 @@ async function init() {
         const projId = compareSelect?.value || currentProjectId;
         if (projId) {
             currentProjectId = projId;
-            
-            // 加载该 QOR Case 保存的容差配置
-            const savedConfig = loadToleranceConfig(projId);
-            if (savedConfig) {
-                applyToleranceConfigToForm(savedConfig);
-            }
-            
-            await loadCompareDates(currentProjectId);
-            await loadCompareRules(currentProjectId);
+            await onCompareProjectChange(currentProjectId);
         }
     }
     
@@ -2440,28 +2430,17 @@ async function autoRefreshOnLoad() {
                     
                     const compareCaseSelect = document.getElementById('compareCaseSelect');
                     if (compareCaseSelect) {
+                        const oldValue = compareCaseSelect.value;
                         compareCaseSelect.innerHTML = '<option value="">-- 请选择case --</option>' + 
                             result.project_list.map(p => `<option value="${p.id}">${p.name}</option>`).join('');
-                        
-                        // 加载上次选择的项目并恢复容差配置
-                        const lastProject = getLastCompareProject();
-                        if (lastProject && result.project_list.some(p => p.id === lastProject)) {
-                            compareCaseSelect.value = lastProject;
-                            currentProjectId = lastProject;
-                            
-                            const savedConfig = loadToleranceConfig(lastProject);
-                            if (savedConfig) {
-                                applyToleranceConfigToForm(savedConfig);
-                                showNotification(`已加载项目 "${lastProject}" 的保存配置`);
-                            }
-                            
-                            await loadCompareDates(lastProject);
-                            await loadCompareRules(lastProject);
-                        } else if (result.project_list.length > 0 && !compareCaseSelect.value) {
+                        if (oldValue && result.project_list.some(p => p.id === oldValue)) {
+                            compareCaseSelect.value = oldValue;
+                        } else if (result.project_list.length > 0) {
                             compareCaseSelect.value = result.project_list[0].id;
-                            currentProjectId = result.project_list[0].id;
-                            await loadCompareDates(currentProjectId);
-                            await loadCompareRules(currentProjectId);
+                        }
+                        // 加载对比配置
+                        if (compareCaseSelect.value) {
+                            await onCompareProjectChange(compareCaseSelect.value);
                         }
                     }
                 }
@@ -2479,28 +2458,10 @@ async function autoRefreshOnLoad() {
     } else {
         console.log('正常页面加载，使用服务端数据');
         mrUpdateDates = buildMrUpdateMap(perf);
-        
-        // 正常加载时也尝试恢复容差配置
-        const compareCaseSelect = document.getElementById('compareCaseSelect');
-        if (compareCaseSelect && compareCaseSelect.options.length > 0) {
-            const lastProject = getLastCompareProject();
-            if (lastProject && Array.from(compareCaseSelect.options).some(opt => opt.value === lastProject)) {
-                compareCaseSelect.value = lastProject;
-                currentProjectId = lastProject;
-                const savedConfig = loadToleranceConfig(lastProject);
-                if (savedConfig) {
-                    applyToleranceConfigToForm(savedConfig);
-                    showNotification(`已加载项目 "${lastProject}" 的保存配置`, false);
-                }
-            } else if (!compareCaseSelect.value && compareCaseSelect.options.length > 0) {
-                compareCaseSelect.value = compareCaseSelect.options[0].value;
-                currentProjectId = compareCaseSelect.value;
-            }
-            
-            if (currentProjectId) {
-                await loadCompareDates(currentProjectId);
-                await loadCompareRules(currentProjectId);
-            }
+        // 尝试加载已保存的对比配置
+        const compareSelect = document.getElementById('compareCaseSelect');
+        if (compareSelect && compareSelect.options.length > 0) {
+            await onCompareProjectChange(compareSelect.value);
         }
     }
 }

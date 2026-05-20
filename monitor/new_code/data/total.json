@@ -234,6 +234,50 @@
                         }
                     }
                 }
+            },
+            "20260508": {
+                "Analysis": {
+                    "thread_metrics": {
+                        "0": {
+                            "runtime": 1.66,
+                            "memory": 2.77,
+                            "cores": 0
+                        },
+                        "2": {
+                            "runtime": 1.3,
+                            "memory": 3.2,
+                            "cores": 2
+                        }
+                    }
+                },
+                "Elaborate": {
+                    "thread_metrics": {
+                        "0": {
+                            "runtime": 10.57,
+                            "memory": 10.69,
+                            "cores": 0
+                        },
+                        "4": {
+                            "runtime": 6.9,
+                            "memory": 11.8,
+                            "cores": 4
+                        }
+                    }
+                },
+                "DoUniquify": {
+                    "thread_metrics": {
+                        "0": {
+                            "runtime": 21.09,
+                            "memory": 21.11,
+                            "cores": 0
+                        },
+                        "8": {
+                            "runtime": 12.8,
+                            "memory": 24.5,
+                            "cores": 8
+                        }
+                    }
+                }
             }
         },
         "available_dates": [

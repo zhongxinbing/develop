@@ -14,6 +14,7 @@ import threading
 import time
 import socket
 import json
+import os
 from datetime import datetime
 from pathlib import Path
 
@@ -66,41 +67,104 @@ CASE_CONFIG = {
     # }
 }
 
-COMPARE_CONFIG_FILE = Path('./static/uploads/compare_config.json')
-COMPARE_CONFIG_FILE.parent.mkdir(parents=True, exist_ok=True)
+# 数据目录配置
+DATA_DIR = Path('./data')
+DATA_DIR.mkdir(parents=True, exist_ok=True)
 
+# 对比配置文件路径
+COMPARE_CONFIG_FILE = DATA_DIR / 'compare.json'
+
+
+# app.py 中的配置管理函数（修改后）
 
 def load_compare_config():
     """加载对比配置"""
     if not COMPARE_CONFIG_FILE.exists():
+        log(f"配置文件不存在，创建空配置: {COMPARE_CONFIG_FILE}")
         return {}
     try:
         with open(COMPARE_CONFIG_FILE, 'r', encoding='utf-8') as f:
-            return json.load(f)
-    except Exception:
+            content = f.read()
+            if not content.strip():
+                return {}
+            return json.loads(content)
+    except json.JSONDecodeError as e:
+        log(f"配置文件JSON解析失败: {e}，将创建新配置")
+        return {}
+    except Exception as e:
+        log(f"加载对比配置失败: {e}")
         return {}
 
 
 def save_compare_config(config_data):
     """保存对比配置"""
     try:
+        COMPARE_CONFIG_FILE.parent.mkdir(parents=True, exist_ok=True)
+        
         with open(COMPARE_CONFIG_FILE, 'w', encoding='utf-8') as f:
             json.dump(config_data, f, ensure_ascii=False, indent=4)
+        
+        log(f"对比配置已保存到: {COMPARE_CONFIG_FILE}")
+        return True
     except Exception as e:
         log(f"保存对比配置失败: {e}")
+        return False
 
 
 def get_compare_config(project_id: str):
-    """获取指定项目的对比配置"""
+    """
+    获取指定项目的对比配置
+    
+    参数:
+        project_id: 项目ID
+    
+    返回:
+        dict: 配置信息，包含 tolerance_runtime, tolerance_memory
+    """
     configs = load_compare_config()
+    log(f"加载配置: project_id={project_id}, 当前配置={configs}")
+    
+    if not configs:
+        return {}
+    
     return configs.get(project_id, {})
 
 
 def update_compare_config(project_id: str, config: dict):
-    """更新指定项目的对比配置"""
+    """
+    更新指定项目的对比配置
+    
+    参数:
+        project_id: 项目ID
+        config: 配置字典，包含 tolerance_runtime, tolerance_memory
+    """
+    log(f"保存配置: project_id={project_id}, config={config}")
+    
+    # 加载现有配置
     configs = load_compare_config()
-    configs[project_id] = config
-    save_compare_config(configs)
+    
+    # 保存配置（只保存 runtime 和 memory 容差）
+    configs[project_id] = {
+        'tolerance_runtime': config.get('tolerance_runtime', 0),
+        'tolerance_memory': config.get('tolerance_memory', 0),
+        'last_updated': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    }
+    
+    # 保存到文件
+    if save_compare_config(configs):
+        log(f"配置保存成功: {project_id}")
+    else:
+        log(f"配置保存失败: {project_id}")
+
+
+def delete_compare_config(project_id: str):
+    """删除项目的对比配置"""
+    configs = load_compare_config()
+    
+    if project_id in configs:
+        configs.pop(project_id, None)
+        save_compare_config(configs)
+        log(f"配置已删除: project_id={project_id}")
 
 
 # ==================================================
@@ -519,6 +583,8 @@ def api_multi_thread_data():
         return jsonify({'success': False, 'error': str(e)}), 500
 
 
+# app.py 中的 API 路由（修改后）
+
 @app.route('/api/compare', methods=['POST'])
 def api_compare():
     """数据对比API - 支持单阶段和全阶段对比"""
@@ -531,8 +597,10 @@ def api_compare():
         tolerance_runtime = float(data.get('tolerance_runtime', 0))
         tolerance_memory = float(data.get('tolerance_memory', 0))
         tolerance_mode = data.get('tolerance_mode', 'absolute')
+        compare_dimension = data.get('compare_dimension', 'both')
+        save_config = data.get('save_config', True)  # 是否保存配置
         
-        log(f"对比请求: project_id={project_id}, rule_name={rule_name}, date1={date1}, date2={date2}, mode={tolerance_mode}")
+        log(f"对比请求: project_id={project_id}, rule_name={rule_name}, date1={date1}, date2={date2}")
         
         # 获取项目数据
         if project_id not in parsed_projects:
@@ -575,22 +643,21 @@ def api_compare():
         compare_result = comparator.compare_data(
             data1, data2, project_id, rule_name,
             tolerance_runtime, tolerance_memory,
-            tolerance_mode=tolerance_mode
+            tolerance_mode=tolerance_mode,
+            compare_dimension=compare_dimension
         )
         
         compare_result['tolerance_mode'] = tolerance_mode
+        compare_result['compare_dimension'] = compare_dimension
 
-        update_compare_config(project_id, {
-            'project_id': project_id,
-            'rule_name': rule_name,
-            'date1': date1,
-            'date2': date2,
-            'tolerance_runtime': tolerance_runtime,
-            'tolerance_memory': tolerance_memory,
-            'tolerance_mode': tolerance_mode,
-            'timestamp': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-            'summary': compare_result.get('summary', {})
-        })
+        # 保存配置（只保存项目的 runtime 和 memory 容差）
+        if save_config:
+            log(f"准备保存配置: project_id={project_id}")
+            update_compare_config(project_id, {
+                'tolerance_runtime': tolerance_runtime,
+                'tolerance_memory': tolerance_memory
+            })
+            log("配置保存完成")
         
         return jsonify({
             'success': True,
@@ -603,23 +670,60 @@ def api_compare():
         return jsonify({'success': False, 'error': str(e)}), 500
 
 
-@app.route('/api/compare_config', methods=['GET', 'POST'])
+@app.route('/api/compare_config', methods=['GET', 'POST', 'DELETE'])
 def api_compare_config():
-    """获取或保存上一次的对比配置"""
+    """
+    获取、保存或删除对比配置
+    
+    GET: 获取指定项目的配置
+        参数: project_id
+    POST: 保存配置
+        参数: project_id, config (包含 tolerance_runtime, tolerance_memory)
+    DELETE: 删除配置
+        参数: project_id
+    """
     try:
         if request.method == 'GET':
             project_id = request.args.get('project_id', '')
+            
             if not project_id:
                 return jsonify({'success': False, 'error': 'project_id 参数缺失'}), 400
+            
             config = get_compare_config(project_id)
             return jsonify({'success': True, 'config': config})
-        else:
+        
+        elif request.method == 'POST':
             data = request.get_json() or {}
             project_id = data.get('project_id')
+            
             if not project_id:
                 return jsonify({'success': False, 'error': 'project_id 参数缺失'}), 400
-            update_compare_config(project_id, data)
+            
+            update_compare_config(project_id, data.get('config', {}))
             return jsonify({'success': True, 'message': '配置保存成功'})
+        
+        elif request.method == 'DELETE':
+            data = request.get_json() or {}
+            project_id = data.get('project_id')
+            
+            if not project_id:
+                return jsonify({'success': False, 'error': 'project_id 参数缺失'}), 400
+            
+            delete_compare_config(project_id)
+            return jsonify({'success': True, 'message': '配置删除成功'})
+            
+    except Exception as e:
+        log(f"API错误: {e}")
+        import traceback
+        traceback.print_exc()
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/api/compare_all_configs', methods=['GET'])
+def api_compare_all_configs():
+    """获取所有对比配置"""
+    try:
+        configs = load_compare_config()
+        return jsonify({'success': True, 'configs': configs})
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
 

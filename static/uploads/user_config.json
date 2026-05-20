@@ -1,0 +1,8 @@
+{
+    "elint_single": {
+        "json_path": "C:\\Users\\xbzhong\\Desktop\\lint\\script\\monitor\\develop\\monitor\\new_code\\data\\total.json",
+        "original_path": "/home/xbzhong/develop/monitor/code_20260513/data/original",
+        "mem": "C:\\Users\\xbzhong\\Desktop\\lint\\script\\monitor\\develop\\monitor\\new_code\\data\\lint_mem.csv",
+        "cpu": "C:\\Users\\xbzhong\\Desktop\\lint\\script\\monitor\\develop\\monitor\\new_code\\data\\lint_cpu.csv"
+    }
+}
