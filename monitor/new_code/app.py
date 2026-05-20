@@ -807,7 +807,161 @@ def open_browser():
         time.sleep(1.5)
         webbrowser.open_new(f"http://127.0.0.1:{CONFIG['port']}")
 
+# app.py 中添加以下代码
 
+# 在路由部分添加新路由
+@app.route('/api/dimensions/<project_id>')
+def api_get_dimensions(project_id):
+    """获取项目的可用数据维度"""
+    if project_id not in parsed_projects:
+        return jsonify({'error': 'Project not found'}), 404
+    
+    project_info = parsed_projects[project_id]
+    rule_data = project_info.get('rule_data', {})
+    
+    # 收集所有可用的维度
+    dimensions = {
+        'rules': project_info.get('rules', []),
+        'metrics': ['runtime', 'memory', 'cores'],
+        'threads': []
+    }
+    
+    # 收集所有可用的线程数
+    threads_set = set()
+    for rule_name, rule_info in rule_data.items():
+        for thread_key in rule_info.get('thread_counts', []):
+            threads_set.add(thread_key)
+    dimensions['threads'] = sorted(list(threads_set), key=lambda x: int(x) if x.isdigit() else 0)
+    
+    # 收集日期范围
+    dates = project_info.get('dates', [])
+    dimensions['date_range'] = {
+        'start': dates[0] if dates else None,
+        'end': dates[-1] if dates else None,
+        'all': dates
+    }
+    
+    return jsonify({
+        'success': True,
+        'dimensions': dimensions,
+        'project_name': project_info.get('project_name', project_id)
+    })
+
+
+@app.route('/api/custom_chart_data', methods=['POST'])
+def api_custom_chart_data():
+    """获取自定义图表数据"""
+    try:
+        data = request.get_json()
+        project_id = data.get('project_id')
+        rule_name = data.get('rule_name')
+        x_axis = data.get('x_axis', {})  # {'type': 'date', 'dimension': None} 或 {'type': 'thread', 'dimension': '0'}
+        y_axis = data.get('y_axis', {})  # {'metric': 'runtime', 'thread': '0'}
+        date_range = data.get('date_range', {})  # {'start': '20260507', 'end': '20260509'}
+        
+        if project_id not in parsed_projects:
+            return jsonify({'success': False, 'error': '项目不存在'}), 404
+        
+        project_info = parsed_projects[project_id]
+        
+        # 获取规则数据
+        if rule_name not in project_info.get('rule_data', {}):
+            return jsonify({'success': False, 'error': f'阶段 {rule_name} 不存在'}), 404
+        
+        rule_info = project_info['rule_data'][rule_name]
+        dates = rule_info.get('dates', [])
+        
+        # 过滤日期范围
+        if date_range.get('start') and date_range.get('end'):
+            start_idx = dates.index(date_range['start']) if date_range['start'] in dates else 0
+            end_idx = dates.index(date_range['end']) if date_range['end'] in dates else len(dates) - 1
+            if start_idx <= end_idx:
+                dates = dates[start_idx:end_idx + 1]
+        
+        # 构建X轴数据
+        x_data = []
+        if x_axis.get('type') == 'date':
+            x_data = dates
+        elif x_axis.get('type') == 'thread':
+            thread_key = str(x_axis.get('dimension', '0'))
+            thread_metrics = rule_info.get('thread_metrics', {})
+            if thread_key in thread_metrics:
+                # 对于线程X轴，返回线程数作为X轴数据
+                x_data = [int(t) for t in rule_info.get('thread_counts', []) if t.isdigit()]
+            else:
+                x_data = [int(thread_key)] if thread_key.isdigit() else []
+        else:
+            # 默认使用日期
+            x_data = dates
+        
+        # 构建Y轴数据
+        y_data = []
+        y_metric = y_axis.get('metric', 'runtime')
+        y_thread = str(y_axis.get('thread', '0'))
+        
+        thread_metrics = rule_info.get('thread_metrics', {})
+        
+        if y_thread in thread_metrics:
+            if x_axis.get('type') == 'date':
+                # X轴是日期，Y轴按日期取对应线程的数据
+                thread_info = thread_metrics[y_thread]
+                data_list = thread_info.get(f'{y_metric}s', [])
+                # 按日期过滤
+                original_dates = rule_info.get('dates', [])
+                for date in dates:
+                    try:
+                        idx = original_dates.index(date)
+                        if idx < len(data_list):
+                            y_data.append(data_list[idx])
+                        else:
+                            y_data.append(None)
+                    except ValueError:
+                        y_data.append(None)
+            else:
+                # X轴是线程，Y轴按线程取数据
+                for thread_key in x_data:
+                    thread_key_str = str(thread_key)
+                    if thread_key_str in thread_metrics:
+                        thread_info = thread_metrics[thread_key_str]
+                        # 使用最新日期的数据（取最后一个非空值）
+                        data_list = thread_info.get(f'{y_metric}s', [])
+                        # 取最后一个有效值
+                        valid_data = [v for v in data_list if v is not None]
+                        y_data.append(valid_data[-1] if valid_data else None)
+                    else:
+                        y_data.append(None)
+        else:
+            # 如果没有指定线程，使用默认线程0的数据
+            default_thread = '0'
+            if default_thread in thread_metrics:
+                thread_info = thread_metrics[default_thread]
+                data_list = thread_info.get(f'{y_metric}s', [])
+                original_dates = rule_info.get('dates', [])
+                for date in dates:
+                    try:
+                        idx = original_dates.index(date)
+                        if idx < len(data_list):
+                            y_data.append(data_list[idx])
+                        else:
+                            y_data.append(None)
+                    except ValueError:
+                        y_data.append(None)
+        
+        return jsonify({
+            'success': True,
+            'x_data': x_data,
+            'y_data': y_data,
+            'x_type': x_axis.get('type', 'date'),
+            'y_metric': y_metric,
+            'rule_name': rule_name,
+            'date_range_used': {'start': dates[0] if dates else None, 'end': dates[-1] if dates else None}
+        })
+        
+    except Exception as e:
+        log(f"获取自定义图表数据失败: {e}")
+        import traceback
+        traceback.print_exc()
+        return jsonify({'success': False, 'error': str(e)}), 500
 # 全局变量
 current_projects_data = {}
 parsed_projects = {}

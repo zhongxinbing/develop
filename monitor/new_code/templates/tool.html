@@ -128,6 +128,11 @@
                     <span class="nav-icon">📊</span>
                     <span class="nav-label">数据对比</span>
                 </div>
+                <!-- 在 nav-menu 中添加 -->
+<div class="nav-item" data-view="custom">
+    <span class="nav-icon">🎨</span>
+    <span class="nav-label">自定义图表</span>
+</div>
             </nav>
             
             <div class="sidebar-footer">
@@ -369,6 +374,103 @@
                     </div>
                 </div>
             </div>
+            <!-- ==================================================
+     视图4: 自定义图表
+================================================== -->
+<div id="customView" class="view-container">
+    <!-- 配置面板 -->
+    <div class="config-card">
+        <div class="config-header">
+            <span class="config-icon">⚙️</span>
+            <h4>图表配置</h4>
+            <span class="tooltip-icon" title="自定义X轴和Y轴数据，生成个性化图表">ℹ️</span>
+            <span class="user-config-badge" id="userConfigBadge" style="display: none;">
+                <span class="dot"></span>
+                <span>自定义模式</span>
+            </span>
+        </div>
+        
+        <div class="config-row">
+            <div class="config-group">
+                <label>📁 选择项目</label>
+                <select id="customCaseSelect">
+                    {% for project in project_list %}
+                    <option value="{{ project.id }}">{{ project.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="config-group">
+                <label>🔧 选择阶段</label>
+                <select id="customRuleSelect">
+                    <option value="">请先选择项目</option>
+                </select>
+            </div>
+        </div>
+        
+        <div class="config-row">
+            <div class="config-group">
+                <label>📊 X轴类型</label>
+                <select id="customXType">
+                    <option value="date">📅 日期</option>
+                    <option value="thread">🔢 线程数</option>
+                </select>
+            </div>
+            <div class="config-group" id="customXDimensionGroup">
+                <label id="customXDimensionLabel">📅 日期范围</label>
+                <div class="date-range-inputs" id="customDateRangeInputs" style="display: flex;">
+                    <input type="text" id="customDateStart" placeholder="开始日期">
+                    <span>→</span>
+                    <input type="text" id="customDateEnd" placeholder="结束日期">
+                </div>
+                <select id="customXThreadSelect" style="display: none;">
+                    <option value="">选择线程</option>
+                </select>
+            </div>
+        </div>
+        
+        <div class="config-row">
+            <div class="config-group">
+                <label>📈 Y轴指标</label>
+                <select id="customYMetric">
+                    <option value="runtime">⏱️ Runtime (秒)</option>
+                    <option value="memory">💾 Memory (MB)</option>
+                    <option value="cores">🖥️ Cores (核心数)</option>
+                </select>
+            </div>
+            <div class="config-group">
+                <label>🔢 Y轴线程</label>
+                <select id="customYThread">
+                    <option value="0">线程0 (默认)</option>
+                </select>
+            </div>
+        </div>
+        
+        <div class="config-actions">
+            <button class="btn-sm btn-primary" id="applyCustomConfigBtn">
+                📊 生成图表
+            </button>
+            <button class="btn-sm btn-secondary" id="resetCustomConfigBtn">
+                🔄 重置
+            </button>
+        </div>
+        
+        <div class="config-preview" id="customConfigPreview">
+            等待配置...
+        </div>
+    </div>
+    
+    <!-- 图表区域 -->
+    <div class="card">
+        <div class="card-header">
+            <div class="card-title" id="customChartTitle">🎨 自定义图表</div>
+            <div class="btn-group">
+                <button class="btn btn-secondary" id="exportCustomChartBtn">💾 导出图片</button>
+            </div>
+        </div>
+        <div id="custom-chart" class="custom-chart-container"></div>
+        <div class="config-status" id="customChartStatus" style="display: none;"></div>
+    </div>
+</div>
         </main>
     </div>
 
