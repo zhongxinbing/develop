@@ -7,99 +7,100 @@
     <script src="{{ url_for('static', filename='js/echarts.min.js') }}"></script>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/tool.css') }}">
     <style>
-        /* 线程选择器样式 */
-        .thread-selector {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            flex-wrap: wrap;
-        }
-        
+        /* 额外样式 */
         .thread-checkbox-group {
             display: flex;
             flex-wrap: wrap;
-            gap: 0.5rem;
-            max-height: 300px;
-            overflow-y: auto;
-            padding: 0.5rem;
-            background: rgba(15, 23, 42, 0.6);
-            border-radius: var(--radius-md);
-            border: 1px solid var(--border);
+            gap: 0.75rem;
+            margin-top: 0.5rem;
         }
-        
         .thread-checkbox {
             display: flex;
             align-items: center;
-            gap: 0.4rem;
-            padding: 0.25rem 0.6rem;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
             background: rgba(99, 102, 241, 0.1);
-            border-radius: 16px;
+            border-radius: var(--radius-md);
             cursor: pointer;
-            transition: var(--transition);
-            font-size: 0.75rem;
+            transition: all 0.2s;
+            border: 1px solid transparent;
         }
-        
         .thread-checkbox:hover {
             background: rgba(99, 102, 241, 0.2);
+            transform: translateY(-1px);
         }
-        
+        .thread-checkbox.selected {
+            background: rgba(99, 102, 241, 0.25);
+            border-color: var(--primary);
+        }
         .thread-checkbox input {
             margin: 0;
-            width: auto;
+            width: 16px;
+            height: 16px;
             cursor: pointer;
+            accent-color: var(--primary);
         }
-        
-        .thread-checkbox.selected {
-            background: rgba(99, 102, 241, 0.3);
-            border: 1px solid var(--primary);
+        .thread-checkbox span {
+            font-size: 0.875rem;
+            color: var(--text-primary);
         }
-        
-        .info-bar-multi {
+        .stat-card-tooltip {
+            position: fixed;
+            background: #1e293b;
+            border: 1px solid #6366f1;
+            border-radius: 8px;
+            padding: 10px 14px;
+            font-size: 12px;
+            color: #f1f5f9;
+            z-index: 10000;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5), 0 0 20px rgba(99, 102, 241, 0.3);
+            backdrop-filter: blur(4px);
+            max-width: 350px;
+            pointer-events: none;
+            line-height: 1.5;
+        }
+        .date-option {
             display: flex;
-            flex-wrap: wrap;
-            gap: 1rem;
-            justify-content: space-between;
             align-items: center;
-            padding: 0.75rem 1rem;
-            background: rgba(15, 23, 42, 0.6);
-            border-radius: var(--radius-lg);
-            margin-top: 1rem;
-        }
-        
-        .thread-select-btn {
-            padding: 0.5rem 1rem;
-            background: rgba(99, 102, 241, 0.15);
-            border: 1px solid var(--primary);
+            gap: 0.5rem;
+            padding: 0.5rem;
             border-radius: var(--radius-md);
-            color: var(--primary-light);
             cursor: pointer;
-            font-size: 0.75rem;
-            transition: var(--transition);
+            background: rgba(15, 23, 42, 0.6);
+            transition: all 0.2s;
         }
-        
-        .thread-select-btn:hover {
-            background: var(--primary);
-            color: white;
+        .date-option:hover {
+            background: rgba(99, 102, 241, 0.2);
         }
-        
-        /* 模态框内容样式 */
+        .date-option input {
+            cursor: pointer;
+            accent-color: var(--primary);
+        }
+        .modal.hidden {
+            display: none !important;
+        }
+        .modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(8px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
         .modal-content {
-            max-width: 500px;
+            background: var(--bg-card);
+            border-radius: var(--radius-xl);
             width: 90%;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow: auto;
+            padding: 1.5rem;
         }
-        
-        /* 加载动画 */
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-        
-        .loading-spinner {
-            width: 50px;
-            height: 50px;
-            border: 3px solid var(--border);
-            border-top-color: var(--primary);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
+        .btn-sm {
+            padding: 0.4rem 0.8rem;
+            font-size: 0.75rem;
         }
     </style>
 </head>
@@ -107,7 +108,7 @@
     <div class="app-container">
         <!-- 侧边栏导航 -->
         <aside class="sidebar">
-            <div class="sidebar-header" id="backToHomeBtn">
+            <div class="sidebar-header" id="backToHomeBtn" style="cursor: pointer;">
                 <h1>
                     <span class="tool-icon">{{ tool_icon }}</span>
                     <span class="tool-name">{{ tool_name }}</span>
@@ -143,152 +144,137 @@
 
         <!-- 主内容区域 -->
         <main class="main-content">
-            <!-- ==================================================
-                 视图1: 时序曲线图
-            ================================================== -->
+            <!-- ==================== 时序曲线图视图 ==================== -->
             <div id="timelineView" class="view-container active">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <span>📋 项目与阶段选择</span>
+                        </div>
+                        <div class="control-bar" style="margin-bottom: 0;">
+                            <div class="control-group">
+                                <label class="control-label">选择项目</label>
+                                <select id="caseSelect">
+                                    {% for project in project_list %}
+                                    <option value="{{ project.id }}">{{ project.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="control-group">
+                                <label class="control-label">搜索阶段</label>
+                                <input type="text" id="ruleSearch" class="search-input" placeholder="输入阶段名称...">
+                            </div>
+                            <div class="control-group">
+                                <label class="control-label">选择阶段</label>
+                                <select id="ruleSelect"></select>
+                            </div>
+                            <div class="btn-group" style="align-self: flex-end;">
+                                <button id="openDatePickerBtn" class="btn btn-secondary">📅 选择日期范围</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 图表卡片 -->
+                <div class="card" id="chartCard">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <span id="chartCardTitle">⏱️ Runtime 性能曲线</span>
+                        </div>
+                        <div class="btn-group" id="chartTypeButtons">
+                            <button class="btn chart-type-btn btn-primary" data-type="runtime">⏱️ Runtime</button>
+                            <button class="btn chart-type-btn btn-secondary" data-type="memory">💾 Memory</button>
+                        </div>
+                    </div>
+                    <div id="chart-runtime" class="chart-container" style="height: 450px;"></div>
+                    <div id="chart-memory" class="chart-container hidden" style="height: 450px;"></div>
+                    <div class="stats-grid" id="stats-main">
+                        <div class="stat-item"><div class="stat-value">-</div><div class="stat-label">加载中...</div></div>
+                    </div>
+                    <div class="info-bar">
+                        <span>📅 当前显示: <span id="dateRange">-</span></span>
+                        <span>📊 数据点: <span id="dataPoints">0</span></span>
+                        <span id="selectedDateSummary"></span>
+                    </div>
+                </div>
+
+                <!-- 项目统计卡片 -->
                 <div class="card">
                     <div class="card-header">
                         <div class="card-title">📊 项目概览</div>
                     </div>
                     <div class="stats-grid" id="projectStats"></div>
                 </div>
-
-                <div class="card">
-                    <div class="control-bar">
-                        <div class="control-group">
-                            <label class="control-label">📁 QOR Case</label>
-                            <select id="caseSelect">
-                                {% for project in project_list %}
-                                <option value="{{ project.id }}">{{ project.name }}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                        <div class="control-group">
-                            <label class="control-label">🔧 阶段/Rule</label>
-                            <select id="ruleSelect">
-                                <option value="">加载中...</option>
-                            </select>
-                        </div>
-                        <div class="control-group">
-                            <label class="control-label">🔍 搜索阶段</label>
-                            <input type="text" id="ruleSearch" placeholder="输入阶段名称..." class="search-input">
-                        </div>
-                    </div>
-                </div>
-
-                <div class="card">
-                    <div class="card-header">
-                        <div class="chart-type-buttons" id="chartTypeButtons">
-                            <button class="btn btn-primary chart-type-btn" data-type="runtime">⏱️ Runtime</button>
-                            <button class="btn btn-secondary chart-type-btn" data-type="memory">💾 Memory</button>
-                        </div>
-                        <div class="btn-group">
-                            <button class="btn btn-secondary" id="openDatePickerBtn">📅 选择日期范围</button>
-                            <button class="btn btn-secondary" id="selectRecentBtn">🕐 最近51条</button>
-                            <button class="btn btn-secondary" id="selectAllDatesBtn">📆 显示全部</button>
-                        </div>
-                        <span class="tooltip" data-tip="MR更新日期会高亮显示">ℹ️</span>
-                    </div>
-                    <div class="card-header">
-                        <div class="card-title" id="chartCardTitle">⏱️ Runtime 性能曲线</div>
-                    </div>
-                    <div class="chart-wrapper">
-                        <div id="chart-runtime" class="chart-container"></div>
-                        <div id="chart-memory" class="chart-container hidden"></div>
-                    </div>
-                    <div class="stats-grid" id="stats-main"></div>
-                </div>
-
-                <div class="info-bar">
-                    <span>📅 数据范围: <strong id="dateRange">-</strong></span>
-                    <span>📈 数据点数: <strong id="dataPoints">0</strong></span>
-                    <span>🔧 当前阶段: <strong id="currentRuleName">未选择</strong></span>
-                    <span>🎨 ECharts 交互式图表</span>
-                </div>
             </div>
 
-            <!-- ==================================================
-                 视图2: 多线程对比 - 重构版
-            ================================================== -->
+            <!-- ==================== 多线程对比视图 ==================== -->
             <div id="multithreadView" class="view-container">
                 <div class="card">
                     <div class="card-header">
-                        <div class="card-title">📊 项目概览</div>
-                    </div>
-                    <div class="stats-grid" id="multiStats"></div>
-                </div>
-
-                <div class="card">
-                    <div class="control-bar">
-                        <div class="control-group">
-                            <label class="control-label">📁 QOR Case</label>
-                            <select id="multiCaseSelect">
-                                {% for project in project_list %}
-                                <option value="{{ project.id }}">{{ project.name }}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                        <div class="control-group">
-                            <label class="control-label">🔧 阶段/Rule</label>
-                            <select id="multiRuleSelect">
-                                <option value="">请先选择项目</option>
-                            </select>
-                        </div>
-                        <div class="control-group">
-                            <label class="control-label">🔍 搜索阶段</label>
-                            <input type="text" id="multiRuleSearch" placeholder="输入阶段名称..." class="search-input">
+                        <div class="card-title">📋 多线程对比配置</div>
+                        <div class="control-bar" style="margin-bottom: 0;">
+                            <div class="control-group">
+                                <label class="control-label">选择项目</label>
+                                <select id="multiCaseSelect">
+                                    {% for project in project_list %}
+                                    <option value="{{ project.id }}">{{ project.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="control-group">
+                                <label class="control-label">搜索阶段</label>
+                                <input type="text" id="multiRuleSearch" class="search-input" placeholder="输入阶段名称...">
+                            </div>
+                            <div class="control-group">
+                                <label class="control-label">选择阶段</label>
+                                <select id="multiRuleSelect"></select>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="card">
+                <div class="multi-chart-card">
                     <div class="card-header">
-                        <div class="chart-type-buttons">
-                            <button class="btn btn-primary" id="multiChartRuntimeBtn" onclick="window.selectMultiChartType('runtime')">⏱️ Runtime</button>
-                            <button class="btn btn-secondary" id="multiChartMemoryBtn" onclick="window.selectMultiChartType('memory')">💾 Memory</button>
+                        <div class="card-title">
+                            <span id="multiChartCardTitle">⏱️ Runtime 性能曲线</span>
                         </div>
                         <div class="btn-group">
+                            <button class="btn btn-primary" id="multiChartRuntimeBtn" onclick="selectMultiChartType('runtime')">⏱️ Runtime</button>
+                            <button class="btn btn-secondary" id="multiChartMemoryBtn" onclick="selectMultiChartType('memory')">💾 Memory</button>
+                            <button class="btn btn-secondary" onclick="openThreadSelectorModal()">🎛️ 选择线程</button>
                             <button class="btn btn-secondary" id="multiOpenDatePickerBtn">📅 选择日期</button>
-                            <button class="btn btn-secondary" id="multiSelectRecentBtn">🕐 最新日期</button>
+                            <button class="btn btn-secondary" id="multiSelectRecentBtn">🔄 最新日期</button>
                         </div>
                     </div>
-                    
-                    <div class="card-header">
-                        <div class="card-title" id="multiChartCardTitle">⏱️ Runtime 性能曲线</div>
-                        <button class="thread-select-btn" id="multiThreadSelectBtn" onclick="window.openThreadSelectorModal()">🧵 选择线程</button>
+                    <div id="chart-multi-runtime" class="chart-container" style="height: 450px;"></div>
+                    <div id="chart-multi-memory" class="chart-container hidden" style="height: 450px;"></div>
+                    <div class="stats-grid" id="multiStats">
+                        <div class="stat-item"><div class="stat-value">-</div><div class="stat-label">线程数</div></div>
+                        <div class="stat-item"><div class="stat-value">-</div><div class="stat-label">平均Runtime</div></div>
+                        <div class="stat-item"><div class="stat-value">-</div><div class="stat-label">平均Memory</div></div>
                     </div>
-                    
-                    <div class="chart-wrapper">
-                        <div id="chart-multi-runtime" class="chart-container" style="height: 450px;"></div>
-                        <div id="chart-multi-memory" class="chart-container hidden" style="height: 450px;"></div>
+                    <div class="stats-grid" id="multiStatsDetail" style="margin-top: 0.5rem;">
+                        <div class="stat-item"><div class="stat-value">-</div><div class="stat-label">最大Runtime</div></div>
+                        <div class="stat-item"><div class="stat-value">-</div><div class="stat-label">最小Runtime</div></div>
+                        <div class="stat-item"><div class="stat-value">-</div><div class="stat-label">最大Memory</div></div>
+                        <div class="stat-item"><div class="stat-value">-</div><div class="stat-label">最小Memory</div></div>
                     </div>
-                                        
-                    <div class="stats-grid" id="multiStatsDetail"></div>
-                </div>
-
-                <div class="info-bar-multi">
-                    <span>📊 多线程性能对比分析</span>
-                    <span>📅 当前日期: <strong id="multiCurrentDate">-</strong></span>
-                    <span>🎨 ECharts 交互式图表 | 点击选择线程可筛选</span>
+                    <div class="info-bar">
+                        <span>📅 当前日期: <span id="multiCurrentDate">-</span></span>
+                        <span>🧵 已选线程: <span id="selectedThreadsCount">0</span></span>
+                    </div>
                 </div>
             </div>
 
-            <!-- ==================================================
-                 视图3: 数据对比
-            ================================================== -->
+            <!-- ==================== 数据对比视图 ==================== -->
             <div id="compareView" class="view-container">
                 <div class="card">
                     <div class="card-header">
-                        <div class="card-title">📊 数据对比分析</div>
-                        <div class="btn-group">
-                            <button class="btn btn-secondary" id="exportCompareBtn">💾 导出CSV</button>
-                        </div>
+                        <div class="card-title">📊 数据对比配置</div>
                     </div>
-                    
                     <div class="control-bar">
                         <div class="control-group">
-                            <label class="control-label">📁 QOR Case</label>
+                            <label class="control-label">选择项目</label>
                             <select id="compareCaseSelect">
                                 <option value="">-- 请选择case --</option>
                                 {% for project in project_list %}
@@ -297,75 +283,68 @@
                             </select>
                         </div>
                         <div class="control-group">
-                            <label class="control-label">🔧 对比模式</label>
+                            <label class="control-label">对比模式</label>
                             <select id="compareModeSelect">
-                                <option value="single">🎯 单阶段对比</option>
                                 <option value="all">📊 全阶段对比</option>
+                                <option value="single">🎯 单阶段对比</option>
                             </select>
                         </div>
                         <div class="control-group" id="compareRuleGroup">
-                            <label class="control-label">🔧 选择阶段</label>
-                            <select id="compareRuleSelect">
-                                <option value="all">所有阶段</option>
-                            </select>
+                            <label class="control-label">选择阶段</label>
+                            <select id="compareRuleSelect"></select>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label">基准日期</label>
+                            <select id="compareDate1"></select>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label">对比日期</label>
+                            <select id="compareDate2"></select>
                         </div>
                     </div>
-                    
                     <div class="control-bar">
                         <div class="control-group">
-                            <label class="control-label">📅 日期1 (基准)</label>
-                            <select id="compareDate1">
-                                <option value="">请先选择项目</option>
-                            </select>
+                            <label class="control-label">Runtime容差</label>
+                            <input type="number" id="toleranceRuntime" value="20" step="1">
                         </div>
                         <div class="control-group">
-                            <label class="control-label">📅 日期2 (对比)</label>
-                            <select id="compareDate2">
-                                <option value="">请先选择项目</option>
-                            </select>
-                        </div>
-                        <div class="control-group">
-                            <label class="control-label">⚙️ 误差模式</label>
-                            <select id="toleranceMode">
-                                <option value="absolute">绝对值</option>
-                                <option value="percentage">百分比</option>
-                            </select>
-                        </div>
-                        <div class="control-group">
-                            <label class="control-label">📊 对比维度</label>
-                            <select id="compareDimensionSelect">
-                                <option value="both">📈 全部 (Runtime + Memory)</option>
-                                <option value="runtime">⏱️ 仅 Runtime</option>
-                                <option value="memory">💾 仅 Memory</option>
-                            </select>
-                        </div>
-                    </div>
-                    
-                    <div class="control-bar">
-                        <div class="control-group">
-                            <label class="control-label">⏱️ Runtime容差</label>
-                            <input type="number" id="toleranceRuntime" value="0" step="0.1">
-                        </div>
-                        <div class="control-group">
-                            <label class="control-label">💾 Memory容差</label>
+                            <label class="control-label">Memory容差(MB)</label>
                             <input type="number" id="toleranceMemory" value="0" step="10">
                         </div>
                         <div class="control-group">
-                            <button class="btn btn-primary" id="executeCompareBtn" style="margin-top: 1.5rem;">🔍 执行对比</button>
+                            <label class="control-label">误差模式</label>
+                            <select id="toleranceMode">
+                                <option value="absolute">绝对值</option>
+                                <option value="percentage">百分比(%)</option>
+                            </select>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label">对比维度</label>
+                            <select id="compareDimensionSelect">
+                                <option value="both">Runtime & Memory</option>
+                                <option value="runtime">仅 Runtime</option>
+                                <option value="memory">仅 Memory</option>
+                            </select>
+                        </div>
+                        <div class="btn-group">
+                            <button id="executeCompareBtn" class="btn btn-primary">🔍 执行对比</button>
+                            <button id="exportCompareBtn" class="btn btn-secondary">📥 导出结果</button>
                         </div>
                     </div>
                 </div>
 
-                <div id="compareResultArea" class="card" style="display: none;">
-                    <div class="card-header">
-                        <div class="card-title" id="compareResultTitle">📈 对比结果</div>
-                    </div>
-                    <div id="compareSummary" class="stats-grid"></div>
-                    <div class="table-container">
-                        <table class="result-table" id="compareResultTable">
-                            <thead id="compareTableHeader"></thead>
-                            <tbody id="compareTableBody"></tbody>
-                        </table>
+                <div id="compareResultArea" style="display: none;">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title" id="compareResultTitle">📈 对比结果</div>
+                        </div>
+                        <div class="stats-grid" id="compareSummary"></div>
+                        <div class="table-container">
+                            <table class="result-table">
+                                <thead id="compareTableHeader"></thead>
+                                <tbody id="compareTableBody"></tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -375,12 +354,14 @@
     <!-- 日期选择模态框 -->
     <div id="datePickerModal" class="modal hidden">
         <div class="modal-content">
-            <h3 style="margin-bottom: 1rem;">📅 选择要显示的日期</h3>
-            <input type="text" id="dateFilterInput" placeholder="筛选日期..." style="width: 100%; margin-bottom: 1rem;">
+            <h3>📅 选择日期范围</h3>
+            <input type="text" id="dateFilterInput" class="search-input" placeholder="筛选日期..." style="margin: 1rem 0;">
             <div id="dateOptionsContainer" class="date-options"></div>
-            <div class="btn-group" style="margin-top: 1rem;">
-                <button class="btn btn-primary" id="confirmDateBtn">确认应用</button>
-                <button class="btn btn-secondary" id="closeDateModalBtn">取消</button>
+            <div class="btn-group" style="margin-top: 1rem; justify-content: flex-end;">
+                <button id="selectRecentBtn" class="btn btn-secondary">最近50天</button>
+                <button id="selectAllDatesBtn" class="btn btn-secondary">全选</button>
+                <button id="confirmDateBtn" class="btn btn-primary">确认</button>
+                <button id="closeDateModalBtn" class="btn btn-secondary">取消</button>
             </div>
         </div>
     </div>
@@ -388,12 +369,12 @@
     <!-- 多线程日期选择模态框 -->
     <div id="multiDatePickerModal" class="modal hidden">
         <div class="modal-content">
-            <h3 style="margin-bottom: 1rem;">📅 选择要显示的日期</h3>
-            <input type="text" id="multiDateFilterInput" placeholder="筛选日期..." style="width: 100%; margin-bottom: 1rem;">
+            <h3>📅 选择对比日期</h3>
+            <input type="text" id="multiDateFilterInput" class="search-input" placeholder="筛选日期..." style="margin: 1rem 0;">
             <div id="multiDateOptionsContainer" class="date-options"></div>
-            <div class="btn-group" style="margin-top: 1rem;">
-                <button class="btn btn-primary" id="multiConfirmDateBtn">确认应用</button>
-                <button class="btn btn-secondary" id="multiCloseDateModalBtn">取消</button>
+            <div class="btn-group" style="margin-top: 1rem; justify-content: flex-end;">
+                <button id="multiConfirmDateBtn" class="btn btn-primary">确认</button>
+                <button id="multiCloseDateModalBtn" class="btn btn-secondary">取消</button>
             </div>
         </div>
     </div>
@@ -401,34 +382,34 @@
     <!-- 线程选择模态框 -->
     <div id="threadSelectorModal" class="modal hidden">
         <div class="modal-content">
-            <h3 style="margin-bottom: 1rem;">🧵 选择要显示的线程</h3>
-            <div id="threadSelectorModalContent" style="min-height: 200px;">
-                <!-- 动态内容 -->
-            </div>
-            <div class="btn-group" style="margin-top: 1rem;">
-                <button class="btn btn-primary" id="confirmThreadBtn" onclick="window.confirmThreadSelection()">确认应用</button>
-                <button class="btn btn-secondary" id="closeThreadModalBtn" onclick="window.closeThreadSelectorModal()">取消</button>
+            <h3>🎛️ 选择要显示的线程</h3>
+            <div id="threadSelectorModalContent"></div>
+            <div class="btn-group" style="margin-top: 1rem; justify-content: flex-end;">
+                <button class="btn btn-primary" onclick="confirmThreadSelection()">确认</button>
+                <button class="btn btn-secondary" onclick="closeThreadSelectorModal()">取消</button>
             </div>
         </div>
     </div>
 
     <!-- 加载遮罩 -->
-    <div id="loadingOverlay" class="modal hidden" style="background: rgba(0,0,0,0.7); z-index: 10000;">
-        <div class="loading-spinner"></div>
+    <div id="loadingOverlay" class="loading-overlay hidden" style="position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 9999; display: flex; align-items: center; justify-content: center;">
+        <div class="spinner"></div>
     </div>
 
     <script>
+        // 从 Flask 模板传递的数据
         const projectsData = {{ projects_data_json | tojson }};
         const perf = {{ perf | tojson }};
         const toolId = '{{ tool_id }}';
         const toolName = '{{ tool_name }}';
         const initialMode = '{{ request.args.get("mode", "single") }}';
+        const projectList = {{ project_list | tojson }};
         
+        // 全局变量
         let currentProjectId = null;
         let currentRule = null;
         let selectedDates = [];
         let availableDates = [];
-        let selectedThreads = ['0'];
         let currentChartType = 'runtime';
         let charts = {};
         let cachedToolData = {};
@@ -440,11 +421,12 @@
         let selectedMultiThreads = [];
         let availableThreads = [];
         let multiAvailableDates = [];
-        let pendingMultiSelectedDates = [];
         let currentMultiThreadData = [];
-        let currentFilterText = '';
         let currentCompareResult = null;
         let currentFilteredData = [];
+        let currentFilterText = '';
+        let pendingSelectedDates = [];
+        let pendingMultiSelectedDates = [];
     </script>
     
     <script src="{{ url_for('static', filename='js/tool.js') }}"></script>

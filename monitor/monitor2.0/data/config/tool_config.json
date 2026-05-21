@@ -1,0 +1,36 @@
+{
+    "elint": {
+        "name": "ELINT",
+        "description": "EDA Lint工具性能监控",
+        "icon": "🔍",
+        "single": {
+            "original_path": "/home/xbzhong/develop/monitor/code_20260513/data/original",
+            "json_path": "./data/elint.json",
+            "mem": "./data/lint_mem.csv",
+            "cpu": "./data/lint_cpu.csv"
+        },
+        "multi": {
+            "original_path": "/mnt/efs/fs1/jenkins/lint_comparison_results_qor",
+            "json_path": "/mnt/efs/fs1/reg_test_data/CN/lint/pv/other/monitor/json/elint/multi",
+            "mem": "./data/lint_mem.csv",
+            "cpu": "./data/lint_cpu.csv"
+        }
+    },
+     "ecdc": {
+         "name": "ECDC",
+         "description": "EDA CDC工具性能监控",
+         "icon": "⚡",
+         "single": {
+            "original_path": "",
+            "json_path": "",
+            "mem": "",
+            "cpu": ""
+        },
+         "multi":{
+            "original_path": "",
+            "json_path": "",
+            "mem": "",
+            "cpu": ""
+        }
+     }
+}

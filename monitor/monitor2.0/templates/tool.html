@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>{{ tool_name }} 性能监控系统</title>
+    <script src="{{ url_for('static', filename='js/echarts.min.js') }}"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/tool.css') }}">
+    <style>
+        .hidden { display: none !important; }
+        .view-container { display: none; }
+        .view-container.active { display: block; }
+        
+        /* 通用卡片样式补充 */
+        .card, .multi-chart-card {
+            background: var(--bg-card);
+            border-radius: var(--radius-xl);
+            border: 1px solid var(--border);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            transition: var(--transition);
+        }
+        
+        .control-group {
+            flex: 1;
+            min-width: 180px;
+        }
+        
+        .control-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-bottom: 0.25rem;
+            display: block;
+        }
+        
+        select, input {
+            width: 100%;
+            padding: 0.625rem 0.875rem;
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            color: var(--text-primary);
+            font-size: 0.875rem;
+            transition: var(--transition);
+        }
+        
+        select:focus, input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+        }
+        
+        .btn {
+            padding: 0.625rem 1.25rem;
+            border-radius: var(--radius-md);
+            font-weight: 500;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: var(--transition);
+            border: none;
+            background: rgba(99, 102, 241, 0.15);
+            color: var(--text-primary);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: var(--glow);
+        }
+        
+        .btn-secondary {
+            background: rgba(6, 182, 212, 0.15);
+            border: 1px solid var(--secondary);
+            color: var(--secondary);
+        }
+        
+        .btn-secondary:hover {
+            background: var(--secondary);
+            color: white;
+        }
+        
+        .btn-group {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+        
+        .chart-container {
+            width: 100%;
+            height: 450px;
+            border-radius: var(--radius-lg);
+            background: rgba(15, 23, 42, 0.5);
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .stat-item {
+            background: rgba(15, 23, 42, 0.6);
+            border-radius: var(--radius-lg);
+            padding: 1rem;
+            text-align: center;
+            transition: var(--transition);
+            cursor: help;
+            position: relative;
+        }
+        
+        .stat-item:hover {
+            background: rgba(99, 102, 241, 0.1);
+            transform: translateY(-2px);
+        }
+        
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-light);
+        }
+        
+        .stat-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 0.25rem;
+        }
+        
+        .status-increase { color: #ef4444; font-weight: 600; }
+        .status-decrease { color: #10b981; font-weight: 600; }
+        
+        .modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(8px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        
+        .modal.hidden { display: none; }
+        
+        .modal-content {
+            background: var(--bg-card);
+            border-radius: var(--radius-xl);
+            width: 90%;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow: auto;
+            padding: 1.5rem;
+        }
+        
+        .date-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 0.5rem;
+            margin: 1rem 0;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .date-option {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+        }
+        
+        .date-option:hover {
+            background: rgba(99, 102, 241, 0.1);
+        }
+        
+        .table-container {
+            overflow-x: auto;
+            margin-top: 1rem;
+        }
+        
+        .result-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.8125rem;
+        }
+        
+        .result-table th,
+        .result-table td {
+            padding: 0.75rem;
+            text-align: center;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .result-table th {
+            background: rgba(99, 102, 241, 0.1);
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
+        
+        .result-table tr:hover {
+            background: rgba(99, 102, 241, 0.05);
+        }
+        
+        .info-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            background: rgba(15, 23, 42, 0.6);
+            border-radius: var(--radius-lg);
+            margin-top: 1rem;
+        }
+        
+        .chart-type-buttons {
+            display: flex;
+            gap: 0.5rem;
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .chart-type-buttons .btn {
+            flex: 1;
+            min-width: 100px;
+        }
+        
+        .thread-checkbox-group {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .thread-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.5rem 0.75rem;
+            margin-bottom: 0.25rem;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .thread-checkbox:hover {
+            background: rgba(99, 102, 241, 0.1);
+        }
+        
+        .thread-checkbox.selected {
+            background: rgba(99, 102, 241, 0.15);
+            border-left: 2px solid var(--primary);
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- 侧边栏导航 -->
+        <aside class="sidebar">
+            <div class="sidebar-header" id="backToHomeBtn">
+                <h1>
+                    <span class="tool-icon">{{ tool_icon }}</span>
+                    <span class="tool-name">{{ tool_name }}</span>
+                </h1>
+                <div class="version">性能监控系统 v2.0</div>
+            </div>
+            
+            <nav class="nav-menu">
+                <div class="nav-item active" data-view="timeline">
+                    <span class="nav-icon">📈</span>
+                    <span class="nav-label">时序曲线图</span>
+                </div>
+                <div class="nav-item" data-view="multithread">
+                    <span class="nav-icon">🔄</span>
+                    <span class="nav-label">多线程对比</span>
+                </div>
+                <div class="nav-item" data-view="compare">
+                    <span class="nav-icon">📊</span>
+                    <span class="nav-label">数据对比</span>
+                </div>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <div class="refresh-status">
+                    <span class="status-dot" id="statusDot"></span>
+                    <span id="lastUpdateText">等待刷新</span>
+                </div>
+                <button class="btn btn-secondary" id="refreshDataBtn" style="width: 100%; margin-top: 0.75rem;">
+                    🔄 刷新数据
+                </button>
+            </div>
+        </aside>
+
+        <!-- 主内容区域 -->
+        <main class="main-content">
+            <!-- ========== 时序曲线图视图 ========== -->
+            <div id="timelineView" class="view-container active">
+                <!-- 控制栏 -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">🎛️ 数据筛选</div>
+                    </div>
+                    <div class="control-bar">
+                        <div class="control-group">
+                            <label class="control-label">📁 选择项目</label>
+                            <select id="caseSelect">
+                                {% for project in project_list %}
+                                <option value="{{ project.id }}">{{ project.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label">📋 选择阶段</label>
+                            <select id="ruleSelect"></select>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label">🔍 搜索阶段</label>
+                            <input type="text" id="ruleSearch" placeholder="输入阶段名称..." class="search-input">
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label">📅 日期范围</label>
+                            <div class="btn-group">
+                                <button class="btn btn-secondary" id="openDatePickerBtn">📅 选择日期</button>
+                                <button class="btn btn-secondary" id="selectRecentBtn">📆 最近50天</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 图表类型切换 -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title" id="chartCardTitle">⏱️ Runtime 性能曲线</div>
+                        <div id="chartTypeButtons" class="chart-type-buttons">
+                            <button class="btn btn-primary chart-type-btn" data-type="runtime">⏱️ Runtime</button>
+                            <button class="btn btn-secondary chart-type-btn" data-type="memory">💾 Memory</button>
+                        </div>
+                    </div>
+                    <div id="chart-runtime" class="chart-container"></div>
+                    <div id="chart-memory" class="chart-container hidden"></div>
+                </div>
+                <!-- 统计卡片 -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">📊 性能统计 - <span id="currentRuleName">未选择</span></div>
+                        <div class="info-text">
+                            <span>📅 日期范围: <span id="dateRange">-</span></span>
+                            <span style="margin-left: 1rem;">📊 数据点数: <span id="dataPoints">0</span></span>
+                        </div>
+                    </div>
+                    <div class="stats-grid" id="stats-main"></div>
+                </div>
+                <!-- 项目统计 -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">📈 项目概况</div>
+                    </div>
+                    <div class="stats-grid" id="projectStats"></div>
+                </div>
+            </div>
+
+            <!-- ========== 多线程对比视图 ========== -->
+            <div id="multithreadView" class="view-container">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">🎛️ 数据筛选</div>
+                    </div>
+                    <div class="control-bar">
+                        <div class="control-group">
+                            <label class="control-label">📁 选择项目</label>
+                            <select id="multiCaseSelect">
+                                {% for project in project_list %}
+                                <option value="{{ project.id }}">{{ project.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label">📋 选择阶段</label>
+                            <select id="multiRuleSelect"></select>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label">🔍 搜索阶段</label>
+                            <input type="text" id="multiRuleSearch" placeholder="输入阶段名称..." class="search-input">
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label">📅 选择日期</label>
+                            <div class="btn-group">
+                                <button class="btn btn-secondary" id="multiOpenDatePickerBtn">📅 选择日期</button>
+                                <button class="btn btn-secondary" id="multiSelectRecentBtn">📆 最新</button>
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label">🧵 线程选择</label>
+                            <button class="btn btn-secondary" id="openThreadSelectorBtn" onclick="openThreadSelectorModal()">🎯 选择线程</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 图表区域 -->
+                <div class="multi-chart-card">
+                    <div class="card-header">
+                        <div class="card-title" id="multiChartCardTitle">⏱️ Runtime 性能曲线</div>
+                        <div class="btn-group">
+                            <button class="btn btn-primary" id="multiChartRuntimeBtn" onclick="selectMultiChartType('runtime')">⏱️ Runtime</button>
+                            <button class="btn btn-secondary" id="multiChartMemoryBtn" onclick="selectMultiChartType('memory')">💾 Memory</button>
+                        </div>
+                    </div>
+                    <div id="chart-multi-runtime" class="chart-container"></div>
+                    <div id="chart-multi-memory" class="chart-container hidden"></div>
+                </div>
+
+                <!-- 统计卡片 -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">📊 性能统计 - <span id="multiCurrentRuleName">未选择</span></div>
+                        <div>📅 当前日期: <span id="multiCurrentDate">-</span></div>
+                    </div>
+                    <div class="stats-grid" id="multiStats"></div>
+                    <div class="stats-grid" id="multiStatsDetail" style="margin-top: 0.5rem;"></div>
+                </div>
+            </div>
+
+            <!-- ========== 数据对比视图 ========== -->
+            <div id="compareView" class="view-container">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">⚙️ 对比配置</div>
+                    </div>
+                    <div class="control-bar">
+                        <div class="control-group">
+                            <label class="control-label">📁 选择项目</label>
+                            <select id="compareCaseSelect">
+                                <option value="">-- 请选择case --</option>
+                                {% for project in project_list %}
+                                <option value="{{ project.id }}">{{ project.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label">📋 对比模式</label>
+                            <select id="compareModeSelect">
+                                <option value="all">📊 全阶段对比</option>
+                                <option value="single">📈 单阶段对比</option>
+                            </select>
+                        </div>
+                        <div class="control-group" id="compareRuleGroup" style="display: none;">
+                            <label class="control-label">📋 选择阶段</label>
+                            <select id="compareRuleSelect"></select>
+                        </div>
+                    </div>
+                    
+                    <div class="control-bar">
+                        <div class="control-group">
+                            <label class="control-label">📅 基准日期</label>
+                            <select id="compareDate1"></select>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label">📅 对比日期</label>
+                            <select id="compareDate2"></select>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label">⚙️ 误差模式</label>
+                            <select id="toleranceMode">
+                                <option value="absolute">绝对值</option>
+                                <option value="percentage">百分比</option>
+                            </select>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label">📐 对比维度</label>
+                            <select id="compareDimensionSelect">
+                                <option value="both">Runtime + Memory</option>
+                                <option value="runtime">仅 Runtime</option>
+                                <option value="memory">仅 Memory</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="control-bar">
+                        <div class="control-group">
+                            <label class="control-label">🎯 Runtime 容差</label>
+                            <input type="number" id="toleranceRuntime" step="0.1" value="0" placeholder="绝对值或百分比">
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label">🎯 Memory 容差</label>
+                            <input type="number" id="toleranceMemory" step="0.1" value="0" placeholder="绝对值或百分比">
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label">&nbsp;</label>
+                            <div class="btn-group">
+                                <button class="btn btn-primary" id="executeCompareBtn">▶ 执行对比</button>
+                                <button class="btn btn-secondary" id="exportCompareBtn">💾 导出结果</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 对比结果区域 -->
+                <div id="compareResultArea" style="display: none;">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title" id="compareResultTitle">📈 对比结果</div>
+                        </div>
+                        <div class="stats-grid" id="compareSummary"></div>
+                        <div class="table-container">
+                            <table class="result-table">
+                                <thead id="compareTableHeader">
+                                    <tr>
+                                        <th>阶段名称</th>
+                                        <th>Runtime(基准)</th>
+                                        <th>Runtime(对比)</th>
+                                        <th>Runtime差值</th>
+                                        <th>Runtime变化率(%)</th>
+                                        <th>Memory(基准)</th>
+                                        <th>Memory(对比)</th>
+                                        <th>Memory差值</th>
+                                        <th>Memory变化率(%)</th>
+                                        <th>状态</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="compareTableBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- ========== 模态框 ========== -->
+    
+    <!-- 日期选择模态框（时序曲线图） -->
+    <div id="datePickerModal" class="modal hidden">
+        <div class="modal-content">
+            <h3 style="margin-bottom: 1rem;">📅 选择日期范围</h3>
+            <input type="text" id="dateFilterInput" placeholder="筛选日期..." style="width: 100%; margin-bottom: 1rem;">
+            <div id="dateOptionsContainer" class="date-options"></div>
+            <div class="btn-group" style="margin-top: 1rem; justify-content: flex-end;">
+                <button class="btn btn-secondary" id="closeDateModalBtn">取消</button>
+                <button class="btn btn-primary" id="confirmDateBtn">确认</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 多线程日期选择模态框 -->
+    <div id="multiDatePickerModal" class="modal hidden">
+        <div class="modal-content">
+            <h3 style="margin-bottom: 1rem;">📅 选择对比日期</h3>
+            <input type="text" id="multiDateFilterInput" placeholder="筛选日期..." style="width: 100%; margin-bottom: 1rem;">
+            <div id="multiDateOptionsContainer" class="date-options"></div>
+            <div class="btn-group" style="margin-top: 1rem; justify-content: flex-end;">
+                <button class="btn btn-secondary" id="multiCloseDateModalBtn">取消</button>
+                <button class="btn btn-primary" id="multiConfirmDateBtn">确认</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 线程选择模态框 -->
+    <div id="threadSelectorModal" class="modal hidden">
+        <div class="modal-content">
+            <h3 style="margin-bottom: 1rem;">🧵 选择线程</h3>
+            <div id="threadSelectorModalContent"></div>
+            <div class="btn-group" style="margin-top: 1rem; justify-content: flex-end;">
+                <button class="btn btn-secondary" onclick="closeThreadSelectorModal()">取消</button>
+                <button class="btn btn-primary" onclick="confirmThreadSelection()">确认</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 加载遮罩 -->
+    <div id="loadingOverlay" class="modal hidden" style="z-index: 10000;">
+        <div style="background: var(--bg-card); border-radius: var(--radius-xl); padding: 2rem; text-align: center;">
+            <div class="spinner" style="width: 40px; height: 40px; margin: 0 auto 1rem;"></div>
+            <div>加载中...</div>
+        </div>
+    </div>
+
+    <style>
+        .spinner {
+            border: 3px solid var(--border);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+
+    <script>
+        // 传递给 JS 的数据
+        const projectsData = {{ projects_data_json | tojson }};
+        console.log('Projects Data:', projectsData);
+        const perf = {{ perf | tojson }};
+        const toolId = '{{ tool_id }}';
+        const toolName = '{{ tool_name }}';
+        const initialMode = '{{ request.args.get("mode", "single") }}';
+        
+        // 全局变量
+        let currentProjectId = null;
+        let currentRule = null;
+        let selectedDates = [];
+        let availableDates = [];
+        let currentChartType = 'runtime';
+        let charts = {};
+        let cachedToolData = {};
+        let mrUpdateDates = {};
+        let currentDataVersion = '';
+        let currentMultiRule = null;
+        let currentMultiDate = null;
+        let currentMultiChartType = 'runtime';
+        let selectedMultiThreads = [];
+        let availableThreads = [];
+        let multiAvailableDates = [];
+        let currentMultiThreadData = [];
+        let currentCompareResult = null;
+        let currentFilteredData = [];
+        let currentFilterText = '';
+        let pendingMultiSelectedDates = [];
+        // let pendingSelectedDates = [];
+        
+        // 挂载全局函数供 onclick 使用
+        window.selectMultiChartType = function(type) {
+            if (currentMultiChartType === type) return;
+            currentMultiChartType = type;
+            updateMultiChartTypeButtons();
+        };
+        
+        window.openThreadSelectorModal = function() {
+            if (!availableThreads || availableThreads.length === 0) {
+                showNotification('暂无线程数据', true);
+                return;
+            }
+            buildThreadSelectorModal();
+            const modal = document.getElementById('threadSelectorModal');
+            if (modal) modal.classList.remove('hidden');
+        };
+        
+        window.closeThreadSelectorModal = function() {
+            const modal = document.getElementById('threadSelectorModal');
+            if (modal) modal.classList.add('hidden');
+        };
+        
+        window.confirmThreadSelection = function() {
+            updateSelectedThreadsFromModal();
+            if (selectedMultiThreads.length === 0) {
+                selectedMultiThreads = [...availableThreads];
+                showNotification('未选择任何线程，已自动全选');
+            }
+            renderMultiThreadChart();
+            closeThreadSelectorModal();
+        };
+        
+        window.selectAllThreads = function() {
+            const chart = charts[currentChartType];
+            if (chart) {
+                const option = chart.getOption();
+                const legendData = option.legend[0].data;
+                const newSelected = {};
+                legendData.forEach(name => { newSelected[name] = true; });
+                chart.setOption({ legend: { selected: newSelected } });
+                showNotification('已全选所有线程');
+            }
+        };
+        
+        window.inverseSelectThreads = function() {
+            const chart = charts[currentChartType];
+            if (chart) {
+                const option = chart.getOption();
+                const legendSelected = option.legend[0].selected || {};
+                const newSelected = {};
+                Object.entries(legendSelected).forEach(([name, isSelected]) => {
+                    newSelected[name] = !isSelected;
+                });
+                chart.setOption({ legend: { selected: newSelected } });
+                showNotification('已反选线程');
+            }
+        };
+    </script>
+    
+    <script src="{{ url_for('static', filename='js/tool.js') }}"></script>
+</body>
+</html>
