@@ -463,7 +463,7 @@ function handleLegendSelectionChanged(params) {
     const newSelectedThreads = [];
     Object.entries(params.selected).forEach(([name, isSelected]) => {
         if (isSelected) {
-            if (name === 'e线程0') {
+            if (name === '线程0') {
                 newSelectedThreads.push('0');
             } else if (name.startsWith('其他线程')) {
                 const threadId = name.replace('其他线程', '');
@@ -560,7 +560,7 @@ function renderTimelineChart(chartType, dataKey, color, yAxisName, yAxisFormatte
         });
         
         const seriesColor = palette[index % palette.length];
-        const threadLabel = threadId === '0' ? 'e线程0' : `其他线程${threadId}`;
+        const threadLabel = threadId === '0' ? '线程0' : `其他线程${threadId}`;
         
         const seriesData = mappedValues.map((value, idx) => {
             const date = dates[idx];
@@ -607,7 +607,7 @@ function renderTimelineChart(chartType, dataKey, color, yAxisName, yAxisFormatte
     // 图例默认选中状态（默认只选线程0）
     const legendSelected = {};
     threadIds.forEach(threadId => {
-        const seriesName = threadId === '0' ? 'e线程0' : `其他线程${threadId}`;
+        const seriesName = threadId === '0' ? '线程0' : `其他线程${threadId}`;
         legendSelected[seriesName] = (threadId === '0');
     });
     
@@ -878,16 +878,35 @@ function buildMultiDatePicker(usePending = false) {
     const filterText = filterInput?.value || '';
     const filteredDates = multiAvailableDates.filter(date => date.toLowerCase().includes(filterText.toLowerCase()));
     
+    const isSingleMode = document.querySelector('input[name="multiSelectMode"]:checked')?.value === 'single';
+    
     container.innerHTML = filteredDates.map(date => `
         <label class="date-option">
-            <input type="radio" name="multiDate" value="${date}" ${currentSelection.includes(date) ? 'checked' : ''}>
+            <input type="${isSingleMode ? 'radio' : 'checkbox'}" name="multiDate" value="${date}" ${currentSelection.includes(date) ? 'checked' : ''}>
             <span>${date}</span>
         </label>
     `).join('');
     
-    container.querySelectorAll('input[type="radio"]').forEach(cb => {
+    const selectModeRadios = document.querySelectorAll('input[name="multiSelectMode"]');
+    selectModeRadios.forEach(radio => {
+        radio.addEventListener('change', () => {
+            buildMultiDatePicker(usePending);
+        });
+    });
+    
+    container.querySelectorAll('input[type="checkbox"], input[type="radio"]').forEach(cb => {
         cb.addEventListener('change', (e) => {
-            pendingMultiSelectedDates = [e.target.value];
+            if (isSingleMode) {
+                pendingMultiSelectedDates = [e.target.value];
+            } else {
+                if (e.target.checked) {
+                    if (!pendingMultiSelectedDates.includes(e.target.value)) {
+                        pendingMultiSelectedDates.push(e.target.value);
+                    }
+                } else {
+                    pendingMultiSelectedDates = pendingMultiSelectedDates.filter(d => d !== e.target.value);
+                }
+            }
         });
     });
 }
@@ -901,16 +920,152 @@ async function confirmMultiDateSelection() {
         return;
     }
     
-    const newDate = pendingMultiSelectedDates[0];
-    if (newDate !== currentMultiDate) {
-        currentMultiDate = newDate;
-        const multiCurrentDateSpan = document.getElementById('multiCurrentDate');
-        if (multiCurrentDateSpan) {
-            multiCurrentDateSpan.innerText = currentMultiDate;
+    const isMultiMode = document.querySelector('input[name="multiSelectMode"]:checked')?.value === 'all';
+    
+    if (isMultiMode) {
+        multiAvailableDates = pendingMultiSelectedDates.sort();
+        await loadMultiThreadDataForMultipleDates(currentProjectId, currentMultiRule, multiAvailableDates);
+    } else {
+        const newDate = pendingMultiSelectedDates[0];
+        if (newDate !== currentMultiDate) {
+            currentMultiDate = newDate;
+            const multiCurrentDateSpan = document.getElementById('multiCurrentDate');
+            if (multiCurrentDateSpan) {
+                multiCurrentDateSpan.innerText = currentMultiDate;
+            }
+            await loadMultiThreadData(currentProjectId, currentMultiRule, currentMultiDate);
         }
-        await loadMultiThreadData(currentProjectId, currentMultiRule, currentMultiDate);
     }
     closeMultiDatePickerModal();
+}
+
+/**
+ * 加载多个日期的多线程数据用于对比趋势
+ */
+async function loadMultiThreadDataForMultipleDates(projectId, ruleName, dates) {
+    showLoading(true);
+    
+    try {
+        const promises = dates.map(date => 
+            fetch('/api/multi_thread_data', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ project_id: projectId, rule_name: ruleName, date: date })
+            }).then(res => res.json())
+        );
+        
+        const results = await Promise.all(promises);
+        const validResults = results.filter(r => r.success && r.threads_data);
+        
+        if (validResults.length === 0) {
+            showNotification('没有有效的多线程数据', true);
+            return;
+        }
+        
+        // 合并多个日期的数据用于趋势对比
+        const allThreads = new Set();
+        validResults.forEach(r => {
+            r.threads_data.forEach(d => allThreads.add(d.threads.toString()));
+        });
+        availableThreads = Array.from(allThreads).sort((a, b) => parseInt(a) - parseInt(b));
+        
+        if (selectedMultiThreads.length === 0) {
+            selectedMultiThreads = [...availableThreads];
+        }
+        
+        currentMultiThreadData = validResults;
+        renderMultiThreadComparisonChart();
+        
+    } catch (error) {
+        console.error('加载多线程数据失败:', error);
+        showNotification('加载多线程数据失败', true);
+    } finally {
+        showLoading(false);
+    }
+}
+
+/**
+ * 渲染多日期对比图表
+ */
+function renderMultiThreadComparisonChart() {
+    if (!currentMultiThreadData || currentMultiThreadData.length === 0) return;
+    
+    const isRuntime = currentMultiChartType === 'runtime';
+    const chart = isRuntime ? charts.multiRuntime : charts.multiMemory;
+    if (!chart) return;
+    
+    const dates = currentMultiThreadData.map(d => d.date);
+    const selectedThreadIds = selectedMultiThreads;
+    
+    const palette = ['#6366f1', '#f59e0b', '#10b981', '#ef4444', '#06b6d4', '#8b5cf6', '#ec4899', '#84cc16'];
+    
+    const seriesList = selectedThreadIds.map((threadId, idx) => {
+        const values = currentMultiThreadData.map(dayData => {
+            const threadData = dayData.threads_data.find(t => t.threads.toString() === threadId);
+            return threadData ? (isRuntime ? threadData.runtime : threadData.memory) : null;
+        });
+        
+        return {
+            name: threadId === '0' ? '线程0' : `线程 ${threadId}`,
+            type: 'line',
+            data: values,
+            smooth: true,
+            lineStyle: { width: 2, color: palette[idx % palette.length] },
+            symbol: 'circle',
+            symbolSize: 6,
+            connectNulls: true
+        };
+    });
+    
+    const yAxisName = isRuntime ? 'Runtime (秒)' : 'Memory (MB)';
+    
+    const option = {
+        backgroundColor: 'transparent',
+        tooltip: {
+            trigger: 'axis',
+            formatter: function(params) {
+                if (!params?.length) return '';
+                const date = params[0].axisValue;
+                const rows = params.map(p => `<div>${p.seriesName}: ${p.value !== null ? p.value.toFixed(2) : 'N/A'} ${isRuntime ? '秒' : 'MB'}</div>`).join('');
+                return `<strong>📅 ${date}</strong>${rows}`;
+            }
+        },
+        xAxis: {
+            type: 'category',
+            name: '日期',
+            data: dates,
+            axisLabel: { rotate: 30, color: '#94a3b8', fontSize: 11 },
+            axisLine: { lineStyle: { color: '#475569' } }
+        },
+        yAxis: {
+            type: 'value',
+            name: yAxisName,
+            nameTextStyle: { color: '#cbd5e1', fontSize: 12 },
+            axisLabel: { color: '#94a3b8', fontSize: 11 },
+            splitLine: { lineStyle: { color: 'rgba(71, 85, 105, 0.3)', type: 'dashed' } }
+        },
+        series: seriesList,
+        legend: {
+            data: seriesList.map(s => s.name),
+            textStyle: { color: '#cbd5e1', fontSize: 11 },
+            orient: 'horizontal',
+            right: 10,
+            top: 0,
+            itemWidth: 25,
+            itemHeight: 12
+        },
+        toolbox: {
+            feature: {
+                saveAsImage: { title: '保存为图片' },
+                zoom: { title: { zoom: '区域缩放', back: '还原' } },
+                restore: { title: '重置' }
+            },
+            iconStyle: { borderColor: '#94a3b8' }
+        }
+    };
+    
+    chart.setOption(option, { notMerge: true });
+    setTimeout(() => chart.resize(), 50);
 }
 
 /**
@@ -976,7 +1131,13 @@ function updateMultiChartTypeButtons() {
     
     if (currentMultiThreadData && currentMultiThreadData.length > 0) {
         setTimeout(() => {
-            renderMultiThreadChart();
+            if (Array.isArray(currentMultiThreadData) && currentMultiThreadData[0]?.threads_data) {
+                renderMultiThreadChart();
+            } else if (Array.isArray(currentMultiThreadData) && currentMultiThreadData[0]?.date) {
+                renderMultiThreadComparisonChart();
+            } else {
+                renderMultiThreadChart();
+            }
         }, 50);
     }
 }
@@ -1014,61 +1175,21 @@ function closeThreadSelectorModal() {
 }
 
 /**
- * 构建线程选择模态框内容
+ * 构建线程选择模态框内容（与日期选择器布局一致）
  */
 function buildThreadSelectorModal() {
     const container = document.getElementById('threadSelectorModalContent');
     if (!container) return;
     
-    const selectAllBtn = document.createElement('button');
-    selectAllBtn.textContent = '☑ 全选';
-    selectAllBtn.className = 'btn btn-secondary';
-    selectAllBtn.style.cssText = 'padding: 0.5rem 1rem; margin-right: 0.75rem;';
-    selectAllBtn.onclick = () => {
-        const checkboxes = container.querySelectorAll('.thread-checkbox input');
-        checkboxes.forEach(cb => {
-            cb.checked = true;
-            const label = cb.closest('.thread-checkbox');
-            if (label) label.classList.add('selected');
-        });
-        updateSelectedThreadsFromModal();
-    };
+    const filterInput = document.getElementById('threadFilterInput');
+    const filterText = filterInput?.value || '';
+    const filteredThreads = availableThreads.filter(thread => 
+        thread.toLowerCase().includes(filterText.toLowerCase())
+    );
     
-    const inverseBtn = document.createElement('button');
-    inverseBtn.textContent = '🔄 反选';
-    inverseBtn.className = 'btn btn-secondary';
-    inverseBtn.style.cssText = 'padding: 0.5rem 1rem;';
-    inverseBtn.onclick = () => {
-        const checkboxes = container.querySelectorAll('.thread-checkbox input');
-        checkboxes.forEach(cb => {
-            cb.checked = !cb.checked;
-            const label = cb.closest('.thread-checkbox');
-            if (label) {
-                if (cb.checked) {
-                    label.classList.add('selected');
-                } else {
-                    label.classList.remove('selected');
-                }
-            }
-        });
-        updateSelectedThreadsFromModal();
-    };
-    
-    container.innerHTML = '';
-    
-    const buttonBar = document.createElement('div');
-    buttonBar.style.cssText = 'display: flex; gap: 0.5rem; margin-bottom: 1rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--border);';
-    buttonBar.appendChild(selectAllBtn);
-    buttonBar.appendChild(inverseBtn);
-    container.appendChild(buttonBar);
-    
-    const checkboxGroup = document.createElement('div');
-    checkboxGroup.className = 'thread-checkbox-group';
-    checkboxGroup.style.cssText = 'max-height: 300px; overflow-y: auto;';
-    
-    checkboxGroup.innerHTML = availableThreads.map(threadId => {
+    container.innerHTML = filteredThreads.map(threadId => {
         const isChecked = selectedMultiThreads.includes(threadId);
-        const displayName = threadId === '0' ? 'e线程0' : `线程 ${threadId}`;
+        const displayName = threadId === '0' ? '线程0' : `线程 ${threadId}`;
         return `
             <label class="thread-checkbox ${isChecked ? 'selected' : ''}" data-thread="${threadId}">
                 <input type="checkbox" value="${threadId}" ${isChecked ? 'checked' : ''}>
@@ -1077,7 +1198,8 @@ function buildThreadSelectorModal() {
         `;
     }).join('');
     
-    checkboxGroup.querySelectorAll('.thread-checkbox input').forEach(cb => {
+    // 绑定复选框事件
+    container.querySelectorAll('.thread-checkbox input').forEach(cb => {
         cb.addEventListener('change', (e) => {
             e.stopPropagation();
             const label = e.target.closest('.thread-checkbox');
@@ -1088,11 +1210,25 @@ function buildThreadSelectorModal() {
                     label.classList.remove('selected');
                 }
             }
-            updateSelectedThreadsFromModal();
         });
     });
     
-    container.appendChild(checkboxGroup);
+    // 绑定标签点击事件
+    container.querySelectorAll('.thread-checkbox').forEach(label => {
+        label.addEventListener('click', (e) => {
+            if (e.target.tagName !== 'INPUT') {
+                const checkbox = label.querySelector('input');
+                if (checkbox) {
+                    checkbox.checked = !checkbox.checked;
+                    if (checkbox.checked) {
+                        label.classList.add('selected');
+                    } else {
+                        label.classList.remove('selected');
+                    }
+                }
+            }
+        });
+    });
 }
 
 /**
@@ -1106,6 +1242,60 @@ function updateSelectedThreadsFromModal() {
     modalContent.querySelectorAll('.thread-checkbox input:checked').forEach(cb => {
         selectedMultiThreads.push(cb.value);
     });
+}
+
+/**
+ * 线程选择全选按钮
+ */
+function selectAllThreadsInModal() {
+    const modalContent = document.getElementById('threadSelectorModalContent');
+    if (!modalContent) return;
+    
+    const checkboxes = modalContent.querySelectorAll('.thread-checkbox input');
+    checkboxes.forEach(cb => {
+        cb.checked = true;
+        const label = cb.closest('.thread-checkbox');
+        if (label) label.classList.add('selected');
+    });
+    updateSelectedThreadsFromModal();
+}
+
+/**
+ * 线程选择全不选按钮
+ */
+function deselectAllThreadsInModal() {
+    const modalContent = document.getElementById('threadSelectorModalContent');
+    if (!modalContent) return;
+    
+    const checkboxes = modalContent.querySelectorAll('.thread-checkbox input');
+    checkboxes.forEach(cb => {
+        cb.checked = false;
+        const label = cb.closest('.thread-checkbox');
+        if (label) label.classList.remove('selected');
+    });
+    updateSelectedThreadsFromModal();
+}
+
+/**
+ * 线程选择反选按钮
+ */
+function inverseSelectThreadsInModal() {
+    const modalContent = document.getElementById('threadSelectorModalContent');
+    if (!modalContent) return;
+    
+    const checkboxes = modalContent.querySelectorAll('.thread-checkbox input');
+    checkboxes.forEach(cb => {
+        cb.checked = !cb.checked;
+        const label = cb.closest('.thread-checkbox');
+        if (label) {
+            if (cb.checked) {
+                label.classList.add('selected');
+            } else {
+                label.classList.remove('selected');
+            }
+        }
+    });
+    updateSelectedThreadsFromModal();
 }
 
 /**
@@ -1409,10 +1599,72 @@ function updateMultiStats(threadsData) {
 // ==================================================
 
 /**
+ * 根据是否选择了case来更新对比页面控件的禁用状态
+ * @param {boolean} hasCase - 是否选择了case
+ */
+function updateCompareControlsState(hasCase) {
+    const controls = [
+        'compareModeSelect',
+        'compareRuleSelect',
+        'compareDate1',
+        'compareDate2',
+        'toleranceMode',
+        'compareDimensionSelect',
+        'toleranceRuntime',
+        'toleranceMemory',
+        'executeCompareBtn',
+        'exportCompareBtn'
+    ];
+    
+    controls.forEach(controlId => {
+        const element = document.getElementById(controlId);
+        if (element) {
+            element.disabled = !hasCase;
+        }
+    });
+    
+    // 单独处理对比模式选择框（确保启用）
+    const modeSelect = document.getElementById('compareModeSelect');
+    if (modeSelect) modeSelect.disabled = !hasCase;
+    
+    // 显示/隐藏警告和内容
+    const warningDiv = document.getElementById('compareNoCaseWarning');
+    const resultArea = document.getElementById('compareResultArea');
+    
+    if (warningDiv) {
+        warningDiv.style.display = hasCase ? 'none' : 'flex';
+    }
+    if (resultArea) {
+        resultArea.style.display = 'none';
+    }
+    
+    // 清空对比结果
+    currentCompareResult = null;
+    currentFilteredData = [];
+    
+    // 清空统计卡片
+    const compareSummary = document.getElementById('compareSummary');
+    if (compareSummary) {
+        compareSummary.innerHTML = '';
+    }
+    
+    // 清空表格
+    const tableBody = document.getElementById('compareTableBody');
+    if (tableBody) {
+        tableBody.innerHTML = '';
+    }
+}
+
+/**
  * 加载对比日期列表
  * @param {string} projectId - 项目ID
  */
 async function loadCompareDates(projectId) {
+    if (!projectId) {
+        updateCompareControlsState(false);
+        return;
+    }
+    
     try {
         const response = await fetch('/api/get_dates', {
             method: 'POST',
@@ -1434,6 +1686,8 @@ async function loadCompareDates(projectId) {
                 });
                 if (currentDate1 && data.dates.includes(currentDate1)) {
                     date1Select.value = currentDate1;
+                } else if (data.dates.length > 0) {
+                    date1Select.value = data.dates[0];
                 }
             }
             
@@ -1444,11 +1698,20 @@ async function loadCompareDates(projectId) {
                 });
                 if (currentDate2 && data.dates.includes(currentDate2)) {
                     date2Select.value = currentDate2;
+                } else if (data.dates.length > 1) {
+                    date2Select.value = data.dates[1];
+                } else if (data.dates.length > 0) {
+                    date2Select.value = data.dates[0];
                 }
             }
+            
+            updateCompareControlsState(true);
+        } else {
+            updateCompareControlsState(false);
         }
     } catch (error) {
         console.error('加载日期失败:', error);
+        updateCompareControlsState(false);
     }
 }
 
@@ -1457,6 +1720,11 @@ async function loadCompareDates(projectId) {
  * @param {string} projectId - 项目ID
  */
 async function loadCompareRules(projectId) {
+    if (!projectId) {
+        updateCompareControlsState(false);
+        return;
+    }
+    
     try {
         const response = await fetch(`/api/project/${projectId}`);
         const data = await response.json();
@@ -1470,10 +1738,15 @@ async function loadCompareRules(projectId) {
             
             if (currentValue && (currentValue === 'all' || data.rules.includes(currentValue))) {
                 ruleSelect.value = currentValue;
+            } else if (data.rules.length > 0) {
+                ruleSelect.value = 'all';
             }
         }
+        
+        updateCompareControlsState(true);
     } catch (error) {
         console.error('加载规则失败:', error);
+        updateCompareControlsState(false);
     }
 }
 
@@ -1579,7 +1852,10 @@ function getCurrentCompareConfig() {
  * @param {string} projectId - 项目ID
  */
 async function onCompareProjectChange(projectId) {
-    if (!projectId) return;
+    if (!projectId) {
+        updateCompareControlsState(false);
+        return;
+    }
     
     await loadCompareDates(projectId);
     await loadCompareRules(projectId);
@@ -1615,6 +1891,11 @@ function buildSortedList(rulesComparison, type, isIncrease) {
  */
 async function executeCompare() {
     const projectId = document.getElementById('compareCaseSelect').value;
+    if (!projectId) {
+        showNotification('请先选择一个项目', true);
+        return;
+    }
+    
     const compareMode = document.getElementById('compareModeSelect').value;
     let ruleName = document.getElementById('compareRuleSelect').value;
     const date1 = document.getElementById('compareDate1').value;
@@ -1626,8 +1907,8 @@ async function executeCompare() {
     
     if (compareMode === 'all') ruleName = 'all';
     
-    if (!projectId || !date1 || !date2) {
-        showNotification('请完整填写对比参数', true);
+    if (!date1 || !date2) {
+        showNotification('请选择两个日期进行对比', true);
         return;
     }
     
@@ -1997,7 +2278,7 @@ async function exportCompareResult() {
 let pendingSelectedDates = [];
 
 /**
- * 构建日期选择器
+ * 构建日期选择器（带全选按钮）
  * @param {boolean} usePending - 是否使用待确认的日期
  */
 function buildDatePicker(usePending = false) {
@@ -2025,6 +2306,52 @@ function buildDatePicker(usePending = false) {
                 pendingSelectedDates = pendingSelectedDates.filter(d => d !== date);
             }
         });
+    });
+}
+
+/**
+ * 全选所有日期
+ */
+function selectAllDates() {
+    const container = document.getElementById('dateOptionsContainer');
+    if (!container) return;
+    
+    const checkboxes = container.querySelectorAll('input[type="checkbox"]');
+    pendingSelectedDates = [];
+    checkboxes.forEach(cb => {
+        cb.checked = true;
+        pendingSelectedDates.push(cb.value);
+    });
+}
+
+/**
+ * 全不选所有日期
+ */
+function deselectAllDates() {
+    const container = document.getElementById('dateOptionsContainer');
+    if (!container) return;
+    
+    const checkboxes = container.querySelectorAll('input[type="checkbox"]');
+    pendingSelectedDates = [];
+    checkboxes.forEach(cb => {
+        cb.checked = false;
+    });
+}
+
+/**
+ * 反选日期
+ */
+function inverseSelectDates() {
+    const container = document.getElementById('dateOptionsContainer');
+    if (!container) return;
+    
+    const checkboxes = container.querySelectorAll('input[type="checkbox"]');
+    pendingSelectedDates = [];
+    checkboxes.forEach(cb => {
+        cb.checked = !cb.checked;
+        if (cb.checked) {
+            pendingSelectedDates.push(cb.value);
+        }
     });
 }
 
@@ -2127,6 +2454,8 @@ async function refreshAllData() {
                     
                     if (compareCaseSelect.value) {
                         await onCompareProjectChange(compareCaseSelect.value);
+                    } else {
+                        updateCompareControlsState(false);
                     }
                 }
             }
@@ -2179,7 +2508,13 @@ function switchView(viewId) {
         setTimeout(() => {
             if (charts.multiRuntime) charts.multiRuntime.resize();
             if (charts.multiMemory) charts.multiMemory.resize();
-            renderMultiThreadChart();
+            if (currentMultiThreadData && currentMultiThreadData.length > 0) {
+                if (Array.isArray(currentMultiThreadData) && currentMultiThreadData[0]?.date) {
+                    renderMultiThreadComparisonChart();
+                } else {
+                    renderMultiThreadChart();
+                }
+            }
         }, 100);
     } else if (viewId === 'timeline') {
         setTimeout(() => {
@@ -2302,7 +2637,13 @@ function bindEvents() {
     if (selectRecentBtn) selectRecentBtn.addEventListener('click', () => resetDateSelection(false));
     
     const selectAllDatesBtn = document.getElementById('selectAllDatesBtn');
-    if (selectAllDatesBtn) selectAllDatesBtn.addEventListener('click', () => resetDateSelection(true));
+    if (selectAllDatesBtn) selectAllDatesBtn.addEventListener('click', selectAllDates);
+    
+    const deselectAllDatesBtn = document.getElementById('deselectAllDatesBtn');
+    if (deselectAllDatesBtn) deselectAllDatesBtn.addEventListener('click', deselectAllDates);
+    
+    const inverseDatesBtn = document.getElementById('inverseDatesBtn');
+    if (inverseDatesBtn) inverseDatesBtn.addEventListener('click', inverseSelectDates);
     
     const dateFilterInput = document.getElementById('dateFilterInput');
     if (dateFilterInput) {
@@ -2354,6 +2695,45 @@ function bindEvents() {
         }, 150));
     }
     
+    // 多线程 - 图表类型切换按钮
+    const multiChartRuntimeBtn = document.getElementById('multiChartRuntimeBtn');
+    if (multiChartRuntimeBtn) {
+        multiChartRuntimeBtn.addEventListener('click', () => selectMultiChartType('runtime'));
+    }
+    const multiChartMemoryBtn = document.getElementById('multiChartMemoryBtn');
+    if (multiChartMemoryBtn) {
+        multiChartMemoryBtn.addEventListener('click', () => selectMultiChartType('memory'));
+    }
+    
+    // 多线程 - 线程选择按钮
+    const openThreadSelectorBtn = document.getElementById('openThreadSelectorBtn');
+    if (openThreadSelectorBtn) {
+        openThreadSelectorBtn.addEventListener('click', openThreadSelectorModal);
+    }
+    
+    // 线程选择模态框按钮
+    const selectAllThreadsBtn = document.getElementById('selectAllThreadsBtn');
+    if (selectAllThreadsBtn) selectAllThreadsBtn.addEventListener('click', selectAllThreadsInModal);
+    
+    const deselectAllThreadsBtn = document.getElementById('deselectAllThreadsBtn');
+    if (deselectAllThreadsBtn) deselectAllThreadsBtn.addEventListener('click', deselectAllThreadsInModal);
+    
+    const inverseThreadsBtn = document.getElementById('inverseThreadsBtn');
+    if (inverseThreadsBtn) inverseThreadsBtn.addEventListener('click', inverseSelectThreadsInModal);
+    
+    const closeThreadModalBtn = document.getElementById('closeThreadModalBtn');
+    if (closeThreadModalBtn) closeThreadModalBtn.addEventListener('click', closeThreadSelectorModal);
+    
+    const confirmThreadModalBtn = document.getElementById('confirmThreadModalBtn');
+    if (confirmThreadModalBtn) confirmThreadModalBtn.addEventListener('click', confirmThreadSelection);
+    
+    const threadFilterInput = document.getElementById('threadFilterInput');
+    if (threadFilterInput) {
+        threadFilterInput.addEventListener('input', debounce(() => {
+            buildThreadSelectorModal();
+        }, 150));
+    }
+    
     // 对比 - 项目选择
     const compareCaseSelect = document.getElementById('compareCaseSelect');
     if (compareCaseSelect) {
@@ -2361,6 +2741,8 @@ function bindEvents() {
             const projId = e.target.value;
             if (projId) {
                 await onCompareProjectChange(projId);
+            } else {
+                updateCompareControlsState(false);
             }
         });
     }
@@ -2378,6 +2760,11 @@ function bindEvents() {
                 }
             }
         });
+        // 初始化触发一次
+        if (compareModeSelect.value === 'all') {
+            const ruleGroup = document.getElementById('compareRuleGroup');
+            if (ruleGroup) ruleGroup.style.display = 'none';
+        }
     }
     
     // 对比 - 执行按钮
@@ -2498,6 +2885,8 @@ async function autoRefreshOnLoad() {
                         }
                         if (compareCaseSelect.value) {
                             await onCompareProjectChange(compareCaseSelect.value);
+                        } else {
+                            updateCompareControlsState(false);
                         }
                     }
                 }
@@ -2517,7 +2906,13 @@ async function autoRefreshOnLoad() {
         mrUpdateDates = buildMrUpdateMap(perf);
         const compareSelect = document.getElementById('compareCaseSelect');
         if (compareSelect && compareSelect.options.length > 0) {
-            await onCompareProjectChange(compareSelect.value);
+            if (compareSelect.value) {
+                await onCompareProjectChange(compareSelect.value);
+            } else {
+                updateCompareControlsState(false);
+            }
+        } else {
+            updateCompareControlsState(false);
         }
     }
 }
@@ -2548,10 +2943,16 @@ async function init() {
     
     const compareSelect = document.getElementById('compareCaseSelect');
     if (compareSelect && compareSelect.options.length > 0) {
-        compareSelect.value = compareSelect.options[0]?.value || '';
+        if (!compareSelect.value && compareSelect.options.length > 0) {
+            compareSelect.value = compareSelect.options[0]?.value || '';
+        }
         if (compareSelect.value) {
             await onCompareProjectChange(compareSelect.value);
+        } else {
+            updateCompareControlsState(false);
         }
+    } else {
+        updateCompareControlsState(false);
     }
     
     if (initialMode === 'multi') {

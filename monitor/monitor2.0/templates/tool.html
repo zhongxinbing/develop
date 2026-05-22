@@ -6,255 +6,7 @@
     <title>{{ tool_name }} 性能监控系统</title>
     <script src="{{ url_for('static', filename='js/echarts.min.js') }}"></script>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/tool.css') }}">
-    <style>
-        .hidden { display: none !important; }
-        .view-container { display: none; }
-        .view-container.active { display: block; }
-        
-        /* 通用卡片样式补充 */
-        .card, .multi-chart-card {
-            background: var(--bg-card);
-            border-radius: var(--radius-xl);
-            border: 1px solid var(--border);
-            padding: 1.5rem;
-            margin-bottom: 1.5rem;
-            transition: var(--transition);
-        }
-        
-        .control-group {
-            flex: 1;
-            min-width: 180px;
-        }
-        
-        .control-label {
-            font-size: 0.75rem;
-            color: var(--text-muted);
-            margin-bottom: 0.25rem;
-            display: block;
-        }
-        
-        select, input {
-            width: 100%;
-            padding: 0.625rem 0.875rem;
-            background: rgba(15, 23, 42, 0.8);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-md);
-            color: var(--text-primary);
-            font-size: 0.875rem;
-            transition: var(--transition);
-        }
-        
-        select:focus, input:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
-        }
-        
-        .btn {
-            padding: 0.625rem 1.25rem;
-            border-radius: var(--radius-md);
-            font-weight: 500;
-            font-size: 0.875rem;
-            cursor: pointer;
-            transition: var(--transition);
-            border: none;
-            background: rgba(99, 102, 241, 0.15);
-            color: var(--text-primary);
-        }
-        
-        .btn-primary {
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            color: white;
-        }
-        
-        .btn-primary:hover {
-            transform: translateY(-1px);
-            box-shadow: var(--glow);
-        }
-        
-        .btn-secondary {
-            background: rgba(6, 182, 212, 0.15);
-            border: 1px solid var(--secondary);
-            color: var(--secondary);
-        }
-        
-        .btn-secondary:hover {
-            background: var(--secondary);
-            color: white;
-        }
-        
-        .btn-group {
-            display: flex;
-            gap: 0.5rem;
-            flex-wrap: wrap;
-        }
-        
-        .chart-container {
-            width: 100%;
-            height: 450px;
-            border-radius: var(--radius-lg);
-            background: rgba(15, 23, 42, 0.5);
-        }
-        
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-            gap: 1rem;
-            margin-top: 1rem;
-        }
-        
-        .stat-item {
-            background: rgba(15, 23, 42, 0.6);
-            border-radius: var(--radius-lg);
-            padding: 1rem;
-            text-align: center;
-            transition: var(--transition);
-            cursor: help;
-            position: relative;
-        }
-        
-        .stat-item:hover {
-            background: rgba(99, 102, 241, 0.1);
-            transform: translateY(-2px);
-        }
-        
-        .stat-value {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--primary-light);
-        }
-        
-        .stat-label {
-            font-size: 0.75rem;
-            color: var(--text-muted);
-            margin-top: 0.25rem;
-        }
-        
-        .status-increase { color: #ef4444; font-weight: 600; }
-        .status-decrease { color: #10b981; font-weight: 600; }
-        
-        .modal {
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(8px);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-        }
-        
-        .modal.hidden { display: none; }
-        
-        .modal-content {
-            background: var(--bg-card);
-            border-radius: var(--radius-xl);
-            width: 90%;
-            max-width: 600px;
-            max-height: 80vh;
-            overflow: auto;
-            padding: 1.5rem;
-        }
-        
-        .date-options {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-            gap: 0.5rem;
-            margin: 1rem 0;
-            max-height: 300px;
-            overflow-y: auto;
-        }
-        
-        .date-option {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.5rem;
-            border-radius: var(--radius-md);
-            cursor: pointer;
-        }
-        
-        .date-option:hover {
-            background: rgba(99, 102, 241, 0.1);
-        }
-        
-        .table-container {
-            overflow-x: auto;
-            margin-top: 1rem;
-        }
-        
-        .result-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 0.8125rem;
-        }
-        
-        .result-table th,
-        .result-table td {
-            padding: 0.75rem;
-            text-align: center;
-            border-bottom: 1px solid var(--border);
-        }
-        
-        .result-table th {
-            background: rgba(99, 102, 241, 0.1);
-            color: var(--text-secondary);
-            font-weight: 600;
-        }
-        
-        .result-table tr:hover {
-            background: rgba(99, 102, 241, 0.05);
-        }
-        
-        .info-bar {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 1rem;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0.75rem 1rem;
-            background: rgba(15, 23, 42, 0.6);
-            border-radius: var(--radius-lg);
-            margin-top: 1rem;
-        }
-        
-        .chart-type-buttons {
-            display: flex;
-            gap: 0.5rem;
-            flex: 1;
-            min-width: 0;
-        }
-        
-        .chart-type-buttons .btn {
-            flex: 1;
-            min-width: 100px;
-        }
-        
-        .thread-checkbox-group {
-            max-height: 300px;
-            overflow-y: auto;
-        }
-        
-        .thread-checkbox {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            padding: 0.5rem 0.75rem;
-            margin-bottom: 0.25rem;
-            border-radius: var(--radius-md);
-            cursor: pointer;
-            transition: var(--transition);
-        }
-        
-        .thread-checkbox:hover {
-            background: rgba(99, 102, 241, 0.1);
-        }
-        
-        .thread-checkbox.selected {
-            background: rgba(99, 102, 241, 0.15);
-            border-left: 2px solid var(--primary);
-        }
-    </style>
+    
 </head>
 <body>
     <div class="app-container">
@@ -332,12 +84,12 @@
 
                 <!-- 图表类型切换 -->
                 <div class="card">
-                    <div class="card-header">
-                        <div class="card-title" id="chartCardTitle">⏱️ Runtime 性能曲线</div>
-                        <div id="chartTypeButtons" class="chart-type-buttons">
+                    <div id="chartTypeButtons" class="chart-type-buttons">
                             <button class="btn btn-primary chart-type-btn" data-type="runtime">⏱️ Runtime</button>
                             <button class="btn btn-secondary chart-type-btn" data-type="memory">💾 Memory</button>
                         </div>
+                    <div class="card-header">
+                        <div class="card-title" id="chartCardTitle">⏱️ Runtime 性能曲线</div>
                     </div>
                     <div id="chart-runtime" class="chart-container"></div>
                     <div id="chart-memory" class="chart-container hidden"></div>
@@ -394,19 +146,19 @@
                         </div>
                         <div class="control-group">
                             <label class="control-label">🧵 线程选择</label>
-                            <button class="btn btn-secondary" id="openThreadSelectorBtn" onclick="openThreadSelectorModal()">🎯 选择线程</button>
+                            <div class="thread-selector-btn" id="openThreadSelectorBtn">🎯 点击选择线程</div>
                         </div>
                     </div>
                 </div>
 
                 <!-- 图表区域 -->
                 <div class="multi-chart-card">
+                    <div class="chart-type-buttons">
+                            <button class="btn btn-primary chart-type-btn" id="multiChartRuntimeBtn">⏱️ Runtime</button>
+                            <button class="btn btn-secondary chart-type-btn" id="multiChartMemoryBtn">💾 Memory</button>
+                        </div>
                     <div class="card-header">
                         <div class="card-title" id="multiChartCardTitle">⏱️ Runtime 性能曲线</div>
-                        <div class="btn-group">
-                            <button class="btn btn-primary" id="multiChartRuntimeBtn" onclick="selectMultiChartType('runtime')">⏱️ Runtime</button>
-                            <button class="btn btn-secondary" id="multiChartMemoryBtn" onclick="selectMultiChartType('memory')">💾 Memory</button>
-                        </div>
                     </div>
                     <div id="chart-multi-runtime" class="chart-container"></div>
                     <div id="chart-multi-memory" class="chart-container hidden"></div>
@@ -525,17 +277,29 @@
                         </div>
                     </div>
                 </div>
+                
+                <!-- 未选择case时的提示 -->
+                <div id="compareNoCaseWarning" class="warning-placeholder">
+                    <div class="icon">📋</div>
+                    <div>请先选择一个项目 (QOR Case)</div>
+                    <div style="font-size: 0.8rem; margin-top: 0.5rem;">选择项目后即可配置对比参数并执行对比</div>
+                </div>
             </div>
         </main>
     </div>
 
     <!-- ========== 模态框 ========== -->
     
-    <!-- 日期选择模态框（时序曲线图） -->
+    <!-- 日期选择模态框（时序曲线图）- 带全选按钮 -->
     <div id="datePickerModal" class="modal hidden">
         <div class="modal-content">
             <h3 style="margin-bottom: 1rem;">📅 选择日期范围</h3>
-            <input type="text" id="dateFilterInput" placeholder="筛选日期..." style="width: 100%; margin-bottom: 1rem;">
+            <div class="filter-bar">
+                <input type="text" id="dateFilterInput" placeholder="筛选日期...">
+                <button class="btn btn-secondary" id="selectAllDatesBtn" style="padding: 0.4rem 0.8rem;">☑️ 全选</button>
+                <button class="btn btn-secondary" id="deselectAllDatesBtn" style="padding: 0.4rem 0.8rem;">⬜ 全不选</button>
+                <button class="btn btn-secondary" id="inverseDatesBtn" style="padding: 0.4rem 0.8rem;">🔄 反选</button>
+            </div>
             <div id="dateOptionsContainer" class="date-options"></div>
             <div class="btn-group" style="margin-top: 1rem; justify-content: flex-end;">
                 <button class="btn btn-secondary" id="closeDateModalBtn">取消</button>
@@ -548,7 +312,15 @@
     <div id="multiDatePickerModal" class="modal hidden">
         <div class="modal-content">
             <h3 style="margin-bottom: 1rem;">📅 选择对比日期</h3>
-            <input type="text" id="multiDateFilterInput" placeholder="筛选日期..." style="width: 100%; margin-bottom: 1rem;">
+            <div class="filter-bar">
+                <input type="text" id="multiDateFilterInput" placeholder="筛选日期...">
+                <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                    <input type="radio" name="multiSelectMode" value="single" checked> 单选
+                </label>
+                <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                    <input type="radio" name="multiSelectMode" value="all"> 全选（仅对比趋势）
+                </label>
+            </div>
             <div id="multiDateOptionsContainer" class="date-options"></div>
             <div class="btn-group" style="margin-top: 1rem; justify-content: flex-end;">
                 <button class="btn btn-secondary" id="multiCloseDateModalBtn">取消</button>
@@ -557,14 +329,20 @@
         </div>
     </div>
 
-    <!-- 线程选择模态框 -->
+    <!-- 线程选择模态框 - 与日期选择器布局一致 -->
     <div id="threadSelectorModal" class="modal hidden">
         <div class="modal-content">
             <h3 style="margin-bottom: 1rem;">🧵 选择线程</h3>
-            <div id="threadSelectorModalContent"></div>
+            <div class="filter-bar">
+                <input type="text" id="threadFilterInput" placeholder="筛选线程...">
+                <button class="btn btn-secondary" id="selectAllThreadsBtn" style="padding: 0.4rem 0.8rem;">☑️ 全选</button>
+                <button class="btn btn-secondary" id="deselectAllThreadsBtn" style="padding: 0.4rem 0.8rem;">⬜ 全不选</button>
+                <button class="btn btn-secondary" id="inverseThreadsBtn" style="padding: 0.4rem 0.8rem;">🔄 反选</button>
+            </div>
+            <div id="threadSelectorModalContent" class="thread-checkbox-group"></div>
             <div class="btn-group" style="margin-top: 1rem; justify-content: flex-end;">
-                <button class="btn btn-secondary" onclick="closeThreadSelectorModal()">取消</button>
-                <button class="btn btn-primary" onclick="confirmThreadSelection()">确认</button>
+                <button class="btn btn-secondary" id="closeThreadModalBtn">取消</button>
+                <button class="btn btn-primary" id="confirmThreadModalBtn">确认</button>
             </div>
         </div>
     </div>
@@ -576,18 +354,6 @@
             <div>加载中...</div>
         </div>
     </div>
-
-    <style>
-        .spinner {
-            border: 3px solid var(--border);
-            border-top-color: var(--primary);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-    </style>
 
     <script>
         // 传递给 JS 的数据
@@ -619,7 +385,6 @@
         let currentFilteredData = [];
         let currentFilterText = '';
         let pendingMultiSelectedDates = [];
-        // let pendingSelectedDates = [];
         
         // 挂载全局函数供 onclick 使用
         window.selectMultiChartType = function(type) {
@@ -651,32 +416,6 @@
             }
             renderMultiThreadChart();
             closeThreadSelectorModal();
-        };
-        
-        window.selectAllThreads = function() {
-            const chart = charts[currentChartType];
-            if (chart) {
-                const option = chart.getOption();
-                const legendData = option.legend[0].data;
-                const newSelected = {};
-                legendData.forEach(name => { newSelected[name] = true; });
-                chart.setOption({ legend: { selected: newSelected } });
-                showNotification('已全选所有线程');
-            }
-        };
-        
-        window.inverseSelectThreads = function() {
-            const chart = charts[currentChartType];
-            if (chart) {
-                const option = chart.getOption();
-                const legendSelected = option.legend[0].selected || {};
-                const newSelected = {};
-                Object.entries(legendSelected).forEach(([name, isSelected]) => {
-                    newSelected[name] = !isSelected;
-                });
-                chart.setOption({ legend: { selected: newSelected } });
-                showNotification('已反选线程');
-            }
         };
     </script>
     

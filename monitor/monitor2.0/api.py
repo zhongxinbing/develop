@@ -9,7 +9,7 @@ from datetime import datetime
 from pathlib import Path
 
 from common import log
-from elint import load_json, get_json_data, get_perf
+from elint import *
 from data_cache import data_cache, version_manager
 from compare import comparator
 from config import *
@@ -80,7 +80,9 @@ def tool_page(tool_id):
         projects_data = get_json_data(tool_id, config.get('original_path', ''), config.get('json_path', ''))
         current_projects_data = projects_data.copy()
         parsed_projects, project_list = refresh_parsed_projects(current_projects_data)
-        print(f"解析完成，项目数量999999999999999999999999: {len(parsed_projects)}")
+        # print(f"使用缓存数据，项目数量: {parsed_projects}")
+        save_json("./parsed_projects.json", parsed_projects)
+        print(f"项目列表: {project_list}")
         if CONFIG['cache_enabled']:
             data_cache.set(cache_key, {
                 'projects_data': current_projects_data,
@@ -95,14 +97,13 @@ def tool_page(tool_id):
             'available_dates': info.get('available_dates', info['dates']),
             'rules': info['rules'],
             'rule_data': info['rule_data'],
-            'project_name': info['project_name'],
-            'description': info['description']
+            'project_name': info['project_name']
         }
 
     # 获取性能数据（MR更新信息）
     config = tool_info.get('single', {})
     perf = get_perf(config.get('mem', ''), config.get('cpu', ''))
-    
+    save_json("./projects_data_json.json", projects_data_json)
     return render_template(
         'tool.html',
         tool_id=tool_id,
@@ -197,8 +198,7 @@ def api_refresh():
                 'dates': info['dates'],
                 'rules': info['rules'],
                 'rule_data': info['rule_data'],
-                'project_name': info['project_name'],
-                'description': info['description']
+                'project_name': info['project_name']
             }
         
         last_update = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
@@ -302,7 +302,6 @@ def api_project_data(project_id):
     info = parsed_projects[project_id]
     return jsonify({
         'project_name': info['project_name'],
-        'description': info['description'],
         'dates': info['dates'],
         'available_dates': info.get('available_dates', info['dates']),
         'rules': info['rules'],
