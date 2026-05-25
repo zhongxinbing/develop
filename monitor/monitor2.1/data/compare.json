@@ -1,7 +1,7 @@
 {
     "openc910-main": {
-        "tolerance_runtime": 20,
+        "tolerance_runtime": 30,
         "tolerance_memory": 0,
-        "last_updated": "2026-05-25 21:46:38"
+        "last_updated": "2026-05-25 23:08:13"
     }
 }

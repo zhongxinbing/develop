@@ -259,7 +259,23 @@
                         <div class="card-header">
                             <div class="card-title" id="compareResultTitle">📈 对比结果</div>
                         </div>
-                        <div class="stats-grid" id="compareSummary"></div>
+                        
+                        <!-- Runtime 统计卡片行 -->
+                        <div id="compareRuntimeStatsRow" class="stats-row-compare" style="margin-bottom: 1rem;">
+                            <h4 style="margin: 0 0 0.5rem 0; color: var(--primary-light); display: flex; align-items: center; gap: 0.5rem;">
+                                <span>⏱️</span> Runtime 统计
+                            </h4>
+                            <div id="compareRuntimeStats" class="stats-grid"></div>
+                        </div>
+                        
+                        <!-- Memory 统计卡片行 -->
+                        <div id="compareMemoryStatsRow" class="stats-row-compare" style="margin-bottom: 1rem;">
+                            <h4 style="margin: 0 0 0.5rem 0; color: var(--primary-light); display: flex; align-items: center; gap: 0.5rem;">
+                                <span>💾</span> Memory 统计
+                            </h4>
+                            <div id="compareMemoryStats" class="stats-grid"></div>
+                        </div>
+                        
                         <div class="table-container">
                             <table class="result-table">
                                 <thead id="compareTableHeader">

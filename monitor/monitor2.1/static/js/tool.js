@@ -1788,7 +1788,7 @@ async function executeCompare() {
             displayCompareResult(result.result);
             const compareResultArea = document.getElementById('compareResultArea');
             if (compareResultArea) compareResultArea.style.display = 'block';
-            
+            setTimeout(() => initStatsTooltips(), 100);
             await saveCompareConfig(projectId, {
                 tolerance_runtime: toleranceRuntime,
                 tolerance_memory: toleranceMemory
@@ -1953,18 +1953,37 @@ function applyTableFilter() {
 }
 
 /**
- * 渲染筛选后的表格
+ * 渲染筛选后的表格 - 根据对比维度动态显示列
  */
 function renderFilteredTable(filteredData) {
     const tbody = document.getElementById('compareTableBody');
     if (!tbody) return;
     
+    // 获取当前对比维度
+    const compareDimensionSelect = document.getElementById('compareDimensionSelect');
+    const compareDimension = compareDimensionSelect ? compareDimensionSelect.value : 'both';
+    const compareRuntime = compareDimension === 'runtime' || compareDimension === 'both';
+    const compareMemory = compareDimension === 'memory' || compareDimension === 'both';
+    
     tbody.innerHTML = filteredData.map(rule => {
         const statusText = () => {
             if (!rule.has_data) return '无数据';
-            if (rule.runtime_status === 'increase') return '⬆️ 增加';
-            if (rule.runtime_status === 'decrease') return '⬇️ 减少';
-            return '➖ 不变';
+            // 根据对比维度决定显示哪个状态
+            if (compareRuntime && compareMemory) {
+                // 两者都显示时，优先显示有变化的
+                if (rule.runtime_status === 'increase' || rule.memory_status === 'increase') return '⬆️ 增加';
+                if (rule.runtime_status === 'decrease' || rule.memory_status === 'decrease') return '⬇️ 减少';
+                return '➖ 不变';
+            } else if (compareRuntime) {
+                if (rule.runtime_status === 'increase') return '⬆️ 增加';
+                if (rule.runtime_status === 'decrease') return '⬇️ 减少';
+                return '➖ 不变';
+            } else if (compareMemory) {
+                if (rule.memory_status === 'increase') return '⬆️ 增加';
+                if (rule.memory_status === 'decrease') return '⬇️ 减少';
+                return '➖ 不变';
+            }
+            return '无数据';
         };
         
         // 安全获取数值，处理 null/undefined
@@ -1992,26 +2011,31 @@ function renderFilteredTable(filteredData) {
             return '';
         };
         
-        return `
-            <tr>
-                <td style="text-align:left; font-weight:500;">${escapeHtml(rule.rule_name)}</td>
+        let rowHtml = `<tr>
+            <td style="text-align:left; font-weight:500;">${escapeHtml(rule.rule_name)}</td>`;
+        
+        if (compareRuntime) {
+            rowHtml += `
                 <td>${runtime1}</td>
                 <td>${runtime2}</td>
                 <td>${runtimeDiff}</td>
-                <td class="${runtimeClass()}">${runtimeChangePct}</td>
+                <td class="${runtimeClass()}">${runtimeChangePct}</td>`;
+        }
+        
+        if (compareMemory) {
+            rowHtml += `
                 <td>${memory1}</td>
                 <td>${memory2}</td>
                 <td>${memoryDiff}</td>
-                <td class="${memoryClass()}">${memoryChangePct}</td>
-                <td>${statusText()}</td>
-            </tr>
-        `;
+                <td class="${memoryClass()}">${memoryChangePct}</td>`;
+        }
+        
+        rowHtml += `<td>${statusText()}</td>
+            </tr>`;
+        return rowHtml;
     }).join('');
 }
 
-/**
- * 显示对比结果
- */
 function displayCompareResult(result) {
     const isAllRules = result.mode === 'all_rules';
     const compareResultTitle = document.getElementById('compareResultTitle');
@@ -2024,6 +2048,11 @@ function displayCompareResult(result) {
     const compareRuntime = compareDimension === 'runtime' || compareDimension === 'both';
     const compareMemory = compareDimension === 'memory' || compareDimension === 'both';
     
+    const runtimeStatsContainer = document.getElementById('compareRuntimeStats');
+    const memoryStatsContainer = document.getElementById('compareMemoryStats');
+    const runtimeStatsRow = document.getElementById('compareRuntimeStatsRow');
+    const memoryStatsRow = document.getElementById('compareMemoryStatsRow');
+    
     if (isAllRules) {
         const runtimeSummary = compareRuntime ? (summary.runtime || {}) : {};
         const memorySummary = compareMemory ? (summary.memory || {}) : {};
@@ -2031,80 +2060,106 @@ function displayCompareResult(result) {
         
         currentFilteredData = rulesComparison;
         
-        // 构建排序列表
-        const runtimeIncreaseList = compareRuntime ? buildSortedList(rulesComparison, 'runtime', true) : [];
-        const runtimeDecreaseList = compareRuntime ? buildSortedList(rulesComparison, 'runtime', false) : [];
-        const memoryIncreaseList = compareMemory ? buildSortedList(rulesComparison, 'memory', true) : [];
-        const memoryDecreaseList = compareMemory ? buildSortedList(rulesComparison, 'memory', false) : [];
-        
-        const compareSummary = document.getElementById('compareSummary');
-        // 在 displayCompareResult 函数中，更新统计卡片的显示
-        if (compareSummary) {
-            let summaryHtml = '';
+        if (compareRuntime && runtimeStatsContainer) {
+            runtimeStatsRow.style.display = 'block';
             
-            if (compareRuntime) {
-                const maxIncPct = runtimeSummary.max_increase_pct !== undefined && runtimeSummary.max_increase_pct !== null 
-                    ? runtimeSummary.max_increase_pct.toFixed(2) : '0';
-                const maxDecPct = runtimeSummary.max_decrease_pct !== undefined && runtimeSummary.max_decrease_pct !== null 
-                    ? Math.abs(runtimeSummary.max_decrease_pct).toFixed(2) : '0';
-                
-                summaryHtml += `
-                    <div class="stat-item" id="statRuntimeIncrease">
-                        <div class="stat-value status-increase">${runtimeSummary.total_increase || 0}</div>
-                        <div class="stat-label">Runtime增加阶段</div>
-                    </div>
-                    <div class="stat-item" id="statRuntimeDecrease">
-                        <div class="stat-value status-decrease">${runtimeSummary.total_decrease || 0}</div>
-                        <div class="stat-label">Runtime减少阶段</div>
-                    </div>
-                    <div class="stat-item" id="statRuntimeAvg">
-                        <div class="stat-value">${runtimeSummary.avg_change_pct || 0}%</div>
-                        <div class="stat-label">Runtime平均变化率</div>
-                    </div>
-                    <div class="stat-item" id="statRuntimeMaxInc">
-                        <div class="stat-value">${maxIncPct}%</div>
-                        <div class="stat-label">Runtime最大增加</div>
-                    </div>
-                    <div class="stat-item" id="statRuntimeMaxDec">
-                        <div class="stat-value">${maxDecPct}%</div>
-                        <div class="stat-label">Runtime最大减少</div>
-                    </div>
-                `;
+            runtimeStatsContainer.innerHTML = `
+                <div class="stat-item">
+                    <div class="stat-value status-increase">${runtimeSummary.total_increase || 0}</div>
+                    <div class="stat-label">Runtime增加阶段</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value status-decrease">${runtimeSummary.total_decrease || 0}</div>
+                    <div class="stat-label">Runtime减少阶段</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">${runtimeSummary.avg_change_pct || 0}%</div>
+                    <div class="stat-label">Runtime平均变化率</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">${runtimeSummary.max_increase_pct ? runtimeSummary.max_increase_pct.toFixed(2) + '%' : '0%'}</div>
+                    <div class="stat-label">Runtime最大增加</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">${runtimeSummary.max_decrease_pct ? Math.abs(runtimeSummary.max_decrease_pct).toFixed(2) + '%' : '0%'}</div>
+                    <div class="stat-label">Runtime最大减少</div>
+                </div>
+            `;
+            
+            // 为增加和减少卡片添加 tooltip 数据
+            const items = runtimeStatsContainer.querySelectorAll('.stat-item');
+            const increaseCard = items[0];
+            const decreaseCard = items[1];
+            
+            if (increaseCard && runtimeSummary.increase_list && runtimeSummary.increase_list.length > 0) {
+                increaseCard.setAttribute('data-tooltip-html', buildStatsTooltipHtml(runtimeSummary.increase_list, 'Runtime', '增加'));
+                increaseCard.style.cursor = 'help';
+            } else if (increaseCard) {
+                increaseCard.setAttribute('data-tooltip-html', '<div style="padding: 8px 12px;">暂无Runtime增加阶段</div>');
+                increaseCard.style.cursor = 'help';
             }
             
-            if (compareMemory) {
-                const maxIncPct = memorySummary.max_increase_pct !== undefined && memorySummary.max_increase_pct !== null 
-                    ? memorySummary.max_increase_pct.toFixed(2) : '0';
-                const maxDecPct = memorySummary.max_decrease_pct !== undefined && memorySummary.max_decrease_pct !== null 
-                    ? Math.abs(memorySummary.max_decrease_pct).toFixed(2) : '0';
-                
-                summaryHtml += `
-                    <div class="stat-item" id="statMemoryIncrease">
-                        <div class="stat-value status-increase">${memorySummary.total_increase || 0}</div>
-                        <div class="stat-label">Memory增加阶段</div>
-                    </div>
-                    <div class="stat-item" id="statMemoryDecrease">
-                        <div class="stat-value status-decrease">${memorySummary.total_decrease || 0}</div>
-                        <div class="stat-label">Memory减少阶段</div>
-                    </div>
-                    <div class="stat-item" id="statMemoryAvg">
-                        <div class="stat-value">${memorySummary.avg_change_pct || 0}%</div>
-                        <div class="stat-label">Memory平均变化率</div>
-                    </div>
-                    <div class="stat-item" id="statMemoryMaxInc">
-                        <div class="stat-value">${maxIncPct}%</div>
-                        <div class="stat-label">Memory最大增加</div>
-                    </div>
-                    <div class="stat-item" id="statMemoryMaxDec">
-                        <div class="stat-value">${maxDecPct}%</div>
-                        <div class="stat-label">Memory最大减少</div>
-                    </div>
-                `;
+            if (decreaseCard && runtimeSummary.decrease_list && runtimeSummary.decrease_list.length > 0) {
+                decreaseCard.setAttribute('data-tooltip-html', buildStatsTooltipHtml(runtimeSummary.decrease_list, 'Runtime', '减少'));
+                decreaseCard.style.cursor = 'help';
+            } else if (decreaseCard) {
+                decreaseCard.setAttribute('data-tooltip-html', '<div style="padding: 8px 12px;">暂无Runtime减少阶段</div>');
+                decreaseCard.style.cursor = 'help';
             }
-            
-            compareSummary.innerHTML = summaryHtml;
+        } else if (runtimeStatsRow) {
+            runtimeStatsRow.style.display = 'none';
         }
         
+        if (compareMemory && memoryStatsContainer) {
+            memoryStatsRow.style.display = 'block';
+            
+            memoryStatsContainer.innerHTML = `
+                <div class="stat-item">
+                    <div class="stat-value status-increase">${memorySummary.total_increase || 0}</div>
+                    <div class="stat-label">Memory增加阶段</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value status-decrease">${memorySummary.total_decrease || 0}</div>
+                    <div class="stat-label">Memory减少阶段</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">${memorySummary.avg_change_pct || 0}%</div>
+                    <div class="stat-label">Memory平均变化率</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">${memorySummary.max_increase_pct ? memorySummary.max_increase_pct.toFixed(2) + '%' : '0%'}</div>
+                    <div class="stat-label">Memory最大增加</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">${memorySummary.max_decrease_pct ? Math.abs(memorySummary.max_decrease_pct).toFixed(2) + '%' : '0%'}</div>
+                    <div class="stat-label">Memory最大减少</div>
+                </div>
+            `;
+            
+            const items = memoryStatsContainer.querySelectorAll('.stat-item');
+            const increaseCard = items[0];
+            const decreaseCard = items[1];
+            
+            if (increaseCard && memorySummary.increase_list && memorySummary.increase_list.length > 0) {
+                increaseCard.setAttribute('data-tooltip-html', buildStatsTooltipHtml(memorySummary.increase_list, 'Memory', '增加'));
+                increaseCard.style.cursor = 'help';
+            } else if (increaseCard) {
+                increaseCard.setAttribute('data-tooltip-html', '<div style="padding: 8px 12px;">暂无Memory增加阶段</div>');
+                increaseCard.style.cursor = 'help';
+            }
+            
+            if (decreaseCard && memorySummary.decrease_list && memorySummary.decrease_list.length > 0) {
+                decreaseCard.setAttribute('data-tooltip-html', buildStatsTooltipHtml(memorySummary.decrease_list, 'Memory', '减少'));
+                decreaseCard.style.cursor = 'help';
+            } else if (decreaseCard) {
+                decreaseCard.setAttribute('data-tooltip-html', '<div style="padding: 8px 12px;">暂无Memory减少阶段</div>');
+                decreaseCard.style.cursor = 'help';
+            }
+        } else if (memoryStatsRow) {
+            memoryStatsRow.style.display = 'none';
+        }
+        
+        // 渲染表格表头
         const compareTableHeader = document.getElementById('compareTableHeader');
         if (compareTableHeader) {
             let headerHtml = '<tr>';
@@ -2125,7 +2180,302 @@ function displayCompareResult(result) {
         
         addTableFilter();
         applyTableFilter();
+    } else {
+        // 单阶段对比模式
+        const comparisons = result.comparisons || [];
+        
+        if (compareRuntime && runtimeStatsContainer) {
+            runtimeStatsRow.style.display = 'block';
+            runtimeStatsContainer.innerHTML = `
+                <div class="stat-item">
+                    <div class="stat-value status-increase">${summary.runtime_increased || 0}</div>
+                    <div class="stat-label">Runtime增加</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value status-decrease">${summary.runtime_decreased || 0}</div>
+                    <div class="stat-label">Runtime减少</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">${summary.runtime_unchanged || 0}</div>
+                    <div class="stat-label">Runtime不变</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">${summary.runtime_max_change || 0}%</div>
+                    <div class="stat-label">Runtime最大变化</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">${summary.runtime_avg_change || 0}%</div>
+                    <div class="stat-label">Runtime平均变化</div>
+                </div>
+            `;
+            
+            const items = runtimeStatsContainer.querySelectorAll('.stat-item');
+            const increaseCard = items[0];
+            const decreaseCard = items[1];
+            
+            if (increaseCard && summary.runtime_increase_list && summary.runtime_increase_list.length > 0) {
+                increaseCard.setAttribute('data-tooltip-html', buildSingleStatsTooltipHtml(summary.runtime_increase_list, 'Runtime', '增加'));
+                increaseCard.style.cursor = 'help';
+            } else if (increaseCard) {
+                increaseCard.setAttribute('data-tooltip-html', '<div style="padding: 8px 12px;">暂无Runtime增加数据点</div>');
+                increaseCard.style.cursor = 'help';
+            }
+            
+            if (decreaseCard && summary.runtime_decrease_list && summary.runtime_decrease_list.length > 0) {
+                decreaseCard.setAttribute('data-tooltip-html', buildSingleStatsTooltipHtml(summary.runtime_decrease_list, 'Runtime', '减少'));
+                decreaseCard.style.cursor = 'help';
+            } else if (decreaseCard) {
+                decreaseCard.setAttribute('data-tooltip-html', '<div style="padding: 8px 12px;">暂无Runtime减少数据点</div>');
+                decreaseCard.style.cursor = 'help';
+            }
+        } else if (runtimeStatsRow) {
+            runtimeStatsRow.style.display = 'none';
+        }
+        
+        if (compareMemory && memoryStatsContainer) {
+            memoryStatsRow.style.display = 'block';
+            memoryStatsContainer.innerHTML = `
+                <div class="stat-item">
+                    <div class="stat-value status-increase">${summary.memory_increased || 0}</div>
+                    <div class="stat-label">Memory增加</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value status-decrease">${summary.memory_decreased || 0}</div>
+                    <div class="stat-label">Memory减少</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">${summary.memory_unchanged || 0}</div>
+                    <div class="stat-label">Memory不变</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">${summary.memory_max_change || 0}%</div>
+                    <div class="stat-label">Memory最大变化</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">${summary.memory_avg_change || 0}%</div>
+                    <div class="stat-label">Memory平均变化</div>
+                </div>
+            `;
+            
+            const items = memoryStatsContainer.querySelectorAll('.stat-item');
+            const increaseCard = items[0];
+            const decreaseCard = items[1];
+            
+            if (increaseCard && summary.memory_increase_list && summary.memory_increase_list.length > 0) {
+                increaseCard.setAttribute('data-tooltip-html', buildSingleStatsTooltipHtml(summary.memory_increase_list, 'Memory', '增加'));
+                increaseCard.style.cursor = 'help';
+            } else if (increaseCard) {
+                increaseCard.setAttribute('data-tooltip-html', '<div style="padding: 8px 12px;">暂无Memory增加数据点</div>');
+                increaseCard.style.cursor = 'help';
+            }
+            
+            if (decreaseCard && summary.memory_decrease_list && summary.memory_decrease_list.length > 0) {
+                decreaseCard.setAttribute('data-tooltip-html', buildSingleStatsTooltipHtml(summary.memory_decrease_list, 'Memory', '减少'));
+                decreaseCard.style.cursor = 'help';
+            } else if (decreaseCard) {
+                decreaseCard.setAttribute('data-tooltip-html', '<div style="padding: 8px 12px;">暂无Memory减少数据点</div>');
+                decreaseCard.style.cursor = 'help';
+            }
+        } else if (memoryStatsRow) {
+            memoryStatsRow.style.display = 'none';
+        }
+        
+        // 渲染表格表头
+        const compareTableHeader = document.getElementById('compareTableHeader');
+        if (compareTableHeader) {
+            let headerHtml = '</table>';
+            headerHtml += '<th>序号</th><th>日期</th>';
+            
+            if (compareRuntime) {
+                headerHtml += '<th>Runtime(基准)</th><th>Runtime(对比)</th><th>Runtime差值</th><th>Runtime变化率(%)</th><th>Runtime状态</th>';
+            }
+            
+            if (compareMemory) {
+                headerHtml += '<th>Memory(基准)</th><th>Memory(对比)</th><th>Memory差值</th><th>Memory变化率(%)</th><th>Memory状态</th>';
+            }
+            
+            headerHtml += '</tr>';
+            compareTableHeader.innerHTML = headerHtml;
+        }
+        
+        const tableBody = document.getElementById('compareTableBody');
+        if (tableBody) {
+            tableBody.innerHTML = comparisons.map(comp => {
+                let rowHtml = `<tr><td>${comp.index + 1}</td><td>${comp.date}</td>`;
+                
+                if (compareRuntime) {
+                    const runtimeStatusClass = comp.runtime_status === 'increase' ? 'status-increase' : 
+                                               (comp.runtime_status === 'decrease' ? 'status-decrease' : '');
+                    rowHtml += `
+                        <td>${comp.runtime1 !== null ? comp.runtime1.toFixed(2) : 'N/A'}</td>
+                        <td>${comp.runtime2 !== null ? comp.runtime2.toFixed(2) : 'N/A'}</td>
+                        <td>${comp.runtime_diff !== null ? comp.runtime_diff.toFixed(2) : 'N/A'}</td>
+                        <td class="${runtimeStatusClass}">${comp.runtime_change_pct !== null ? comp.runtime_change_pct.toFixed(2) + '%' : 'N/A'}</td>
+                        <td>${comp.runtime_status || 'N/A'}</td>
+                    `;
+                }
+                if (compareMemory) {
+                    const memoryStatusClass = comp.memory_status === 'increase' ? 'status-increase' : 
+                                              (comp.memory_status === 'decrease' ? 'status-decrease' : '');
+                    rowHtml += `
+                        <td>${comp.memory1 !== null ? comp.memory1.toFixed(2) : 'N/A'}</td>
+                        <td>${comp.memory2 !== null ? comp.memory2.toFixed(2) : 'N/A'}</td>
+                        <td>${comp.memory_diff !== null ? comp.memory_diff.toFixed(2) : 'N/A'}</td>
+                        <td class="${memoryStatusClass}">${comp.memory_change_pct !== null ? comp.memory_change_pct.toFixed(2) + '%' : 'N/A'}</td>
+                        <td>${comp.memory_status || 'N/A'}</td>
+                    `;
+                }
+                rowHtml += '</tr>';
+                return rowHtml;
+            }).join('');
+        }
     }
+    
+    // 初始化 tooltips
+    setTimeout(() => initStatsTooltips(), 50);
+}
+
+/**
+ * 构建全阶段对比的tooltip HTML
+ */
+function buildStatsTooltipHtml(items, metricName, trend) {
+    if (!items || items.length === 0) {
+        return `<div style="padding: 8px 12px;">暂无${metricName}${trend}阶段</div>`;
+    }
+    
+    const sign = trend === '增加' ? '+' : '';
+    const color = trend === '增加' ? '#ef4444' : '#10b981';
+    
+    let html = `<div style="min-width: 220px; max-width: 300px;">`;
+    html += `<div style="font-weight: bold; margin-bottom: 8px; border-bottom: 1px solid #334155; padding-bottom: 6px;">📊 ${metricName}${trend} Top${Math.min(items.length, 10)}</div>`;
+    
+    items.slice(0, 10).forEach((item, idx) => {
+        const name = item.name || item.date || '未知';
+        const changePct = item.change_pct;
+        html += `<div style="display: flex; justify-content: space-between; gap: 12px; padding: 5px 0; font-size: 0.7rem; border-bottom: 1px solid rgba(51, 65, 85, 0.3);">`;
+        html += `<span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 160px;" title="${escapeHtml(name)}">${idx + 1}. ${escapeHtml(name)}</span>`;
+        html += `<span style="color: ${color}; font-weight: 500; flex-shrink: 0;">${sign}${changePct}%</span>`;
+        html += `</div>`;
+    });
+    
+    if (items.length > 10) {
+        html += `<div style="margin-top: 6px; padding-top: 4px; text-align: center; color: #64748b; font-size: 0.65rem;">共 ${items.length} 个阶段</div>`;
+    }
+    
+    html += `</div>`;
+    return html;
+}
+
+/**
+ * 构建单阶段对比的tooltip HTML
+ */
+function buildSingleStatsTooltipHtml(items, metricName, trend) {
+    if (!items || items.length === 0) {
+        return `<div style="padding: 8px 12px;">暂无${metricName}${trend}数据点</div>`;
+    }
+    
+    const sign = trend === '增加' ? '+' : '';
+    const color = trend === '增加' ? '#ef4444' : '#10b981';
+    
+    let html = `<div style="min-width: 240px; max-width: 320px;">`;
+    html += `<div style="font-weight: bold; margin-bottom: 8px; border-bottom: 1px solid #334155; padding-bottom: 6px;">📊 ${metricName}${trend} Top${Math.min(items.length, 10)}</div>`;
+    
+    items.slice(0, 10).forEach((item, idx) => {
+        const date = item.date || '未知';
+        const changePct = item.change_pct;
+        const value = item.value;
+        html += `<div style="display: flex; justify-content: space-between; gap: 12px; padding: 5px 0; font-size: 0.7rem; border-bottom: 1px solid rgba(51, 65, 85, 0.3);">`;
+        html += `<span style="flex: 1;">${idx + 1}. ${escapeHtml(date)}</span>`;
+        html += `<span style="color: ${color}; font-weight: 500; min-width: 65px; text-align: right;">${sign}${changePct}%</span>`;
+        html += `<span style="color: #94a3b8; min-width: 55px; text-align: right;">(${trend === '增加' ? '+' : ''}${value})</span>`;
+        html += `</div>`;
+    });
+    
+    if (items.length > 10) {
+        html += `<div style="margin-top: 6px; padding-top: 4px; text-align: center; color: #64748b; font-size: 0.65rem;">共 ${items.length} 个数据点</div>`;
+    }
+    
+    html += `</div>`;
+    return html;
+}
+
+// 确保 HTML 转义函数可用
+function escapeHtml(text) {
+    if (!text) return '';
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+/**
+ * 构建全阶段对比的tooltip HTML
+ */
+function buildStatsTooltipHtml(items, metricName, trend) {
+    if (!items || items.length === 0) {
+        return `<div style="padding: 8px 12px;">暂无${metricName}${trend}阶段</div>`;
+    }
+    
+    const sign = trend === '增加' ? '+' : '';
+    const color = trend === '增加' ? '#ef4444' : '#10b981';
+    
+    let html = `<div style="min-width: 220px; max-width: 300px;">`;
+    html += `<div style="font-weight: bold; margin-bottom: 8px; border-bottom: 1px solid #334155; padding-bottom: 6px;">📊 ${metricName}${trend} Top${Math.min(items.length, 10)}</div>`;
+    
+    items.slice(0, 10).forEach((item, idx) => {
+        const name = item.name || item.date || '未知';
+        const changePct = item.change_pct;
+        html += `<div style="display: flex; justify-content: space-between; gap: 12px; padding: 5px 0; font-size: 0.7rem; border-bottom: 1px solid rgba(51, 65, 85, 0.3);">`;
+        html += `<span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 160px;" title="${escapeHtml(name)}">${idx + 1}. ${escapeHtml(name)}</span>`;
+        html += `<span style="color: ${color}; font-weight: 500; flex-shrink: 0;">${sign}${changePct}%</span>`;
+        html += `</div>`;
+    });
+    
+    if (items.length > 10) {
+        html += `<div style="margin-top: 6px; padding-top: 4px; text-align: center; color: #64748b; font-size: 0.65rem;">共 ${items.length} 个阶段</div>`;
+    }
+    
+    html += `</div>`;
+    return html;
+}
+
+/**
+ * 构建单阶段对比的tooltip HTML
+ */
+function buildSingleStatsTooltipHtml(items, metricName, trend) {
+    if (!items || items.length === 0) {
+        return `<div style="padding: 8px 12px;">暂无${metricName}${trend}数据点</div>`;
+    }
+    
+    const sign = trend === '增加' ? '+' : '';
+    const color = trend === '增加' ? '#ef4444' : '#10b981';
+    
+    let html = `<div style="min-width: 240px; max-width: 320px;">`;
+    html += `<div style="font-weight: bold; margin-bottom: 8px; border-bottom: 1px solid #334155; padding-bottom: 6px;">📊 ${metricName}${trend} Top${Math.min(items.length, 10)}</div>`;
+    
+    items.slice(0, 10).forEach((item, idx) => {
+        const date = item.date || '未知';
+        const changePct = item.change_pct;
+        const value = item.value;
+        html += `<div style="display: flex; justify-content: space-between; gap: 12px; padding: 5px 0; font-size: 0.7rem; border-bottom: 1px solid rgba(51, 65, 85, 0.3);">`;
+        html += `<span style="flex: 1;">${idx + 1}. ${escapeHtml(date)}</span>`;
+        html += `<span style="color: ${color}; font-weight: 500; min-width: 65px; text-align: right;">${sign}${changePct}%</span>`;
+        html += `<span style="color: #94a3b8; min-width: 55px; text-align: right;">(${trend === '增加' ? '+' : ''}${value})</span>`;
+        html += `</div>`;
+    });
+    
+    if (items.length > 10) {
+        html += `<div style="margin-top: 6px; padding-top: 4px; text-align: center; color: #64748b; font-size: 0.65rem;">共 ${items.length} 个数据点</div>`;
+    }
+    
+    html += `</div>`;
+    return html;
+}
+
+// 确保 HTML 转义函数可用
+function escapeHtml(text) {
+    if (!text) return '';
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
 }
 
 /**
@@ -3572,5 +3922,209 @@ window.openThreadSelectorModal = openThreadSelectorModal;
 window.closeThreadSelectorModal = closeThreadSelectorModal;
 window.confirmThreadSelection = confirmThreadSelection;
 
+// ==================================================
+// 自定义 Tooltip 组件（支持HTML内容）
+// ==================================================
+
+// 全局 tooltip 实例
+let statsTooltip = null;
+
+/**
+ * 初始化统计卡片的 tooltip
+ */
+function initStatsTooltips() {
+    // 创建 tooltip 元素
+    if (!statsTooltip) {
+        statsTooltip = document.createElement('div');
+        statsTooltip.id = 'statsTooltip';
+        statsTooltip.style.cssText = `
+            position: fixed;
+            visibility: hidden;
+            opacity: 0;
+            background: var(--bg-card);
+            border: 1px solid var(--primary);
+            border-radius: var(--radius-md);
+            padding: 0;
+            font-size: 0.7rem;
+            z-index: 10000;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(99, 102, 241, 0.3);
+            color: var(--text-primary);
+            pointer-events: none;
+            backdrop-filter: blur(8px);
+            transition: opacity 0.15s ease, visibility 0.15s ease;
+            max-width: 350px;
+            min-width: 220px;
+        `;
+        document.body.appendChild(statsTooltip);
+    }
+    
+    // 查找所有统计卡片
+    const statItems = document.querySelectorAll('#compareRuntimeStats .stat-item, #compareMemoryStats .stat-item');
+    
+    statItems.forEach(item => {
+        // 移除旧的事件监听器
+        item.removeEventListener('mouseenter', handleStatsMouseEnter);
+        item.removeEventListener('mouseleave', handleStatsMouseLeave);
+        item.removeEventListener('mousemove', handleStatsMouseMove);
+        
+        // 添加新的事件监听器
+        item.addEventListener('mouseenter', handleStatsMouseEnter);
+        item.addEventListener('mouseleave', handleStatsMouseLeave);
+        item.addEventListener('mousemove', handleStatsMouseMove);
+    });
+}
+
+/**
+ * 统计卡片鼠标进入事件
+ */
+function handleStatsMouseEnter(e) {
+    const item = e.currentTarget;
+    const tooltipHtml = item.getAttribute('data-tooltip-html');
+    
+    if (tooltipHtml && tooltipHtml.trim() !== '') {
+        // 设置 tooltip 内容
+        statsTooltip.innerHTML = tooltipHtml;
+        statsTooltip.style.visibility = 'visible';
+        statsTooltip.style.opacity = '1';
+        
+        // 设置位置
+        updateTooltipPosition(e);
+    }
+}
+
+/**
+ * 统计卡片鼠标离开事件
+ */
+function handleStatsMouseLeave() {
+    if (statsTooltip) {
+        statsTooltip.style.visibility = 'hidden';
+        statsTooltip.style.opacity = '0';
+    }
+}
+
+/**
+ * 统计卡片鼠标移动事件 - 更新 tooltip 位置
+ */
+function handleStatsMouseMove(e) {
+    if (statsTooltip && statsTooltip.style.visibility === 'visible') {
+        updateTooltipPosition(e);
+    }
+}
+
+/**
+ * 更新 tooltip 位置
+ */
+function updateTooltipPosition(e) {
+    if (!statsTooltip) return;
+    
+    const x = e.clientX + 15;
+    const y = e.clientY - 10;
+    const tooltipRect = statsTooltip.getBoundingClientRect();
+    const viewportWidth = window.innerWidth;
+    const viewportHeight = window.innerHeight;
+    
+    let left = x;
+    let top = y - tooltipRect.height;
+    
+    // 防止超出右边界
+    if (left + tooltipRect.width > viewportWidth - 10) {
+        left = viewportWidth - tooltipRect.width - 10;
+    }
+    
+    // 防止超出左边界
+    if (left < 10) {
+        left = 10;
+    }
+    
+    // 防止超出顶部边界
+    if (top < 10) {
+        top = y + 20;
+    }
+    
+    // 防止超出底部边界
+    if (top + tooltipRect.height > viewportHeight - 10) {
+        top = viewportHeight - tooltipRect.height - 10;
+    }
+    
+    statsTooltip.style.left = left + 'px';
+    statsTooltip.style.top = top + 'px';
+}
+
+/**
+ * 构建全阶段对比的tooltip HTML
+ * @param {Array} items - 阶段列表
+ * @param {string} metricName - 指标名称 ('Runtime' 或 'Memory')
+ * @param {string} trend - 趋势 ('增加' 或 '减少')
+ * @returns {string} HTML格式的tooltip内容
+ */
+function buildStatsTooltipHtml(items, metricName, trend) {
+    if (!items || items.length === 0) {
+        return `<div style="padding: 8px 12px;">暂无${metricName}${trend}阶段</div>`;
+    }
+    
+    const sign = trend === '增加' ? '+' : '';
+    const color = trend === '增加' ? '#ef4444' : '#10b981';
+    
+    let html = `<div style="min-width: 220px; max-width: 320px;">`;
+    html += `<div style="font-weight: bold; margin-bottom: 8px; border-bottom: 1px solid #334155; padding: 8px 12px 6px 12px; background: rgba(99, 102, 241, 0.1); border-radius: var(--radius-md) var(--radius-md) 0 0;">📊 ${metricName}${trend} Top${Math.min(items.length, 10)}</div>`;
+    html += `<div style="max-height: 300px; overflow-y: auto; padding: 4px 8px;">`;
+    
+    items.slice(0, 10).forEach((item, idx) => {
+        const name = item.name || item.date || '未知';
+        const changePct = item.change_pct;
+        html += `<div style="display: flex; justify-content: space-between; gap: 12px; padding: 6px 0; font-size: 0.7rem; border-bottom: 1px solid rgba(51, 65, 85, 0.3);">`;
+        html += `<span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 160px;" title="${escapeHtml(name)}">${idx + 1}. ${escapeHtml(name)}</span>`;
+        html += `<span style="color: ${color}; font-weight: 500; flex-shrink: 0;">${sign}${changePct}%</span>`;
+        html += `</div>`;
+    });
+    
+    if (items.length > 10) {
+        html += `<div style="margin-top: 6px; padding: 6px 0; text-align: center; color: #64748b; font-size: 0.65rem;">共 ${items.length} 个阶段</div>`;
+    }
+    
+    html += `</div></div>`;
+    return html;
+}
+
+/**
+ * 构建单阶段对比的tooltip HTML
+ * @param {Array} items - 日期列表
+ * @param {string} metricName - 指标名称 ('Runtime' 或 'Memory')
+ * @param {string} trend - 趋势 ('增加' 或 '减少')
+ * @returns {string} HTML格式的tooltip内容
+ */
+function buildSingleStatsTooltipHtml(items, metricName, trend) {
+    if (!items || items.length === 0) {
+        return `<div style="padding: 8px 12px;">暂无${metricName}${trend}数据点</div>`;
+    }
+    
+    const sign = trend === '增加' ? '+' : '';
+    const color = trend === '增加' ? '#ef4444' : '#10b981';
+    
+    let html = `<div style="min-width: 240px; max-width: 320px;">`;
+    html += `<div style="font-weight: bold; margin-bottom: 8px; border-bottom: 1px solid #334155; padding: 8px 12px 6px 12px; background: rgba(99, 102, 241, 0.1); border-radius: var(--radius-md) var(--radius-md) 0 0;">📊 ${metricName}${trend} Top${Math.min(items.length, 10)}</div>`;
+    html += `<div style="max-height: 300px; overflow-y: auto; padding: 4px 8px;">`;
+    
+    items.slice(0, 10).forEach((item, idx) => {
+        const date = item.date || '未知';
+        const changePct = item.change_pct;
+        const value = item.value;
+        html += `<div style="display: flex; justify-content: space-between; gap: 12px; padding: 6px 0; font-size: 0.7rem; border-bottom: 1px solid rgba(51, 65, 85, 0.3);">`;
+        html += `<span style="flex: 1;">${idx + 1}. ${escapeHtml(date)}</span>`;
+        html += `<span style="color: ${color}; font-weight: 500; min-width: 65px; text-align: right;">${sign}${changePct}%</span>`;
+        html += `<span style="color: #94a3b8; min-width: 55px; text-align: right;">(${trend === '增加' ? '+' : ''}${value})</span>`;
+        html += `</div>`;
+    });
+    
+    if (items.length > 10) {
+        html += `<div style="margin-top: 6px; padding: 6px 0; text-align: center; color: #64748b; font-size: 0.65rem;">共 ${items.length} 个数据点</div>`;
+    }
+    
+    html += `</div></div>`;
+    return html;
+}
+
 // 启动应用
 init();
+
+

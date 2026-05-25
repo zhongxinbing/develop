@@ -1125,3 +1125,124 @@ select:disabled, input:disabled {
     white-space: nowrap;
     display: inline;
 }
+
+
+/* ==================================================
+    对比结果统计行样式 - Runtime 和 Memory 分开展示
+================================================== */
+
+.stats-row-compare {
+    background: rgba(15, 23, 42, 0.4);
+    border-radius: var(--radius-lg);
+    padding: 1rem;
+    margin-bottom: 1rem;
+}
+
+.stats-row-compare h4 {
+    margin: 0 0 0.75rem 0;
+    color: var(--primary-light);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.stats-row-compare h4 span {
+    font-size: 1rem;
+}
+
+.stats-row-compare .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 0.75rem;
+    margin-top: 0;
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+    .stats-row-compare .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* 状态颜色 */
+.status-increase {
+    color: #ef4444;
+}
+
+.status-decrease {
+    color: #10b981;
+}
+
+/* ==================================================
+    统计卡片 Tooltip 增强样式
+    使用 JavaScript 实现的自定义 tooltip
+================================================== */
+
+/* 统计卡片基础样式 */
+.stat-item {
+    transition: all 0.2s ease;
+}
+
+/* 统计卡片 hover 增强效果 */
+.stat-item[data-tooltip-html]:hover {
+    background: rgba(99, 102, 241, 0.15);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* 增加阶段的统计卡片 hover 边框 */
+.stat-item .status-increase {
+    color: #ef4444;
+}
+
+.stat-item:has(.status-increase):hover {
+    border-left: 2px solid #ef4444;
+}
+
+/* 减少阶段的统计卡片 hover 边框 */
+.stat-item .status-decrease {
+    color: #10b981;
+}
+
+.stat-item:has(.status-decrease):hover {
+    border-left: 2px solid #10b981;
+}
+
+/* 自定义 tooltip 滚动条 */
+#statsTooltip::-webkit-scrollbar {
+    width: 4px;
+}
+
+#statsTooltip::-webkit-scrollbar-track {
+    background: var(--bg-dark);
+    border-radius: 4px;
+}
+
+#statsTooltip::-webkit-scrollbar-thumb {
+    background: var(--primary);
+    border-radius: 4px;
+}
+
+/* tooltip 内文本样式 */
+#statsTooltip .stat-tooltip-item {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 6px 0;
+    font-size: 0.7rem;
+    border-bottom: 1px solid rgba(51, 65, 85, 0.3);
+}
+
+#statsTooltip .stat-tooltip-name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 160px;
+}
+
+#statsTooltip .stat-tooltip-value {
+    font-weight: 500;
+    flex-shrink: 0;
+}

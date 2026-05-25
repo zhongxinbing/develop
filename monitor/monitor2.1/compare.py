@@ -29,6 +29,42 @@ class DataComparator:
         self.export_dir = Path(export_dir)
         self.export_dir.mkdir(parents=True, exist_ok=True)
     
+    def _build_sorted_list(self, rules_comparison: List[Dict], metric_type: str, is_increase: bool) -> List[Dict]:
+        """
+        构建排序后的阶段列表（用于tooltip显示）
+        
+        参数:
+            rules_comparison: 阶段对比结果列表
+            metric_type: 指标类型 ('runtime' 或 'memory')
+            is_increase: True=增加，False=减少
+        
+        返回:
+            list: 排序后的阶段列表，包含阶段名和变化率
+        """
+        change_key = f"{metric_type}_change_pct"
+        
+        # 筛选有数据且符合增减条件的阶段
+        filtered = []
+        for r in rules_comparison:
+            has_data = r.get("has_data", False)
+            change_pct = r.get(change_key)
+            
+            if has_data and change_pct is not None:
+                if is_increase and change_pct > 0:
+                    filtered.append({
+                        "name": r["rule_name"],
+                        "change_pct": round(change_pct, 2)
+                    })
+                elif not is_increase and change_pct < 0:
+                    filtered.append({
+                        "name": r["rule_name"],
+                        "change_pct": round(abs(change_pct), 2)
+                    })
+        
+        # 按变化率降序排序，取前10
+        filtered.sort(key=lambda x: x["change_pct"], reverse=True)
+        return filtered[:10]
+    
     def compare_all_rules(
         self,
         data1: Dict,
@@ -81,7 +117,9 @@ class DataComparator:
                 "max_increase_rule": None,
                 "max_decrease_rule": None,
                 "max_increase_pct": 0,
-                "max_decrease_pct": 0
+                "max_decrease_pct": 0,
+                "increase_list": [],   # 增加阶段列表（按变化率降序）
+                "decrease_list": []    # 减少阶段列表（按变化率降序）
             }
         
         # 初始化memory统计
@@ -93,7 +131,9 @@ class DataComparator:
                 "max_increase_rule": None,
                 "max_decrease_rule": None,
                 "max_increase_pct": 0,
-                "max_decrease_pct": 0
+                "max_decrease_pct": 0,
+                "increase_list": [],   # 增加阶段列表（按变化率降序）
+                "decrease_list": []    # 减少阶段列表（按变化率降序）
             }
         
         # 收集所有阶段名称
@@ -128,7 +168,13 @@ class DataComparator:
             # 判断是否有数据（根据对比维度）
             has_runtime_data = (runtime1 is not None and runtime2 is not None) if compare_runtime else True
             has_memory_data = (memory1 is not None and memory2 is not None) if compare_memory else True
-            has_data = has_runtime_data and has_memory_data if compare_dimension == 'both' else (has_runtime_data if compare_runtime else has_memory_data)
+            
+            if compare_dimension == 'both':
+                has_data = has_runtime_data and has_memory_data
+            elif compare_runtime:
+                has_data = has_runtime_data
+            else:
+                has_data = has_memory_data
             
             rule_comparison = {
                 "rule_name": rule,
@@ -167,7 +213,7 @@ class DataComparator:
                 
                 runtime_changes_pct.append(abs(runtime_change_pct))
                 
-                # 更新统计
+                # 更新统计（不计入容差内的变化）
                 if self._is_significant(runtime_diff, tolerance_runtime, tolerance_mode, runtime1):
                     if runtime_diff > 0:
                         result["summary"]["runtime"]["total_increase"] += 1
@@ -242,10 +288,24 @@ class DataComparator:
             result["summary"]["runtime"]["avg_change_pct"] = round(
                 sum(runtime_changes_pct) / len(runtime_changes_pct), 2
             )
+            # 构建增加和减少阶段的前10列表
+            result["summary"]["runtime"]["increase_list"] = self._build_sorted_list(
+                result["rules_comparison"], "runtime", True
+            )
+            result["summary"]["runtime"]["decrease_list"] = self._build_sorted_list(
+                result["rules_comparison"], "runtime", False
+            )
         
         if compare_memory and memory_changes_pct:
             result["summary"]["memory"]["avg_change_pct"] = round(
                 sum(memory_changes_pct) / len(memory_changes_pct), 2
+            )
+            # 构建增加和减少阶段的前10列表
+            result["summary"]["memory"]["increase_list"] = self._build_sorted_list(
+                result["rules_comparison"], "memory", True
+            )
+            result["summary"]["memory"]["decrease_list"] = self._build_sorted_list(
+                result["rules_comparison"], "memory", False
             )
         
         # 按变化率排序
@@ -309,6 +369,8 @@ class DataComparator:
                 "runtime_unchanged": 0,
                 "runtime_max_change": 0,
                 "runtime_avg_change": 0,
+                "runtime_increase_list": [],
+                "runtime_decrease_list": []
             })
         
         if compare_memory:
@@ -318,6 +380,8 @@ class DataComparator:
                 "memory_unchanged": 0,
                 "memory_max_change": 0,
                 "memory_avg_change": 0,
+                "memory_increase_list": [],
+                "memory_decrease_list": []
             })
         
         # 获取阶段数据
@@ -342,6 +406,8 @@ class DataComparator:
         
         runtime_changes = [] if compare_runtime else []
         memory_changes = [] if compare_memory else []
+        runtime_items = []  # 存储 (date, change_pct) 用于排序
+        memory_items = []   # 存储 (date, change_pct) 用于排序
         
         # 遍历每个数据点进行对比
         for i in range(min_len):
@@ -377,8 +443,18 @@ class DataComparator:
                 if self._is_significant(runtime_diff, tolerance_runtime, tolerance_mode, runtime1):
                     if runtime_diff > 0:
                         result["summary"]["runtime_increased"] += 1
+                        runtime_items.append({
+                            "date": comparison["date"],
+                            "change_pct": round(runtime_change_pct, 2),
+                            "value": round(runtime_diff, 2)
+                        })
                     else:
                         result["summary"]["runtime_decreased"] += 1
+                        runtime_items.append({
+                            "date": comparison["date"],
+                            "change_pct": round(abs(runtime_change_pct), 2),
+                            "value": round(runtime_diff, 2)
+                        })
                 else:
                     result["summary"]["runtime_unchanged"] += 1
                 
@@ -415,8 +491,18 @@ class DataComparator:
                 if self._is_significant(memory_diff, tolerance_memory, tolerance_mode, memory1):
                     if memory_diff > 0:
                         result["summary"]["memory_increased"] += 1
+                        memory_items.append({
+                            "date": comparison["date"],
+                            "change_pct": round(memory_change_pct, 2),
+                            "value": round(memory_diff, 2)
+                        })
                     else:
                         result["summary"]["memory_decreased"] += 1
+                        memory_items.append({
+                            "date": comparison["date"],
+                            "change_pct": round(abs(memory_change_pct), 2),
+                            "value": round(memory_diff, 2)
+                        })
                 else:
                     result["summary"]["memory_unchanged"] += 1
                 
@@ -435,14 +521,26 @@ class DataComparator:
         
         result["summary"]["total"] = len(result["comparisons"])
         
-        # 计算汇总统计
+        # 计算汇总统计并排序列表（取前10）
         if compare_runtime and runtime_changes:
             result["summary"]["runtime_max_change"] = round(max(runtime_changes), 2)
             result["summary"]["runtime_avg_change"] = round(sum(runtime_changes) / len(runtime_changes), 2)
+            # 按变化率降序排序，取前10
+            runtime_items.sort(key=lambda x: x["change_pct"], reverse=True)
+            result["summary"]["runtime_increase_list"] = runtime_items[:10]
+            # 减少阶段按变化率降序排列（绝对值大的在前）
+            runtime_items_dec = [item for item in runtime_items if item["value"] < 0]
+            runtime_items_dec.sort(key=lambda x: x["change_pct"], reverse=True)
+            result["summary"]["runtime_decrease_list"] = runtime_items_dec[:10]
         
         if compare_memory and memory_changes:
             result["summary"]["memory_max_change"] = round(max(memory_changes), 2)
             result["summary"]["memory_avg_change"] = round(sum(memory_changes) / len(memory_changes), 2)
+            memory_items.sort(key=lambda x: x["change_pct"], reverse=True)
+            result["summary"]["memory_increase_list"] = memory_items[:10]
+            memory_items_dec = [item for item in memory_items if item["value"] < 0]
+            memory_items_dec.sort(key=lambda x: x["change_pct"], reverse=True)
+            result["summary"]["memory_decrease_list"] = memory_items_dec[:10]
         
         return result
     
@@ -551,9 +649,28 @@ class DataComparator:
                 writer.writerow(["Runtime减少阶段数", runtime_summary.get("total_decrease", 0)])
                 writer.writerow(["Runtime平均变化率(%)", runtime_summary.get("avg_change_pct", 0)])
                 writer.writerow(["Runtime最大增加阶段", runtime_summary.get("max_increase_rule", "N/A")])
-                writer.writerow(["Runtime最大增加率(%)", runtime_summary.get("max_increase_pct", 0)])
+                writer.writerow(["Runtime最大增加率(%)", f"{runtime_summary.get('max_increase_pct', 0):.2f}" if runtime_summary.get('max_increase_pct') else "0"])
                 writer.writerow(["Runtime最大减少阶段", runtime_summary.get("max_decrease_rule", "N/A")])
-                writer.writerow(["Runtime最大减少率(%)", runtime_summary.get("max_decrease_pct", 0)])
+                writer.writerow(["Runtime最大减少率(%)", f"{abs(runtime_summary.get('max_decrease_pct', 0)):.2f}" if runtime_summary.get('max_decrease_pct') else "0"])
+                
+                # 写入增加阶段详情
+                inc_list = runtime_summary.get("increase_list", [])
+                if inc_list:
+                    writer.writerow([])
+                    writer.writerow(["Runtime增加阶段Top10"])
+                    writer.writerow(["阶段名称", "增加率(%)"])
+                    for item in inc_list[:10]:
+                        writer.writerow([item["name"], item["change_pct"]])
+                
+                # 写入减少阶段详情
+                dec_list = runtime_summary.get("decrease_list", [])
+                if dec_list:
+                    writer.writerow([])
+                    writer.writerow(["Runtime减少阶段Top10"])
+                    writer.writerow(["阶段名称", "减少率(%)"])
+                    for item in dec_list[:10]:
+                        writer.writerow([item["name"], item["change_pct"]])
+                
                 writer.writerow([])
         
         # 写入Memory统计
@@ -565,9 +682,28 @@ class DataComparator:
                 writer.writerow(["Memory减少阶段数", memory_summary.get("total_decrease", 0)])
                 writer.writerow(["Memory平均变化率(%)", memory_summary.get("avg_change_pct", 0)])
                 writer.writerow(["Memory最大增加阶段", memory_summary.get("max_increase_rule", "N/A")])
-                writer.writerow(["Memory最大增加率(%)", memory_summary.get("max_increase_pct", 0)])
+                writer.writerow(["Memory最大增加率(%)", f"{memory_summary.get('max_increase_pct', 0):.2f}" if memory_summary.get('max_increase_pct') else "0"])
                 writer.writerow(["Memory最大减少阶段", memory_summary.get("max_decrease_rule", "N/A")])
-                writer.writerow(["Memory最大减少率(%)", memory_summary.get("max_decrease_pct", 0)])
+                writer.writerow(["Memory最大减少率(%)", f"{abs(memory_summary.get('max_decrease_pct', 0)):.2f}" if memory_summary.get('max_decrease_pct') else "0"])
+                
+                # 写入增加阶段详情
+                inc_list = memory_summary.get("increase_list", [])
+                if inc_list:
+                    writer.writerow([])
+                    writer.writerow(["Memory增加阶段Top10"])
+                    writer.writerow(["阶段名称", "增加率(%)"])
+                    for item in inc_list[:10]:
+                        writer.writerow([item["name"], item["change_pct"]])
+                
+                # 写入减少阶段详情
+                dec_list = memory_summary.get("decrease_list", [])
+                if dec_list:
+                    writer.writerow([])
+                    writer.writerow(["Memory减少阶段Top10"])
+                    writer.writerow(["阶段名称", "减少率(%)"])
+                    for item in dec_list[:10]:
+                        writer.writerow([item["name"], item["change_pct"]])
+                
                 writer.writerow([])
         
         # 写入详细对比数据
@@ -621,13 +757,51 @@ class DataComparator:
             writer.writerow(["Runtime不变点数", summary.get("runtime_unchanged", 0)])
             writer.writerow(["Runtime最大变化率(%)", summary.get("runtime_max_change", 0)])
             writer.writerow(["Runtime平均变化率(%)", summary.get("runtime_avg_change", 0)])
+            
+            # 写入增加详情
+            inc_list = summary.get("runtime_increase_list", [])
+            if inc_list:
+                writer.writerow([])
+                writer.writerow(["Runtime增加Top10"])
+                writer.writerow(["日期", "增加率(%)", "增加值"])
+                for item in inc_list[:10]:
+                    writer.writerow([item["date"], item["change_pct"], item["value"]])
+            
+            # 写入减少详情
+            dec_list = summary.get("runtime_decrease_list", [])
+            if dec_list:
+                writer.writerow([])
+                writer.writerow(["Runtime减少Top10"])
+                writer.writerow(["日期", "减少率(%)", "减少值"])
+                for item in dec_list[:10]:
+                    writer.writerow([item["date"], item["change_pct"], abs(item["value"])])
         
         if compare_dimension in ['memory', 'both']:
+            writer.writerow([] if compare_dimension in ['runtime', 'both'] else [])
             writer.writerow(["Memory增加点数", summary.get("memory_increased", 0)])
             writer.writerow(["Memory减少点数", summary.get("memory_decreased", 0)])
             writer.writerow(["Memory不变点数", summary.get("memory_unchanged", 0)])
             writer.writerow(["Memory最大变化率(%)", summary.get("memory_max_change", 0)])
             writer.writerow(["Memory平均变化率(%)", summary.get("memory_avg_change", 0)])
+            
+            # 写入增加详情
+            inc_list = summary.get("memory_increase_list", [])
+            if inc_list:
+                writer.writerow([])
+                writer.writerow(["Memory增加Top10"])
+                writer.writerow(["日期", "增加率(%)", "增加值"])
+                for item in inc_list[:10]:
+                    writer.writerow([item["date"], item["change_pct"], item["value"]])
+            
+            # 写入减少详情
+            dec_list = summary.get("memory_decrease_list", [])
+            if dec_list:
+                writer.writerow([])
+                writer.writerow(["Memory减少Top10"])
+                writer.writerow(["日期", "减少率(%)", "减少值"])
+                for item in dec_list[:10]:
+                    writer.writerow([item["date"], item["change_pct"], abs(item["value"])])
+        
         writer.writerow([])
         
         # 写入详细对比数据
