@@ -9,19 +9,173 @@ from datetime import datetime
 from pathlib import Path
 
 from common import log
-# from elint import *
 from tool.elint.elint import *
 from tool.elint.parse import *
 from data_cache import data_cache, version_manager
 from compare import comparator
 from config import *
-# from elint_parse import *
 
 # ==================================================
 # Flask应用初始化
 # ==================================================
 app = Flask(__name__)
 CORS(app)  # 启用跨域支持
+
+
+# ==================================================
+# 工具配置管理函数
+# ==================================================
+
+def update_tool_config(tool_id, config):
+    """
+    更新工具配置
+    
+    参数:
+        tool_id: 工具ID
+        config: 配置字典
+    """
+    log(f"保存工具配置: tool_id={tool_id}, config={config}")
+    
+    # 获取配置值
+    name = config.get('name', '').strip()
+    description = config.get('description', '').strip()
+    icon = config.get('icon', '').strip()
+    single_original_path = config.get('single_original_path', '').strip()
+    
+    # 可以为空的字段
+    json_path = config.get('json_path', '').strip() if config.get('json_path') else ''
+    mem = config.get('mem', '').strip() if config.get('mem') else ''
+    cpu = config.get('cpu', '').strip() if config.get('cpu') else ''
+    multi_original_path = config.get('multi_original_path', '').strip() if config.get('multi_original_path') else ''
+    
+    # ========== 必填字段验证 ==========
+    errors = []
+    
+    # 工具名称不能为空
+    if not name:
+        errors.append("工具名称不能为空")
+    
+    # 工具图标不能为空
+    if not icon:
+        errors.append("工具图标不能为空")
+    
+    # Single模式的原始数据路径不能为空（因为这是监控的核心数据源）
+    if not single_original_path:
+        errors.append("Single模式原始数据路径不能为空")
+    
+    # 如果有验证错误，返回失败
+    if errors:
+        error_msg = "; ".join(errors)
+        log(f"配置保存失败: {error_msg}")
+        return False
+    
+    configs = load_tool_config()
+    
+    # 保存配置
+    configs[tool_id] = {
+        'name': name,
+        'description': description,
+        'icon': icon,
+        'json_path': json_path,
+        'mem': mem,
+        'cpu': cpu,
+        'single_original_path': single_original_path,
+        'multi_original_path': multi_original_path,
+        'last_updated': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    }
+    
+    # 保存到文件
+    if save_tool_config(configs):
+        log(f"配置保存成功: {tool_id}")
+        return True
+    else:
+        log(f"配置保存失败: {tool_id}")
+        return False
+
+def save_tool_config(config_data):
+    """
+    保存工具配置文件
+    
+    参数:
+        config_data: dict - 配置数据
+    
+    返回:
+        bool: 保存成功返回True
+    """
+    try:
+        TOOL_CONFIG_PATH.parent.mkdir(parents=True, exist_ok=True)
+        
+        with open(TOOL_CONFIG_PATH, 'w', encoding='utf-8') as f:
+            json.dump(config_data, f, ensure_ascii=False, indent=4)
+        
+        log(f"工具配置已保存到: {TOOL_CONFIG_PATH}")
+        return True
+    except Exception as e:
+        log(f"保存工具配置失败: {e}")
+        return False
+
+
+def get_tool_config(tool_id=None):
+    """
+    获取工具配置
+    
+    参数:
+        tool_id: 工具ID（可选，不传则返回所有）
+    
+    返回:
+        dict: 配置信息
+    """
+    configs = load_tool_config()
+    
+    if tool_id:
+        return configs.get(tool_id, {})
+    return configs
+
+
+def update_tool_config(tool_id, config):
+    """
+    更新工具配置
+    
+    参数:
+        tool_id: 工具ID
+        config: 配置字典
+    """
+    log(f"保存工具配置: tool_id={tool_id}, config={config}")
+    
+    configs = load_tool_config()
+    
+    # 保存配置 - 共用 json_path, mem, cpu
+    configs[tool_id] = {
+        'name': config.get('name', tool_id),
+        'description': config.get('description', ''),
+        'icon': config.get('icon', '🔧'),
+        'json_path': config.get('json_path', ''),
+        'mem': config.get('mem', ''),
+        'cpu': config.get('cpu', ''),
+        'single_original_path': config.get('single_original_path', ''),
+        'multi_original_path': config.get('multi_original_path', ''),
+        'last_updated': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    }
+    
+    # 保存到文件
+    if save_tool_config(configs):
+        log(f"配置保存成功: {tool_id}")
+        return True
+    else:
+        log(f"配置保存失败: {tool_id}")
+        return False
+
+
+def delete_tool_config(tool_id):
+    """删除工具配置"""
+    configs = load_tool_config()
+    
+    if tool_id in configs:
+        configs.pop(tool_id, None)
+        save_tool_config(configs)
+        log(f"配置已删除: tool_id={tool_id}")
+        return True
+    return False
 
 
 # ==================================================
@@ -44,8 +198,8 @@ def index():
             'name': tool_info.get('name', tool_key),
             'description': tool_info.get('description', ''),
             'icon': tool_info.get('icon', '🔧'),
-            'has_single': 'single' in tool_info,
-            'has_multi': 'multi' in tool_info
+            'has_single': bool(tool_info.get('single_original_path')),
+            'has_multi': bool(tool_info.get('multi_original_path'))
         })
     
     return render_template('main.html', tools=tools_list)
@@ -63,10 +217,17 @@ def tool_page(tool_id):
         str: 渲染的HTML模板
     """
     global parsed_projects
+    
     if tool_id not in CASE_CONFIG:
         return "工具不存在", 404
     
     tool_info = CASE_CONFIG[tool_id]
+    
+    # 获取共用配置
+    json_path = tool_info.get('json_path', '')
+    mem_path = tool_info.get('mem', '')
+    cpu_path = tool_info.get('cpu', '')
+    single_original_path = tool_info.get('single_original_path', '')
     
     # 获取项目数据（优先使用缓存）
     cache_key = f"{tool_id}_single_projects_data"
@@ -78,12 +239,13 @@ def tool_page(tool_id):
         parsed_projects, project_list = refresh_parsed_projects(current_projects_data)
         log("使用缓存数据")
     else:
-        config = tool_info.get('single', {})
-        # projects_data = get_json_data(tool_id, config.get('original_path', ''), config.get('json_path', ''))
+        config = {
+            'json_path': json_path,
+            'original_path': single_original_path
+        }
         projects_data = get_elint_data(config.get('json_path', ''), config.get('original_path', ''))
         current_projects_data = projects_data.copy()
         parsed_projects, project_list = refresh_parsed_projects(current_projects_data)
-        # print(f"使用缓存数据，项目数量: {parsed_projects}")
         save_json("./parsed_projects.json", parsed_projects)
         print(f"项目列表: {project_list}")
         if CONFIG['cache_enabled']:
@@ -103,20 +265,28 @@ def tool_page(tool_id):
             'project_name': info['project_name']
         }
 
-    # 获取性能数据（MR更新信息）
-    config = tool_info.get('single', {})
-    perf = get_perf(config.get('mem', ''), config.get('cpu', ''))
+    # 获取性能数据（MR更新信息）- Single和Multi共用
+    perf = get_perf(mem_path, cpu_path)
     save_json("./projects_data_json.json", projects_data_json)
+    
+    # 获取Multi模式的原始路径（如果有配置）
+    multi_original_path = tool_info.get('multi_original_path', '')
+    
     return render_template(
         'tool.html',
         tool_id=tool_id,
         tool_name=tool_info.get('name', tool_id),
         tool_icon=tool_info.get('icon', '🔧'),
-        has_single=tool_info.get('has_single', True),
-        has_multi=tool_info.get('has_multi', True),
+        has_single=bool(single_original_path),
+        has_multi=bool(multi_original_path),
         project_list=project_list,
         projects_data_json=projects_data_json,
-        perf=perf
+        perf=perf,
+        single_original_path=single_original_path,
+        multi_original_path=multi_original_path,
+        json_path=json_path,
+        mem_path=mem_path,
+        cpu_path=cpu_path
     )
 
 
@@ -132,19 +302,37 @@ def api_refresh():
     返回:
         JSON: 刷新后的数据
     """
+    # global CASE_CONFIG
+    global current_projects_data
+    global parsed_projects
+    global project_list
+    
     log("刷新数据中...")
-    global CASE_CONFIG
     
     try:
         # 重新加载工具配置
-        CASE_CONFIG = load_json(TOOL_CONFIG_PATH)
+        CASE_CONFIG = load_tool_config()
 
         data = request.get_json()
         tool = data.get('tool', 'elint')
         mode = data.get('mode', 'single')
         
-        # 获取配置
-        config = CASE_CONFIG.get(tool, {}).get(mode, {})
+        # 获取工具配置
+        tool_config = CASE_CONFIG.get(tool, {})
+        
+        # 根据模式获取不同的 original_path
+        if mode == 'single':
+            original_path = tool_config.get('single_original_path', '')
+        else:
+            original_path = tool_config.get('multi_original_path', '')
+        
+        # 共用配置
+        json_path = tool_config.get('json_path', '')
+        
+        config = {
+            'json_path': json_path,
+            'original_path': original_path
+        }
         
         # 检查数据是否有变化（使用版本管理器）
         if version_manager.check_changes(config):
@@ -152,10 +340,8 @@ def api_refresh():
             cache_key = f"{tool}_{mode}_projects_data"
             data_cache.invalidate(cache_key)
             
-            # projects_data = get_json_data(tool, config.get('original_path', ''), config.get('json_path', ''))
             projects_data = get_elint_data(config.get('json_path', ''), config.get('original_path', ''))
             # 更新全局变量
-            global current_projects_data, parsed_projects, project_list
             current_projects_data = projects_data.copy()
             parsed_projects, project_list = refresh_parsed_projects(current_projects_data)
             
@@ -179,7 +365,6 @@ def api_refresh():
                 log("使用缓存数据")
             else:
                 # 缓存过期，重新获取
-                # projects_data = get_json_data(tool, config.get('original_path', ''), config.get('json_path', ''))
                 projects_data = get_elint_data(config.get('json_path', ''), config.get('original_path', ''))
                 current_projects_data = projects_data.copy()
                 parsed_projects, project_list = refresh_parsed_projects(current_projects_data)
@@ -192,8 +377,10 @@ def api_refresh():
                         'timestamp': time.time()
                     })
         
-        # 获取性能数据
-        perf = get_perf(config.get('mem', ''), config.get('cpu', ''))
+        # 获取性能数据（Single和Multi共用）
+        mem_path = tool_config.get('mem', '')
+        cpu_path = tool_config.get('cpu', '')
+        perf = get_perf(mem_path, cpu_path)
         
         # 构建返回数据
         projects_data_json = {}
@@ -240,7 +427,17 @@ def api_check_update():
         mode = data.get('mode', 'single')
         current_version = data.get('version', '')
         
-        config = CASE_CONFIG.get(tool, {}).get(mode, {})
+        tool_config = CASE_CONFIG.get(tool, {})
+        
+        if mode == 'single':
+            original_path = tool_config.get('single_original_path', '')
+        else:
+            original_path = tool_config.get('multi_original_path', '')
+        
+        config = {
+            'json_path': tool_config.get('json_path', ''),
+            'original_path': original_path
+        }
         new_version = version_manager.get_data_signature(config)
         
         has_update = (new_version != current_version)
@@ -327,6 +524,119 @@ def page_not_found(e):
     </body>
     </html>
     ''', 404
+
+
+# ==================================================
+# 工具配置页面路由
+# ==================================================
+
+@app.route('/tools_config')
+def tools_config_page():
+    """
+    工具配置管理页面
+    """
+    return render_template('tools_config.html')
+
+
+# ==================================================
+# 工具配置API
+# ==================================================
+
+@app.route('/api/tools', methods=['GET'])
+def api_get_tools():
+    """
+    获取所有工具配置
+    
+    返回:
+        JSON: 工具配置列表
+    """
+    try:
+        configs = load_tool_config()
+        tools_list = []
+        for tool_id, tool_info in configs.items():
+            tools_list.append({
+                'id': tool_id,
+                'name': tool_info.get('name', tool_id),
+                'description': tool_info.get('description', ''),
+                'icon': tool_info.get('icon', '🔧'),
+                'has_single': bool(tool_info.get('single_original_path')),
+                'has_multi': bool(tool_info.get('multi_original_path')),
+                'json_path': tool_info.get('json_path', ''),
+                'mem': tool_info.get('mem', ''),
+                'cpu': tool_info.get('cpu', ''),
+                'single_original_path': tool_info.get('single_original_path', ''),
+                'multi_original_path': tool_info.get('multi_original_path', ''),
+                'last_updated': tool_info.get('last_updated', '')
+            })
+        return jsonify({'success': True, 'tools': tools_list})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+@app.route('/api/tool/<tool_id>', methods=['GET', 'PUT', 'DELETE'])
+def api_tool_config(tool_id):
+    """
+    获取、保存或删除工具配置的API
+    
+    GET: 获取指定工具的配置
+    PUT: 保存/更新配置
+    DELETE: 删除配置
+    """
+    try:
+        if request.method == 'GET':
+            config = get_tool_config(tool_id)
+            return jsonify({
+                'success': True,
+                'tool': {
+                    'id': tool_id,
+                    'name': config.get('name', tool_id),
+                    'description': config.get('description', ''),
+                    'icon': config.get('icon', '🔧'),
+                    'json_path': config.get('json_path', ''),
+                    'mem': config.get('mem', ''),
+                    'cpu': config.get('cpu', ''),
+                    'single_original_path': config.get('single_original_path', ''),
+                    'multi_original_path': config.get('multi_original_path', ''),
+                    'last_updated': config.get('last_updated', '')
+                }
+            })
+        
+        elif request.method == 'PUT':
+            data = request.get_json() or {}
+            
+            config = {
+                'name': data.get('name', tool_id),
+                'description': data.get('description', ''),
+                'icon': data.get('icon', '🔧'),
+                'json_path': data.get('json_path', ''),
+                'mem': data.get('mem', ''),
+                'cpu': data.get('cpu', ''),
+                'single_original_path': data.get('single_original_path', ''),
+                'multi_original_path': data.get('multi_original_path', '')
+            }
+            
+            if update_tool_config(tool_id, config):
+                # 更新全局配置
+                # global CASE_CONFIG
+                CASE_CONFIG = load_tool_config()
+                return jsonify({'success': True, 'message': '配置保存成功'})
+            else:
+                return jsonify({'success': False, 'error': '配置保存失败'}), 500
+        
+        elif request.method == 'DELETE':
+            if delete_tool_config(tool_id):
+                # global CASE_CONFIG
+                CASE_CONFIG = load_tool_config()
+                return jsonify({'success': True, 'message': '配置删除成功'})
+            else:
+                return jsonify({'success': False, 'error': '配置不存在'}), 404
+            
+    except Exception as e:
+        log(f"API错误: {e}")
+        import traceback
+        traceback.print_exc()
+        return jsonify({'success': False, 'error': str(e)}), 500
+
 
 # ==================================================
 # 对比配置管理函数

@@ -10,7 +10,7 @@ import threading
 import socket
 import json
 
-# 导入公共 的 api
+# 导入公共的 api
 from api import *
 
 def open_browser():

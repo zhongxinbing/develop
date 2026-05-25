@@ -23,7 +23,6 @@ def log(msg: str) -> None:
     print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}: {msg}")
 
 
-
 def load_json(path):
     """
     加载JSON文件
@@ -41,3 +40,15 @@ def load_json(path):
 current_projects_data = {}  # 原始项目数据
 parsed_projects = {}        # 解析后的项目数据
 project_list = []           # 项目列表
+
+
+def save_json(json_path, data):
+    """保存JSON文件"""
+    try:
+        with open(json_path, 'w', encoding='utf-8') as f:
+            json.dump(data, f, ensure_ascii=False, indent=4)
+        log(f"JSON已保存: {json_path}")
+        return True
+    except Exception as e:
+        log(f"保存JSON失败: {e}")
+        return False
