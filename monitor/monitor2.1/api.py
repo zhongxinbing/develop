@@ -1020,3 +1020,58 @@ def download_file(filename):
     """下载文件"""
     return send_from_directory(comparator.export_dir, filename, as_attachment=True)
 
+# ==================================================
+# 自定义曲线图API
+# ==================================================
+
+@app.route('/api/fetch_user_data', methods=['POST'])
+def api_fetch_user_data():
+    """
+    获取用户自定义数据API
+    
+    请求体:
+        case_path: 用户数据路径
+    
+    返回:
+        JSON: 解析后的项目数据
+    """
+    try:
+        data = request.get_json()
+        case_path = data.get('case_path', '')
+        print(f"接收到用户数据请求: case_path={case_path}")
+        if not case_path:
+            return jsonify({'success': False, 'error': '请提供用户数据路径'}), 400
+        print(f"正在获取用户数据: {case_path}")
+        # 调用用户提供的数据获取函数
+        # get_user_data 函数由用户自己实现
+        from tool.elint.elint import get_user_data
+        
+        result = get_user_data(case_path)
+        
+        if result and isinstance(result, dict):
+            # 解析数据
+            parsed_projects_result = {}
+            for project_id, project_data in result.items():
+                parsed_projects_result[project_id] = parse_project_data(project_data, project_id)
+                parsed_projects_result[project_id]['project_name'] = project_data.get('project_name', project_id)
+                parsed_projects_result[project_id]['description'] = project_data.get('description', '')
+            
+            return jsonify({
+                'success': True,
+                'data': parsed_projects_result,
+                'message': '数据加载成功'
+            })
+        else:
+            return jsonify({'success': False, 'error': '获取数据失败，请检查路径'}), 500
+            
+    except ImportError:
+        # 如果用户还没有实现 get_user_data 函数
+        return jsonify({
+            'success': False,
+            'error': 'get_user_data 函数尚未实现，请先在 elint.py 中实现该函数'
+        }), 501
+    except Exception as e:
+        log(f"获取用户数据失败: {e}")
+        import traceback
+        traceback.print_exc()
+        return jsonify({'success': False, 'error': str(e)}), 500

@@ -33,6 +33,10 @@
                     <span class="nav-icon">📊</span>
                     <span class="nav-label">数据对比</span>
                 </div>
+                <div class="nav-item" data-view="custom">
+                    <span class="nav-icon">📝</span>
+                    <span class="nav-label">自定义曲线图</span>
+                </div>
             </nav>
             
             <div class="sidebar-footer">
@@ -286,7 +290,116 @@
                 </div>
             </div>
 
-            
+            <!-- ========== 自定义曲线图视图 ========== -->
+            <div id="customView" class="view-container">
+                <!-- 用户输入区域 -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">📝 自定义数据加载</div>
+                    </div>
+                    <div class="control-bar">
+                        <div class="control-group" style="flex: 2;">
+                            <label class="control-label">🔗 User Case 路径</label>
+                            <input type="text" id="customCasePath" class="search-input" placeholder="输入用户数据的路径..." style="width: 100%;">
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label">&nbsp;</label>
+                            <div class="btn-group">
+                                <button class="btn btn-primary" id="loadCustomDataBtn">✅ 确认加载</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="config-hint" style="margin-top: 0.5rem; padding: 0.5rem; background: rgba(99, 102, 241, 0.1); border-radius: var(--radius-md);">
+                        💡 提示：输入用户数据的路径后点击确认，系统将获取数据并显示曲线图。数据会自动添加到项目数据中。
+                    </div>
+                </div>
+
+                <!-- 加载状态指示 -->
+                <div id="customLoadingIndicator" class="card" style="display: none;">
+                    <div style="text-align: center; padding: 1rem;">
+                        <div class="spinner" style="width: 30px; height: 30px; margin: 0 auto 0.5rem;"></div>
+                        <div>正在加载用户数据...</div>
+                    </div>
+                </div>
+
+                <!-- 数据信息卡片 -->
+                <div id="customDataInfo" class="card" style="display: none;">
+                    <div class="card-header">
+                        <div class="card-title">📋 数据信息111</div>
+                    </div>
+                    <div class="control-bar">
+                        <div class="control-group">
+                            <label class="control-label">📁 当前项目</label>
+                            <span id="customProjectName" style="color: var(--primary-light);">-</span>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label">📅 可用日期</label>
+                            <span id="customAvailableDates" style="color: var(--primary-light);">-</span>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label">📋 可用阶段</label>
+                            <span id="customAvailableRules" style="color: var(--primary-light);">-</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 项目选择区域 -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">🎛️ 数据筛选</div>
+                    </div>
+                    <div class="control-bar">
+                        <div class="control-group">
+                            <label class="control-label">📁 选择项目</label>
+                            <select id="customCaseSelect">
+                                <option value="">-- 请先加载数据 --</option>
+                            </select>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label">📋 选择阶段</label>
+                            <select id="customRuleSelect" disabled>
+                                <option value="">-- 请先选择项目 --</option>
+                            </select>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label">🔍 搜索阶段</label>
+                            <input type="text" id="customRuleSearch" placeholder="输入阶段名称..." class="search-input" disabled>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label">📅 日期范围</label>
+                            <div class="btn-group">
+                                <button class="btn btn-secondary" id="customOpenDatePickerBtn" disabled>📅 选择日期</button>
+                                <button class="btn btn-secondary" id="customSelectRecentBtn" disabled>📆 最近50天</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 图表类型切换 -->
+                <div class="card">
+                    <div id="customChartTypeButtons" class="chart-type-buttons">
+                        <button class="btn btn-primary chart-type-btn" data-type="runtime">⏱️ Runtime</button>
+                        <button class="btn btn-secondary chart-type-btn" data-type="memory">💾 Memory</button>
+                    </div>
+                    <div class="card-header">
+                        <div class="card-title" id="customChartCardTitle">⏱️ Runtime 性能曲线 - 用户数据</div>
+                    </div>
+                    <div id="custom-chart-runtime" class="chart-container"></div>
+                    <div id="custom-chart-memory" class="chart-container hidden"></div>
+                </div>
+
+                <!-- 统计卡片 -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">📊 性能统计 - <span id="customCurrentRuleName">未选择</span></div>
+                        <div class="info-text">
+                            <span>📅 日期范围: <span id="customDateRange">-</span></span>
+                            <span style="margin-left: 1rem;">📊 数据点数: <span id="customDataPoints">0</span></span>
+                        </div>
+                    </div>
+                    <div class="stats-grid" id="customStatsMain"></div>
+                </div>
+            </div>
         </main>
     </div>
 
@@ -327,6 +440,24 @@
             <div class="btn-group" style="margin-top: 1rem; justify-content: flex-end;">
                 <button class="btn btn-secondary" id="multiCloseDateModalBtn">取消</button>
                 <button class="btn btn-primary" id="multiConfirmDateBtn">确认</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 自定义曲线图日期选择模态框 -->
+    <div id="customDatePickerModal" class="modal hidden">
+        <div class="modal-content">
+            <h3 style="margin-bottom: 1rem;">📅 选择日期范围 - 用户数据</h3>
+            <div class="filter-bar">
+                <input type="text" id="customDateFilterInput" placeholder="筛选日期...">
+                <button class="btn btn-secondary" id="customSelectAllDatesBtn" style="padding: 0.4rem 0.8rem;">☑️ 全选</button>
+                <button class="btn btn-secondary" id="customDeselectAllDatesBtn" style="padding: 0.4rem 0.8rem;">⬜ 全不选</button>
+                <button class="btn btn-secondary" id="customInverseDatesBtn" style="padding: 0.4rem 0.8rem;">🔄 反选</button>
+            </div>
+            <div id="customDateOptionsContainer" class="date-options"></div>
+            <div class="btn-group" style="margin-top: 1rem; justify-content: flex-end;">
+                <button class="btn btn-secondary" id="customCloseDateModalBtn">取消</button>
+                <button class="btn btn-primary" id="customConfirmDateBtn">确认</button>
             </div>
         </div>
     </div>
@@ -387,6 +518,17 @@
         let currentFilteredData = [];
         let currentFilterText = '';
         let pendingMultiSelectedDates = [];
+        
+        // 自定义曲线图全局变量
+        let customProjectsData = {};
+        let customCurrentProjectId = null;
+        let customCurrentRule = null;
+        let customSelectedDates = [];
+        let customAvailableDates = [];
+        let customCurrentChartType = 'runtime';
+        let customCharts = {};
+        let customCachedToolData = {};
+        let customPendingSelectedDates = [];
         
         // 挂载全局函数供 onclick 使用
         window.selectMultiChartType = function(type) {

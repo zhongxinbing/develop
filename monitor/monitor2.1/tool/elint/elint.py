@@ -281,3 +281,51 @@ def get_perf(mem, cpu):
             "cpu": {}
         }
     
+def get_user_data(case_path):
+    """
+    获取用户自定义数据
+    
+    参数:
+        case_path: 用户输入的路径
+    
+    返回:
+        dict: 符合 elint.json 格式的数据
+        格式示例:
+        {
+            "project_name": {
+                "project_name": "project_name",
+                "description": "description",
+                "daily_metrics": {
+                    "20260509_user": {
+                        "Analysis": {
+                            "thread_metrics": {
+                                "0": {
+                                    "runtime": 0,
+                                    "memory": 1,
+                                    "cores": 0
+                                }
+                            }
+                        }
+                    }
+                },
+                "available_dates": ["20260509_user"]
+            }
+        }
+    
+    注意: 日期格式应包含 "_user" 后缀，例如 "20260509_user"
+    """
+    # ==================================================
+    # 请在此处实现您的数据获取逻辑
+    # ==================================================
+    
+    # 示例返回数据结构
+    result = {}
+    
+    result = load_json(case_path)  # 假设用户输入的路径是一个JSON文件，直接加载并返回    
+
+    # TODO: 实现您的数据获取逻辑
+    # 1. 根据 case_path 读取数据
+    # 2. 解析数据并构建 result 字典
+    # 3. 返回 result
+    
+    return result

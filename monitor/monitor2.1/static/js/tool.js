@@ -1,12 +1,7 @@
 /**
  * EDA 性能监控系统 - 工具页面主脚本
- * 支持时序曲线图、多线程对比、数据对比三大功能
+ * 支持时序曲线图、多线程对比、数据对比、自定义曲线图四大功能
  * 使用 ECharts 进行数据可视化
- * 
- * 功能模块：
- * 1. 时序曲线图 (Timeline) - 展示单线程性能趋势
- * 2. 多线程对比 (Multi-thread) - 对比不同线程的性能
- * 3. 数据对比 (Compare) - 对比不同日期的性能数据
  */
 
 // ==================================================
@@ -15,9 +10,6 @@
 
 /**
  * 防抖函数 - 限制函数调用频率
- * @param {Function} func - 要执行的函数
- * @param {number} wait - 等待时间（毫秒）
- * @returns {Function} 防抖后的函数
  */
 function debounce(func, wait) {
     let timeout;
@@ -33,12 +25,9 @@ function debounce(func, wait) {
 
 /**
  * 显示通知消息
- * @param {string} message - 消息内容
- * @param {boolean} isError - 是否为错误消息
  */
 function showNotification(message, isError = false) {
     const notification = document.createElement('div');
-    notification.className = `notification ${isError ? 'error' : 'success'}`;
     notification.textContent = isError ? `❌ ${message}` : `✅ ${message}`;
     notification.style.cssText = `
         position: fixed;
@@ -60,12 +49,15 @@ function showNotification(message, isError = false) {
 
 /**
  * 显示/隐藏加载状态
- * @param {boolean} show - 是否显示加载状态
  */
 function showLoading(show) {
     const overlay = document.getElementById('loadingOverlay');
     if (overlay) {
-        overlay.classList.toggle('hidden', !show);
+        if (show) {
+            overlay.classList.remove('hidden');
+        } else {
+            overlay.classList.add('hidden');
+        }
     }
 }
 
@@ -88,8 +80,6 @@ function updateLastUpdateTime() {
 
 /**
  * 构建MR更新映射表
- * @param {Object} perfData - 性能数据
- * @returns {Object} 日期到MR评论的映射
  */
 function buildMrUpdateMap(perfData) {
     const mrMap = {};
@@ -114,108 +104,25 @@ function buildMrUpdateMap(perfData) {
 }
 
 /**
- * 格式化工具提示HTML
- * @param {Array} items - 数据项列表
- * @param {string} title - 标题
- * @returns {string} HTML字符串
+ * HTML转义
  */
-function formatTooltipListHtml(items, title) {
-    if (!items || items.length === 0) return title;
-    const top10 = items.slice(0, 10);
-    const itemsHtml = top10.map((item, i) => {
-        const changeColor = item.change_pct > 0 ? '#ef4444' : '#10b981';
-        const arrow = item.change_pct > 0 ? '⬆️' : '⬇️';
-        return `<div style="display: flex; justify-content: space-between; gap: 20px; padding: 4px 0;">
-                    <span style="color: #94a3b8;">${i+1}. ${item.rule}</span>
-                    <span style="color: ${changeColor}; font-weight: 600;">${arrow} ${Math.abs(item.change_pct).toFixed(2)}%</span>
-                </div>`;
-    }).join('');
-    
-    return `<div style="min-width: 280px;">
-                <div style="font-weight: 600; margin-bottom: 8px; padding-bottom: 6px; border-bottom: 1px solid #334155;">📊 ${title}</div>
-                ${itemsHtml}
-                ${items.length > 10 ? `<div style="margin-top: 6px; padding-top: 4px; border-top: 1px solid #334155; color: #64748b; font-size: 11px;">... 共 ${items.length} 项，仅显示前10</div>` : ''}
-            </div>`;
-}
-
-/**
- * 为统计卡片添加工具提示
- * @param {HTMLElement} element - 目标元素
- * @param {string} tooltipHtml - 工具提示HTML
- */
-function addStatCardTooltip(element, tooltipHtml) {
-    if (!element) return;
-    
-    element.removeEventListener('mouseenter', element._tooltipHandler);
-    element.removeEventListener('mouseleave', element._tooltipHandlerLeave);
-    
-    let tooltipEl = null;
-    
-    const showTooltip = (e) => {
-        tooltipEl = document.createElement('div');
-        tooltipEl.className = 'stat-card-tooltip';
-        tooltipEl.innerHTML = tooltipHtml;
-        tooltipEl.style.cssText = `
-            position: fixed;
-            background: #1e293b;
-            border: 1px solid #6366f1;
-            border-radius: 8px;
-            padding: 10px 14px;
-            font-size: 12px;
-            color: #f1f5f9;
-            z-index: 10000;
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5), 0 0 20px rgba(99, 102, 241, 0.3);
-            backdrop-filter: blur(4px);
-            max-width: 350px;
-            pointer-events: none;
-            font-family: monospace;
-            line-height: 1.5;
-        `;
-        document.body.appendChild(tooltipEl);
-        
-        const rect = element.getBoundingClientRect();
-        let left = rect.right + 10;
-        let top = rect.top;
-        
-        if (left + 350 > window.innerWidth) {
-            left = rect.left - 360;
-        }
-        if (top + 300 > window.innerHeight) {
-            top = window.innerHeight - 310;
-        }
-        if (top < 0) top = 10;
-        
-        tooltipEl.style.left = left + 'px';
-        tooltipEl.style.top = top + 'px';
-        tooltipEl.style.animation = 'tooltipFadeIn 0.15s ease-out';
-    };
-    
-    const hideTooltip = () => {
-        if (tooltipEl) {
-            tooltipEl.remove();
-            tooltipEl = null;
-        }
-    };
-    
-    element._tooltipHandler = showTooltip;
-    element._tooltipHandlerLeave = hideTooltip;
-    
-    element.addEventListener('mouseenter', showTooltip);
-    element.addEventListener('mouseleave', hideTooltip);
+function escapeHtml(text) {
+    if (!text) return '';
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
 }
 
 // 添加工具提示动画样式
 const tooltipStyle = document.createElement('style');
 tooltipStyle.textContent = `
+    @keyframes slideIn {
+        from { transform: translateX(100%); opacity: 0; }
+        to { transform: translateX(0); opacity: 1; }
+    }
     @keyframes tooltipFadeIn {
-        from {
-            opacity: 0;
-            transform: translateY(-5px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
+        from { opacity: 0; transform: translateY(-5px); }
+        to { opacity: 1; transform: translateY(0); }
     }
 `;
 document.head.appendChild(tooltipStyle);
@@ -227,7 +134,6 @@ document.head.appendChild(tooltipStyle);
 
 /**
  * 获取当前选中的项目数据
- * @returns {Object} 项目数据
  */
 function getCurrentProjectData() {
     return projectsData[currentProjectId];
@@ -298,11 +204,6 @@ function updateDateSelectionInfo() {
     if (dataPointsSpan) {
         dataPointsSpan.innerText = selectedDates.length;
     }
-    
-    const summaryEl = document.getElementById('selectedDateSummary');
-    if (summaryEl) {
-        summaryEl.innerText = selectedDates.length === availableDates.length ? '全部可用日期' : `${selectedDates.length} 条已选`;
-    }
 }
 
 /**
@@ -347,7 +248,6 @@ function updateChartTypeButtons() {
 
 /**
  * 切换图表类型
- * @param {string} type - 图表类型 ('runtime' 或 'memory')
  */
 function selectChartType(type) {
     currentChartType = type;
@@ -356,9 +256,7 @@ function selectChartType(type) {
 }
 
 /**
- * 获取过滤后的工具数据（根据选中的日期）
- * @param {Object} toolData - 工具数据
- * @returns {Object} 过滤后的数据
+ * 获取过滤后的工具数据
  */
 function getFilteredToolData(toolData) {
     if (!toolData || !toolData.dates) return null;
@@ -386,7 +284,6 @@ function getFilteredToolData(toolData) {
 
 /**
  * 获取当前选中的工具数据（带缓存）
- * @returns {Object} 工具数据
  */
 function getCurrentToolData() {
     if (!currentRule) return null;
@@ -408,8 +305,6 @@ function getCurrentToolData() {
 
 /**
  * 检查日期是否有MR更新
- * @param {string} date - 日期
- * @returns {boolean}
  */
 function hasMrUpdate(date) {
     const comment = mrUpdateDates[date];
@@ -418,8 +313,6 @@ function hasMrUpdate(date) {
 
 /**
  * 获取MR更新评论
- * @param {string} date - 日期
- * @returns {string}
  */
 function getMrComment(date) {
     return mrUpdateDates[date] || '';
@@ -427,10 +320,6 @@ function getMrComment(date) {
 
 /**
  * 更新统计卡片
- * @param {string} containerId - 容器ID
- * @param {Array} data - 数据数组
- * @param {string} unit - 单位
- * @param {string} label - 标签
  */
 function updateStats(containerId, data, unit, label) {
     const validData = data.filter(v => v !== null && v !== undefined && v > 0);
@@ -457,7 +346,6 @@ function updateStats(containerId, data, unit, label) {
 
 /**
  * 处理图例选择变化事件
- * @param {Object} params - ECharts事件参数
  */
 function handleLegendSelectionChanged(params) {
     const newSelectedThreads = [];
@@ -510,11 +398,6 @@ function inverseSelectThreads() {
 
 /**
  * 渲染时序曲线图
- * @param {string} chartType - 图表类型 ('runtime' 或 'memory')
- * @param {string} dataKey - 数据键名 ('runtimes' 或 'memories')
- * @param {string} color - 主题色
- * @param {string} yAxisName - Y轴名称
- * @param {Function} yAxisFormatter - Y轴格式化函数
  */
 function renderTimelineChart(chartType, dataKey, color, yAxisName, yAxisFormatter = null) {
     const toolData = getCurrentToolData();
@@ -867,7 +750,6 @@ function closeMultiDatePickerModal() {
 
 /**
  * 构建多线程日期选择器
- * @param {boolean} usePending - 是否使用待确认的日期
  */
 function buildMultiDatePicker(usePending = false) {
     const container = document.getElementById('multiDateOptionsContainer');
@@ -962,7 +844,6 @@ async function loadMultiThreadDataForMultipleDates(projectId, ruleName, dates) {
             return;
         }
         
-        // 合并多个日期的数据用于趋势对比
         const allThreads = new Set();
         validResults.forEach(r => {
             r.threads_data.forEach(d => allThreads.add(d.threads.toString()));
@@ -1144,7 +1025,6 @@ function updateMultiChartTypeButtons() {
 
 /**
  * 切换多线程图表类型
- * @param {string} type - 图表类型
  */
 function selectMultiChartType(type) {
     if (currentMultiChartType === type) return;
@@ -1175,7 +1055,7 @@ function closeThreadSelectorModal() {
 }
 
 /**
- * 构建线程选择模态框内容（与日期选择器布局一致）
+ * 构建线程选择模态框内容
  */
 function buildThreadSelectorModal() {
     const container = document.getElementById('threadSelectorModalContent');
@@ -1198,7 +1078,6 @@ function buildThreadSelectorModal() {
         `;
     }).join('');
     
-    // 绑定复选框事件
     container.querySelectorAll('.thread-checkbox input').forEach(cb => {
         cb.addEventListener('change', (e) => {
             e.stopPropagation();
@@ -1213,7 +1092,6 @@ function buildThreadSelectorModal() {
         });
     });
     
-    // 绑定标签点击事件
     container.querySelectorAll('.thread-checkbox').forEach(label => {
         label.addEventListener('click', (e) => {
             if (e.target.tagName !== 'INPUT') {
@@ -1313,7 +1191,6 @@ function confirmThreadSelection() {
 
 /**
  * 加载多线程规则列表
- * @param {string} projectId - 项目ID
  */
 async function loadMultiRules(projectId) {
     try {
@@ -1379,8 +1256,6 @@ let multiRuleSearchHandler = debounce(() => {
 
 /**
  * 加载多线程可用日期
- * @param {string} projectId - 项目ID
- * @param {string} ruleName - 规则名称
  */
 async function loadMultiDates(projectId, ruleName) {
     if (!ruleName) return;
@@ -1407,9 +1282,6 @@ async function loadMultiDates(projectId, ruleName) {
 
 /**
  * 加载多线程数据
- * @param {string} projectId - 项目ID
- * @param {string} ruleName - 规则名称
- * @param {string} date - 日期
  */
 async function loadMultiThreadData(projectId, ruleName, date) {
     showLoading(true);
@@ -1420,7 +1292,6 @@ async function loadMultiThreadData(projectId, ruleName, date) {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ project_id: projectId, rule_name: ruleName, date: date })
         });
-        console.log('请求多线程数据:', { projectId, ruleName, date });
         const result = await response.json();
         
         if (result.success && result.threads_data) {
@@ -1486,11 +1357,7 @@ function renderMultiThreadChart() {
     const color = isRuntime ? '#6366f1' : '#10b981';
     const chart = isRuntime ? charts.multiRuntime : charts.multiMemory;
     
-    if (!chart) {
-        initMultiCharts();
-        const newChart = isRuntime ? charts.multiRuntime : charts.multiMemory;
-        if (!newChart) return;
-    }
+    if (!chart) return;
     
     const option = {
         backgroundColor: 'transparent',
@@ -1560,7 +1427,6 @@ function renderMultiThreadChart() {
 
 /**
  * 更新多线程统计卡片
- * @param {Array} threadsData - 线程数据
  */
 function updateMultiStats(threadsData) {
     const runtimes = threadsData.map(d => d.runtime).filter(v => v !== null && v !== undefined);
@@ -1600,7 +1466,6 @@ function updateMultiStats(threadsData) {
 
 /**
  * 根据是否选择了case来更新对比页面控件的禁用状态
- * @param {boolean} hasCase - 是否选择了case
  */
 function updateCompareControlsState(hasCase) {
     const controls = [
@@ -1623,11 +1488,9 @@ function updateCompareControlsState(hasCase) {
         }
     });
     
-    // 单独处理对比模式选择框（确保启用）
     const modeSelect = document.getElementById('compareModeSelect');
     if (modeSelect) modeSelect.disabled = !hasCase;
     
-    // 显示/隐藏警告和内容
     const warningDiv = document.getElementById('compareNoCaseWarning');
     const resultArea = document.getElementById('compareResultArea');
     
@@ -1638,17 +1501,14 @@ function updateCompareControlsState(hasCase) {
         resultArea.style.display = 'none';
     }
     
-    // 清空对比结果
     currentCompareResult = null;
     currentFilteredData = [];
     
-    // 清空统计卡片
     const compareSummary = document.getElementById('compareSummary');
     if (compareSummary) {
         compareSummary.innerHTML = '';
     }
     
-    // 清空表格
     const tableBody = document.getElementById('compareTableBody');
     if (tableBody) {
         tableBody.innerHTML = '';
@@ -1657,7 +1517,6 @@ function updateCompareControlsState(hasCase) {
 
 /**
  * 加载对比日期列表
- * @param {string} projectId - 项目ID
  */
 async function loadCompareDates(projectId) {
     if (!projectId) {
@@ -1717,7 +1576,6 @@ async function loadCompareDates(projectId) {
 
 /**
  * 加载对比规则列表
- * @param {string} projectId - 项目ID
  */
 async function loadCompareRules(projectId) {
     if (!projectId) {
@@ -1752,9 +1610,6 @@ async function loadCompareRules(projectId) {
 
 /**
  * 保存对比配置到服务器
- * @param {string} projectId - 项目ID
- * @param {Object} config - 配置对象
- * @returns {Promise<boolean>}
  */
 async function saveCompareConfig(projectId, config) {
     if (!projectId) return false;
@@ -1784,8 +1639,6 @@ async function saveCompareConfig(projectId, config) {
 
 /**
  * 加载对比配置
- * @param {string} projectId - 项目ID
- * @returns {Promise<Object>}
  */
 async function loadCompareConfig(projectId) {
     if (!projectId) return {};
@@ -1806,8 +1659,6 @@ async function loadCompareConfig(projectId) {
 
 /**
  * 应用配置到表单
- * @param {Object} config - 配置对象
- * @returns {boolean}
  */
 function applyCompareConfigToForm(config) {
     if (!config || Object.keys(config).length === 0) return false;
@@ -1849,7 +1700,6 @@ function getCurrentCompareConfig() {
 
 /**
  * 项目切换时加载配置
- * @param {string} projectId - 项目ID
  */
 async function onCompareProjectChange(projectId) {
     if (!projectId) {
@@ -1866,10 +1716,6 @@ async function onCompareProjectChange(projectId) {
 
 /**
  * 构建排序列表
- * @param {Array} rulesComparison - 规则对比数据
- * @param {string} type - 类型 ('runtime' 或 'memory')
- * @param {boolean} isIncrease - 是否增加
- * @returns {Array}
  */
 function buildSortedList(rulesComparison, type, isIncrease) {
     if (!rulesComparison || rulesComparison.length === 0) return [];
@@ -2108,7 +1954,6 @@ function applyTableFilter() {
 
 /**
  * 渲染筛选后的表格
- * @param {Array} filteredData - 筛选后的数据
  */
 function renderFilteredTable(filteredData) {
     const tbody = document.getElementById('compareTableBody');
@@ -2140,7 +1985,6 @@ function renderFilteredTable(filteredData) {
 
 /**
  * 显示对比结果
- * @param {Object} result - 对比结果
  */
 function displayCompareResult(result) {
     const isAllRules = result.mode === 'all_rules';
@@ -2209,11 +2053,6 @@ function displayCompareResult(result) {
             `;
         }
         
-        addStatCardTooltip(document.getElementById('statRuntimeIncrease'), formatTooltipListHtml(runtimeIncreaseList, 'Runtime 增加排行'));
-        addStatCardTooltip(document.getElementById('statRuntimeDecrease'), formatTooltipListHtml(runtimeDecreaseList, 'Runtime 减少排行'));
-        addStatCardTooltip(document.getElementById('statMemoryIncrease'), formatTooltipListHtml(memoryIncreaseList, 'Memory 增加排行'));
-        addStatCardTooltip(document.getElementById('statMemoryDecrease'), formatTooltipListHtml(memoryDecreaseList, 'Memory 减少排行'));
-        
         const compareTableHeader = document.getElementById('compareTableHeader');
         if (compareTableHeader) {
             compareTableHeader.innerHTML = `
@@ -2278,8 +2117,7 @@ async function exportCompareResult() {
 let pendingSelectedDates = [];
 
 /**
- * 构建日期选择器（带全选按钮）
- * @param {boolean} usePending - 是否使用待确认的日期
+ * 构建日期选择器
  */
 function buildDatePicker(usePending = false) {
     const container = document.getElementById('dateOptionsContainer');
@@ -2388,12 +2226,602 @@ function confirmDateSelection() {
 
 /**
  * 重置日期选择
- * @param {boolean} useAll - 是否选择全部
  */
 function resetDateSelection(useAll = false) {
     selectedDates = useAll ? [...availableDates] : availableDates.slice(-51);
     updateDateSelectionInfo();
     refreshTimelineCharts();
+}
+
+
+// ==================================================
+// 自定义曲线图模块
+// ==================================================
+
+// 自定义曲线图全局变量
+// let customProjectsData = {};
+// let customCurrentProjectId = null;
+// let customCurrentRule = null;
+// let customSelectedDates = [];
+// let customAvailableDates = [];
+// let customCurrentChartType = 'runtime';
+// let customCharts = {};
+// let customCachedToolData = {};
+// let customPendingSelectedDates = [];
+
+/**
+ * 获取用户数据（调用后端API）
+ */
+async function fetchUserData(casePath) {
+    showLoading(true);
+    const loadingIndicator = document.getElementById('customLoadingIndicator');
+    if (loadingIndicator) loadingIndicator.style.display = 'block';
+    
+    try {
+        const response = await fetch('/api/fetch_user_data', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ case_path: casePath })
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            customProjectsData = result.data;
+            
+            // const dataInfo = document.getElementById('customDataInfo');
+            // if (dataInfo) dataInfo.style.display = 'block';
+            
+            const projectIds = Object.keys(customProjectsData);
+            
+            const caseSelect = document.getElementById('customCaseSelect');
+            if (caseSelect) {
+                caseSelect.innerHTML = '<option value="">-- 请选择项目 --</option>' + 
+                    projectIds.map(pid => `<option value="${pid}">${customProjectsData[pid].project_name || pid}</option>`).join('');
+                caseSelect.disabled = false;
+            }
+            
+            const projectNameSpan = document.getElementById('customProjectName');
+            if (projectNameSpan && projectIds.length > 0) {
+                projectNameSpan.textContent = projectIds.join(', ');
+            }
+            
+            const datesSet = new Set();
+            const rulesSet = new Set();
+            Object.values(customProjectsData).forEach(project => {
+                if (project.dates) project.dates.forEach(d => datesSet.add(d));
+                if (project.rules) project.rules.forEach(r => rulesSet.add(r));
+            });
+            
+            const availableDatesSpan = document.getElementById('customAvailableDates');
+            if (availableDatesSpan) availableDatesSpan.textContent = Array.from(datesSet).sort().slice(0, 5).join(', ') + (datesSet.size > 5 ? '...' : '');
+            
+            const availableRulesSpan = document.getElementById('customAvailableRules');
+            if (availableRulesSpan) availableRulesSpan.textContent = Array.from(rulesSet).slice(0, 5).join(', ') + (rulesSet.size > 5 ? '...' : '');
+            
+            showNotification('用户数据加载成功');
+            return result.data;
+        } else {
+            showNotification('加载失败: ' + (result.error || '未知错误'), true);
+            return null;
+        }
+    } catch (error) {
+        console.error('加载用户数据失败:', error);
+        showNotification('加载用户数据失败: ' + error.message, true);
+        return null;
+    } finally {
+        showLoading(false);
+        if (loadingIndicator) loadingIndicator.style.display = 'none';
+    }
+}
+
+/**
+ * 获取当前选中的自定义项目数据
+ */
+function getCurrentCustomProjectData() {
+    if (!customCurrentProjectId) return null;
+    return customProjectsData[customCurrentProjectId];
+}
+
+/**
+ * 更新自定义曲线图阶段选择下拉框
+ */
+function updateCustomRuleSelect() {
+    const projectData = getCurrentCustomProjectData();
+    if (!projectData) return;
+    
+    const rules = projectData.rules || [];
+    const searchText = document.getElementById('customRuleSearch').value.toLowerCase();
+    
+    let filteredRules = rules;
+    if (searchText) {
+        filteredRules = rules.filter(rule => rule.toLowerCase().includes(searchText));
+    }
+    
+    const select = document.getElementById('customRuleSelect');
+    const currentValue = select.value;
+    
+    select.innerHTML = '<option value="">-- 请选择阶段 --</option>';
+    filteredRules.forEach(rule => {
+        const option = document.createElement('option');
+        option.value = rule;
+        option.textContent = rule;
+        select.appendChild(option);
+    });
+    
+    if (currentValue && filteredRules.includes(currentValue)) {
+        select.value = currentValue;
+        customCurrentRule = currentValue;
+    } else if (filteredRules.length > 0 && !customCurrentRule) {
+        select.value = filteredRules[0];
+        customCurrentRule = filteredRules[0];
+    }
+    
+    if (customCurrentRule) {
+        const currentRuleNameSpan = document.getElementById('customCurrentRuleName');
+        if (currentRuleNameSpan) {
+            currentRuleNameSpan.innerText = customCurrentRule;
+        }
+        updateCustomDateSelectionInfo();
+        refreshCustomTimelineCharts();
+    }
+}
+
+/**
+ * 获取过滤后的自定义工具数据
+ */
+function getFilteredCustomToolData(toolData) {
+    if (!toolData || !toolData.dates) return null;
+    
+    const filterSet = new Set(customSelectedDates);
+    
+    const filtered = {
+        dates: [],
+        runtimes: [],
+        memories: [],
+        cores: []
+    };
+    
+    toolData.dates.forEach((date, index) => {
+        if (filterSet.has(date)) {
+            filtered.dates.push(date);
+            filtered.runtimes.push(toolData.runtimes?.[index] ?? null);
+            filtered.memories.push(toolData.memories?.[index] ?? null);
+            filtered.cores.push(toolData.cores?.[index] ?? null);
+        }
+    });
+    
+    return filtered;
+}
+
+/**
+ * 获取当前选中的自定义工具数据（带缓存）
+ */
+function getCurrentCustomToolData() {
+    if (!customCurrentRule) return null;
+    
+    if (customCachedToolData[customCurrentRule] && customCachedToolData[customCurrentRule].projectId === customCurrentProjectId) {
+        return customCachedToolData[customCurrentRule].data;
+    }
+    
+    const projectData = getCurrentCustomProjectData();
+    if (!projectData?.rule_data[customCurrentRule]) return null;
+    
+    customCachedToolData[customCurrentRule] = {
+        projectId: customCurrentProjectId,
+        data: projectData.rule_data[customCurrentRule]
+    };
+    
+    return projectData.rule_data[customCurrentRule];
+}
+
+/**
+ * 更新自定义曲线图日期选择信息
+ */
+function updateCustomDateSelectionInfo() {
+    const projectData = getCurrentCustomProjectData();
+    if (!projectData) return;
+    
+    customAvailableDates = projectData.available_dates || projectData.dates || [];
+    
+    if (customSelectedDates.length === 0) {
+        customSelectedDates = customAvailableDates.slice(-51);
+    }
+    
+    const dateRangeSpan = document.getElementById('customDateRange');
+    if (dateRangeSpan) {
+        dateRangeSpan.innerText = customSelectedDates.length ? `${customSelectedDates[0]} 至 ${customSelectedDates[customSelectedDates.length - 1]}` : '无';
+    }
+    const dataPointsSpan = document.getElementById('customDataPoints');
+    if (dataPointsSpan) {
+        dataPointsSpan.innerText = customSelectedDates.length;
+    }
+}
+
+/**
+ * 更新自定义曲线图图表类型按钮状态
+ */
+function updateCustomChartTypeButtons() {
+    const buttons = document.querySelectorAll('#customChartTypeButtons .chart-type-btn');
+    buttons.forEach(btn => {
+        const type = btn.dataset.type;
+        if (type === customCurrentChartType) {
+            btn.classList.add('btn-primary');
+            btn.classList.remove('btn-secondary');
+        } else {
+            btn.classList.add('btn-secondary');
+            btn.classList.remove('btn-primary');
+        }
+    });
+
+    const runtimeContainer = document.getElementById('custom-chart-runtime');
+    const memoryContainer = document.getElementById('custom-chart-memory');
+    if (runtimeContainer && memoryContainer) {
+        if (customCurrentChartType === 'runtime') {
+            runtimeContainer.classList.remove('hidden');
+            memoryContainer.classList.add('hidden');
+        } else {
+            runtimeContainer.classList.add('hidden');
+            memoryContainer.classList.remove('hidden');
+        }
+    }
+
+    const chartCardTitle = document.getElementById('customChartCardTitle');
+    if (chartCardTitle) {
+        chartCardTitle.innerText = customCurrentChartType === 'runtime' ? '⏱️ Runtime 性能曲线 - 用户数据' : '💾 Memory 使用曲线 - 用户数据';
+    }
+    
+    if (customCurrentChartType === 'runtime') {
+        customCharts.runtime?.resize();
+    } else {
+        customCharts.memory?.resize();
+    }
+}
+
+/**
+ * 切换自定义曲线图图表类型
+ */
+function selectCustomChartType(type) {
+    if (customCurrentChartType === type) return;
+    customCurrentChartType = type;
+    updateCustomChartTypeButtons();
+    refreshCustomTimelineCharts();
+}
+
+/**
+ * 渲染自定义曲线图
+ */
+function renderCustomTimelineChart(chartType, dataKey, color, yAxisName, yAxisFormatter = null) {
+    const toolData = getCurrentCustomToolData();
+    if (!toolData) {
+        if (customCharts[chartType]) customCharts[chartType].clear();
+        return;
+    }
+    
+    const filteredData = getFilteredCustomToolData(toolData);
+    if (!filteredData || filteredData.dates.length === 0) {
+        if (customCharts[chartType]) customCharts[chartType].clear();
+        return;
+    }
+    
+    const dates = filteredData.dates;
+    
+    const threadMetrics = toolData.thread_metrics || {};
+    if (!threadMetrics['0'] && filteredData.runtimes?.length) {
+        threadMetrics['0'] = {
+            runtimes: filteredData.runtimes,
+            memories: filteredData.memories,
+            cores: filteredData.cores
+        };
+    }
+    
+    const threadIds = Object.keys(threadMetrics).sort((a, b) => parseInt(a) - parseInt(b));
+    const palette = ['#6366f1', '#f59e0b', '#10b981', '#ef4444', '#06b6d4', '#8b5cf6', '#ec4899', '#84cc16'];
+    
+    const seriesList = threadIds.map((threadId, index) => {
+        const threadInfo = threadMetrics[threadId];
+        let values = threadInfo?.[dataKey] || [];
+        
+        const mappedValues = [];
+        const originalDates = toolData.dates || [];
+        
+        dates.forEach(selectedDate => {
+            const dateIndex = originalDates.indexOf(selectedDate);
+            if (dateIndex !== -1 && values[dateIndex] !== undefined) {
+                mappedValues.push(values[dateIndex]);
+            } else {
+                mappedValues.push(null);
+            }
+        });
+        
+        const seriesColor = palette[index % palette.length];
+        const threadLabel = threadId === '0' ? '线程0' : `其他线程${threadId}`;
+        
+        const seriesData = mappedValues.map((value, idx) => {
+            return {
+                value: value,
+                symbol: 'circle',
+                symbolSize: 6
+            };
+        });
+        
+        return {
+            threadId,
+            name: threadLabel,
+            type: 'line',
+            data: seriesData,
+            smooth: false,
+            lineStyle: { width: 2, color: seriesColor },
+            areaStyle: { opacity: 0.08, color: seriesColor },
+            connectNulls: false,
+            showSymbol: true,
+            step: false
+        };
+    });
+    
+    // 更新统计
+    const allValues = seriesList
+        .flatMap(series => series.data.map(item => item.value))
+        .filter(v => v !== null && v !== undefined && v > 0);
+    
+    const unit = dataKey === 'runtimes' ? '秒' : 'MB';
+    const label = dataKey === 'runtimes' ? 'Runtime' : 'Memory';
+    if (chartType === customCurrentChartType) {
+        updateCustomStats(allValues, unit, label);
+    }
+    
+    const avgValue = allValues.length > 0 ? (allValues.reduce((a, b) => a + b, 0) / allValues.length).toFixed(1) : 0;
+    
+    // 图例默认选中状态（默认只选线程0）
+    const legendSelected = {};
+    threadIds.forEach(threadId => {
+        const seriesName = threadId === '0' ? '线程0' : `其他线程${threadId}`;
+        legendSelected[seriesName] = (threadId === '0');
+    });
+    
+    const tooltipFormatter = function(params) {
+        if (!params?.length) return '';
+        const date = params[0].axisValue;
+        const rows = params.map(p => `<div>${p.seriesName}: ${p.value} ${unit}</div>`).join('');
+        return `<strong>📅 ${date}</strong>${rows}`;
+    };
+    
+    const option = {
+        backgroundColor: 'transparent',
+        tooltip: {
+            trigger: 'axis',
+            backgroundColor: 'rgba(30, 41, 59, 0.95)',
+            borderColor: color,
+            borderWidth: 1,
+            textStyle: { color: '#f1f5f9', fontSize: 12 },
+            formatter: tooltipFormatter
+        },
+        grid: { left: '8%', right: '8%', top: '18%', bottom: '10%', containLabel: true },
+        xAxis: {
+            type: 'category',
+            data: dates,
+            axisLabel: { rotate: dates.length > 10 ? 30 : 0, color: '#94a3b8', fontSize: 11 },
+            axisLine: { lineStyle: { color: '#475569' } },
+            boundaryGap: false
+        },
+        yAxis: {
+            type: 'value',
+            name: yAxisName,
+            nameTextStyle: { color: '#cbd5e1', fontSize: 12 },
+            axisLabel: { color: '#94a3b8', fontSize: 11, formatter: yAxisFormatter },
+            splitLine: { lineStyle: { color: 'rgba(71, 85, 105, 0.3)', type: 'dashed' } }
+        },
+        series: [
+            ...seriesList,
+            {
+                name: '平均值',
+                type: 'line',
+                data: new Array(dates.length).fill(parseFloat(avgValue)),
+                lineStyle: { width: 1.5, color: '#f59e0b', type: 'dashed' },
+                symbol: 'none',
+                tooltip: { show: false }
+            }
+        ],
+        legend: {
+            data: seriesList.map(s => s.name),
+            selected: legendSelected,
+            textStyle: { color: '#cbd5e1', fontSize: 11 },
+            orient: 'horizontal',
+            right: 10,
+            top: 0,
+            itemWidth: 25,
+            itemHeight: 12
+        },
+        toolbox: {
+            feature: {
+                saveAsImage: { title: '保存为图片' },
+                zoom: { title: { zoom: '区域缩放', back: '还原' } },
+                restore: { title: '重置' }
+            },
+            iconStyle: { borderColor: '#94a3b8' },
+            right: 10,
+            bottom: 10
+        }
+    };
+    
+    if (customCharts[chartType]) {
+        customCharts[chartType].setOption(option, { notMerge: false, lazyUpdate: true });
+    }
+}
+
+/**
+ * 刷新自定义曲线图
+ */
+function refreshCustomTimelineCharts() {
+    if (!customCurrentRule) return;
+    
+    renderCustomTimelineChart('runtime', 'runtimes', '#6366f1', 'Runtime (秒)');
+    renderCustomTimelineChart('memory', 'memories', '#10b981', 'Memory (MB)', (value) => {
+        if (value >= 1024) return (value / 1024).toFixed(1) + ' GB';
+        return value + ' MB';
+    });
+    updateCustomChartTypeButtons();
+}
+
+/**
+ * 更新自定义曲线图统计卡片
+ */
+function updateCustomStats(allValues, unit, label) {
+    const container = document.getElementById('customStatsMain');
+    if (!container) return;
+    
+    if (allValues.length === 0) {
+        container.innerHTML = '<div class="stat-item"><div class="stat-value">-</div><div class="stat-label">暂无数据</div></div>';
+        return;
+    }
+    
+    const total = allValues.reduce((a, b) => a + b, 0);
+    const avg = (total / allValues.length).toFixed(1);
+    const max = Math.max(...allValues);
+    const min = Math.min(...allValues);
+    
+    container.innerHTML = `
+        <div class="stat-item"><div class="stat-value">${total.toFixed(1)}<span style="font-size:0.875rem;">${unit}</span></div><div class="stat-label">总${label}</div></div>
+        <div class="stat-item"><div class="stat-value">${avg}<span style="font-size:0.875rem;">${unit}</span></div><div class="stat-label">平均${label}</div></div>
+        <div class="stat-item"><div class="stat-value">${max.toFixed(1)}<span style="font-size:0.875rem;">${unit}</span></div><div class="stat-label">最大${label}</div></div>
+        <div class="stat-item"><div class="stat-value">${min.toFixed(1)}<span style="font-size:0.875rem;">${unit}</span></div><div class="stat-label">最小${label}</div></div>
+    `;
+}
+
+/**
+ * 构建自定义曲线图日期选择器
+ */
+function buildCustomDatePicker(usePending = false) {
+    const container = document.getElementById('customDateOptionsContainer');
+    if (!container) return;
+    
+    const currentSelection = usePending ? customPendingSelectedDates : customSelectedDates;
+    const filterInput = document.getElementById('customDateFilterInput');
+    const filterText = filterInput?.value || '';
+    const filteredDates = customAvailableDates.filter(date => date.toLowerCase().includes(filterText.toLowerCase()));
+    
+    container.innerHTML = filteredDates.map(date => `
+        <label class="date-option">
+            <input type="checkbox" value="${date}" ${currentSelection.includes(date) ? 'checked' : ''}>
+            <span>${date}</span>
+        </label>
+    `).join('');
+    
+    container.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+        cb.addEventListener('change', (e) => {
+            const date = e.target.value;
+            if (e.target.checked) {
+                if (!customPendingSelectedDates.includes(date)) customPendingSelectedDates.push(date);
+            } else {
+                customPendingSelectedDates = customPendingSelectedDates.filter(d => d !== date);
+            }
+        });
+    });
+}
+
+/**
+ * 全选自定义曲线图所有日期
+ */
+function selectAllCustomDates() {
+    const container = document.getElementById('customDateOptionsContainer');
+    if (!container) return;
+    
+    const checkboxes = container.querySelectorAll('input[type="checkbox"]');
+    customPendingSelectedDates = [];
+    checkboxes.forEach(cb => {
+        cb.checked = true;
+        customPendingSelectedDates.push(cb.value);
+    });
+}
+
+/**
+ * 全不选自定义曲线图所有日期
+ */
+function deselectAllCustomDates() {
+    const container = document.getElementById('customDateOptionsContainer');
+    if (!container) return;
+    
+    const checkboxes = container.querySelectorAll('input[type="checkbox"]');
+    customPendingSelectedDates = [];
+    checkboxes.forEach(cb => {
+        cb.checked = false;
+    });
+}
+
+/**
+ * 反选自定义曲线图日期
+ */
+function inverseSelectCustomDates() {
+    const container = document.getElementById('customDateOptionsContainer');
+    if (!container) return;
+    
+    const checkboxes = container.querySelectorAll('input[type="checkbox"]');
+    customPendingSelectedDates = [];
+    checkboxes.forEach(cb => {
+        cb.checked = !cb.checked;
+        if (cb.checked) {
+            customPendingSelectedDates.push(cb.value);
+        }
+    });
+}
+
+/**
+ * 打开自定义曲线图日期选择模态框
+ */
+function openCustomDatePickerModal() {
+    customPendingSelectedDates = [...customSelectedDates];
+    buildCustomDatePicker(true);
+    const modal = document.getElementById('customDatePickerModal');
+    if (modal) modal.classList.remove('hidden');
+}
+
+/**
+ * 关闭自定义曲线图日期选择模态框
+ */
+function closeCustomDatePickerModal() {
+    const modal = document.getElementById('customDatePickerModal');
+    if (modal) modal.classList.add('hidden');
+}
+
+/**
+ * 确认自定义曲线图日期选择
+ */
+function confirmCustomDateSelection() {
+    if (customPendingSelectedDates.length === 0) {
+        customPendingSelectedDates = customAvailableDates.slice(-51);
+    }
+    customSelectedDates = [...customPendingSelectedDates];
+    updateCustomDateSelectionInfo();
+    refreshCustomTimelineCharts();
+    closeCustomDatePickerModal();
+}
+
+/**
+ * 重置自定义曲线图日期选择
+ */
+function resetCustomDateSelection(useAll = false) {
+    customSelectedDates = useAll ? [...customAvailableDates] : customAvailableDates.slice(-51);
+    updateCustomDateSelectionInfo();
+    refreshCustomTimelineCharts();
+}
+
+/**
+ * 初始化自定义曲线图图表
+ */
+function initCustomCharts() {
+    const runtimeDom = document.getElementById('custom-chart-runtime');
+    const memoryDom = document.getElementById('custom-chart-memory');
+    
+    if (runtimeDom) {
+        customCharts.runtime = echarts.init(runtimeDom);
+    }
+    if (memoryDom) {
+        customCharts.memory = echarts.init(memoryDom);
+    }
+    
+    window.addEventListener('resize', () => {
+        Object.values(customCharts).forEach(chart => chart?.resize());
+    });
 }
 
 
@@ -2486,7 +2914,6 @@ async function refreshAllData() {
 
 /**
  * 切换视图
- * @param {string} viewId - 视图ID
  */
 function switchView(viewId) {
     const containers = document.querySelectorAll('.view-container');
@@ -2521,6 +2948,11 @@ function switchView(viewId) {
             if (charts.runtime) charts.runtime.resize();
             if (charts.memory) charts.memory.resize();
         }, 100);
+    } else if (viewId === 'custom') {
+        setTimeout(() => {
+            if (customCharts.runtime) customCharts.runtime.resize();
+            if (customCharts.memory) customCharts.memory.resize();
+        }, 100);
     }
 }
 
@@ -2529,9 +2961,6 @@ function switchView(viewId) {
 // 返回主页
 // ==================================================
 
-/**
- * 返回主页
- */
 function backToHome() {
     window.location.href = '/';
 }
@@ -2541,9 +2970,6 @@ function backToHome() {
 // 初始化 ECharts
 // ==================================================
 
-/**
- * 初始化所有图表
- */
 function initCharts() {
     const runtimeDom = document.getElementById('chart-runtime');
     const memoryDom = document.getElementById('chart-memory');
@@ -2574,9 +3000,6 @@ function initCharts() {
 // 事件绑定
 // ==================================================
 
-/**
- * 绑定所有事件
- */
 function bindEvents() {
     // 时序曲线图 - 项目选择
     const caseSelect = document.getElementById('caseSelect');
@@ -2760,7 +3183,6 @@ function bindEvents() {
                 }
             }
         });
-        // 初始化触发一次
         if (compareModeSelect.value === 'all') {
             const ruleGroup = document.getElementById('compareRuleGroup');
             if (ruleGroup) ruleGroup.style.display = 'none';
@@ -2775,6 +3197,115 @@ function bindEvents() {
     const exportCompareBtn = document.getElementById('exportCompareBtn');
     if (exportCompareBtn) exportCompareBtn.addEventListener('click', exportCompareResult);
     
+    // 自定义曲线图 - 加载用户数据按钮
+    const loadCustomDataBtn = document.getElementById('loadCustomDataBtn');
+    if (loadCustomDataBtn) {
+        loadCustomDataBtn.addEventListener('click', async () => {
+            const casePath = document.getElementById('customCasePath').value.trim();
+            if (!casePath) {
+                showNotification('请输入用户数据路径', true);
+                return;
+            }
+            const data = await fetchUserData(casePath);
+            if (data) {
+                const caseSelect = document.getElementById('customCaseSelect');
+                if (caseSelect && caseSelect.options.length > 0) {
+                    customCurrentProjectId = caseSelect.value;
+                    updateCustomRuleSelect();
+                    updateCustomDateSelectionInfo();
+                    updateCustomChartTypeButtons();
+                }
+            }
+        });
+    }
+    
+    // 自定义曲线图 - 项目选择
+    const customCaseSelect = document.getElementById('customCaseSelect');
+    if (customCaseSelect) {
+        customCaseSelect.addEventListener('change', (e) => {
+            customCurrentProjectId = e.target.value;
+            customCurrentRule = null;
+            customCachedToolData = {};
+            customSelectedDates = [];
+            
+            const ruleSelect = document.getElementById('customRuleSelect');
+            const ruleSearch = document.getElementById('customRuleSearch');
+            const openDatePicker = document.getElementById('customOpenDatePickerBtn');
+            const selectRecent = document.getElementById('customSelectRecentBtn');
+            
+            if (customCurrentProjectId) {
+                ruleSelect.disabled = false;
+                ruleSearch.disabled = false;
+                openDatePicker.disabled = false;
+                selectRecent.disabled = false;
+                updateCustomRuleSelect();
+                updateCustomDateSelectionInfo();
+                updateCustomChartTypeButtons();
+            } else {
+                ruleSelect.disabled = true;
+                ruleSearch.disabled = true;
+                openDatePicker.disabled = true;
+                selectRecent.disabled = true;
+            }
+        });
+    }
+    
+    // 自定义曲线图 - 规则选择
+    const customRuleSelect = document.getElementById('customRuleSelect');
+    if (customRuleSelect) {
+        customRuleSelect.addEventListener('change', (e) => {
+            customCurrentRule = e.target.value;
+            if (customCurrentRule) {
+                const currentRuleNameSpan = document.getElementById('customCurrentRuleName');
+                if (currentRuleNameSpan) currentRuleNameSpan.innerText = customCurrentRule;
+                refreshCustomTimelineCharts();
+            }
+        });
+    }
+    
+    // 自定义曲线图 - 规则搜索
+    const customRuleSearch = document.getElementById('customRuleSearch');
+    if (customRuleSearch) {
+        customRuleSearch.addEventListener('input', debounce(() => {
+            updateCustomRuleSelect();
+        }, 300));
+    }
+    
+    // 自定义曲线图 - 图表类型切换
+    const customChartTypeBtns = document.querySelectorAll('#customChartTypeButtons .chart-type-btn');
+    customChartTypeBtns.forEach(btn => {
+        btn.addEventListener('click', () => selectCustomChartType(btn.dataset.type));
+    });
+    
+    // 自定义曲线图 - 日期选择按钮
+    const customOpenDatePickerBtn = document.getElementById('customOpenDatePickerBtn');
+    if (customOpenDatePickerBtn) customOpenDatePickerBtn.addEventListener('click', openCustomDatePickerModal);
+    
+    const customCloseDateModalBtn = document.getElementById('customCloseDateModalBtn');
+    if (customCloseDateModalBtn) customCloseDateModalBtn.addEventListener('click', closeCustomDatePickerModal);
+    
+    const customConfirmDateBtn = document.getElementById('customConfirmDateBtn');
+    if (customConfirmDateBtn) customConfirmDateBtn.addEventListener('click', confirmCustomDateSelection);
+    
+    const customSelectRecentBtn = document.getElementById('customSelectRecentBtn');
+    if (customSelectRecentBtn) customSelectRecentBtn.addEventListener('click', () => resetCustomDateSelection(false));
+    
+    const customSelectAllDatesBtn = document.getElementById('customSelectAllDatesBtn');
+    if (customSelectAllDatesBtn) customSelectAllDatesBtn.addEventListener('click', selectAllCustomDates);
+    
+    const customDeselectAllDatesBtn = document.getElementById('customDeselectAllDatesBtn');
+    if (customDeselectAllDatesBtn) customDeselectAllDatesBtn.addEventListener('click', deselectAllCustomDates);
+    
+    const customInverseDatesBtn = document.getElementById('customInverseDatesBtn');
+    if (customInverseDatesBtn) customInverseDatesBtn.addEventListener('click', inverseSelectCustomDates);
+    
+    const customDateFilterInput = document.getElementById('customDateFilterInput');
+    if (customDateFilterInput) {
+        customDateFilterInput.addEventListener('input', debounce(() => {
+            buildCustomDatePicker(true);
+        }, 150));
+    }
+    
     // 导航菜单
     const navItems = document.querySelectorAll('.nav-item');
     navItems.forEach(item => {
@@ -2785,16 +3316,6 @@ function bindEvents() {
     const backToHomeBtn = document.getElementById('backToHomeBtn');
     if (backToHomeBtn) backToHomeBtn.addEventListener('click', backToHome);
 }
-
-
-// ==================================================
-// 挂载全局函数
-// ==================================================
-
-window.selectMultiChartType = selectMultiChartType;
-window.openThreadSelectorModal = openThreadSelectorModal;
-window.closeThreadSelectorModal = closeThreadSelectorModal;
-window.confirmThreadSelection = confirmThreadSelection;
 
 
 // ==================================================
@@ -2922,6 +3443,7 @@ async function autoRefreshOnLoad() {
  */
 async function init() {
     initCharts();
+    initCustomCharts();
     bindEvents();
     
     await autoRefreshOnLoad();
@@ -2955,10 +3477,23 @@ async function init() {
         updateCompareControlsState(false);
     }
     
+    // 设置自定义曲线图初始状态
+    const customRuleSelect = document.getElementById('customRuleSelect');
+    const customRuleSearch = document.getElementById('customRuleSearch');
+    const customOpenDatePicker = document.getElementById('customOpenDatePickerBtn');
+    const customSelectRecent = document.getElementById('customSelectRecentBtn');
+    
+    if (customRuleSelect) customRuleSelect.disabled = true;
+    if (customRuleSearch) customRuleSearch.disabled = true;
+    if (customOpenDatePicker) customOpenDatePicker.disabled = true;
+    if (customSelectRecent) customSelectRecent.disabled = true;
+    
     if (initialMode === 'multi') {
         switchView('multithread');
     } else if (initialMode === 'compare') {
         switchView('compare');
+    } else if (initialMode === 'custom') {
+        switchView('custom');
     }
     
     // 定期检查数据更新
@@ -2979,6 +3514,11 @@ async function init() {
     updateMultiChartTypeButtons();
 }
 
+// 挂载全局函数
+window.selectMultiChartType = selectMultiChartType;
+window.openThreadSelectorModal = openThreadSelectorModal;
+window.closeThreadSelectorModal = closeThreadSelectorModal;
+window.confirmThreadSelection = confirmThreadSelection;
+
 // 启动应用
 init();
-
