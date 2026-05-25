@@ -192,7 +192,7 @@ def get_elint_data(jsonDataFile, original_path):
             # 合并并去重
             newDataFiles = list(dict.fromkeys(currentDataFiles + lastDataFiles))
             newCaseData["dataFiles"] = newDataFiles.sort()
-            save_json(jsonDataFile,caseData)
+            save_json(jsonDataFile, newCaseData)
         else:
             log("数据不需要更新")
             # 数据没有新增、并且保持不变
@@ -280,3 +280,4 @@ def get_perf(mem, cpu):
             "mem": {},
             "cpu": {}
         }
+    

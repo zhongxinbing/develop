@@ -246,8 +246,7 @@ def tool_page(tool_id):
         projects_data = get_elint_data(config.get('json_path', ''), config.get('original_path', ''))
         current_projects_data = projects_data.copy()
         parsed_projects, project_list = refresh_parsed_projects(current_projects_data)
-        save_json("./parsed_projects.json", parsed_projects)
-        print(f"项目列表: {project_list}")
+
         if CONFIG['cache_enabled']:
             data_cache.set(cache_key, {
                 'projects_data': current_projects_data,
@@ -267,7 +266,6 @@ def tool_page(tool_id):
 
     # 获取性能数据（MR更新信息）- Single和Multi共用
     perf = get_perf(mem_path, cpu_path)
-    save_json("./projects_data_json.json", projects_data_json)
     
     # 获取Multi模式的原始路径（如果有配置）
     multi_original_path = tool_info.get('multi_original_path', '')
@@ -1021,3 +1019,4 @@ def api_export_compare():
 def download_file(filename):
     """下载文件"""
     return send_from_directory(comparator.export_dir, filename, as_attachment=True)
+

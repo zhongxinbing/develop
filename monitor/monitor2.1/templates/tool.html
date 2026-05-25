@@ -285,6 +285,8 @@
                     <div style="font-size: 0.8rem; margin-top: 0.5rem;">选择项目后即可配置对比参数并执行对比</div>
                 </div>
             </div>
+
+            
         </main>
     </div>
 
@@ -358,7 +360,7 @@
     <script>
         // 传递给 JS 的数据
         const projectsData = {{ projects_data_json | tojson }};
-        console.log('Projects Data:', projectsData);
+
         const perf = {{ perf | tojson }};
         const toolId = '{{ tool_id }}';
         const toolName = '{{ tool_name }}';
