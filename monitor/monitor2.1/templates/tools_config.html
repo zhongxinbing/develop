@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>工具配置管理 - EDA性能监控系统</title>
     <style>
-        /* 样式保持不变，与之前相同 */
         * {
             margin: 0;
             padding: 0;
@@ -51,7 +50,7 @@
             min-height: 100vh;
         }
 
-        /* 侧边栏 */
+        /* 侧边栏样式 */
         .sidebar {
             width: 280px;
             background: var(--bg-sidebar);
@@ -133,6 +132,7 @@
             padding: 1.5rem;
         }
 
+        /* 卡片样式 */
         .card {
             background: var(--bg-card);
             border-radius: var(--radius-xl);
@@ -158,6 +158,7 @@
             gap: 0.5rem;
         }
 
+        /* 按钮样式 */
         .btn {
             padding: 0.625rem 1.25rem;
             border-radius: var(--radius-md);
@@ -203,7 +204,7 @@
             flex-wrap: wrap;
         }
 
-        /* 工具卡片网格 */
+        /* 工具卡片网格 - 使用Grid布局 */
         .tools-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
@@ -308,7 +309,7 @@
             min-height: 80px;
         }
 
-        /* 配置区块 */
+        /* 配置区域 */
         .config-section {
             background: rgba(0, 0, 0, 0.2);
             border-radius: var(--radius-md);
@@ -336,48 +337,14 @@
             border-top: 1px dashed var(--border);
         }
 
-        /* 弹窗 */
-        .modal {
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(8px);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-        }
-
-        .modal.hidden {
-            display: none;
-        }
-
-        .modal-content {
-            background: var(--bg-card);
-            border-radius: var(--radius-xl);
-            width: 90%;
-            max-width: 650px;
-            max-height: 85vh;
-            overflow-y: auto;
-            padding: 1.5rem;
-        }
-
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1.25rem;
-            padding-bottom: 0.75rem;
-            border-bottom: 1px solid var(--border);
-        }
-
+        /* 表格样式 */
         .row {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             gap: 1rem;
         }
 
-        /* 状态徽章 */
+        /* 徽章样式 */
         .badge {
             display: inline-flex;
             align-items: center;
@@ -439,7 +406,42 @@
             display: block;
         }
 
-        /* 响应式 */
+        /* 模态框 */
+        .modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(8px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal.hidden {
+            display: none;
+        }
+
+        .modal-content {
+            background: var(--bg-card);
+            border-radius: var(--radius-xl);
+            width: 90%;
+            max-width: 650px;
+            max-height: 85vh;
+            overflow-y: auto;
+            padding: 1.5rem;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.25rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        /* 响应式布局 */
         @media (max-width: 768px) {
             .sidebar {
                 width: 70px;
@@ -581,7 +583,7 @@
                             <div class="form-group">
                                 <label class="form-label required">原始数据路径 *</label>
                                 <input type="text" id="singleOriginalPath" class="form-input" placeholder="例如: /path/to/single/original" required>
-                                <div class="config-hint">单线程原始txt数据文件目录路径（必填）</div>
+                                <div class="config-hint">单线程原始txt文件目录路径（必填）</div>
                             </div>
                         </div>
 
@@ -861,7 +863,7 @@
             const toolIcon = document.getElementById('toolIcon').value.trim();
             const singleOriginalPath = document.getElementById('singleOriginalPath').value.trim();
             
-            // ========== 前端验证 ==========
+            // 前端验证
             const errors = [];
             
             // 验证工具ID
@@ -910,7 +912,6 @@
             const toolIcon = document.getElementById('editToolIcon').value.trim();
             const singleOriginalPath = document.getElementById('editSingleOriginalPath').value.trim();
             
-            // ========== 前端验证 ==========
             const errors = validateRequiredFields({
                 '工具名称': toolName,
                 '工具图标': toolIcon,
@@ -946,6 +947,7 @@
                     <div style="grid-column: 1/-1; text-align: center; padding: 3rem;">
                         <div style="font-size: 3rem; margin-bottom: 1rem;">🔧</div>
                         <p style="color: var(--text-secondary);">暂无工具配置</p>
+                        <p style="color: var(--text-muted); font-size: 0.8rem; margin-top: 0.5rem;">点击下方按钮添加第一个工具</p>
                         <button class="btn btn-primary" onclick="switchView('add')" style="margin-top: 1rem;">➕ 添加第一个工具</button>
                     </div>
                 `;
@@ -973,7 +975,7 @@
                         </div>
                         <div style="font-size: 0.7rem; color: var(--text-muted);">
                             <div>📁 JSON: ${tool.json_path || '未配置'}</div>
-                            <div>📄 Single Original: ${tool.single_original_path || '未配置'}</div>
+                            <div>📈 Single Original: ${tool.single_original_path || '未配置'}</div>
                             ${tool.multi_original_path ? `<div>🔄 Multi Original: ${tool.multi_original_path}</div>` : ''}
                         </div>
                         ${tool.last_updated ? `

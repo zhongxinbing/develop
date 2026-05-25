@@ -18,31 +18,15 @@ TOOL_CONFIG_PATH = Path('./data/config/tool_config.json')
 DATA_DIR = Path('./data')
 DATA_DIR.mkdir(parents=True, exist_ok=True)
 
-# 工具配置（默认只包含基本信息）
-DEFAULT_TOOL_CONFIG = {
-    "elint": {
-        "name": "ELINT",
-        "description": "EDA Lint工具性能监控",
-        "icon": "🔍"
-    },
-    "ecdc": {
-        "name": "ECDC",
-        "description": "EDA CDC工具性能监控",
-        "icon": "⚡"
-    }
-}
-
-# 加载工具配置（如果文件不存在则创建默认配置）
+# 加载工具配置（如果文件不存在则返回空配置）
 def load_tool_config():
     if TOOL_CONFIG_PATH.exists():
         return load_json(TOOL_CONFIG_PATH)
     else:
         # 确保目录存在
         TOOL_CONFIG_PATH.parent.mkdir(parents=True, exist_ok=True)
-        # 保存默认配置
-        with open(TOOL_CONFIG_PATH, 'w', encoding='utf-8') as f:
-            json.dump(DEFAULT_TOOL_CONFIG, f, ensure_ascii=False, indent=4)
-        return DEFAULT_TOOL_CONFIG.copy()
+        # 返回空配置，用户需要自己添加工具
+        return {}
 
 CASE_CONFIG = load_tool_config()  # 工具配置
 

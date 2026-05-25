@@ -125,9 +125,10 @@ class DataComparator:
             memory1 = memories1[0] if memories1 else None
             memory2 = memories2[0] if memories2 else None
             
-            has_data = (runtime1 is not None and runtime2 is not None) if compare_runtime else True
-            if compare_memory:
-                has_data = has_data and (memory1 is not None and memory2 is not None) or compare_runtime
+            # 判断是否有数据（根据对比维度）
+            has_runtime_data = (runtime1 is not None and runtime2 is not None) if compare_runtime else True
+            has_memory_data = (memory1 is not None and memory2 is not None) if compare_memory else True
+            has_data = has_runtime_data and has_memory_data if compare_dimension == 'both' else (has_runtime_data if compare_runtime else has_memory_data)
             
             rule_comparison = {
                 "rule_name": rule,
@@ -151,7 +152,10 @@ class DataComparator:
             # 计算runtime变化
             if compare_runtime and runtime1 is not None and runtime2 is not None:
                 runtime_diff = runtime2 - runtime1
-                runtime_change_pct = (runtime_diff / runtime1 * 100) if runtime1 != 0 else 0
+                if runtime1 != 0:
+                    runtime_change_pct = (runtime_diff / runtime1 * 100)
+                else:
+                    runtime_change_pct = 0 if runtime_diff == 0 else (100 if runtime_diff > 0 else -100)
                 runtime_status = self._get_status(runtime_diff, tolerance_runtime, tolerance_mode, runtime1)
 
                 rule_comparison.update({
@@ -189,12 +193,15 @@ class DataComparator:
             # 计算memory变化
             if compare_memory and memory1 is not None and memory2 is not None:
                 memory_diff = memory2 - memory1
-                memory_change_pct = (memory_diff / memory1 * 100) if memory1 != 0 else 0
+                if memory1 != 0:
+                    memory_change_pct = (memory_diff / memory1 * 100)
+                else:
+                    memory_change_pct = 0 if memory_diff == 0 else (100 if memory_diff > 0 else -100)
                 memory_status = self._get_status(memory_diff, tolerance_memory, tolerance_mode, memory1)
 
                 rule_comparison.update({
-                    "memory_diff": round(memory_diff, 2),
-                    "memory_change_pct": round(memory_change_pct, 2),
+                    "memory_diff": round(memory_diff, 2) if memory_diff is not None else None,
+                    "memory_change_pct": round(memory_change_pct, 2) if memory_change_pct is not None else None,
                     "memory_status": memory_status,
                     "memory_significant": self._is_significant(memory_diff, tolerance_memory, tolerance_mode, memory1),
                 })
@@ -351,7 +358,10 @@ class DataComparator:
             # 处理runtime对比
             if compare_runtime and runtime1 is not None and runtime2 is not None:
                 runtime_diff = runtime2 - runtime1
-                runtime_change_pct = (runtime_diff / runtime1 * 100) if runtime1 != 0 else 0
+                if runtime1 != 0:
+                    runtime_change_pct = (runtime_diff / runtime1 * 100)
+                else:
+                    runtime_change_pct = 0 if runtime_diff == 0 else (100 if runtime_diff > 0 else -100)
                 runtime_significant = self._is_significant(runtime_diff, tolerance_runtime, tolerance_mode, runtime1)
 
                 comparison.update({
@@ -386,7 +396,10 @@ class DataComparator:
             # 处理memory对比
             if compare_memory and memory1 is not None and memory2 is not None:
                 memory_diff = memory2 - memory1
-                memory_change_pct = (memory_diff / memory1 * 100) if memory1 != 0 else 0
+                if memory1 != 0:
+                    memory_change_pct = (memory_diff / memory1 * 100)
+                else:
+                    memory_change_pct = 0 if memory_diff == 0 else (100 if memory_diff > 0 else -100)
                 memory_significant = self._is_significant(memory_diff, tolerance_memory, tolerance_mode, memory1)
 
                 comparison.update({
@@ -454,12 +467,16 @@ class DataComparator:
     
     def _is_significant(self, diff: float, tolerance: float, mode: str = 'absolute', base_value: float = None) -> bool:
         """判断差异是否超出容差范围"""
+        if diff is None:
+            return False
         if mode == 'percentage' and base_value is not None and base_value != 0:
             return abs(diff / base_value * 100) > tolerance
         return abs(diff) > tolerance
 
     def _get_status(self, diff: float, tolerance: float, mode: str = 'absolute', base_value: float = None) -> str:
         """获取变化状态"""
+        if diff is None:
+            return "no_data"
         if mode == 'percentage' and base_value is not None and base_value != 0:
             actual = abs(diff / base_value * 100)
         else:
@@ -528,28 +545,30 @@ class DataComparator:
         # 写入Runtime统计
         if compare_dimension in ['runtime', 'both']:
             runtime_summary = summary.get("runtime", {})
-            writer.writerow(["=== Runtime 统计 ==="])
-            writer.writerow(["Runtime增加阶段数", runtime_summary.get("total_increase", 0)])
-            writer.writerow(["Runtime减少阶段数", runtime_summary.get("total_decrease", 0)])
-            writer.writerow(["Runtime平均变化率(%)", runtime_summary.get("avg_change_pct", 0)])
-            writer.writerow(["Runtime最大增加阶段", runtime_summary.get("max_increase_rule", "N/A")])
-            writer.writerow(["Runtime最大增加率(%)", runtime_summary.get("max_increase_pct", 0)])
-            writer.writerow(["Runtime最大减少阶段", runtime_summary.get("max_decrease_rule", "N/A")])
-            writer.writerow(["Runtime最大减少率(%)", runtime_summary.get("max_decrease_pct", 0)])
-            writer.writerow([])
+            if runtime_summary:
+                writer.writerow(["=== Runtime 统计 ==="])
+                writer.writerow(["Runtime增加阶段数", runtime_summary.get("total_increase", 0)])
+                writer.writerow(["Runtime减少阶段数", runtime_summary.get("total_decrease", 0)])
+                writer.writerow(["Runtime平均变化率(%)", runtime_summary.get("avg_change_pct", 0)])
+                writer.writerow(["Runtime最大增加阶段", runtime_summary.get("max_increase_rule", "N/A")])
+                writer.writerow(["Runtime最大增加率(%)", runtime_summary.get("max_increase_pct", 0)])
+                writer.writerow(["Runtime最大减少阶段", runtime_summary.get("max_decrease_rule", "N/A")])
+                writer.writerow(["Runtime最大减少率(%)", runtime_summary.get("max_decrease_pct", 0)])
+                writer.writerow([])
         
         # 写入Memory统计
         if compare_dimension in ['memory', 'both']:
             memory_summary = summary.get("memory", {})
-            writer.writerow(["=== Memory 统计 ==="])
-            writer.writerow(["Memory增加阶段数", memory_summary.get("total_increase", 0)])
-            writer.writerow(["Memory减少阶段数", memory_summary.get("total_decrease", 0)])
-            writer.writerow(["Memory平均变化率(%)", memory_summary.get("avg_change_pct", 0)])
-            writer.writerow(["Memory最大增加阶段", memory_summary.get("max_increase_rule", "N/A")])
-            writer.writerow(["Memory最大增加率(%)", memory_summary.get("max_increase_pct", 0)])
-            writer.writerow(["Memory最大减少阶段", memory_summary.get("max_decrease_rule", "N/A")])
-            writer.writerow(["Memory最大减少率(%)", memory_summary.get("max_decrease_pct", 0)])
-            writer.writerow([])
+            if memory_summary:
+                writer.writerow(["=== Memory 统计 ==="])
+                writer.writerow(["Memory增加阶段数", memory_summary.get("total_increase", 0)])
+                writer.writerow(["Memory减少阶段数", memory_summary.get("total_decrease", 0)])
+                writer.writerow(["Memory平均变化率(%)", memory_summary.get("avg_change_pct", 0)])
+                writer.writerow(["Memory最大增加阶段", memory_summary.get("max_increase_rule", "N/A")])
+                writer.writerow(["Memory最大增加率(%)", memory_summary.get("max_increase_pct", 0)])
+                writer.writerow(["Memory最大减少阶段", memory_summary.get("max_decrease_rule", "N/A")])
+                writer.writerow(["Memory最大减少率(%)", memory_summary.get("max_decrease_pct", 0)])
+                writer.writerow([])
         
         # 写入详细对比数据
         writer.writerow(["=== 各阶段详细对比 ==="])

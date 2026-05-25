@@ -1721,7 +1721,7 @@ function buildSortedList(rulesComparison, type, isIncrease) {
     if (!rulesComparison || rulesComparison.length === 0) return [];
     
     const list = rulesComparison
-        .filter(r => r.has_data && r[`${type}_change_pct`] !== null)
+        .filter(r => r.has_data && r[`${type}_change_pct`] !== null && r[`${type}_change_pct`] !== undefined)
         .filter(r => isIncrease ? r[`${type}_change_pct`] > 0 : r[`${type}_change_pct`] < 0)
         .map(r => ({
             rule: r.rule_name,
@@ -1966,17 +1966,43 @@ function renderFilteredTable(filteredData) {
             if (rule.runtime_status === 'decrease') return '⬇️ 减少';
             return '➖ 不变';
         };
+        
+        // 安全获取数值，处理 null/undefined
+        const runtime1 = rule.runtime1 !== null && rule.runtime1 !== undefined ? rule.runtime1.toFixed(2) : 'N/A';
+        const runtime2 = rule.runtime2 !== null && rule.runtime2 !== undefined ? rule.runtime2.toFixed(2) : 'N/A';
+        const runtimeDiff = rule.runtime_diff !== null && rule.runtime_diff !== undefined ? rule.runtime_diff.toFixed(2) : 'N/A';
+        const runtimeChangePct = rule.runtime_change_pct !== null && rule.runtime_change_pct !== undefined ? rule.runtime_change_pct.toFixed(2) + '%' : 'N/A';
+        
+        const memory1 = rule.memory1 !== null && rule.memory1 !== undefined ? rule.memory1.toFixed(2) : 'N/A';
+        const memory2 = rule.memory2 !== null && rule.memory2 !== undefined ? rule.memory2.toFixed(2) : 'N/A';
+        const memoryDiff = rule.memory_diff !== null && rule.memory_diff !== undefined ? rule.memory_diff.toFixed(2) : 'N/A';
+        const memoryChangePct = rule.memory_change_pct !== null && rule.memory_change_pct !== undefined ? rule.memory_change_pct.toFixed(2) + '%' : 'N/A';
+        
+        const runtimeClass = () => {
+            if (!rule.has_data) return '';
+            if (rule.runtime_change_pct > 0) return 'status-increase';
+            if (rule.runtime_change_pct < 0) return 'status-decrease';
+            return '';
+        };
+        
+        const memoryClass = () => {
+            if (!rule.has_data) return '';
+            if (rule.memory_change_pct > 0) return 'status-increase';
+            if (rule.memory_change_pct < 0) return 'status-decrease';
+            return '';
+        };
+        
         return `
             <tr>
-                <td style="text-align:left; font-weight:500;">${rule.rule_name}</td>
-                <td>${rule.runtime1 !== null ? rule.runtime1.toFixed(2) : 'N/A'}</td>
-                <td>${rule.runtime2 !== null ? rule.runtime2.toFixed(2) : 'N/A'}</td>
-                <td>${rule.runtime_diff !== null ? rule.runtime_diff.toFixed(2) : 'N/A'}</td>
-                <td class="${rule.runtime_change_pct > 0 ? 'status-increase' : (rule.runtime_change_pct < 0 ? 'status-decrease' : '')}">${rule.runtime_change_pct !== null ? rule.runtime_change_pct.toFixed(2) + '%' : 'N/A'}</td>
-                <td>${rule.memory1 !== null ? rule.memory1.toFixed(2) : 'N/A'}</td>
-                <td>${rule.memory2 !== null ? rule.memory2.toFixed(2) : 'N/A'}</td>
-                <td>${rule.memory_diff !== null ? rule.memory_diff.toFixed(2) : 'N/A'}</td>
-                <td class="${rule.memory_change_pct > 0 ? 'status-increase' : (rule.memory_change_pct < 0 ? 'status-decrease' : '')}">${rule.memory_change_pct !== null ? rule.memory_change_pct.toFixed(2) + '%' : 'N/A'}</td>
+                <td style="text-align:left; font-weight:500;">${escapeHtml(rule.rule_name)}</td>
+                <td>${runtime1}</td>
+                <td>${runtime2}</td>
+                <td>${runtimeDiff}</td>
+                <td class="${runtimeClass()}">${runtimeChangePct}</td>
+                <td>${memory1}</td>
+                <td>${memory2}</td>
+                <td>${memoryDiff}</td>
+                <td class="${memoryClass()}">${memoryChangePct}</td>
                 <td>${statusText()}</td>
             </tr>
         `;
@@ -1994,81 +2020,107 @@ function displayCompareResult(result) {
     }
     
     const summary = result.summary;
+    const compareDimension = result.compare_dimension || 'both';
+    const compareRuntime = compareDimension === 'runtime' || compareDimension === 'both';
+    const compareMemory = compareDimension === 'memory' || compareDimension === 'both';
     
     if (isAllRules) {
-        const runtimeSummary = summary.runtime || {};
-        const memorySummary = summary.memory || {};
+        const runtimeSummary = compareRuntime ? (summary.runtime || {}) : {};
+        const memorySummary = compareMemory ? (summary.memory || {}) : {};
         const rulesComparison = result.rules_comparison || [];
         
         currentFilteredData = rulesComparison;
         
-        const runtimeIncreaseList = buildSortedList(rulesComparison, 'runtime', true);
-        const runtimeDecreaseList = buildSortedList(rulesComparison, 'runtime', false);
-        const memoryIncreaseList = buildSortedList(rulesComparison, 'memory', true);
-        const memoryDecreaseList = buildSortedList(rulesComparison, 'memory', false);
+        // 构建排序列表
+        const runtimeIncreaseList = compareRuntime ? buildSortedList(rulesComparison, 'runtime', true) : [];
+        const runtimeDecreaseList = compareRuntime ? buildSortedList(rulesComparison, 'runtime', false) : [];
+        const memoryIncreaseList = compareMemory ? buildSortedList(rulesComparison, 'memory', true) : [];
+        const memoryDecreaseList = compareMemory ? buildSortedList(rulesComparison, 'memory', false) : [];
         
         const compareSummary = document.getElementById('compareSummary');
+        // 在 displayCompareResult 函数中，更新统计卡片的显示
         if (compareSummary) {
-            compareSummary.innerHTML = `
-                <div class="stat-item" id="statRuntimeIncrease">
-                    <div class="stat-value status-increase">${runtimeSummary.total_increase || 0}</div>
-                    <div class="stat-label">Runtime增加阶段</div>
-                </div>
-                <div class="stat-item" id="statRuntimeDecrease">
-                    <div class="stat-value status-decrease">${runtimeSummary.total_decrease || 0}</div>
-                    <div class="stat-label">Runtime减少阶段</div>
-                </div>
-                <div class="stat-item" id="statMemoryIncrease">
-                    <div class="stat-value status-increase">${memorySummary.total_increase || 0}</div>
-                    <div class="stat-label">Memory增加阶段</div>
-                </div>
-                <div class="stat-item" id="statMemoryDecrease">
-                    <div class="stat-value status-decrease">${memorySummary.total_decrease || 0}</div>
-                    <div class="stat-label">Memory减少阶段</div>
-                </div>
-                <div class="stat-item" id="statRuntimeAvg">
-                    <div class="stat-value">${runtimeSummary.avg_change_pct || 0}%</div>
-                    <div class="stat-label">Runtime平均变化率</div>
-                </div>
-                <div class="stat-item" id="statMemoryAvg">
-                    <div class="stat-value">${memorySummary.avg_change_pct || 0}%</div>
-                    <div class="stat-label">Memory平均变化率</div>
-                </div>
-                <div class="stat-item" id="statRuntimeMaxInc">
-                    <div class="stat-value">${runtimeSummary.max_increase_pct.toFixed(2) || 0}%</div>
-                    <div class="stat-label">Runtime最大增加</div>
-                </div>
-                <div class="stat-item" id="statRuntimeMaxDec">
-                    <div class="stat-value">${runtimeSummary.max_decrease_pct.toFixed(2) || 0}%</div>
-                    <div class="stat-label">Runtime最大减少</div>
-                </div>
-                <div class="stat-item" id="statMemoryMaxInc">
-                    <div class="stat-value">${memorySummary.max_increase_pct.toFixed(2) || 0}%</div>
-                    <div class="stat-label">Memory最大增加</div>
-                </div>
-                <div class="stat-item" id="statMemoryMaxDec">
-                    <div class="stat-value">${memorySummary.max_decrease_pct.toFixed(2) || 0}%</div>
-                    <div class="stat-label">Memory最大减少</div>
-                </div>
-            `;
+            let summaryHtml = '';
+            
+            if (compareRuntime) {
+                const maxIncPct = runtimeSummary.max_increase_pct !== undefined && runtimeSummary.max_increase_pct !== null 
+                    ? runtimeSummary.max_increase_pct.toFixed(2) : '0';
+                const maxDecPct = runtimeSummary.max_decrease_pct !== undefined && runtimeSummary.max_decrease_pct !== null 
+                    ? Math.abs(runtimeSummary.max_decrease_pct).toFixed(2) : '0';
+                
+                summaryHtml += `
+                    <div class="stat-item" id="statRuntimeIncrease">
+                        <div class="stat-value status-increase">${runtimeSummary.total_increase || 0}</div>
+                        <div class="stat-label">Runtime增加阶段</div>
+                    </div>
+                    <div class="stat-item" id="statRuntimeDecrease">
+                        <div class="stat-value status-decrease">${runtimeSummary.total_decrease || 0}</div>
+                        <div class="stat-label">Runtime减少阶段</div>
+                    </div>
+                    <div class="stat-item" id="statRuntimeAvg">
+                        <div class="stat-value">${runtimeSummary.avg_change_pct || 0}%</div>
+                        <div class="stat-label">Runtime平均变化率</div>
+                    </div>
+                    <div class="stat-item" id="statRuntimeMaxInc">
+                        <div class="stat-value">${maxIncPct}%</div>
+                        <div class="stat-label">Runtime最大增加</div>
+                    </div>
+                    <div class="stat-item" id="statRuntimeMaxDec">
+                        <div class="stat-value">${maxDecPct}%</div>
+                        <div class="stat-label">Runtime最大减少</div>
+                    </div>
+                `;
+            }
+            
+            if (compareMemory) {
+                const maxIncPct = memorySummary.max_increase_pct !== undefined && memorySummary.max_increase_pct !== null 
+                    ? memorySummary.max_increase_pct.toFixed(2) : '0';
+                const maxDecPct = memorySummary.max_decrease_pct !== undefined && memorySummary.max_decrease_pct !== null 
+                    ? Math.abs(memorySummary.max_decrease_pct).toFixed(2) : '0';
+                
+                summaryHtml += `
+                    <div class="stat-item" id="statMemoryIncrease">
+                        <div class="stat-value status-increase">${memorySummary.total_increase || 0}</div>
+                        <div class="stat-label">Memory增加阶段</div>
+                    </div>
+                    <div class="stat-item" id="statMemoryDecrease">
+                        <div class="stat-value status-decrease">${memorySummary.total_decrease || 0}</div>
+                        <div class="stat-label">Memory减少阶段</div>
+                    </div>
+                    <div class="stat-item" id="statMemoryAvg">
+                        <div class="stat-value">${memorySummary.avg_change_pct || 0}%</div>
+                        <div class="stat-label">Memory平均变化率</div>
+                    </div>
+                    <div class="stat-item" id="statMemoryMaxInc">
+                        <div class="stat-value">${maxIncPct}%</div>
+                        <div class="stat-label">Memory最大增加</div>
+                    </div>
+                    <div class="stat-item" id="statMemoryMaxDec">
+                        <div class="stat-value">${maxDecPct}%</div>
+                        <div class="stat-label">Memory最大减少</div>
+                    </div>
+                `;
+            }
+            
+            compareSummary.innerHTML = summaryHtml;
         }
         
         const compareTableHeader = document.getElementById('compareTableHeader');
         if (compareTableHeader) {
-            compareTableHeader.innerHTML = `
-                <tr>
-                    <th>阶段名称</th>
-                    <th>Runtime(基准)</th>
-                    <th>Runtime(对比)</th>
-                    <th>Runtime差值</th>
-                    <th>Runtime变化率(%)</th>
-                    <th>Memory(基准)</th>
-                    <th>Memory(对比)</th>
-                    <th>Memory差值</th>
-                    <th>Memory变化率(%)</th>
-                    <th>状态</th>
-                </tr>
-            `;
+            let headerHtml = '<tr>';
+            headerHtml += '<th>阶段名称</th>';
+            
+            if (compareRuntime) {
+                headerHtml += '<th>Runtime(基准)</th><th>Runtime(对比)</th><th>Runtime差值</th><th>Runtime变化率(%)</th>';
+            }
+            
+            if (compareMemory) {
+                headerHtml += '<th>Memory(基准)</th><th>Memory(对比)</th><th>Memory差值</th><th>Memory变化率(%)</th>';
+            }
+            
+            headerHtml += '<th>状态</th>';
+            headerHtml += '</tr>';
+            compareTableHeader.innerHTML = headerHtml;
         }
         
         addTableFilter();
