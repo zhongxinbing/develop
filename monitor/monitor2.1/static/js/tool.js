@@ -1364,103 +1364,6 @@ function displayCompareResult(result) {
 }
 
 
-function addTableFilter() {
-    const compareResultArea = document.getElementById('compareResultArea');
-    if (!compareResultArea) return;
-    if (document.getElementById('tableFilterInput')) return;
-    const tableContainer = compareResultArea.querySelector('.table-container');
-    if (!tableContainer) return;
-    const filterBar = document.createElement('div');
-    filterBar.className = 'table-filter-bar';
-    filterBar.style.cssText = `display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem; padding: 0.75rem 1rem; background: rgba(15, 23, 42, 0.6); border-radius: var(--radius-lg); flex-wrap: wrap;`;
-    filterBar.innerHTML = `<div><span>🔍</span><input type="text" id="tableFilterInput" placeholder="筛选阶段名称..." style="width: 250px; padding: 0.5rem 0.75rem; background: rgba(0,0,0,0.3); border: 1px solid var(--border); border-radius: var(--radius-md); color: var(--text-primary);"></div>
-        <div><span>📊 显示:</span><select id="filterStatusSelect" style="padding: 0.5rem 0.75rem; background: rgba(0,0,0,0.3); border: 1px solid var(--border); border-radius: var(--radius-md); color: var(--text-primary);"><option value="all">全部阶段</option><option value="increase">仅显示增加</option><option value="decrease">仅显示减少</option><option value="no_data">仅显示无数据</option></select></div>
-        <div><span>📈 排序:</span><select id="filterSortSelect" style="padding: 0.5rem 0.75rem; background: rgba(0,0,0,0.3); border: 1px solid var(--border); border-radius: var(--radius-md); color: var(--text-primary);"><option value="none">无排序</option><option value="runtime_inc">Runtime 增加最多</option><option value="runtime_dec">Runtime 减少最多</option><option value="memory_inc">Memory 增加最多</option><option value="memory_dec">Memory 减少最多</option></select></div>
-        <button id="clearTableFilterBtn" class="btn btn-secondary" style="padding: 0.5rem 1rem;">清除筛选</button>
-        <span id="filterResultCount" style="color: var(--text-muted); font-size: 0.75rem;">共 0 条</span>`;
-    tableContainer.parentNode.insertBefore(filterBar, tableContainer);
-    const filterInput = document.getElementById('tableFilterInput');
-    const statusSelect = document.getElementById('filterStatusSelect');
-    const sortSelect = document.getElementById('filterSortSelect');
-    const clearBtn = document.getElementById('clearTableFilterBtn');
-    if (filterInput) filterInput.addEventListener('input', debounce(() => { compareState.currentFilterText = filterInput.value; applyTableFilter(); }, 300));
-    if (statusSelect) statusSelect.addEventListener('change', () => applyTableFilter());
-    if (sortSelect) sortSelect.addEventListener('change', () => applyTableFilter());
-    if (clearBtn) clearBtn.addEventListener('click', () => { if (filterInput) filterInput.value = ''; if (statusSelect) statusSelect.value = 'all'; if (sortSelect) sortSelect.value = 'none'; compareState.currentFilterText = ''; applyTableFilter(); });
-}
-
-function applyTableFilter() {
-    if (!compareState.currentFilteredData.length) return;
-    const filterText = compareState.currentFilterText.toLowerCase();
-    const statusFilter = document.getElementById('filterStatusSelect')?.value || 'all';
-    const sortBy = document.getElementById('filterSortSelect')?.value || 'none';
-    const compareDimension = document.getElementById('compareDimensionSelect')?.value || 'both';
-    const compareRuntime = compareDimension === 'runtime' || compareDimension === 'both';
-    const compareMemory = compareDimension === 'memory' || compareDimension === 'both';
-    let filtered = [...compareState.currentFilteredData];
-    if (filterText) filtered = filtered.filter(rule => rule.rule_name && rule.rule_name.toLowerCase().includes(filterText));
-    if (statusFilter !== 'all') {
-        filtered = filtered.filter(rule => {
-            if (statusFilter === 'increase') return rule.runtime_change_pct > 0;
-            if (statusFilter === 'decrease') return rule.runtime_change_pct < 0;
-            if (statusFilter === 'no_data') return !rule.has_data;
-            return true;
-        });
-    }
-    if (sortBy !== 'none') {
-        filtered.sort((a, b) => {
-            switch (sortBy) {
-                case 'runtime_inc': return (b.runtime_change_pct || -Infinity) - (a.runtime_change_pct || -Infinity);
-                case 'runtime_dec': return (a.runtime_change_pct || Infinity) - (b.runtime_change_pct || Infinity);
-                case 'memory_inc': return (b.memory_change_pct || -Infinity) - (a.memory_change_pct || -Infinity);
-                case 'memory_dec': return (a.memory_change_pct || Infinity) - (b.memory_change_pct || Infinity);
-                default: return 0;
-            }
-        });
-    }
-    renderFilteredTable(filtered, compareRuntime, compareMemory);
-    const countSpan = document.getElementById('filterResultCount');
-    if (countSpan) countSpan.textContent = `共 ${filtered.length} 条`;
-}
-
-function renderFilteredTable(filteredData, compareRuntime, compareMemory) {
-    const tbody = document.getElementById('compareTableBody');
-    if (!tbody) return;
-    tbody.innerHTML = filteredData.map(rule => {
-        const statusText = () => {
-            if (!rule.has_data) return '无数据';
-            if (compareRuntime && compareMemory) {
-                if (rule.runtime_status === 'increase' || rule.memory_status === 'increase') return '⬆️ 增加';
-                if (rule.runtime_status === 'decrease' || rule.memory_status === 'decrease') return '⬇️ 减少';
-                return '➖ 不变';
-            } else if (compareRuntime) {
-                if (rule.runtime_status === 'increase') return '⬆️ 增加';
-                if (rule.runtime_status === 'decrease') return '⬇️ 减少';
-                return '➖ 不变';
-            } else if (compareMemory) {
-                if (rule.memory_status === 'increase') return '⬆️ 增加';
-                if (rule.memory_status === 'decrease') return '⬇️ 减少';
-                return '➖ 不变';
-            }
-            return '无数据';
-        };
-        const runtime1 = rule.runtime1 !== null && rule.runtime1 !== undefined ? rule.runtime1.toFixed(2) : 'N/A';
-        const runtime2 = rule.runtime2 !== null && rule.runtime2 !== undefined ? rule.runtime2.toFixed(2) : 'N/A';
-        const runtimeDiff = rule.runtime_diff !== null && rule.runtime_diff !== undefined ? rule.runtime_diff.toFixed(2) : 'N/A';
-        const runtimeChangePct = rule.runtime_change_pct !== null && rule.runtime_change_pct !== undefined ? rule.runtime_change_pct.toFixed(2) + '%' : 'N/A';
-        const memory1 = rule.memory1 !== null && rule.memory1 !== undefined ? rule.memory1.toFixed(2) : 'N/A';
-        const memory2 = rule.memory2 !== null && rule.memory2 !== undefined ? rule.memory2.toFixed(2) : 'N/A';
-        const memoryDiff = rule.memory_diff !== null && rule.memory_diff !== undefined ? rule.memory_diff.toFixed(2) : 'N/A';
-        const memoryChangePct = rule.memory_change_pct !== null && rule.memory_change_pct !== undefined ? rule.memory_change_pct.toFixed(2) + '%' : 'N/A';
-        const runtimeClass = () => { if (!rule.has_data) return ''; if (rule.runtime_change_pct > 0) return 'status-increase'; if (rule.runtime_change_pct < 0) return 'status-decrease'; return ''; };
-        const memoryClass = () => { if (!rule.has_data) return ''; if (rule.memory_change_pct > 0) return 'status-increase'; if (rule.memory_change_pct < 0) return 'status-decrease'; return ''; };
-        let rowHtml = `<tr><td style="text-align:left; font-weight:500;">${escapeHtml(rule.rule_name)}</td>`;
-        if (compareRuntime) rowHtml += `<td>${runtime1}</td><td>${runtime2}</td><td>${runtimeDiff}</td><td class="${runtimeClass()}">${runtimeChangePct}</td>`;
-        if (compareMemory) rowHtml += `<td>${memory1}</td><td>${memory2}</td><td>${memoryDiff}</td><td class="${memoryClass()}">${memoryChangePct}</td>`;
-        rowHtml += `<td>${statusText()}</td></tr>`;
-        return rowHtml;
-    }).join('');
-}
 
 async function exportCompareResult() {
     if (!compareState.currentResult) { showNotification('没有可导出的对比结果', true); return; }
@@ -2086,8 +1989,6 @@ function bindEvents() {
     if (backToHomeBtn) backToHomeBtn.addEventListener('click', backToHome);
 }
 
-// 全局图表实例
-// let customCharts = {};
 // 初始化自定义曲线图图表
 function initCustomCharts() {
     const runtimeDom = document.getElementById('custom-chart-runtime');

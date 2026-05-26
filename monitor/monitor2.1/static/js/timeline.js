@@ -475,7 +475,10 @@ function refreshTimelineCharts() {
     renderTimelineChart('memory', 'memories', '#10b981', 'Memory (MB)');
     updateTimelineChartTypeButtons();
     
+    // 添加图表 resize 确保正确显示
     setTimeout(() => {
+        if (charts.runtime) charts.runtime.resize();
+        if (charts.memory) charts.memory.resize();
         addLegendControlButtons(ChartManager.get('chart-runtime'));
     }, 100);
 }

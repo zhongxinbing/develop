@@ -166,47 +166,60 @@ def get_elint_performance(original_path, jsonDataFile):
 
 
 def get_elint_data(jsonDataFile, original_path):
-    # 获取绝对路径
-    jsonDataFile = Path(jsonDataFile).resolve()
-    lastCaseData = load_json(jsonDataFile)
-    # print(lastCaseData)
-    # 如果 json 的路径不存在则从新获取
-    if not jsonDataFile.exists() or lastCaseData == {}:
-        log("数据不存在，重新获取。。。")
-        newCaseData = get_elint_performance(original_path, jsonDataFile)
+    """
+    获取 elint 数据，支持增量更新
+    
+    参数:
+        jsonDataFile: JSON数据文件路径（可以是字符串或Path对象）
+        original_path: 原始数据文件路径
+    """
+    # 统一转换为 Path 对象
+    jsonDataFile = Path(jsonDataFile) if isinstance(jsonDataFile, str) else jsonDataFile
+    jsonPath = jsonDataFile.resolve() if jsonDataFile else None
+    
+    # 检查文件是否存在
+    if jsonPath and jsonPath.exists():
+        lastCaseData = load_json(jsonPath)
     else:
-        # 如果存在 json 文件,获取上一次的数据
+        lastCaseData = {}
+        log("JSON文件不存在，将创建新文件")
+    
+    # 如果 json 文件不存在或数据为空，则重新获取
+    if not jsonPath or not jsonPath.exists() or lastCaseData == {}:
+        log("数据不存在，重新获取...")
+        newCaseData = get_elint_performance(original_path, jsonPath)
+    else:
+        # 如果存在 json 文件，获取上一次的数据
         if "dataFiles" not in lastCaseData:
             lastDataFiles = []
-        elif lastCaseData["dataFiles"] == None:
+        elif lastCaseData["dataFiles"] is None:
             lastDataFiles = []
         else:
             lastDataFiles = lastCaseData["dataFiles"]
-        # print("lastDataFiles: ",lastDataFiles)
+        
         # 获取当前所有的 txt 文件
         currentDataFiles = sorted(find(original_path, maxdepth=3, name_pattern=r"^\d{8}_[^/]+\.txt$", file_type="f"))
-        # 最新 currentDataFiles 中存在的文件路径
+        # 新增的文件路径
         addDataFiles = list(set(currentDataFiles) - set(lastDataFiles))
 
         # 如果有新增，则更新数据
         if len(addDataFiles) != 0:
-            newCaseData = get_date_from_txt_signal(addDataFiles,lastCaseData)
+            newCaseData = get_date_from_txt_signal(addDataFiles, lastCaseData)
             
             # 合并并去重
             newDataFiles = list(dict.fromkeys(currentDataFiles + lastDataFiles))
             newCaseData["dataFiles"] = sorted(newDataFiles)
-            save_json(jsonDataFile, newCaseData)
+            save_json(jsonPath, newCaseData)
         else:
             log("数据不需要更新")
             # 数据没有新增、并且保持不变
             newCaseData = lastCaseData
 
+    # 移除临时字段
     if "dataFiles" in newCaseData:
         del newCaseData["dataFiles"]
 
     return newCaseData
-
-
 
 
 def git_pull():

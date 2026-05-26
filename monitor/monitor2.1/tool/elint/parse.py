@@ -47,25 +47,28 @@ def parse_project_data(project_data: Dict, project_id: str) -> Dict:
             
             if rule_info and isinstance(rule_info, dict):
                 if 'thread_metrics' in rule_info and isinstance(rule_info['thread_metrics'], dict):
-                    new_threads = set(str(k) for k in rule_info['thread_metrics'].keys())
+                    # 多线程格式：遍历所有线程
+                    for thread_key in rule_info['thread_metrics'].keys():
+                        new_threads.add(str(thread_key))
                 else:
-                    new_threads = {normalize_thread_key(rule_info.get('cores', 0))}
+                    # 单线程格式：只有线程0
+                    new_threads.add('0')
             
-            # 初始化缺失的线程
+            # 初始化缺失的线程数据结构
             for thread_key in current_threads | new_threads:
                 if thread_key not in rule_data[rule]['thread_metrics']:
                     rule_data[rule]['thread_metrics'][thread_key] = {
-                        'runtimes': [None] * idx,
-                        'memories': [None] * idx,
-                        'cores': [None] * idx
+                        'runtimes': [],
+                        'memories': [],
+                        'cores': []
                     }
-            
-            # 扩展现有线程数据
-            for thread_key in rule_data[rule]['thread_metrics'].keys():
+                # 确保每个线程的数据列表长度与日期索引对齐
                 thread_info = rule_data[rule]['thread_metrics'][thread_key]
                 while len(thread_info['runtimes']) <= idx:
                     thread_info['runtimes'].append(None)
+                while len(thread_info['memories']) <= idx:
                     thread_info['memories'].append(None)
+                while len(thread_info['cores']) <= idx:
                     thread_info['cores'].append(None)
             
             if not rule_info:
@@ -73,36 +76,38 @@ def parse_project_data(project_data: Dict, project_id: str) -> Dict:
             
             # 解析线程数据
             if 'thread_metrics' in rule_info and isinstance(rule_info['thread_metrics'], dict):
+                # 多线程格式
                 for thread_key, thread_values in rule_info['thread_metrics'].items():
                     thread_key = str(thread_key)
                     if thread_key not in rule_data[rule]['thread_metrics']:
                         rule_data[rule]['thread_metrics'][thread_key] = {
-                            'runtimes': [None] * idx,
-                            'memories': [None] * idx,
-                            'cores': [None] * idx
+                            'runtimes': [None] * len(sorted_dates),
+                            'memories': [None] * len(sorted_dates),
+                            'cores': [None] * len(sorted_dates)
                         }
                     rule_data[rule]['thread_metrics'][thread_key]['runtimes'][idx] = thread_values.get('runtime')
                     rule_data[rule]['thread_metrics'][thread_key]['memories'][idx] = thread_values.get('memory')
                     rule_data[rule]['thread_metrics'][thread_key]['cores'][idx] = thread_values.get('cores')
             else:
-                thread_key = normalize_thread_key(rule_info.get('cores', 0))
+                # 单线程格式 - 当作线程0处理
+                thread_key = '0'
                 if thread_key not in rule_data[rule]['thread_metrics']:
                     rule_data[rule]['thread_metrics'][thread_key] = {
-                        'runtimes': [None] * idx,
-                        'memories': [None] * idx,
-                        'cores': [None] * idx
+                        'runtimes': [None] * len(sorted_dates),
+                        'memories': [None] * len(sorted_dates),
+                        'cores': [None] * len(sorted_dates)
                     }
                 rule_data[rule]['thread_metrics'][thread_key]['runtimes'][idx] = rule_info.get('runtime')
                 rule_data[rule]['thread_metrics'][thread_key]['memories'][idx] = rule_info.get('memory')
-                rule_data[rule]['thread_metrics'][thread_key]['cores'][idx] = int(thread_key)
+                rule_data[rule]['thread_metrics'][thread_key]['cores'][idx] = int(rule_info.get('cores', 0))
         
-        # 排序线程数
-        thread_counts = sorted([int(k) for k in rule_data[rule]['thread_metrics'].keys()])
-        thread_counts = [str(x) for x in thread_counts]
-        rule_data[rule]['thread_counts'] = thread_counts
+        # 构建 thread_counts（所有线程ID）
+        thread_counts = [int(k) for k in rule_data[rule]['thread_metrics'].keys()]
+        thread_counts.sort()
+        rule_data[rule]['thread_counts'] = [str(x) for x in thread_counts]
         
-        # 设置默认线程
-        default_thread = '0' if '0' in rule_data[rule]['thread_metrics'] else (thread_counts[0] if thread_counts else None)
+        # 设置默认线程（优先线程0，否则第一个线程）
+        default_thread = '0' if '0' in rule_data[rule]['thread_metrics'] else (rule_data[rule]['thread_counts'][0] if rule_data[rule]['thread_counts'] else None)
         if default_thread:
             rule_data[rule]['runtimes'] = rule_data[rule]['thread_metrics'][default_thread]['runtimes']
             rule_data[rule]['memories'] = rule_data[rule]['thread_metrics'][default_thread]['memories']
@@ -119,8 +124,6 @@ def parse_project_data(project_data: Dict, project_id: str) -> Dict:
         'rules': all_rules,
         'rule_data': rule_data
     }
-
-
 def refresh_parsed_projects(current_projects_data: Dict) -> Tuple[Dict, List]:
     """刷新解析后的项目数据"""
     global parsed_projects, project_list
