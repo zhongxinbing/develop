@@ -1,5 +1,5 @@
 /**
- * 数据对比模块
+ * 数据对比模块 - 修复版
  */
 
 // 对比全局变量
@@ -14,18 +14,14 @@ let compareState = {
 // ==================================================
 // 配置管理
 // ==================================================
-// 工具函数
+
 function escapeHtml(text) {
     if (!text) return '';
     const div = document.createElement('div');
     div.textContent = text;
     return div.innerHTML;
 }
-/**
- * 加载对比配置
- * @param {string} projectId - 项目ID
- * @returns {Promise<object>} 配置对象
- */
+
 async function loadCompareConfig(projectId) {
     if (!projectId) return {};
     
@@ -39,11 +35,6 @@ async function loadCompareConfig(projectId) {
     return {};
 }
 
-/**
- * 应用配置到表单
- * @param {object} config - 配置对象
- * @returns {boolean} 是否应用成功
- */
 function applyCompareConfigToForm(config) {
     if (!config || Object.keys(config).length === 0) return false;
     
@@ -68,12 +59,6 @@ function applyCompareConfigToForm(config) {
     return applied;
 }
 
-/**
- * 保存对比配置到服务器
- * @param {string} projectId - 项目ID
- * @param {object} config - 配置对象
- * @returns {Promise<boolean>} 是否保存成功
- */
 async function saveCompareConfig(projectId, config) {
     if (!projectId) return false;
     
@@ -101,10 +86,6 @@ async function saveCompareConfig(projectId, config) {
 // 数据加载
 // ==================================================
 
-/**
- * 加载对比日期列表
- * @param {string} projectId - 项目ID
- */
 async function loadCompareDates(projectId) {
     if (!projectId) {
         updateCompareControlsState(false);
@@ -163,10 +144,6 @@ async function loadCompareDates(projectId) {
     }
 }
 
-/**
- * 加载对比规则列表
- * @param {string} projectId - 项目ID
- */
 async function loadCompareRules(projectId) {
     if (!projectId) {
         updateCompareControlsState(false);
@@ -198,10 +175,6 @@ async function loadCompareRules(projectId) {
     }
 }
 
-/**
- * 项目切换时加载配置
- * @param {string} projectId - 项目ID
- */
 async function onCompareProjectChange(projectId) {
     if (!projectId) {
         updateCompareControlsState(false);
@@ -219,10 +192,6 @@ async function onCompareProjectChange(projectId) {
 // 控件状态
 // ==================================================
 
-/**
- * 更新对比页面控件的禁用状态
- * @param {boolean} hasCase - 是否有case
- */
 function updateCompareControlsState(hasCase) {
     const controls = [
         'compareModeSelect', 'compareRuleSelect', 'compareDate1', 'compareDate2',
@@ -258,10 +227,6 @@ function updateCompareControlsState(hasCase) {
 // 对比执行
 // ==================================================
 
-/**
- * 获取当前表单配置
- * @returns {object} 配置对象
- */
 function getCurrentCompareConfig() {
     return {
         tolerance_runtime: parseFloat(document.getElementById('toleranceRuntime').value) || 0,
@@ -273,9 +238,6 @@ function getCurrentCompareConfig() {
     };
 }
 
-/**
- * 执行对比
- */
 async function executeCompare() {
     const projectId = document.getElementById('compareCaseSelect')?.value;
     if (!projectId) {
@@ -349,16 +311,9 @@ async function executeCompare() {
 }
 
 // ==================================================
-// 结果展示
+// 结果展示 - 修复版（表头对齐）
 // ==================================================
 
-/**
- * 构建排序列表
- * @param {Array} rulesComparison - 阶段对比列表
- * @param {string} type - 类型 (runtime/memory)
- * @param {boolean} isIncrease - 是否增加
- * @returns {Array} 排序后的列表
- */
 function buildSortedList(rulesComparison, type, isIncrease) {
     if (!rulesComparison?.length) return [];
     
@@ -389,6 +344,7 @@ function buildStatsTooltipHtml(items, metricName, trend) {
     html += `</div></div>`;
     return html;
 }
+
 function buildSingleStatsTooltipHtml(items, metricName, trend) {
     if (!items || items.length === 0) return `<div style="padding: 8px 12px;">暂无${metricName}${trend}数据点</div>`;
     const sign = trend === '增加' ? '+' : '';
@@ -410,7 +366,7 @@ function buildSingleStatsTooltipHtml(items, metricName, trend) {
 }
 
 /**
- * 显示对比结果
+ * 显示对比结果 - 修复表头对齐问题
  * @param {object} result - 对比结果
  */
 function displayCompareResult(result) {
@@ -447,7 +403,6 @@ function displayCompareResult(result) {
                 <div class="stat-item"><div class="stat-value">${runtimeSummary.max_decrease_pct ? Math.abs(runtimeSummary.max_decrease_pct).toFixed(2) + '%' : '0%'}</div><div class="stat-label">Runtime最大减少</div></div>
             `;
             
-            // 添加tooltip
             const increaseCard = runtimeStatsContainer.children[0];
             const decreaseCard = runtimeStatsContainer.children[1];
             if (increaseCard && runtimeSummary.increase_list?.length) {
@@ -488,18 +443,25 @@ function displayCompareResult(result) {
             memoryStatsRow.style.display = 'none';
         }
         
-        // 渲染表头
+        // 渲染表头 - 修复对齐问题：确保表头列数与数据列数一致
         const compareTableHeader = document.getElementById('compareTableHeader');
         if (compareTableHeader) {
             let headerHtml = '<tr>';
-            headerHtml += '<th>阶段名称</th>';
+            headerHtml += '<th style="text-align:center;">阶段名称</th>';
             if (compareRuntime) {
-                headerHtml += '<th>Runtime(基准)</th><th>Runtime(对比)</th><th>Runtime差值</th><th>Runtime变化率(%)</th>';
+                headerHtml += '<th style="text-align:center;">Runtime(基准)</th>';
+                headerHtml += '<th style="text-align:center;">Runtime(对比)</th>';
+                headerHtml += '<th style="text-align:center;">Runtime差值</th>';
+                headerHtml += '<th style="text-align:center;">Runtime变化率(%)</th>';
             }
             if (compareMemory) {
-                headerHtml += '<th>Memory(基准)</th><th>Memory(对比)</th><th>Memory差值</th><th>Memory变化率(%)</th>';
+                headerHtml += '<th style="text-align:center;">Memory(基准)</th>';
+                headerHtml += '<th style="text-align:center;">Memory(对比)</th>';
+                headerHtml += '<th style="text-align:center;">Memory差值</th>';
+                headerHtml += '<th style="text-align:center;">Memory变化率(%)</th>';
             }
-            headerHtml += '<th>状态</th></tr>';
+            headerHtml += '<th style="text-align:center;">状态</th>';
+            headerHtml += '</tr>';
             compareTableHeader.innerHTML = headerHtml;
         }
         
@@ -557,16 +519,25 @@ function displayCompareResult(result) {
             memoryStatsRow.style.display = 'none';
         }
         
-        // 渲染表头
+        // 渲染表头 - 单阶段（修复对齐）
         const compareTableHeader = document.getElementById('compareTableHeader');
         if (compareTableHeader) {
             let headerHtml = '<tr>';
-            headerHtml += '<th>序号</th><th>日期</th>';
+            headerHtml += '<th style="text-align:center;">序号</th>';
+            headerHtml += '<th style="text-align:center;">日期</th>';
             if (compareRuntime) {
-                headerHtml += '<th>Runtime(基准)</th><th>Runtime(对比)</th><th>Runtime差值</th><th>Runtime变化率(%)</th><th>Runtime状态</th>';
+                headerHtml += '<th style="text-align:center;">Runtime(基准)</th>';
+                headerHtml += '<th style="text-align:center;">Runtime(对比)</th>';
+                headerHtml += '<th style="text-align:center;">Runtime差值</th>';
+                headerHtml += '<th style="text-align:center;">Runtime变化率(%)</th>';
+                headerHtml += '<th style="text-align:center;">Runtime状态</th>';
             }
             if (compareMemory) {
-                headerHtml += '<th>Memory(基准)</th><th>Memory(对比)</th><th>Memory差值</th><th>Memory变化率(%)</th><th>Memory状态</th>';
+                headerHtml += '<th style="text-align:center;">Memory(基准)</th>';
+                headerHtml += '<th style="text-align:center;">Memory(对比)</th>';
+                headerHtml += '<th style="text-align:center;">Memory差值</th>';
+                headerHtml += '<th style="text-align:center;">Memory变化率(%)</th>';
+                headerHtml += '<th style="text-align:center;">Memory状态</th>';
             }
             headerHtml += '</tr>';
             compareTableHeader.innerHTML = headerHtml;
@@ -575,28 +546,30 @@ function displayCompareResult(result) {
         const tableBody = document.getElementById('compareTableBody');
         if (tableBody) {
             tableBody.innerHTML = comparisons.map(comp => {
-                let rowHtml = `<tr><td>${comp.index + 1}</td><td>${comp.date}</td>`;
+                let rowHtml = '<tr>';
+                rowHtml += `<td style="text-align:center;">${comp.index + 1}</td>`;
+                rowHtml += `<td style="text-align:center;">${escapeHtml(comp.date)}</td>`;
                 
                 if (compareRuntime) {
                     const runtimeStatusClass = comp.runtime_status === 'increase' ? 'status-increase' : 
                                                (comp.runtime_status === 'decrease' ? 'status-decrease' : '');
                     rowHtml += `
-                        <td>${comp.runtime1 !== null ? comp.runtime1.toFixed(2) : 'N/A'}</td>
-                        <td>${comp.runtime2 !== null ? comp.runtime2.toFixed(2) : 'N/A'}</td>
-                        <td>${comp.runtime_diff !== null ? comp.runtime_diff.toFixed(2) : 'N/A'}</td>
-                        <td class="${runtimeStatusClass}">${comp.runtime_change_pct !== null ? comp.runtime_change_pct.toFixed(2) + '%' : 'N/A'}</td>
-                        <td>${comp.runtime_status || 'N/A'}</td>
+                        <td style="text-align:center;">${comp.runtime1 !== null ? comp.runtime1.toFixed(2) : 'N/A'}</td>
+                        <td style="text-align:center;">${comp.runtime2 !== null ? comp.runtime2.toFixed(2) : 'N/A'}</td>
+                        <td style="text-align:center;">${comp.runtime_diff !== null ? comp.runtime_diff.toFixed(2) : 'N/A'}</td>
+                        <td style="text-align:center;" class="${runtimeStatusClass}">${comp.runtime_change_pct !== null ? comp.runtime_change_pct.toFixed(2) + '%' : 'N/A'}</td>
+                        <td style="text-align:center;">${comp.runtime_status || 'N/A'}</td>
                     `;
                 }
                 if (compareMemory) {
                     const memoryStatusClass = comp.memory_status === 'increase' ? 'status-increase' : 
                                               (comp.memory_status === 'decrease' ? 'status-decrease' : '');
                     rowHtml += `
-                        <td>${comp.memory1 !== null ? comp.memory1.toFixed(2) : 'N/A'}</td>
-                        <td>${comp.memory2 !== null ? comp.memory2.toFixed(2) : 'N/A'}</td>
-                        <td>${comp.memory_diff !== null ? comp.memory_diff.toFixed(2) : 'N/A'}</td>
-                        <td class="${memoryStatusClass}">${comp.memory_change_pct !== null ? comp.memory_change_pct.toFixed(2) + '%' : 'N/A'}</td>
-                        <td>${comp.memory_status || 'N/A'}</td>
+                        <td style="text-align:center;">${comp.memory1 !== null ? comp.memory1.toFixed(2) : 'N/A'}</td>
+                        <td style="text-align:center;">${comp.memory2 !== null ? comp.memory2.toFixed(2) : 'N/A'}</td>
+                        <td style="text-align:center;">${comp.memory_diff !== null ? comp.memory_diff.toFixed(2) : 'N/A'}</td>
+                        <td style="text-align:center;" class="${memoryStatusClass}">${comp.memory_change_pct !== null ? comp.memory_change_pct.toFixed(2) + '%' : 'N/A'}</td>
+                        <td style="text-align:center;">${comp.memory_status || 'N/A'}</td>
                     `;
                 }
                 rowHtml += '</tr>';
@@ -609,12 +582,9 @@ function displayCompareResult(result) {
 }
 
 // ==================================================
-// 表格筛选
+// 表格筛选 - 修复版（保持列对齐）
 // ==================================================
 
-/**
- * 添加表格筛选器
- */
 function addTableFilter() {
     const compareResultArea = document.getElementById('compareResultArea');
     if (!compareResultArea) return;
@@ -698,7 +668,7 @@ function addTableFilter() {
 }
 
 /**
- * 应用表格筛选
+ * 应用表格筛选 - 修复版（保持列对齐）
  */
 function applyTableFilter() {
     if (!compareState.currentFilteredData.length) return;
@@ -720,8 +690,14 @@ function applyTableFilter() {
     
     if (statusFilter !== 'all') {
         filtered = filtered.filter(rule => {
-            if (statusFilter === 'increase') return rule.runtime_change_pct > 0;
-            if (statusFilter === 'decrease') return rule.runtime_change_pct < 0;
+            if (statusFilter === 'increase') {
+                return (compareRuntime && rule.runtime_change_pct > 0) ||
+                       (compareMemory && !compareRuntime && rule.memory_change_pct > 0);
+            }
+            if (statusFilter === 'decrease') {
+                return (compareRuntime && rule.runtime_change_pct < 0) ||
+                       (compareMemory && !compareRuntime && rule.memory_change_pct < 0);
+            }
             if (statusFilter === 'no_data') return !rule.has_data;
             return true;
         });
@@ -746,7 +722,7 @@ function applyTableFilter() {
 }
 
 /**
- * 渲染筛选后的表格
+ * 渲染筛选后的表格 - 修复版（保持列对齐）
  * @param {Array} filteredData - 筛选后的数据
  * @param {boolean} compareRuntime - 是否对比Runtime
  * @param {boolean} compareMemory - 是否对比Memory
@@ -798,27 +774,29 @@ function renderFilteredTable(filteredData, compareRuntime, compareMemory) {
             return '';
         };
         
-        let rowHtml = `<tr><td style="text-align:left; font-weight:500;">${escapeHtml(rule.rule_name)}</td>`;
+        let rowHtml = `<tr>`;
+        rowHtml += `<td style="text-align:center; font-weight:500;">${escapeHtml(rule.rule_name)}</td>`;
         
         if (compareRuntime) {
             rowHtml += `
-                <td>${runtime1}</td>
-                <td>${runtime2}</td>
-                <td>${runtimeDiff}</td>
-                <td class="${runtimeClass()}">${runtimeChangePct}</td>
+                <td style="text-align:center;">${runtime1}</td>
+                <td style="text-align:center;">${runtime2}</td>
+                <td style="text-align:center;">${runtimeDiff}</td>
+                <td style="text-align:center;" class="${runtimeClass()}">${runtimeChangePct}</td>
             `;
         }
         
         if (compareMemory) {
             rowHtml += `
-                <td>${memory1}</td>
-                <td>${memory2}</td>
-                <td>${memoryDiff}</td>
-                <td class="${memoryClass()}">${memoryChangePct}</td>
+                <td style="text-align:center;">${memory1}</td>
+                <td style="text-align:center;">${memory2}</td>
+                <td style="text-align:center;">${memoryDiff}</td>
+                <td style="text-align:center;" class="${memoryClass()}">${memoryChangePct}</td>
             `;
         }
         
-        rowHtml += `<td>${statusText()}</td></tr>`;
+        rowHtml += `<td style="text-align:center;">${statusText()}</td>`;
+        rowHtml += `</tr>`;
         return rowHtml;
     }).join('');
 }
@@ -827,9 +805,6 @@ function renderFilteredTable(filteredData, compareRuntime, compareMemory) {
 // 导出功能
 // ==================================================
 
-/**
- * 导出对比结果
- */
 async function exportCompareResult() {
     if (!compareState.currentResult) {
         showNotification('没有可导出的对比结果', true);
@@ -864,11 +839,7 @@ async function exportCompareResult() {
 // 事件绑定
 // ==================================================
 
-/**
- * 绑定对比事件
- */
 function bindCompareEvents() {
-    // 项目选择
     const compareCaseSelect = document.getElementById('compareCaseSelect');
     if (compareCaseSelect) {
         compareCaseSelect.addEventListener('change', async (e) => {
@@ -881,7 +852,6 @@ function bindCompareEvents() {
         });
     }
     
-    // 模式切换
     const compareModeSelect = document.getElementById('compareModeSelect');
     if (compareModeSelect) {
         compareModeSelect.addEventListener('change', (e) => {
@@ -897,11 +867,9 @@ function bindCompareEvents() {
         }
     }
     
-    // 执行对比
     const executeCompareBtn = document.getElementById('executeCompareBtn');
     if (executeCompareBtn) executeCompareBtn.addEventListener('click', executeCompare);
     
-    // 导出结果
     const exportCompareBtn = document.getElementById('exportCompareBtn');
     if (exportCompareBtn) exportCompareBtn.addEventListener('click', exportCompareResult);
 }

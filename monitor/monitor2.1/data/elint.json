@@ -125,17 +125,17 @@
                 "Analysis": {
                     "thread_metrics": {
                         "0": {
-                            "runtime": 1.66,
+                            "runtime": 30,
                             "memory": 2.77,
                             "cores": 0
                         },
                         "2": {
-                            "runtime": 1.2,
+                            "runtime": 10,
                             "memory": 3.1,
                             "cores": 2
                         },
                         "4": {
-                            "runtime": 18.5,
+                            "runtime": 50,
                             "memory": 20.0,
                             "cores": 4
                         }

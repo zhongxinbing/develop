@@ -1,5 +1,5 @@
 /**
- * 多线程对比模块
+ * 多线程对比模块 - 统一折线图样式
  */
 
 // 多线程全局变量
@@ -110,12 +110,6 @@ async function loadMultiRules(projectId) {
         }
         
         // 搜索功能
-        // const searchInput = document.getElementById('multiRuleSearch');
-        // if (searchInput) {
-        //     searchInput.removeEventListener('input', multiRuleSearchHandler);
-        //     searchInput.addEventListener('input', multiRuleSearchHandler);
-        // }
-        // 移除旧的监听器，添加新的
         const searchInput = document.getElementById('multiRuleSearch');
         if (searchInput) {
             // 移除旧监听器
@@ -198,11 +192,11 @@ let multiRuleSearchHandler = debounce(() => {
 }, 300);
 
 // ==================================================
-// 图表渲染
+// 图表渲染 - 统一折线图样式
 // ==================================================
 
 /**
- * 渲染多线程图表
+ * 渲染多线程图表（单日期对比线程性能）
  */
 function renderMultiThreadChart() {
     if (!multiState.currentData || multiState.currentData.length === 0) return;
@@ -232,24 +226,43 @@ function renderMultiThreadChart() {
     const isRuntime = multiState.currentChartType === 'runtime';
     const chartData = isRuntime ? filteredData.map(d => d.runtime) : filteredData.map(d => d.memory);
     const yAxisName = isRuntime ? 'Runtime (秒)' : 'Memory (MB)';
-    const color = isRuntime ? '#6366f1' : '#10b981';
     const chart = isRuntime ? ChartManager.get('chart-multi-runtime') : ChartManager.get('chart-multi-memory');
     
     if (!chart) return;
+    
+    // 计算所有值用于参考线
+    const allValues = chartData.filter(v => v !== null && v !== undefined && v > 0);
+    const avgValue = allValues.length > 0 
+        ? (allValues.reduce((a, b) => a + b, 0) / allValues.length).toFixed(1) 
+        : 0;
+    
+    // 计算参考线值
+    let referenceValue = avgValue;
+    if (!isRuntime && allValues.length > 0) {
+        const sorted = [...allValues].sort((a, b) => a - b);
+        const mid = Math.floor(sorted.length / 2);
+        referenceValue = sorted[mid];
+    }
+    
+    // 工具提示格式化
+    const tooltipFormatter = (params) => {
+        if (!params?.length) return '';
+        const unit = isRuntime ? '秒' : 'MB';
+        let value = params[0].value;
+        let displayValue = (value !== null && value !== undefined) ? 
+            (isRuntime ? value.toFixed(2) : (value >= 1024 ? (value / 1024).toFixed(2) + ' GB' : value.toFixed(2))) : 'N/A';
+        return `${params[0].axisValue} 线程: ${displayValue} ${unit}`;
+    };
     
     const option = {
         backgroundColor: 'transparent',
         title: { show: false },
         tooltip: {
             trigger: 'axis',
-            formatter: (params) => {
-                if (!params?.length) return '';
-                const unit = isRuntime ? '秒' : 'MB';
-                let value = params[0].value;
-                let displayValue = (value !== null && value !== undefined) ? 
-                    (isRuntime ? value.toFixed(2) : (value >= 1024 ? (value / 1024).toFixed(2) + ' GB' : value.toFixed(2))) : 'N/A';
-                return `${params[0].axisValue} 线程: ${displayValue} ${unit}`;
-            }
+            backgroundColor: 'rgba(30, 41, 59, 0.95)',
+            borderWidth: 1,
+            textStyle: { color: '#f1f5f9', fontSize: 12 },
+            formatter: tooltipFormatter
         },
         xAxis: {
             type: 'category',
@@ -273,18 +286,46 @@ function renderMultiThreadChart() {
             },
             splitLine: { lineStyle: { color: 'rgba(71, 85, 105, 0.3)', type: 'dashed' } }
         },
-        series: [{
-            type: 'line',
-            name: isRuntime ? 'Runtime' : 'Memory',
-            data: chartData,
-            smooth: true,
-            lineStyle: { width: 3, color: color },
-            symbolSize: 8,
-            symbol: 'circle',
-            areaStyle: { opacity: 0.1, color: color },
-            connectNulls: false,
-            itemStyle: { color: color }
-        }],
+        series: [
+            {
+                type: 'line',
+                name: isRuntime ? 'Runtime' : 'Memory',
+                data: chartData,
+                smooth: false,
+                lineStyle: { width: 3, color: isRuntime ? '#6366f1' : '#10b981' },
+                symbolSize: 8,
+                symbol: 'circle',
+                areaStyle: { opacity: 0.1, color: isRuntime ? '#6366f1' : '#10b981' },
+                connectNulls: false,
+                itemStyle: { color: isRuntime ? '#6366f1' : '#10b981' }
+            },
+            {
+                name: '平均值',
+                type: 'line',
+                data: new Array(threads.length).fill(parseFloat(avgValue)),
+                lineStyle: { width: 1.5, color: '#f59e0b', type: 'dashed' },
+                symbol: 'none',
+                tooltip: { show: false }
+            },
+            {
+                name: '参考线',
+                type: 'line',
+                data: new Array(threads.length).fill(parseFloat(referenceValue)),
+                lineStyle: { width: 1, color: '#06b6d4', type: 'dotted' },
+                symbol: 'none',
+                tooltip: { show: true, formatter: () => `📊 参考线: ${referenceValue.toFixed(2)} ${isRuntime ? '秒' : 'MB'}` }
+            }
+        ],
+        legend: {
+            data: [isRuntime ? 'Runtime' : 'Memory', '平均值', '参考线'],
+            selected: { [isRuntime ? 'Runtime' : 'Memory']: true, '平均值': true, '参考线': true },
+            textStyle: { color: '#cbd5e1', fontSize: 11 },
+            orient: 'horizontal',
+            right: 10,
+            top: 0,
+            itemWidth: 25,
+            itemHeight: 12
+        },
         grid: { top: 50, bottom: 30, left: 65, right: 40, containLabel: true },
         toolbox: {
             feature: {
@@ -337,6 +378,162 @@ function updateMultiStats(threadsData) {
     }
 }
 
+/**
+ * 渲染多日期对比图表（趋势图）- 统一折线图样式
+ */
+function renderMultiThreadComparisonChart() {
+    if (!multiState.currentData || multiState.currentData.length === 0) return;
+    
+    const isRuntime = multiState.currentChartType === 'runtime';
+    const chart = isRuntime ? ChartManager.get('chart-multi-runtime') : ChartManager.get('chart-multi-memory');
+    if (!chart) return;
+    
+    const dates = multiState.currentData.map(d => d.date);
+    const selectedThreadIds = multiState.selectedThreads;
+    const yAxisName = isRuntime ? 'Runtime (秒)' : 'Memory (MB)';
+    const palette = ['#6366f1', '#f59e0b', '#10b981', '#ef4444', '#06b6d4', '#8b5cf6', '#ec4899', '#84cc16'];
+    
+    // 收集所有值用于参考线
+    let allValues = [];
+    const seriesList = selectedThreadIds.map((threadId, idx) => {
+        const values = multiState.currentData.map(dayData => {
+            const threadData = dayData.threads_data.find(t => t.threads.toString() === threadId);
+            const val = threadData ? (isRuntime ? threadData.runtime : threadData.memory) : null;
+            if (val !== null && val !== undefined && val > 0) allValues.push(val);
+            return val;
+        });
+        
+        const threadName = threadId === '0' ? '线程0' : `线程 ${threadId}`;
+        return {
+            name: threadName,
+            type: 'line',
+            data: values,
+            smooth: false,
+            lineStyle: { width: 2, color: palette[idx % palette.length] },
+            symbol: 'circle',
+            symbolSize: 6,
+            connectNulls: true,
+            areaStyle: { opacity: 0.08, color: palette[idx % palette.length] }
+        };
+    });
+    
+    // 计算平均值和参考线
+    const avgValue = allValues.length > 0 
+        ? (allValues.reduce((a, b) => a + b, 0) / allValues.length).toFixed(1) 
+        : 0;
+    
+    let referenceValue = avgValue;
+    if (!isRuntime && allValues.length > 0) {
+        const sorted = [...allValues].sort((a, b) => a - b);
+        const mid = Math.floor(sorted.length / 2);
+        referenceValue = sorted[mid];
+    }
+    
+    // 图例默认选中状态（默认只显示线程0）
+    const legendSelected = {};
+    seriesList.forEach((series, idx) => {
+        legendSelected[series.name] = (idx === 0);
+    });
+    legendSelected['平均值'] = true;
+    legendSelected['参考线'] = true;
+    
+    const option = {
+        backgroundColor: 'transparent',
+        tooltip: {
+            trigger: 'axis',
+            backgroundColor: 'rgba(30, 41, 59, 0.95)',
+            borderWidth: 1,
+            textStyle: { color: '#f1f5f9', fontSize: 12 },
+            formatter: (params) => {
+                if (!params?.length) return '';
+                const date = params[0].axisValue;
+                const rows = params.map(p => 
+                    `<div>${p.seriesName}: ${p.value !== null ? p.value.toFixed(2) : 'N/A'} ${isRuntime ? '秒' : 'MB'}</div>`
+                ).join('');
+                return `<strong>📅 ${date}</strong>${rows}`;
+            }
+        },
+        xAxis: {
+            type: 'category',
+            name: '日期',
+            data: dates,
+            axisLabel: { rotate: 30, color: '#94a3b8', fontSize: 11 },
+            axisLine: { lineStyle: { color: '#475569' } }
+        },
+        yAxis: {
+            type: 'value',
+            name: yAxisName,
+            nameTextStyle: { color: '#cbd5e1', fontSize: 12 },
+            axisLabel: {
+                color: '#94a3b8',
+                fontSize: 11,
+                formatter: (value) => {
+                    if (isRuntime) return value.toFixed(2);
+                    if (value >= 1024) return (value / 1024).toFixed(1) + ' GB';
+                    return value.toFixed(0);
+                }
+            },
+            splitLine: { lineStyle: { color: 'rgba(71, 85, 105, 0.3)', type: 'dashed' } }
+        },
+        series: [
+            ...seriesList,
+            {
+                name: '平均值',
+                type: 'line',
+                data: new Array(dates.length).fill(parseFloat(avgValue)),
+                lineStyle: { width: 1.5, color: '#f59e0b', type: 'dashed' },
+                symbol: 'none',
+                tooltip: { show: false }
+            },
+            {
+                name: '参考线',
+                type: 'line',
+                data: new Array(dates.length).fill(parseFloat(referenceValue)),
+                lineStyle: { width: 1, color: '#06b6d4', type: 'dotted' },
+                symbol: 'none',
+                tooltip: { show: true, formatter: () => `📊 参考线: ${referenceValue.toFixed(2)} ${isRuntime ? '秒' : 'MB'}` }
+            }
+        ],
+        legend: {
+            data: seriesList.map(s => s.name).concat(['平均值', '参考线']),
+            selected: legendSelected,
+            textStyle: { color: '#cbd5e1', fontSize: 11 },
+            orient: 'horizontal',
+            right: 10,
+            top: 0,
+            itemWidth: 25,
+            itemHeight: 12
+        },
+        grid: { left: '8%', right: '8%', top: '18%', bottom: '10%', containLabel: true },
+        toolbox: {
+            feature: {
+                saveAsImage: { title: '保存为图片' },
+                zoom: { title: { zoom: '区域缩放', back: '还原' } },
+                restore: { title: '重置' }
+            },
+            iconStyle: { borderColor: '#94a3b8' }
+        }
+    };
+    
+    chart.setOption(option, { notMerge: true });
+    setTimeout(() => chart.resize(), 50);
+}
+
+/**
+ * 选择最新日期
+ */
+async function selectLatestMultiDate() {
+    if (multiState.availableDates.length > 0) {
+        const latestDate = multiState.availableDates[multiState.availableDates.length - 1];
+        if (latestDate !== multiState.currentDate) {
+            multiState.currentDate = latestDate;
+            const currentDateSpan = document.getElementById('multiCurrentDate');
+            if (currentDateSpan) currentDateSpan.innerText = multiState.currentDate;
+            await loadMultiThreadData(multiState.currentProjectId, multiState.currentRule, multiState.currentDate);
+        }
+    }
+}
+
 // ==================================================
 // 图表类型切换
 // ==================================================
@@ -369,7 +566,6 @@ function updateMultiChartTypeButtons() {
     
     const runtimeContainer = document.getElementById('chart-multi-runtime');
     const memoryContainer = document.getElementById('chart-multi-memory');
-    
     if (runtimeContainer && memoryContainer) {
         if (multiState.currentChartType === 'runtime') {
             runtimeContainer.classList.remove('hidden');
@@ -380,15 +576,9 @@ function updateMultiChartTypeButtons() {
         }
     }
     
-    const chartCardTitle = document.getElementById('multiChartCardTitle');
-    if (chartCardTitle) {
-        chartCardTitle.innerText = multiState.currentChartType === 'runtime' 
-            ? '⏱️ Runtime 性能曲线' 
-            : '💾 Memory 使用曲线';
-    }
-    
-    if (multiState.currentData && multiState.currentData.length > 0) {
-        renderMultiThreadChart();
+    const multiChartCardTitle = document.getElementById('multiChartCardTitle');
+    if (multiChartCardTitle) {
+        multiChartCardTitle.innerText = multiState.currentChartType === 'runtime' ? '⏱️ Runtime 性能曲线' : '💾 Memory 使用曲线';
     }
 }
 
@@ -400,6 +590,13 @@ function selectMultiChartType(type) {
     if (multiState.currentChartType === type) return;
     multiState.currentChartType = type;
     updateMultiChartTypeButtons();
+    if (multiState.currentData && multiState.currentData.length > 0) {
+        if (Array.isArray(multiState.currentData) && multiState.currentData[0]?.date) {
+            renderMultiThreadComparisonChart();
+        } else {
+            renderMultiThreadChart();
+        }
+    }
 }
 
 // ==================================================
@@ -543,7 +740,11 @@ function confirmThreadSelection() {
         multiState.selectedThreads = [...multiState.availableThreads];
         showNotification('未选择任何线程，已自动全选');
     }
-    renderMultiThreadChart();
+    if (Array.isArray(multiState.currentData) && multiState.currentData[0]?.date) {
+        renderMultiThreadComparisonChart();
+    } else {
+        renderMultiThreadChart();
+    }
     closeThreadSelectorModal();
 }
 
@@ -686,92 +887,6 @@ async function loadMultiThreadDataForMultipleDates(projectId, ruleName, dates) {
         showNotification('加载多线程数据失败', true);
     } finally {
         showLoading(false);
-    }
-}
-
-/**
- * 渲染多日期对比图表
- */
-function renderMultiThreadComparisonChart() {
-    if (!multiState.currentData || multiState.currentData.length === 0) return;
-    
-    const isRuntime = multiState.currentChartType === 'runtime';
-    const chart = isRuntime ? ChartManager.get('chart-multi-runtime') : ChartManager.get('chart-multi-memory');
-    if (!chart) return;
-    
-    const dates = multiState.currentData.map(d => d.date);
-    const selectedThreadIds = multiState.selectedThreads;
-    const yAxisName = isRuntime ? 'Runtime (秒)' : 'Memory (MB)';
-    
-    const seriesList = selectedThreadIds.map((threadId, idx) => {
-        const values = multiState.currentData.map(dayData => {
-            const threadData = dayData.threads_data.find(t => t.threads.toString() === threadId);
-            return threadData ? (isRuntime ? threadData.runtime : threadData.memory) : null;
-        });
-        
-        const threadName = threadId === '0' ? '线程0' : `线程 ${threadId}`;
-        return {
-            name: threadName,
-            type: 'line',
-            data: values,
-            smooth: true,
-            lineStyle: { width: 2, color: getPaletteColor(idx) },
-            symbol: 'circle',
-            symbolSize: 6,
-            connectNulls: true
-        };
-    });
-    
-    const option = {
-        backgroundColor: 'transparent',
-        tooltip: {
-            trigger: 'axis',
-            formatter: (params) => {
-                if (!params?.length) return '';
-                const date = params[0].axisValue;
-                const rows = params.map(p => 
-                    `<div>${p.seriesName}: ${p.value !== null ? p.value.toFixed(2) : 'N/A'} ${isRuntime ? '秒' : 'MB'}</div>`
-                ).join('');
-                return `<strong>📅 ${date}</strong>${rows}`;
-            }
-        },
-        xAxis: {
-            type: 'category',
-            name: '日期',
-            data: dates,
-            axisLabel: { rotate: 30, color: '#94a3b8', fontSize: 11 },
-            axisLine: { lineStyle: { color: '#475569' } }
-        },
-        yAxis: ChartConfig.getYAxisConfig(yAxisName, isRuntime ? '' : 'MB'),
-        series: seriesList,
-        legend: ChartConfig.getLegendConfig(seriesList.map(s => s.name)),
-        grid: { left: '8%', right: '8%', top: '18%', bottom: '10%', containLabel: true },
-        toolbox: {
-            feature: {
-                saveAsImage: { title: '保存为图片' },
-                zoom: { title: { zoom: '区域缩放', back: '还原' } },
-                restore: { title: '重置' }
-            },
-            iconStyle: { borderColor: '#94a3b8' }
-        }
-    };
-    
-    chart.setOption(option, { notMerge: true });
-    setTimeout(() => chart.resize(), 50);
-}
-
-/**
- * 选择最新日期
- */
-async function selectLatestMultiDate() {
-    if (multiState.availableDates.length > 0) {
-        const latestDate = multiState.availableDates[multiState.availableDates.length - 1];
-        if (latestDate !== multiState.currentDate) {
-            multiState.currentDate = latestDate;
-            const currentDateSpan = document.getElementById('multiCurrentDate');
-            if (currentDateSpan) currentDateSpan.innerText = multiState.currentDate;
-            await loadMultiThreadData(multiState.currentProjectId, multiState.currentRule, multiState.currentDate);
-        }
     }
 }
 

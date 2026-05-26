@@ -1,22 +1,14 @@
 /**
- * 图表工具函数模块
+ * 图表工具函数模块 - 统一的折线图样式（带平均值和参考线）
  */
 
 // ==================================================
 // 图表实例管理
 // ==================================================
 
-// 全局图表实例存储
-// 全局图表实例存储
 const ChartManager = {
     charts: {},
     
-    /**
-     * 获取或创建图表实例
-     * @param {string} id - 容器ID
-     * @param {boolean} createIfNotExist - 是否创建新实例
-     * @returns {object} ECharts实例
-     */
     get(id, createIfNotExist = true) {
         if (!this.charts[id] && createIfNotExist) {
             const dom = document.getElementById(id);
@@ -35,19 +27,10 @@ const ChartManager = {
         return this.charts[id];
     },
     
-    /**
-     * 设置图表实例
-     * @param {string} id - 容器ID
-     * @param {object} chart - ECharts实例
-     */
     set(id, chart) {
         this.charts[id] = chart;
     },
     
-    /**
-     * 销毁图表实例
-     * @param {string} id - 容器ID
-     */
     dispose(id) {
         if (this.charts[id]) {
             this.charts[id].dispose();
@@ -55,9 +38,6 @@ const ChartManager = {
         }
     },
     
-    /**
-     * 调整所有图表大小
-     */
     resizeAll() {
         Object.values(this.charts).forEach(chart => {
             if (chart && !chart.isDisposed()) {
@@ -66,9 +46,6 @@ const ChartManager = {
         });
     },
     
-    /**
-     * 清空所有图表
-     */
     clearAll() {
         Object.values(this.charts).forEach(chart => {
             if (chart && !chart.isDisposed()) {
@@ -77,8 +54,9 @@ const ChartManager = {
         });
     }
 };
+
 // ==================================================
-// 图表配置生成器
+// 统一的图表配置生成器 - 带平均值和参考线
 // ==================================================
 
 const ChartConfig = {
@@ -209,7 +187,7 @@ const ChartConfig = {
     },
     
     /**
-     * 获取系列配置
+     * 获取系列配置 - 统一折线图样式
      * @param {string} name - 系列名称
      * @param {Array} data - 数据
      * @param {string} color - 颜色
@@ -221,7 +199,7 @@ const ChartConfig = {
             name: name,
             type: 'line',
             data: data,
-            smooth: options.smooth || false,
+            smooth: false,
             lineStyle: { width: 2, color: color },
             areaStyle: { opacity: 0.08, color: color },
             connectNulls: options.connectNulls || false,
@@ -246,8 +224,229 @@ const ChartConfig = {
             symbol: 'none',
             tooltip: { show: false }
         };
+    },
+    
+    /**
+     * 获取水平参考线配置
+     * @param {Array} dates - 日期数组
+     * @param {number} referenceValue - 参考线值
+     * @param {string} name - 线名称
+     * @param {string} color - 颜色
+     * @returns {object} 参考线配置
+     */
+    getReferenceLineConfig(dates, referenceValue, name = '参考线', color = '#06b6d4') {
+        return {
+            name: name,
+            type: 'line',
+            data: new Array(dates.length).fill(parseFloat(referenceValue)),
+            lineStyle: { width: 1, color: color, type: 'dotted' },
+            symbol: 'none',
+            tooltip: { show: true, formatter: () => `📊 ${name}: ${referenceValue.toFixed(2)}` }
+        };
+    },
+    
+    /**
+     * 获取完整的折线图配置（带平均值和参考线）
+     * @param {Array} dates - X轴日期数据
+     * @param {Array} seriesList - 系列列表
+     * @param {string} yAxisName - Y轴名称
+     * @param {number} avgValue - 平均值
+     * @param {number} referenceValue - 参考线值
+     * @param {object} legendSelected - 图例选中状态
+     * @param {Function} tooltipFormatter - 自定义tooltip格式化函数
+     * @returns {object} 完整的ECharts配置
+     */
+    getCompleteLineChartConfig(dates, seriesList, yAxisName, avgValue, referenceValue, legendSelected = {}, tooltipFormatter = null) {
+        // 构建系列列表，添加平均值和参考线
+        const allSeries = [...seriesList];
+        
+        if (avgValue !== null && avgValue !== undefined && !isNaN(avgValue)) {
+            allSeries.push(this.getAverageLineConfig(dates, avgValue));
+        }
+        
+        if (referenceValue !== null && referenceValue !== undefined && !isNaN(referenceValue)) {
+            allSeries.push(this.getReferenceLineConfig(dates, referenceValue));
+        }
+        
+        // 构建图例数据
+        const legendData = seriesList.map(s => s.name);
+        if (avgValue !== null && avgValue !== undefined && !isNaN(avgValue)) {
+            legendData.push('平均值');
+        }
+        if (referenceValue !== null && referenceValue !== undefined && !isNaN(referenceValue)) {
+            legendData.push('参考线');
+        }
+        
+        // 设置默认图例选中状态（默认只显示第一个系列）
+        const defaultSelected = {};
+        legendData.forEach((name, idx) => {
+            defaultSelected[name] = idx === 0;
+        });
+        // 平均值和参考线默认显示
+        if (avgValue !== null && avgValue !== undefined && !isNaN(avgValue)) {
+            defaultSelected['平均值'] = true;
+        }
+        if (referenceValue !== null && referenceValue !== undefined && !isNaN(referenceValue)) {
+            defaultSelected['参考线'] = true;
+        }
+        
+        const finalSelected = { ...defaultSelected, ...legendSelected };
+        
+        return {
+            backgroundColor: 'transparent',
+            tooltip: {
+                trigger: 'axis',
+                backgroundColor: 'rgba(30, 41, 59, 0.95)',
+                borderWidth: 1,
+                textStyle: { color: '#f1f5f9', fontSize: 12 },
+                formatter: tooltipFormatter
+            },
+            grid: {
+                left: '8%',
+                right: '8%',
+                top: '18%',
+                bottom: '10%',
+                containLabel: true
+            },
+            xAxis: {
+                type: 'category',
+                name: '日期',
+                data: dates,
+                axisLabel: {
+                    rotate: dates.length > 10 ? 30 : 0,
+                    color: '#94a3b8',
+                    fontSize: 11
+                },
+                axisLine: { lineStyle: { color: '#475569' } },
+                boundaryGap: false
+            },
+            yAxis: {
+                type: 'value',
+                name: yAxisName,
+                nameTextStyle: { color: '#cbd5e1', fontSize: 12 },
+                axisLabel: {
+                    color: '#94a3b8',
+                    fontSize: 11,
+                    formatter: (value) => {
+                        if (yAxisName.includes('MB') && value >= 1024) {
+                            return (value / 1024).toFixed(1) + ' GB';
+                        }
+                        return value.toFixed(2);
+                    }
+                },
+                splitLine: {
+                    lineStyle: { color: 'rgba(71, 85, 105, 0.3)', type: 'dashed' }
+                }
+            },
+            series: allSeries,
+            legend: {
+                data: legendData,
+                selected: finalSelected,
+                textStyle: { color: '#cbd5e1', fontSize: 11 },
+                orient: 'horizontal',
+                right: 10,
+                top: 0,
+                itemWidth: 25,
+                itemHeight: 12
+            },
+            toolbox: {
+                feature: {
+                    saveAsImage: { title: '保存为图片' },
+                    zoom: { title: { zoom: '区域缩放', back: '还原' } },
+                    restore: { title: '重置' }
+                },
+                iconStyle: { borderColor: '#94a3b8' },
+                right: 10,
+                bottom: 10
+            }
+        };
     }
 };
+
+// ==================================================
+// 工具提示相关函数
+// ==================================================
+
+let statsTooltipInstance = null;
+
+function initStatsTooltips() {
+    if (!statsTooltipInstance) {
+        statsTooltipInstance = document.createElement('div');
+        statsTooltipInstance.id = 'statsTooltip';
+        statsTooltipInstance.style.cssText = `
+            position: fixed;
+            visibility: hidden;
+            opacity: 0;
+            background: var(--bg-card);
+            border: 1px solid var(--primary);
+            border-radius: var(--radius-md);
+            padding: 0;
+            font-size: 0.7rem;
+            z-index: 10000;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(99, 102, 241, 0.3);
+            color: var(--text-primary);
+            pointer-events: none;
+            backdrop-filter: blur(8px);
+            transition: opacity 0.15s ease, visibility 0.15s ease;
+            max-width: 350px;
+            min-width: 220px;
+        `;
+        document.body.appendChild(statsTooltipInstance);
+    }
+    
+    const statItems = document.querySelectorAll('#compareRuntimeStats .stat-item, #compareMemoryStats .stat-item');
+    statItems.forEach(item => {
+        item.removeEventListener('mouseenter', handleStatsMouseEnter);
+        item.removeEventListener('mouseleave', handleStatsMouseLeave);
+        item.removeEventListener('mousemove', handleStatsMouseMove);
+        item.addEventListener('mouseenter', handleStatsMouseEnter);
+        item.addEventListener('mouseleave', handleStatsMouseLeave);
+        item.addEventListener('mousemove', handleStatsMouseMove);
+    });
+}
+
+function handleStatsMouseEnter(e) {
+    const item = e.currentTarget;
+    const tooltipHtml = item.getAttribute('data-tooltip-html');
+    if (tooltipHtml && tooltipHtml.trim() !== '') {
+        if (statsTooltipInstance) {
+            statsTooltipInstance.innerHTML = tooltipHtml;
+            statsTooltipInstance.style.visibility = 'visible';
+            statsTooltipInstance.style.opacity = '1';
+            updateTooltipPosition(e);
+        }
+    }
+}
+
+function handleStatsMouseLeave() {
+    if (statsTooltipInstance) {
+        statsTooltipInstance.style.visibility = 'hidden';
+        statsTooltipInstance.style.opacity = '0';
+    }
+}
+
+function handleStatsMouseMove(e) {
+    if (statsTooltipInstance && statsTooltipInstance.style.visibility === 'visible') {
+        updateTooltipPosition(e);
+    }
+}
+
+function updateTooltipPosition(e) {
+    if (!statsTooltipInstance) return;
+    const x = e.clientX + 15;
+    const y = e.clientY - 10;
+    const tooltipRect = statsTooltipInstance.getBoundingClientRect();
+    const viewportWidth = window.innerWidth;
+    const viewportHeight = window.innerHeight;
+    let left = x;
+    let top = y - tooltipRect.height;
+    if (left + tooltipRect.width > viewportWidth - 10) left = viewportWidth - tooltipRect.width - 10;
+    if (left < 10) left = 10;
+    if (top < 10) top = y + 20;
+    if (top + tooltipRect.height > viewportHeight - 10) top = viewportHeight - tooltipRect.height - 10;
+    statsTooltipInstance.style.left = left + 'px';
+    statsTooltipInstance.style.top = top + 'px';
+}
 
 // ==================================================
 // 图例控制按钮
@@ -255,14 +454,10 @@ const ChartConfig = {
 
 let legendControlsAdded = false;
 
-/**
- * 在图例中添加控制按钮（全选/反选）
- * @param {object} chart - ECharts实例
- */
-function addLegendControlButtons(chart) {
+function addLegendControlButtons(chart, chartId) {
     if (legendControlsAdded) return;
     
-    const legendContainer = document.querySelector('.echarts-legend');
+    const legendContainer = document.querySelector(`#${chartId} .echarts-legend`);
     if (!legendContainer) return;
     
     if (document.getElementById('legendControlButtons')) return;
@@ -350,13 +545,12 @@ function addLegendControlButtons(chart) {
     legendControlsAdded = true;
 }
 
-// 监听图表渲染完成
 function observeChartRendering(containerId, chart) {
     const container = document.getElementById(containerId);
     if (!container) return;
     
     const observer = new MutationObserver(() => {
-        addLegendControlButtons(chart);
+        addLegendControlButtons(chart, containerId);
     });
     observer.observe(container, { attributes: true, childList: true, subtree: true });
 }
@@ -365,28 +559,21 @@ function observeChartRendering(containerId, chart) {
 // 统计卡片更新
 // ==================================================
 
-/**
- * 更新统计卡片
- * @param {string} containerId - 容器ID
- * @param {Array} values - 数值数组
- * @param {string} unit - 单位
- * @param {string} label - 标签
- */
 function updateStatsCard(containerId, values, unit, label) {
     const container = document.getElementById(containerId);
     if (!container) return;
     
-    const valid = filterValidNumbers(values);
+    const valid = values.filter(v => v !== null && v !== undefined && !isNaN(v) && v > 0);
     
     if (valid.length === 0) {
         container.innerHTML = '<div class="stat-item"><div class="stat-value">-</div><div class="stat-label">暂无数据</div></div>';
         return;
     }
     
-    const total = calculateSum(valid);
+    const total = valid.reduce((a, b) => a + b, 0);
     const avg = (total / valid.length).toFixed(1);
-    const max = calculateMax(valid);
-    const min = calculateMin(valid);
+    const max = Math.max(...valid);
+    const min = Math.min(...valid);
     
     container.innerHTML = `
         <div class="stat-item"><div class="stat-value">${total.toFixed(1)}<span style="font-size:0.875rem;">${unit}</span></div><div class="stat-label">总${label}</div></div>
@@ -402,3 +589,4 @@ window.ChartConfig = ChartConfig;
 window.addLegendControlButtons = addLegendControlButtons;
 window.observeChartRendering = observeChartRendering;
 window.updateStatsCard = updateStatsCard;
+window.initStatsTooltips = initStatsTooltips;

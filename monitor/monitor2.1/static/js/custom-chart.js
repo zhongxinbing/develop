@@ -21,16 +21,15 @@ let customCharts = {};
 // 初始化自定义图表
 // ==================================================
 
+// 初始化自定义曲线图图表
 function initCustomCharts() {
     const runtimeDom = document.getElementById('custom-chart-runtime');
     const memoryDom = document.getElementById('custom-chart-memory');
     
-    if (runtimeDom) {
-        if (customCharts.runtime) customCharts.runtime.dispose();
+    if (runtimeDom && !customCharts.runtime) {
         customCharts.runtime = echarts.init(runtimeDom);
     }
-    if (memoryDom) {
-        if (customCharts.memory) customCharts.memory.dispose();
+    if (memoryDom && !customCharts.memory) {
         customCharts.memory = echarts.init(memoryDom);
     }
 }
@@ -441,17 +440,16 @@ function renderCustomChart(chartType, dataKey, color, yAxisName) {
             name: threadLabel,
             type: 'line',
             data: mappedValues,
-            smooth: true,
+            smooth: false,
             lineStyle: { width: 2, color: palette[index % palette.length] },
             areaStyle: { opacity: 0.08, color: palette[index % palette.length] },
-            connectNulls: true,
+            connectNulls: false,
             showSymbol: true,
             symbol: 'circle',
             symbolSize: 6
         });
     });
     
-    // 更新统计（只更新当前显示的图表类型对应的统计）
     if (chartType === customState.currentChartType) {
         const unit = dataKey === 'runtimes' ? '秒' : 'MB';
         const label = dataKey === 'runtimes' ? 'Runtime' : 'Memory';
@@ -462,14 +460,20 @@ function renderCustomChart(chartType, dataKey, color, yAxisName) {
         ? (allValues.reduce((a, b) => a + b, 0) / allValues.length).toFixed(1) 
         : 0;
     
-    // 图例默认选中状态（默认只显示线程0）
+    // 计算参考线值
+    let referenceValue = avgValue;
+    if (dataKey === 'memories' && allValues.length > 0) {
+        const sorted = [...allValues].sort((a, b) => a - b);
+        const mid = Math.floor(sorted.length / 2);
+        referenceValue = sorted[mid];
+    }
+    
     const legendSelected = {};
     threadIds.forEach(threadId => {
         const seriesName = threadId === '0' ? '线程0' : `线程 ${threadId}`;
         legendSelected[seriesName] = (threadId === '0');
     });
     
-    // 工具提示格式化
     const tooltipFormatter = (params) => {
         if (!params?.length) return '';
         const unit = dataKey === 'runtimes' ? '秒' : 'MB';
@@ -544,11 +548,19 @@ function renderCustomChart(chartType, dataKey, color, yAxisName) {
                 lineStyle: { width: 1.5, color: '#f59e0b', type: 'dashed' },
                 symbol: 'none',
                 tooltip: { show: false }
+            },
+            {
+                name: '参考线',
+                type: 'line',
+                data: new Array(dates.length).fill(parseFloat(referenceValue)),
+                lineStyle: { width: 1, color: '#06b6d4', type: 'dotted' },
+                symbol: 'none',
+                tooltip: { show: true, formatter: () => `📊 参考线: ${referenceValue.toFixed(2)} ${dataKey === 'runtimes' ? '秒' : 'MB'}` }
             }
         ],
         legend: {
-            data: seriesList.map(s => s.name),
-            selected: legendSelected,
+            data: seriesList.map(s => s.name).concat(['平均值', '参考线']),
+            selected: { ...legendSelected, '平均值': true, '参考线': true },
             textStyle: { color: '#cbd5e1', fontSize: 11 },
             orient: 'horizontal',
             right: 10,
@@ -573,7 +585,6 @@ function renderCustomChart(chartType, dataKey, color, yAxisName) {
         chart.setOption(option, { notMerge: true, lazyUpdate: false });
     }
 }
-
 function refreshCustomCharts() {
     if (!customState.currentRule) return;
     
@@ -599,61 +610,32 @@ function refreshCustomCharts() {
 // ==================================================
 
 async function fetchUserData(casePath) {
+    // 清空旧数据
+    customState.projectsData = {};
+    customState.currentProjectId = null;
+    customState.currentRule = null;
+    customState.selectedDates = [];
+    customState.cachedToolData = {};
+    customState.pendingSelectedDates = [];
     showLoading(true);
     const loadingIndicator = document.getElementById('customLoadingIndicator');
     if (loadingIndicator) loadingIndicator.style.display = 'block';
-    
     try {
-        const response = await fetch('/api/fetch_user_data', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ case_path: casePath })
-        });
-        
+        const response = await fetch('/api/fetch_user_data', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ case_path: casePath }) });
         const result = await response.json();
-        
         if (result.success) {
             customState.projectsData = result.data;
-            
             const projectIds = Object.keys(customState.projectsData);
             const caseSelect = document.getElementById('customCaseSelect');
-            
             if (caseSelect) {
-                caseSelect.innerHTML = '<option value="">-- 请选择项目 --</option>' + 
-                    projectIds.map(pid => `<option value="${pid}">${customState.projectsData[pid].project_name || pid}</option>`).join('');
+                caseSelect.innerHTML = '<option value="">-- 请选择项目 --</option>' + projectIds.map(pid => `<option value="${pid}">${customState.projectsData[pid].project_name || pid}</option>`).join('');
                 caseSelect.disabled = false;
             }
-            
-            // 如果有项目，自动选中第一个并刷新
-            if (projectIds.length > 0) {
-                customState.currentProjectId = projectIds[0];
-                if (caseSelect) caseSelect.value = projectIds[0];
-                
-                // 更新规则列表
-                updateCustomRuleSelect();
-                // 更新日期信息
-                updateCustomDateInfo();
-                // 更新图表类型按钮状态
-                updateCustomChartTypeButtons();
-                
-                // 初始化图表实例
-                initCustomCharts();
-            }
-            
             showNotification('用户数据加载成功');
             return result.data;
-        } else {
-            showNotification('加载失败: ' + (result.error || '未知错误'), true);
-            return null;
-        }
-    } catch (error) {
-        console.error('加载用户数据失败:', error);
-        showNotification('加载用户数据失败: ' + error.message, true);
-        return null;
-    } finally {
-        showLoading(false);
-        if (loadingIndicator) loadingIndicator.style.display = 'none';
-    }
+        } else { showNotification('加载失败: ' + (result.error || '未知错误'), true); return null; }
+    } catch (error) { console.error('加载用户数据失败:', error); showNotification('加载用户数据失败: ' + error.message, true); return null; }
+    finally { showLoading(false); if (loadingIndicator) loadingIndicator.style.display = 'none'; }
 }
 
 // ==================================================
