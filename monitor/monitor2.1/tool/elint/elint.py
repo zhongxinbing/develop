@@ -39,6 +39,7 @@ import csv
 from tool.elint.find import *
 from pathlib import Path
 from datetime import datetime
+import subprocess
 
 def save_json(json_path, data):
     """

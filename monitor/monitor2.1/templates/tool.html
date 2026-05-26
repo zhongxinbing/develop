@@ -5,12 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>{{ tool_name }} 性能监控系统</title>
     <script src="{{ url_for('static', filename='js/echarts.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/echarts.min.js') }}"></script>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/tool.css') }}">
-    
 </head>
 <body>
     <div class="app-container">
-        <!-- 侧边栏导航 -->
+        <!-- 侧边栏导航 - Flexbox 列布局 -->
         <aside class="sidebar">
             <div class="sidebar-header" id="backToHomeBtn">
                 <h1>
@@ -54,7 +54,7 @@
         <main class="main-content">
             <!-- ========== 时序曲线图视图 ========== -->
             <div id="timelineView" class="view-container active">
-                <!-- 控制栏 -->
+                <!-- 控制栏 - Flexbox 布局 -->
                 <div class="card">
                     <div class="card-header">
                         <div class="card-title">🎛️ 数据筛选</div>
@@ -86,19 +86,20 @@
                     </div>
                 </div>
 
-                <!-- 图表类型切换 -->
+                <!-- 图表区域 -->
                 <div class="card">
                     <div id="chartTypeButtons" class="chart-type-buttons">
-                            <button class="btn btn-primary chart-type-btn" data-type="runtime">⏱️ Runtime</button>
-                            <button class="btn btn-secondary chart-type-btn" data-type="memory">💾 Memory</button>
-                        </div>
+                        <button class="btn btn-primary chart-type-btn" data-type="runtime">⏱️ Runtime</button>
+                        <button class="btn btn-secondary chart-type-btn" data-type="memory">💾 Memory</button>
+                    </div>
                     <div class="card-header">
                         <div class="card-title" id="chartCardTitle">⏱️ Runtime 性能曲线</div>
                     </div>
                     <div id="chart-runtime" class="chart-container"></div>
                     <div id="chart-memory" class="chart-container hidden"></div>
                 </div>
-                <!-- 统计卡片 -->
+
+                <!-- 统计卡片 - Grid 布局 -->
                 <div class="card">
                     <div class="card-header">
                         <div class="card-title">📊 性能统计 - <span id="currentRuleName">未选择</span></div>
@@ -109,6 +110,7 @@
                     </div>
                     <div class="stats-grid" id="stats-main"></div>
                 </div>
+
                 <!-- 项目统计 -->
                 <div class="card">
                     <div class="card-header">
@@ -158,9 +160,9 @@
                 <!-- 图表区域 -->
                 <div class="multi-chart-card">
                     <div class="chart-type-buttons">
-                            <button class="btn btn-primary chart-type-btn" id="multiChartRuntimeBtn">⏱️ Runtime</button>
-                            <button class="btn btn-secondary chart-type-btn" id="multiChartMemoryBtn">💾 Memory</button>
-                        </div>
+                        <button class="btn btn-primary chart-type-btn" id="multiChartRuntimeBtn">⏱️ Runtime</button>
+                        <button class="btn btn-secondary chart-type-btn" id="multiChartMemoryBtn">💾 Memory</button>
+                    </div>
                     <div class="card-header">
                         <div class="card-title" id="multiChartCardTitle">⏱️ Runtime 性能曲线</div>
                     </div>
@@ -260,38 +262,20 @@
                             <div class="card-title" id="compareResultTitle">📈 对比结果</div>
                         </div>
                         
-                        <!-- Runtime 统计卡片行 -->
+                        <!-- 统计卡片行 - Grid 布局 -->
                         <div id="compareRuntimeStatsRow" class="stats-row-compare" style="margin-bottom: 1rem;">
-                            <h4 style="margin: 0 0 0.5rem 0; color: var(--primary-light); display: flex; align-items: center; gap: 0.5rem;">
-                                <span>⏱️</span> Runtime 统计
-                            </h4>
+                            <h4><span>⏱️</span> Runtime 统计</h4>
                             <div id="compareRuntimeStats" class="stats-grid"></div>
                         </div>
                         
-                        <!-- Memory 统计卡片行 -->
                         <div id="compareMemoryStatsRow" class="stats-row-compare" style="margin-bottom: 1rem;">
-                            <h4 style="margin: 0 0 0.5rem 0; color: var(--primary-light); display: flex; align-items: center; gap: 0.5rem;">
-                                <span>💾</span> Memory 统计
-                            </h4>
+                            <h4><span>💾</span> Memory 统计</h4>
                             <div id="compareMemoryStats" class="stats-grid"></div>
                         </div>
                         
                         <div class="table-container">
                             <table class="result-table">
-                                <thead id="compareTableHeader">
-                                    <tr>
-                                        <th>阶段名称</th>
-                                        <th>Runtime(基准)</th>
-                                        <th>Runtime(对比)</th>
-                                        <th>Runtime差值</th>
-                                        <th>Runtime变化率(%)</th>
-                                        <th>Memory(基准)</th>
-                                        <th>Memory(对比)</th>
-                                        <th>Memory差值</th>
-                                        <th>Memory变化率(%)</th>
-                                        <th>状态</th>
-                                    </tr>
-                                </thead>
+                                <thead id="compareTableHeader"></thead>
                                 <tbody id="compareTableBody"></tbody>
                             </table>
                         </div>
@@ -308,7 +292,6 @@
 
             <!-- ========== 自定义曲线图视图 ========== -->
             <div id="customView" class="view-container">
-                <!-- 用户输入区域 -->
                 <div class="card">
                     <div class="card-header">
                         <div class="card-title">📝 自定义数据加载</div>
@@ -326,11 +309,10 @@
                         </div>
                     </div>
                     <div class="config-hint" style="margin-top: 0.5rem; padding: 0.5rem; background: rgba(99, 102, 241, 0.1); border-radius: var(--radius-md);">
-                        💡 提示：输入用户数据的路径后点击确认，系统将获取数据并显示曲线图。数据会自动添加到项目数据中。
+                        💡 提示：输入用户数据的路径后点击确认，系统将获取数据并显示曲线图。
                     </div>
                 </div>
 
-                <!-- 加载状态指示 -->
                 <div id="customLoadingIndicator" class="card" style="display: none;">
                     <div style="text-align: center; padding: 1rem;">
                         <div class="spinner" style="width: 30px; height: 30px; margin: 0 auto 0.5rem;"></div>
@@ -338,28 +320,6 @@
                     </div>
                 </div>
 
-                <!-- 数据信息卡片 -->
-                <!-- <div id="customDataInfo" class="card" style="display: none;">
-                    <div class="card-header">
-                        <div class="card-title">📋 数据信息111</div>
-                    </div>
-                    <div class="control-bar">
-                        <div class="control-group">
-                            <label class="control-label">📁 当前项目</label>
-                            <span id="customProjectName" style="color: var(--primary-light);">-</span>
-                        </div>
-                        <div class="control-group">
-                            <label class="control-label">📅 可用日期</label>
-                            <span id="customAvailableDates" style="color: var(--primary-light);">-</span>
-                        </div>
-                        <div class="control-group">
-                            <label class="control-label">📋 可用阶段</label>
-                            <span id="customAvailableRules" style="color: var(--primary-light);">-</span>
-                        </div>
-                    </div>
-                </div> -->
-
-                <!-- 项目选择区域 -->
                 <div class="card">
                     <div class="card-header">
                         <div class="card-title">🎛️ 数据筛选</div>
@@ -391,7 +351,6 @@
                     </div>
                 </div>
 
-                <!-- 图表类型切换 -->
                 <div class="card">
                     <div id="customChartTypeButtons" class="chart-type-buttons">
                         <button class="btn btn-primary chart-type-btn" data-type="runtime">⏱️ Runtime</button>
@@ -404,7 +363,6 @@
                     <div id="custom-chart-memory" class="chart-container hidden"></div>
                 </div>
 
-                <!-- 统计卡片 -->
                 <div class="card">
                     <div class="card-header">
                         <div class="card-title">📊 性能统计 - <span id="customCurrentRuleName">未选择</span></div>
@@ -421,7 +379,7 @@
 
     <!-- ========== 模态框 ========== -->
     
-    <!-- 日期选择模态框（时序曲线图）- 带全选按钮 -->
+    <!-- 日期选择模态框 -->
     <div id="datePickerModal" class="modal hidden">
         <div class="modal-content">
             <h3 style="margin-bottom: 1rem;">📅 选择日期范围</h3>
@@ -478,7 +436,7 @@
         </div>
     </div>
 
-    <!-- 线程选择模态框 - 与日期选择器布局一致 -->
+    <!-- 线程选择模态框 -->
     <div id="threadSelectorModal" class="modal hidden">
         <div class="modal-content">
             <h3 style="margin-bottom: 1rem;">🧵 选择线程</h3>
@@ -505,80 +463,21 @@
     </div>
 
     <script>
-        // 传递给 JS 的数据
+        // 传递给 JS 的数据 - 只保留一处
         const projectsData = {{ projects_data_json | tojson }};
-
         const perf = {{ perf | tojson }};
         const toolId = '{{ tool_id }}';
         const toolName = '{{ tool_name }}';
         const initialMode = '{{ request.args.get("mode", "single") }}';
-        
-        // 全局变量
-        let currentProjectId = null;
-        let currentRule = null;
-        let selectedDates = [];
-        let availableDates = [];
-        let currentChartType = 'runtime';
-        let charts = {};
-        let cachedToolData = {};
-        let mrUpdateDates = {};
-        let currentDataVersion = '';
-        let currentMultiRule = null;
-        let currentMultiDate = null;
-        let currentMultiChartType = 'runtime';
-        let selectedMultiThreads = [];
-        let availableThreads = [];
-        let multiAvailableDates = [];
-        let currentMultiThreadData = [];
-        let currentCompareResult = null;
-        let currentFilteredData = [];
-        let currentFilterText = '';
-        let pendingMultiSelectedDates = [];
-        
-        // 自定义曲线图全局变量
-        let customProjectsData = {};
-        let customCurrentProjectId = null;
-        let customCurrentRule = null;
-        let customSelectedDates = [];
-        let customAvailableDates = [];
-        let customCurrentChartType = 'runtime';
-        let customCharts = {};
-        let customCachedToolData = {};
-        let customPendingSelectedDates = [];
-        
-        // 挂载全局函数供 onclick 使用
-        window.selectMultiChartType = function(type) {
-            if (currentMultiChartType === type) return;
-            currentMultiChartType = type;
-            updateMultiChartTypeButtons();
-        };
-        
-        window.openThreadSelectorModal = function() {
-            if (!availableThreads || availableThreads.length === 0) {
-                showNotification('暂无线程数据', true);
-                return;
-            }
-            buildThreadSelectorModal();
-            const modal = document.getElementById('threadSelectorModal');
-            if (modal) modal.classList.remove('hidden');
-        };
-        
-        window.closeThreadSelectorModal = function() {
-            const modal = document.getElementById('threadSelectorModal');
-            if (modal) modal.classList.add('hidden');
-        };
-        
-        window.confirmThreadSelection = function() {
-            updateSelectedThreadsFromModal();
-            if (selectedMultiThreads.length === 0) {
-                selectedMultiThreads = [...availableThreads];
-                showNotification('未选择任何线程，已自动全选');
-            }
-            renderMultiThreadChart();
-            closeThreadSelectorModal();
-        };
     </script>
     
+    <!-- <script src="{{ url_for('static', filename='js/echarts.min.js') }}"></script> -->
+    <script src="{{ url_for('static', filename='js/utils.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/chart-utils.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/timeline.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/multi-thread.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/compare.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/custom-chart.js') }}"></script>
     <script src="{{ url_for('static', filename='js/tool.js') }}"></script>
 </body>
 </html>

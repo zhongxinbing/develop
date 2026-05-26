@@ -1,16 +1,16 @@
+"""
+Flask API路由模块
+"""
 from flask import Flask, render_template, request, jsonify, send_from_directory
 from flask_cors import CORS
-import webbrowser
-import threading
-import socket
-import json
-import time
 from datetime import datetime
 from pathlib import Path
+from typing import Dict, Any, List, Optional
+import json
 
-from common import log
-from tool.elint.elint import *
-from tool.elint.parse import *
+from common import log, load_json, save_json, get_local_ip
+from tool.elint.elint import get_elint_data, get_perf
+from tool.elint.parse import parse_project_data, refresh_parsed_projects, parsed_projects, project_list
 from data_cache import data_cache, version_manager
 from compare import comparator
 from config import *
@@ -19,14 +19,29 @@ from config import *
 # Flask应用初始化
 # ==================================================
 app = Flask(__name__)
-CORS(app)  # 启用跨域支持
+CORS(app)
+
+# 全局变量
+parsed_projects: Dict = {}
+project_list: List = []
+current_projects_data: Dict = {}
 
 
 # ==================================================
 # 工具配置管理函数
 # ==================================================
 
-def update_tool_config(tool_id, config):
+def save_tool_config(config_data: Dict) -> bool:
+    """保存工具配置文件"""
+    try:
+        TOOL_CONFIG_PATH.parent.mkdir(parents=True, exist_ok=True)
+        return save_json(TOOL_CONFIG_PATH, config_data)
+    except Exception as e:
+        log(f"保存工具配置失败: {e}")
+        return False
+
+
+def update_tool_config(tool_id: str, config: Dict) -> bool:
     """
     更新工具配置
     
@@ -48,30 +63,21 @@ def update_tool_config(tool_id, config):
     cpu = config.get('cpu', '').strip() if config.get('cpu') else ''
     multi_original_path = config.get('multi_original_path', '').strip() if config.get('multi_original_path') else ''
     
-    # ========== 必填字段验证 ==========
+    # 必填字段验证
     errors = []
-    
-    # 工具名称不能为空
     if not name:
         errors.append("工具名称不能为空")
-    
-    # 工具图标不能为空
     if not icon:
         errors.append("工具图标不能为空")
-    
-    # Single模式的原始数据路径不能为空（因为这是监控的核心数据源）
     if not single_original_path:
         errors.append("Single模式原始数据路径不能为空")
     
-    # 如果有验证错误，返回失败
     if errors:
-        error_msg = "; ".join(errors)
-        log(f"配置保存失败: {error_msg}")
+        log(f"配置保存失败: {'; '.join(errors)}")
         return False
     
     configs = load_tool_config()
     
-    # 保存配置
     configs[tool_id] = {
         'name': name,
         'description': description,
@@ -84,92 +90,20 @@ def update_tool_config(tool_id, config):
         'last_updated': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     }
     
-    # 保存到文件
-    if save_tool_config(configs):
-        log(f"配置保存成功: {tool_id}")
-        return True
-    else:
-        log(f"配置保存失败: {tool_id}")
-        return False
-
-def save_tool_config(config_data):
-    """
-    保存工具配置文件
-    
-    参数:
-        config_data: dict - 配置数据
-    
-    返回:
-        bool: 保存成功返回True
-    """
-    try:
-        TOOL_CONFIG_PATH.parent.mkdir(parents=True, exist_ok=True)
-        
-        with open(TOOL_CONFIG_PATH, 'w', encoding='utf-8') as f:
-            json.dump(config_data, f, ensure_ascii=False, indent=4)
-        
-        log(f"工具配置已保存到: {TOOL_CONFIG_PATH}")
-        return True
-    except Exception as e:
-        log(f"保存工具配置失败: {e}")
-        return False
+    return save_tool_config(configs)
 
 
-def get_tool_config(tool_id=None):
-    """
-    获取工具配置
-    
-    参数:
-        tool_id: 工具ID（可选，不传则返回所有）
-    
-    返回:
-        dict: 配置信息
-    """
+def get_tool_config(tool_id: str = None) -> Dict:
+    """获取工具配置"""
     configs = load_tool_config()
-    
     if tool_id:
         return configs.get(tool_id, {})
     return configs
 
 
-def update_tool_config(tool_id, config):
-    """
-    更新工具配置
-    
-    参数:
-        tool_id: 工具ID
-        config: 配置字典
-    """
-    log(f"保存工具配置: tool_id={tool_id}, config={config}")
-    
-    configs = load_tool_config()
-    
-    # 保存配置 - 共用 json_path, mem, cpu
-    configs[tool_id] = {
-        'name': config.get('name', tool_id),
-        'description': config.get('description', ''),
-        'icon': config.get('icon', '🔧'),
-        'json_path': config.get('json_path', ''),
-        'mem': config.get('mem', ''),
-        'cpu': config.get('cpu', ''),
-        'single_original_path': config.get('single_original_path', ''),
-        'multi_original_path': config.get('multi_original_path', ''),
-        'last_updated': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    }
-    
-    # 保存到文件
-    if save_tool_config(configs):
-        log(f"配置保存成功: {tool_id}")
-        return True
-    else:
-        log(f"配置保存失败: {tool_id}")
-        return False
-
-
-def delete_tool_config(tool_id):
+def delete_tool_config(tool_id: str) -> bool:
     """删除工具配置"""
     configs = load_tool_config()
-    
     if tool_id in configs:
         configs.pop(tool_id, None)
         save_tool_config(configs)
@@ -184,13 +118,7 @@ def delete_tool_config(tool_id):
 
 @app.route('/')
 def index():
-    """
-    主页：工具选择页面 - 卡片网格布局
-    
-    返回:
-        str: 渲染的HTML模板
-    """
-    # 构建工具列表供前端渲染
+    """主页：工具选择页面"""
     tools_list = []
     for tool_key, tool_info in CASE_CONFIG.items():
         tools_list.append({
@@ -201,29 +129,19 @@ def index():
             'has_single': bool(tool_info.get('single_original_path')),
             'has_multi': bool(tool_info.get('multi_original_path'))
         })
-    
     return render_template('main.html', tools=tools_list)
 
 
 @app.route('/tool/<tool_id>')
-def tool_page(tool_id):
-    """
-    工具主页面 - 带侧边栏的监控页面
-    
-    参数:
-        tool_id: 工具ID
-    
-    返回:
-        str: 渲染的HTML模板
-    """
-    global parsed_projects
+def tool_page(tool_id: str):
+    """工具主页面"""
+    global parsed_projects, project_list, current_projects_data
     
     if tool_id not in CASE_CONFIG:
         return "工具不存在", 404
     
     tool_info = CASE_CONFIG[tool_id]
     
-    # 获取共用配置
     json_path = tool_info.get('json_path', '')
     mem_path = tool_info.get('mem', '')
     cpu_path = tool_info.get('cpu', '')
@@ -231,12 +149,16 @@ def tool_page(tool_id):
     
     # 获取项目数据（优先使用缓存）
     cache_key = f"{tool_id}_single_projects_data"
-
     cached = data_cache.get(cache_key)
     
-    if cached and (time.time() - cached.get('timestamp', 0) < CONFIG['cache_ttl']):
+    if cached and (datetime.now().timestamp() - cached.get('timestamp', 0) < CONFIG['cache_ttl']):
         current_projects_data = cached['projects_data']
-        parsed_projects, project_list = refresh_parsed_projects(current_projects_data)
+        # 使用缓存的 parsed_projects 和 project_list
+        if 'parsed_projects' in cached:
+            parsed_projects = cached['parsed_projects']
+            project_list = cached['project_list']
+        else:
+            parsed_projects, project_list = refresh_parsed_projects(current_projects_data)
         log("使用缓存数据")
     else:
         config = {
@@ -250,24 +172,24 @@ def tool_page(tool_id):
         if CONFIG['cache_enabled']:
             data_cache.set(cache_key, {
                 'projects_data': current_projects_data,
-                'timestamp': time.time()
+                'parsed_projects': parsed_projects,
+                'project_list': project_list,
+                'timestamp': datetime.now().timestamp()
             })
     
     # 准备前端数据
-    projects_data_json = {}
-    for pid, info in parsed_projects.items():
-        projects_data_json[pid] = {
+    projects_data_json = {
+        pid: {
             'dates': info['dates'],
             'available_dates': info.get('available_dates', info['dates']),
             'rules': info['rules'],
             'rule_data': info['rule_data'],
             'project_name': info['project_name']
         }
+        for pid, info in parsed_projects.items()
+    }
 
-    # 获取性能数据（MR更新信息）- Single和Multi共用
     perf = get_perf(mem_path, cpu_path)
-    
-    # 获取Multi模式的原始路径（如果有配置）
     multi_original_path = tool_info.get('multi_original_path', '')
     
     return render_template(
@@ -290,41 +212,25 @@ def tool_page(tool_id):
 
 @app.route('/api/refresh', methods=['POST'])
 def api_refresh():
-    """
-    刷新数据API接口 - 优化版
-    
-    请求体:
-        tool: 工具名称
-        mode: 模式 (single/multi)
-    
-    返回:
-        JSON: 刷新后的数据
-    """
-    # global CASE_CONFIG
-    global current_projects_data
-    global parsed_projects
-    global project_list
+    """刷新数据API接口"""
+    global parsed_projects, project_list, CASE_CONFIG
     
     log("刷新数据中...")
     
     try:
-        # 重新加载工具配置
         CASE_CONFIG = load_tool_config()
-
-        data = request.get_json()
+        
+        data = request.get_json() or {}
         tool = data.get('tool', 'elint')
         mode = data.get('mode', 'single')
         
-        # 获取工具配置
         tool_config = CASE_CONFIG.get(tool, {})
         
-        # 根据模式获取不同的 original_path
         if mode == 'single':
             original_path = tool_config.get('single_original_path', '')
         else:
             original_path = tool_config.get('multi_original_path', '')
         
-        # 共用配置
         json_path = tool_config.get('json_path', '')
         
         config = {
@@ -332,38 +238,33 @@ def api_refresh():
             'original_path': original_path
         }
         
-        # 检查数据是否有变化（使用版本管理器）
+        cache_key = f"{tool}_{mode}_projects_data"
+        
+        # 检查数据是否有变化
         if version_manager.check_changes(config):
-            # 数据有变化，清除缓存并重新获取
-            cache_key = f"{tool}_{mode}_projects_data"
             data_cache.invalidate(cache_key)
             
-            projects_data = get_elint_data(config.get('json_path', ''), config.get('original_path', ''))
-            # 更新全局变量
+            projects_data = get_elint_data(json_path, original_path)
             current_projects_data = projects_data.copy()
             parsed_projects, project_list = refresh_parsed_projects(current_projects_data)
             
-            # 更新缓存
             if CONFIG['cache_enabled']:
                 data_cache.set(cache_key, {
                     'projects_data': current_projects_data,
                     'parsed_projects': parsed_projects,
                     'project_list': project_list,
-                    'timestamp': time.time()
+                    'timestamp': datetime.now().timestamp()
                 })
         else:
-            # 数据无变化，尝试从缓存获取
-            cache_key = f"{tool}_{mode}_projects_data"
             cached = data_cache.get(cache_key)
             
-            if cached and (time.time() - cached.get('timestamp', 0) < CONFIG['cache_ttl']):
+            if cached and (datetime.now().timestamp() - cached.get('timestamp', 0) < CONFIG['cache_ttl']):
                 current_projects_data = cached['projects_data']
-                parsed_projects = cached['parsed_projects']
-                project_list = cached['project_list']
+                parsed_projects = cached.get('parsed_projects', {})
+                project_list = cached.get('project_list', [])
                 log("使用缓存数据")
             else:
-                # 缓存过期，重新获取
-                projects_data = get_elint_data(config.get('json_path', ''), config.get('original_path', ''))
+                projects_data = get_elint_data(json_path, original_path)
                 current_projects_data = projects_data.copy()
                 parsed_projects, project_list = refresh_parsed_projects(current_projects_data)
                 
@@ -372,30 +273,37 @@ def api_refresh():
                         'projects_data': current_projects_data,
                         'parsed_projects': parsed_projects,
                         'project_list': project_list,
-                        'timestamp': time.time()
+                        'timestamp': datetime.now().timestamp()
                     })
         
-        # 获取性能数据（Single和Multi共用）
         mem_path = tool_config.get('mem', '')
         cpu_path = tool_config.get('cpu', '')
         perf = get_perf(mem_path, cpu_path)
         
-        # 构建返回数据
-        projects_data_json = {}
-        for pid, info in parsed_projects.items():
-            projects_data_json[pid] = {
-                'dates': info['dates'],
-                'rules': info['rules'],
-                'rule_data': info['rule_data'],
-                'project_name': info['project_name']
+        # 构建返回数据 - 使用 parsed_projects
+        projects_data_json = {
+            pid: {
+                'dates': info.get('dates', []),
+                'available_dates': info.get('available_dates', info.get('dates', [])),
+                'rules': info.get('rules', []),
+                'rule_data': info.get('rule_data', {}),
+                'project_name': info.get('project_name', pid)
             }
+            for pid, info in parsed_projects.items()
+        }
         
         last_update = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        
+        # 构建项目列表
+        project_list_data = [
+            {'id': pid, 'name': info.get('project_name', pid)}
+            for pid, info in parsed_projects.items()
+        ]
         
         return jsonify({
             'success': True,
             'data': projects_data_json,
-            'project_list': project_list,
+            'project_list': project_list_data,
             'last_update': last_update,
             'message': '数据刷新成功',
             'perf': perf,
@@ -403,24 +311,16 @@ def api_refresh():
         })
     except Exception as e:
         log(f"刷新失败: {e}")
+        import traceback
+        traceback.print_exc()
         return jsonify({'success': False, 'message': str(e)}), 500
 
 
 @app.route('/api/check_update', methods=['POST'])
 def api_check_update():
-    """
-    检查数据是否有更新（轻量级API）
-    
-    请求体:
-        tool: 工具名称
-        mode: 模式
-        version: 当前版本号
-    
-    返回:
-        JSON: 是否有更新
-    """
+    """检查数据是否有更新"""
     try:
-        data = request.get_json()
+        data = request.get_json() or {}
         tool = data.get('tool', 'elint')
         mode = data.get('mode', 'single')
         current_version = data.get('version', '')
@@ -438,7 +338,7 @@ def api_check_update():
         }
         new_version = version_manager.get_data_signature(config)
         
-        has_update = (new_version != current_version)
+        has_update = new_version != current_version
         
         return jsonify({
             'has_update': has_update,
@@ -451,23 +351,17 @@ def api_check_update():
 
 @app.route('/api/get_dates', methods=['POST'])
 def api_get_dates():
-    """
-    获取项目可用的日期列表
+    """获取项目可用的日期列表"""
+    global parsed_projects
     
-    请求体:
-        project_id: 项目ID
-    
-    返回:
-        JSON: 日期列表
-    """
     try:
-        data = request.get_json()
+        data = request.get_json() or {}
         project_id = data.get('project_id')
         
         if project_id not in parsed_projects:
             return jsonify({'success': False, 'error': '项目不存在'}), 404
         
-        dates = parsed_projects[project_id]['dates']
+        dates = parsed_projects[project_id].get('dates', [])
         available_dates = parsed_projects[project_id].get('available_dates', dates)
         return jsonify({
             'success': True,
@@ -481,30 +375,25 @@ def api_get_dates():
 @app.route('/api/projects')
 def api_projects():
     """获取项目列表"""
+    global project_list
     return jsonify(project_list)
 
 
 @app.route('/api/project/<project_id>')
-def api_project_data(project_id):
-    """
-    获取单个项目的详细数据
+def api_project_data(project_id: str):
+    """获取单个项目的详细数据"""
+    global parsed_projects
     
-    参数:
-        project_id: 项目ID
-    
-    返回:
-        JSON: 项目数据
-    """
     if project_id not in parsed_projects:
         return jsonify({'error': 'Project not found'}), 404
     
     info = parsed_projects[project_id]
     return jsonify({
-        'project_name': info['project_name'],
-        'dates': info['dates'],
-        'available_dates': info.get('available_dates', info['dates']),
-        'rules': info['rules'],
-        'rule_data': info['rule_data']
+        'project_name': info.get('project_name', project_id),
+        'dates': info.get('dates', []),
+        'available_dates': info.get('available_dates', info.get('dates', [])),
+        'rules': info.get('rules', []),
+        'rule_data': info.get('rule_data', {})
     })
 
 
@@ -530,9 +419,7 @@ def page_not_found(e):
 
 @app.route('/tools_config')
 def tools_config_page():
-    """
-    工具配置管理页面
-    """
+    """工具配置管理页面"""
     return render_template('tools_config.html')
 
 
@@ -542,17 +429,11 @@ def tools_config_page():
 
 @app.route('/api/tools', methods=['GET'])
 def api_get_tools():
-    """
-    获取所有工具配置
-    
-    返回:
-        JSON: 工具配置列表
-    """
+    """获取所有工具配置"""
     try:
         configs = load_tool_config()
-        tools_list = []
-        for tool_id, tool_info in configs.items():
-            tools_list.append({
+        tools_list = [
+            {
                 'id': tool_id,
                 'name': tool_info.get('name', tool_id),
                 'description': tool_info.get('description', ''),
@@ -565,21 +446,19 @@ def api_get_tools():
                 'single_original_path': tool_info.get('single_original_path', ''),
                 'multi_original_path': tool_info.get('multi_original_path', ''),
                 'last_updated': tool_info.get('last_updated', '')
-            })
+            }
+            for tool_id, tool_info in configs.items()
+        ]
         return jsonify({'success': True, 'tools': tools_list})
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
 
 
 @app.route('/api/tool/<tool_id>', methods=['GET', 'PUT', 'DELETE'])
-def api_tool_config(tool_id):
-    """
-    获取、保存或删除工具配置的API
+def api_tool_config(tool_id: str):
+    """获取、保存或删除工具配置的API"""
+    global CASE_CONFIG
     
-    GET: 获取指定工具的配置
-    PUT: 保存/更新配置
-    DELETE: 删除配置
-    """
     try:
         if request.method == 'GET':
             config = get_tool_config(tool_id)
@@ -614,20 +493,15 @@ def api_tool_config(tool_id):
             }
             
             if update_tool_config(tool_id, config):
-                # 更新全局配置
-                # global CASE_CONFIG
                 CASE_CONFIG = load_tool_config()
                 return jsonify({'success': True, 'message': '配置保存成功'})
-            else:
-                return jsonify({'success': False, 'error': '配置保存失败'}), 500
+            return jsonify({'success': False, 'error': '配置保存失败'}), 500
         
         elif request.method == 'DELETE':
             if delete_tool_config(tool_id):
-                # global CASE_CONFIG
                 CASE_CONFIG = load_tool_config()
                 return jsonify({'success': True, 'message': '配置删除成功'})
-            else:
-                return jsonify({'success': False, 'error': '配置不存在'}), 404
+            return jsonify({'success': False, 'error': '配置不存在'}), 404
             
     except Exception as e:
         log(f"API错误: {e}")
@@ -640,156 +514,95 @@ def api_tool_config(tool_id):
 # 对比配置管理函数
 # ==================================================
 
-def load_compare_config():
-    """
-    加载对比配置文件
-    
-    返回:
-        dict: 配置字典，key为项目ID，value为配置信息
-    """
+def load_compare_config() -> Dict:
+    """加载对比配置文件"""
     if not COMPARE_CONFIG_FILE.exists():
-        log(f"配置文件不存在，创建空配置: {COMPARE_CONFIG_FILE}")
         return {}
     
     try:
         with open(COMPARE_CONFIG_FILE, 'r', encoding='utf-8') as f:
             content = f.read()
-            if not content.strip():
-                return {}
-            return json.loads(content)
-    except json.JSONDecodeError as e:
-        log(f"配置文件JSON解析失败: {e}，将创建新配置")
-        return {}
-    except Exception as e:
+            return json.loads(content) if content.strip() else {}
+    except (json.JSONDecodeError, Exception) as e:
         log(f"加载对比配置失败: {e}")
         return {}
 
 
-def save_compare_config(config_data):
-    """
-    保存对比配置到文件
-    
-    参数:
-        config_data: dict - 配置数据
-    
-    返回:
-        bool: 保存成功返回True
-    """
+def save_compare_config(config_data: Dict) -> bool:
+    """保存对比配置到文件"""
     try:
         COMPARE_CONFIG_FILE.parent.mkdir(parents=True, exist_ok=True)
-        
-        with open(COMPARE_CONFIG_FILE, 'w', encoding='utf-8') as f:
-            json.dump(config_data, f, ensure_ascii=False, indent=4)
-        
-        log(f"对比配置已保存到: {COMPARE_CONFIG_FILE}")
-        return True
+        return save_json(COMPARE_CONFIG_FILE, config_data)
     except Exception as e:
         log(f"保存对比配置失败: {e}")
         return False
 
 
-def get_compare_config(project_id: str):
-    """
-    获取指定项目的对比配置
-    
-    参数:
-        project_id: 项目ID
-    
-    返回:
-        dict: 配置信息，包含 tolerance_runtime, tolerance_memory
-    """
+def get_compare_config(project_id: str) -> Dict:
+    """获取指定项目的对比配置"""
     configs = load_compare_config()
-    log(f"加载配置: project_id={project_id}, 当前配置={configs}")
-    
-    if not configs:
-        return {}
-    
     return configs.get(project_id, {})
 
 
-def update_compare_config(project_id: str, config: dict):
-    """
-    更新指定项目的对比配置
-    
-    参数:
-        project_id: 项目ID
-        config: 配置字典，包含 tolerance_runtime, tolerance_memory
-    """
+def update_compare_config(project_id: str, config: Dict) -> None:
+    """更新指定项目的对比配置"""
     log(f"保存配置: project_id={project_id}, config={config}")
     
-    # 加载现有配置
     configs = load_compare_config()
     
-    # 保存配置（只保存 runtime 和 memory 容差）
     configs[project_id] = {
         'tolerance_runtime': config.get('tolerance_runtime', 0),
         'tolerance_memory': config.get('tolerance_memory', 0),
         'last_updated': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     }
     
-    # 保存到文件
-    if save_compare_config(configs):
-        log(f"配置保存成功: {project_id}")
-    else:
-        log(f"配置保存失败: {project_id}")
+    save_compare_config(configs)
 
 
-def delete_compare_config(project_id: str):
+def delete_compare_config(project_id: str) -> None:
     """删除项目的对比配置"""
     configs = load_compare_config()
-    
     if project_id in configs:
         configs.pop(project_id, None)
         save_compare_config(configs)
         log(f"配置已删除: project_id={project_id}")
 
 
+# ==================================================
+# 多线程数据API
+# ==================================================
+
 @app.route('/api/multi_thread_data', methods=['POST'])
 def api_multi_thread_data():
-    """
-    获取多线程对比数据 - 返回指定阶段所有线程的性能数据
+    """获取多线程对比数据"""
+    global parsed_projects
     
-    请求体:
-        project_id: 项目ID
-        rule_name: 阶段名称
-        date: 日期（可选）
-    
-    返回:
-        JSON: 线程性能数据
-    """
     try:
-        print("接收到多线程数据请求")
-        data = request.get_json()
+        data = request.get_json() or {}
         project_id = data.get('project_id')
         rule_name = data.get('rule_name')
         date = data.get('date')
         
         if project_id not in parsed_projects:
-            print(f"项目ID {project_id} 不存在")
             return jsonify({'success': False, 'error': '项目不存在'}), 404
         
         project_info = parsed_projects[project_id]
-        rule_info = project_info['rule_data'].get(rule_name, {})
+        rule_info = project_info.get('rule_data', {}).get(rule_name, {})
         
         if not rule_info:
-            print(f"阶段 {rule_name} 不存在")
             return jsonify({'success': False, 'error': '阶段不存在'}), 404
         
-        # 确定使用的日期
         dates = rule_info.get('dates', [])
         if not dates:
-            print(f"阶段 {rule_name} 无日期数据")
             return jsonify({'success': False, 'error': '无数据'}), 404
         
         target_date = date if date else dates[-1]
         
-        # 查找日期索引
         try:
             date_idx = dates.index(target_date)
         except ValueError:
             return jsonify({'success': False, 'error': f'日期 {target_date} 无数据'}), 404
         
-        # 收集所有线程的数据
         thread_metrics = rule_info.get('thread_metrics', {})
         threads_data = []
         
@@ -804,7 +617,6 @@ def api_multi_thread_data():
                     'memory': memory
                 })
         
-        # 按线程数排序
         threads_data.sort(key=lambda x: x['threads'])
         
         return jsonify({
@@ -822,27 +634,17 @@ def api_multi_thread_data():
         return jsonify({'success': False, 'error': str(e)}), 500
 
 
+# ==================================================
+# 对比API
+# ==================================================
+
 @app.route('/api/compare', methods=['POST'])
 def api_compare():
-    """
-    数据对比API - 支持单阶段和全阶段对比
+    """数据对比API"""
+    global parsed_projects
     
-    请求体:
-        project_id: 项目ID
-        rule_name: 阶段名称（all表示全阶段）
-        date1: 基准日期
-        date2: 对比日期
-        tolerance_runtime: Runtime容差
-        tolerance_memory: Memory容差
-        tolerance_mode: 误差模式（absolute/percentage）
-        compare_dimension: 对比维度（runtime/memory/both）
-        save_config: 是否保存配置
-    
-    返回:
-        JSON: 对比结果
-    """
     try:
-        data = request.get_json()
+        data = request.get_json() or {}
         project_id = data.get('project_id')
         rule_name = data.get('rule_name', 'all')
         date1 = data.get('date1')
@@ -855,22 +657,20 @@ def api_compare():
         
         log(f"对比请求: project_id={project_id}, rule_name={rule_name}, date1={date1}, date2={date2}")
         
-        # 获取项目数据
         if project_id not in parsed_projects:
             return jsonify({'success': False, 'error': '项目不存在'}), 404
         
         project_info = parsed_projects[project_id]
         
-        # 构建两天的完整项目数据
-        def build_day_data(date):
-            """构建单天的完整项目数据（包含所有阶段）"""
+        def build_day_data(date: str) -> Dict:
+            """构建单天的完整项目数据"""
             day_data = {
                 'dates': [date],
-                'rules': project_info['rules'],
+                'rules': project_info.get('rules', []),
                 'rule_data': {}
             }
             
-            for rule, rule_info in project_info['rule_data'].items():
+            for rule, rule_info in project_info.get('rule_data', {}).items():
                 try:
                     idx = rule_info['dates'].index(date)
                     day_data['rule_data'][rule] = {
@@ -892,7 +692,6 @@ def api_compare():
         data1 = build_day_data(date1)
         data2 = build_day_data(date2)
         
-        # 执行对比
         compare_result = comparator.compare_data(
             data1, data2, project_id, rule_name,
             tolerance_runtime, tolerance_memory,
@@ -903,19 +702,13 @@ def api_compare():
         compare_result['tolerance_mode'] = tolerance_mode
         compare_result['compare_dimension'] = compare_dimension
 
-        # 保存配置（只保存项目的 runtime 和 memory 容差）
         if save_config:
-            log(f"准备保存配置: project_id={project_id}")
             update_compare_config(project_id, {
                 'tolerance_runtime': tolerance_runtime,
                 'tolerance_memory': tolerance_memory
             })
-            log("配置保存完成")
         
-        return jsonify({
-            'success': True,
-            'result': compare_result
-        })
+        return jsonify({'success': True, 'result': compare_result})
     except Exception as e:
         log(f"对比失败: {e}")
         import traceback
@@ -925,20 +718,10 @@ def api_compare():
 
 @app.route('/api/compare_config', methods=['GET', 'POST', 'DELETE'])
 def api_compare_config():
-    """
-    获取、保存或删除对比配置的API
-    
-    GET: 获取指定项目的配置
-        参数: project_id
-    POST: 保存配置
-        参数: project_id, config
-    DELETE: 删除配置
-        参数: project_id
-    """
+    """获取、保存或删除对比配置的API"""
     try:
         if request.method == 'GET':
             project_id = request.args.get('project_id', '')
-            
             if not project_id:
                 return jsonify({'success': False, 'error': 'project_id 参数缺失'}), 400
             
@@ -984,18 +767,9 @@ def api_compare_all_configs():
 
 @app.route('/api/export_compare', methods=['POST'])
 def api_export_compare():
-    """
-    导出对比结果到CSV文件
-    
-    请求体:
-        result: 对比结果数据
-        filename: 文件名（可选）
-    
-    返回:
-        JSON: 下载链接
-    """
+    """导出对比结果到CSV文件"""
     try:
-        data = request.get_json()
+        data = request.get_json() or {}
         compare_result = data.get('result')
         
         if not compare_result:
@@ -1016,9 +790,10 @@ def api_export_compare():
 
 
 @app.route('/download/<filename>')
-def download_file(filename):
+def download_file(filename: str):
     """下载文件"""
     return send_from_directory(comparator.export_dir, filename, as_attachment=True)
+
 
 # ==================================================
 # 自定义曲线图API
@@ -1026,30 +801,19 @@ def download_file(filename):
 
 @app.route('/api/fetch_user_data', methods=['POST'])
 def api_fetch_user_data():
-    """
-    获取用户自定义数据API
-    
-    请求体:
-        case_path: 用户数据路径
-    
-    返回:
-        JSON: 解析后的项目数据
-    """
+    """获取用户自定义数据API"""
     try:
-        data = request.get_json()
+        data = request.get_json() or {}
         case_path = data.get('case_path', '')
-        print(f"接收到用户数据请求: case_path={case_path}")
+        
         if not case_path:
             return jsonify({'success': False, 'error': '请提供用户数据路径'}), 400
-        print(f"正在获取用户数据: {case_path}")
-        # 调用用户提供的数据获取函数
-        # get_user_data 函数由用户自己实现
+        
         from tool.elint.elint import get_user_data
         
         result = get_user_data(case_path)
         
         if result and isinstance(result, dict):
-            # 解析数据
             parsed_projects_result = {}
             for project_id, project_data in result.items():
                 parsed_projects_result[project_id] = parse_project_data(project_data, project_id)
@@ -1065,7 +829,6 @@ def api_fetch_user_data():
             return jsonify({'success': False, 'error': '获取数据失败，请检查路径'}), 500
             
     except ImportError:
-        # 如果用户还没有实现 get_user_data 函数
         return jsonify({
             'success': False,
             'error': 'get_user_data 函数尚未实现，请先在 elint.py 中实现该函数'

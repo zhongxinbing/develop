@@ -1,13 +1,13 @@
 {
     "elint": {
-        "name": "elint",
-        "description": "lint 静态工具检查",
+        "name": "Elint",
+        "description": "静态功能检查",
         "icon": "🔧",
         "json_path": "./data/elint.json",
         "mem": "./data/lint_mem.csv",
         "cpu": "./data/lint_cpu.csv",
         "single_original_path": "./data/",
         "multi_original_path": "",
-        "last_updated": "2026-05-25 15:08:20"
+        "last_updated": "2026-05-26 15:24:57"
     }
 }

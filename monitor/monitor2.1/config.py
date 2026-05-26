@@ -1,34 +1,36 @@
-from common import *
+"""
+系统配置模块
+"""
 from pathlib import Path
+from common import load_json
 
 # ==================================================
 # 系统配置
 # ==================================================
 CONFIG = {
-    'host': '0.0.0.0',          # 监听所有网络接口
-    'port': 6060,                # 服务端口
-    'debug': True,               # 调试模式
-    'auto_open_browser': False,  # 是否自动打开浏览器
-    'cache_enabled': True,       # 是否启用缓存
-    'cache_ttl': 300             # 缓存有效期（秒）
+    'host': '0.0.0.0',
+    'port': 6060,
+    'debug': True,
+    'auto_open_browser': False,
+    'cache_enabled': True,
+    'cache_ttl': 300
 }
 
-# 工具配置文件路径（使用Path对象）
+# 路径配置
 TOOL_CONFIG_PATH = Path('./data/config/tool_config.json')
 DATA_DIR = Path('./data')
-DATA_DIR.mkdir(parents=True, exist_ok=True)
+COMPARE_CONFIG_FILE = DATA_DIR / 'compare.json'
 
-# 加载工具配置（如果文件不存在则返回空配置）
+# 确保目录存在
+DATA_DIR.mkdir(parents=True, exist_ok=True)
+TOOL_CONFIG_PATH.parent.mkdir(parents=True, exist_ok=True)
+
+
 def load_tool_config():
+    """加载工具配置"""
     if TOOL_CONFIG_PATH.exists():
         return load_json(TOOL_CONFIG_PATH)
-    else:
-        # 确保目录存在
-        TOOL_CONFIG_PATH.parent.mkdir(parents=True, exist_ok=True)
-        # 返回空配置，用户需要自己添加工具
-        return {}
+    return {}
 
-CASE_CONFIG = load_tool_config()  # 工具配置
 
-# 对比配置文件路径
-COMPARE_CONFIG_FILE = DATA_DIR / 'compare.json'
+CASE_CONFIG = load_tool_config()

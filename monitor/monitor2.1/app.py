@@ -1,17 +1,16 @@
 """
 ==================================================
-多项目多阶段EDA流程监控系统 - Flask应用主入口
+EDA性能监控系统 - Flask应用主入口
 支持: 日期 -> 阶段 -> runtime/memory/cores 三层数据结构
 布局: 侧边栏导航 + 主内容区域
 ==================================================
 """
 import webbrowser
 import threading
-import socket
-import json
+import time
 
-# 导入公共的 api
-from api import *
+from api import app, CONFIG
+
 
 def open_browser():
     """自动打开浏览器（后台线程调用）"""
@@ -24,6 +23,8 @@ def open_browser():
 # 应用启动入口
 # ==================================================
 if __name__ == '__main__':
+    from common import get_local_ip, log
+    
     local_ip = get_local_ip()
 
     log(f"启动服务器: http://{local_ip}:{CONFIG['port']}")
@@ -33,8 +34,8 @@ if __name__ == '__main__':
         threading.Thread(target=open_browser, daemon=True).start()
     
     app.run(
-        host=CONFIG['host'], 
-        port=CONFIG['port'], 
-        debug=CONFIG['debug'], 
-        use_reloader=False  # 避免重复启动
+        host=CONFIG['host'],
+        port=CONFIG['port'],
+        debug=CONFIG['debug'],
+        use_reloader=False
     )

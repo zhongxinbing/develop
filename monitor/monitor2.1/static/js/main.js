@@ -89,7 +89,7 @@ function renderToolsGrid() {
     const cardsHtml = toolsConfig.map(tool => `
         <div class="tool-card" data-tool-id="${tool.id}">
             <div class="card-header">
-                <div class="card-icon">${tool.icon || '🔧'}</div>
+                <div class="card-icon">${escapeHtml(tool.icon) || '🔧'}</div>
                 <div class="card-title">
                     <h2>${escapeHtml(tool.name)}</h2>
                     <p>${escapeHtml(tool.description || 'EDA 工具性能监控')}</p>
@@ -119,22 +119,11 @@ function renderToolsGrid() {
 }
 
 /**
- * HTML转义
- */
-function escapeHtml(text) {
-    if (!text) return '';
-    const div = document.createElement('div');
-    div.textContent = text;
-    return div.innerHTML;
-}
-
-/**
  * 绑定卡片按钮点击事件
  */
 function bindCardEvents() {
     // 单线程模式按钮
     document.querySelectorAll('.mode-btn.single').forEach(btn => {
-        // 移除旧事件避免重复绑定
         btn.removeEventListener('click', handleSingleClick);
         btn.addEventListener('click', handleSingleClick);
     });
@@ -159,7 +148,6 @@ function handleSingleClick(e) {
     e.stopPropagation();
     const card = this.closest('.tool-card');
     const toolId = card.dataset.toolId;
-    console.log('点击单线程模式:', toolId);
     navigateToTool(toolId, 'single');
 }
 
@@ -170,7 +158,6 @@ function handleMultiClick(e) {
     e.stopPropagation();
     const card = this.closest('.tool-card');
     const toolId = card.dataset.toolId;
-    console.log('点击多线程模式:', toolId);
     navigateToTool(toolId, 'multi');
 }
 
@@ -178,7 +165,6 @@ function handleMultiClick(e) {
  * 卡片点击处理
  */
 function handleCardClick(e) {
-    // 如果点击的是按钮或其子元素，不处理
     if (e.target.classList && e.target.classList.contains('mode-btn')) return;
     if (e.target.closest('.mode-btn')) return;
     

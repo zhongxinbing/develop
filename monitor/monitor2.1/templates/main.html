@@ -21,7 +21,7 @@
             </button>
         </div>
 
-        <!-- 统计卡片行 -->
+        <!-- 统计卡片行 - Flexbox 布局 -->
         <div class="stats-row">
             <div class="stat-card">
                 <div class="stat-number" id="toolCount">0</div>
@@ -37,7 +37,7 @@
             </div>
         </div>
 
-        <!-- 工具卡片网格 -->
+        <!-- 工具卡片网格 - CSS Grid 布局 -->
         <div class="tools-grid" id="toolsGrid"></div>
 
         <!-- 底部信息 -->
@@ -54,6 +54,7 @@
     <script>
         const toolsConfig = {{ tools | tojson }};
     </script>
+    <script src="{{ url_for('static', filename='js/utils.js') }}"></script>
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 </body>
 </html>
