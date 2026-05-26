@@ -1,3 +1,8 @@
+// ============================================
+// 现代化监控系统 JavaScript
+// 保持原有功能，优化性能和用户体验
+// ============================================
+
 // 防抖函数
 function debounce(func, wait) {
     let timeout;
@@ -8,6 +13,18 @@ function debounce(func, wait) {
         };
         clearTimeout(timeout);
         timeout = setTimeout(later, wait);
+    };
+}
+
+// 节流函数
+function throttle(func, limit) {
+    let inThrottle;
+    return function(...args) {
+        if (!inThrottle) {
+            func.apply(this, args);
+            inThrottle = true;
+            setTimeout(() => inThrottle = false, limit);
+        }
     };
 }
 
@@ -41,69 +58,92 @@ function buildMrUpdateMap(perfData) {
     return mrMap;
 }
 
-let selectedDates = [];
-let selectedDatesSet = new Set();
-
-function getDefaultSelectedDates(projectData) {
-    if (!projectData) return [];
-    const dates = (projectData.available_dates && projectData.available_dates.length)
-        ? projectData.available_dates.slice()
-        : (projectData.dates || []).slice();
-    if (dates.length <= 51) {
-        return dates;
+// 设置模式
+function setMode(mode) {
+    currentMode = mode;
+    document.getElementById('modeSingleBtn')?.classList.toggle('active', mode === 'single');
+    document.getElementById('modeMultiBtn')?.classList.toggle('active', mode === 'multi');
+    document.getElementById('multiConfigPanel')?.classList.toggle('hidden', mode !== 'multi');
+    const tipEl = document.querySelector('.date-control-tip');
+    if (tipEl) {
+        tipEl.textContent = mode === 'multi'
+            ? '多线程模式：x轴为线程数，y轴为 runtime 或 memory。可选多天进行比对。'
+            : '默认显示最近 54 条，点击图例可切换不同线程线。';
     }
-    return dates.slice(dates.length - 51);
+    refreshAllCharts();
 }
 
-function setDateSelectValues(dateArray) {
-    const dateSelect = document.getElementById('dateSelect');
-    if (!dateSelect) return;
-    selectedDates = Array.isArray(dateArray) ? dateArray.slice() : [];
-    selectedDatesSet = new Set(selectedDates);
+// 构建线程过滤器
+function buildThreadFilter() {
+    const container = document.getElementById('threadFilterContainer');
+    if (!container) return;
 
-    Array.from(dateSelect.options).forEach(option => {
-        option.selected = selectedDatesSet.has(option.value);
+    container.innerHTML = '';
+    const activeThreadSet = new Set(selectedThreads);
+
+    AVAILABLE_THREAD_OPTIONS.forEach(thread => {
+        const label = document.createElement('label');
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.value = thread;
+        checkbox.checked = activeThreadSet.has(thread);
+        checkbox.addEventListener('change', (event) => {
+            if (event.target.checked) {
+                if (!selectedThreads.includes(thread)) {
+                    selectedThreads.push(thread);
+                }
+            } else {
+                selectedThreads = selectedThreads.filter(item => item !== thread);
+            }
+            if (!selectedThreads.length) {
+                selectedThreads = ['0'];
+                buildThreadFilter();
+            }
+            refreshAllCharts();
+        });
+        label.appendChild(checkbox);
+        label.appendChild(document.createTextNode(` ${thread}`));
+        container.appendChild(label);
     });
 }
 
-function populateDateSelector(projectData) {
-    const dateSelect = document.getElementById('dateSelect');
-    if (!dateSelect || !projectData) return;
-    const availableDates = new Set(projectData.available_dates || []);
-
-    dateSelect.innerHTML = '';
-    projectData.dates.forEach(date => {
-        const option = document.createElement('option');
-        option.value = date;
-        option.textContent = availableDates.has(date) ? `${date} (QOR)` : date;
-        dateSelect.appendChild(option);
-    });
-
-    const defaultSelection = getDefaultSelectedDates(projectData);
-    setDateSelectValues(defaultSelection);
+function getSelectedThreadCounts() {
+    return selectedThreads && selectedThreads.length ? selectedThreads : ['0'];
 }
 
-function updateSelectedDatesFromSelector() {
-    const dateSelect = document.getElementById('dateSelect');
-    if (!dateSelect) return;
-    const selected = Array.from(dateSelect.selectedOptions).map(option => option.value);
-    if (selected.length === 0) {
-        const projectData = getCurrentProjectData();
-        const defaultSelection = getDefaultSelectedDates(projectData);
-        setDateSelectValues(defaultSelection);
+let currentMode = 'single';
+let selectedDates = [];
+let pendingSelectedDates = [];
+let availableDates = [];
+let selectedThreads = ['0'];
+const AVAILABLE_THREAD_OPTIONS = ['0', '2', '4', '6', '8', '16', '24', '32', '64', '128'];
+const MAX_DEFAULT_POINTS = 54;
+
+function updateDateSelectionInfo() {
+    const current = selectedDates.length ? selectedDates : availableDates.slice(-MAX_DEFAULT_POINTS);
+    const summaryEl = document.getElementById('selectedDateSummary');
+    if (current.length > 0) {
+        document.getElementById('dateRange').innerText = `${current[0]} 至 ${current[current.length - 1]}`;
+        document.getElementById('dataPoints').innerText = current.length;
+        if (summaryEl) {
+            summaryEl.innerText = current.length === availableDates.length ? '全部可用日期' : `${current.length} 条已选`;
+        }
     } else {
-        selectedDates = selected;
-        selectedDatesSet = new Set(selected);
+        const projectData = getCurrentProjectData();
+        if (projectData) {
+            document.getElementById('dateRange').innerText = projectData.dates.length ? 
+                `${projectData.dates[0]} 至 ${projectData.dates[projectData.dates.length - 1]}` : '无';
+            document.getElementById('dataPoints').innerText = projectData.dates.length;
+        }
+        if (summaryEl) {
+            summaryEl.innerText = '未选择日期';
+        }
     }
 }
 
 function getFilteredToolData(toolData) {
-    if (!toolData) return null;
-    if (!selectedDatesSet || selectedDatesSet.size === 0) {
-        return toolData;
-    }
-
-    const filteredData = {
+    const filterSet = new Set(selectedDates.length ? selectedDates : availableDates.slice(-MAX_DEFAULT_POINTS));
+    const filtered = {
         dates: [],
         runtimes: [],
         memories: [],
@@ -111,20 +151,125 @@ function getFilteredToolData(toolData) {
     };
 
     toolData.dates.forEach((date, index) => {
-        if (selectedDatesSet.has(date)) {
-            filteredData.dates.push(date);
-            filteredData.runtimes.push(toolData.runtimes[index]);
-            filteredData.memories.push(toolData.memories[index]);
-            filteredData.cores.push(toolData.cores[index]);
+        if (filterSet.has(date)) {
+            filtered.dates.push(date);
+            filtered.runtimes.push(toolData.runtimes[index]);
+            filtered.memories.push(toolData.memories[index]);
+            filtered.cores.push(toolData.cores[index]);
         }
     });
 
-    return filteredData;
+    return filtered;
+}
+
+function filterAvailableDates(filterText) {
+    const lower = String(filterText || '').trim().toLowerCase();
+    if (!lower) return [...availableDates];
+    return availableDates.filter(date => date.toLowerCase().includes(lower));
+}
+
+function buildDateSelect(usePending = false) {
+    const container = document.getElementById('dateOptionsContainer');
+    if (!container) return;
+
+    const projectData = getCurrentProjectData();
+    if (!projectData) return;
+    
+    availableDates = projectData.available_dates && projectData.available_dates.length ? 
+        projectData.available_dates : projectData.dates;
+
+    if (!selectedDates.length) {
+        selectedDates = availableDates.slice(-MAX_DEFAULT_POINTS);
+    }
+
+    const currentSelection = usePending ? (pendingSelectedDates.length ? pendingSelectedDates : selectedDates.slice(-MAX_DEFAULT_POINTS)) : selectedDates;
+    const filterText = document.getElementById('dateFilterInput')?.value || '';
+    const filteredDates = filterAvailableDates(filterText);
+
+    container.innerHTML = '';
+    filteredDates.forEach(date => {
+        const row = document.createElement('div');
+        row.className = 'date-option-row';
+
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.id = `checkbox-${date}`;
+        checkbox.value = date;
+        checkbox.checked = currentSelection.includes(date);
+
+        checkbox.addEventListener('change', (e) => {
+            if (e.target.checked) {
+                if (!pendingSelectedDates.includes(date)) {
+                    pendingSelectedDates.push(date);
+                }
+            } else {
+                pendingSelectedDates = pendingSelectedDates.filter(item => item !== date);
+            }
+        });
+
+        const label = document.createElement('label');
+        label.htmlFor = checkbox.id;
+        label.textContent = date;
+
+        row.appendChild(checkbox);
+        row.appendChild(label);
+        row.addEventListener('click', (e) => {
+            if (e.target.tagName.toLowerCase() !== 'input') {
+                checkbox.checked = !checkbox.checked;
+                checkbox.dispatchEvent(new Event('change'));
+            }
+        });
+        container.appendChild(row);
+    });
+
+    updateDateSelectionInfo();
+}
+
+function openDatePickerModal() {
+    pendingSelectedDates = selectedDates.length ? [...selectedDates] : availableDates.slice(-MAX_DEFAULT_POINTS);
+    const filterInput = document.getElementById('dateFilterInput');
+    if (filterInput) {
+        filterInput.value = '';
+    }
+    buildDateSelect(true);
+    document.getElementById('datePickerModal')?.classList.remove('hidden');
+}
+
+function closeDatePickerModal() {
+    document.getElementById('datePickerModal')?.classList.add('hidden');
+    buildDateSelect();
+}
+
+function confirmDatePickerSelection() {
+    if (!pendingSelectedDates.length) {
+        pendingSelectedDates = availableDates.slice(-MAX_DEFAULT_POINTS);
+    }
+    selectedDates = [...pendingSelectedDates];
+    updateDateSelectionInfo();
+    debouncedRenderCharts();
+    closeDatePickerModal();
+}
+
+function resetDateSelection(useAll = false) {
+    selectedDates = useAll ? [...availableDates] : availableDates.slice(-MAX_DEFAULT_POINTS);
+    pendingSelectedDates = [...selectedDates];
+    const filterInput = document.getElementById('dateFilterInput');
+    if (filterInput) {
+        filterInput.value = '';
+    }
+    const modalVisible = !document.getElementById('datePickerModal')?.classList.contains('hidden');
+    if (modalVisible) {
+        buildDateSelect(true);
+    }
+    updateDateSelectionInfo();
+    debouncedRenderCharts();
 }
 
 // 更新阶段选择器
 function updateRuleSelect() {
     const caseData = getCurrentProjectData();
+    if (!caseData) return;
+    
     const rules = caseData.rules;
     const searchText = document.getElementById('ruleSearch').value.toLowerCase();
     
@@ -167,6 +312,7 @@ function updateRuleSelect() {
     
     if (currentRule) {
         document.getElementById('currentRuleName').innerText = currentRule;
+        buildDateSelect();
         debouncedRenderCharts();
     } else {
         document.getElementById('currentRuleName').innerText = '未选择';
@@ -188,7 +334,7 @@ function getCurrentToolDataOptimized() {
     }
     
     const projectData = getCurrentProjectData();
-    if (!projectData.rule_data[currentRule]) return null;
+    if (!projectData || !projectData.rule_data[currentRule]) return null;
     
     cachedToolData[currentRule] = {
         projectId: casename,
@@ -204,22 +350,24 @@ function getCurrentToolDataOptimized() {
 }
 
 function clearCharts() {
-    Object.keys(charts).forEach(key => {
-        if (charts[key]) {
-            charts[key].clear();
+    Object.values(charts).forEach(chart => {
+        if (chart && !chart.isDisposed()) {
+            chart.clear();
         }
     });
     
-    ['stats-runtime', 'stats-memory', 'stats-cores'].forEach(id => {
+    ['stats-time-runtime', 'stats-time-memory', 'stats-thread-runtime', 'stats-thread-memory', 'stats-cores'].forEach(id => {
         const element = document.getElementById(id);
         if (element) {
-            element.innerHTML = '<div class="stat-card">请选择阶段</div>';
+            element.innerHTML = '<div class="stat-card"><div class="stat-label">暂无数据</div><div class="stat-value">—</div></div>';
         }
     });
     
     lastRenderedDataHash = {
-        runtime: '',
-        memory: '',
+        timeRuntime: '',
+        timeMemory: '',
+        threadRuntime: '',
+        threadMemory: '',
         cores: ''
     };
 }
@@ -227,7 +375,7 @@ function clearCharts() {
 function updateStats(containerId, data, unit, label) {
     const validData = data.filter(v => v !== null && v !== undefined && v > 0);
     if (validData.length === 0) {
-        document.getElementById(containerId).innerHTML = '<div class="stat-card">暂无数据</div>';
+        document.getElementById(containerId).innerHTML = '<div class="stat-card"><div class="stat-label">暂无数据</div><div class="stat-value">—</div></div>';
         return;
     }
     const total = validData.reduce((a, b) => a + b, 0);
@@ -236,60 +384,189 @@ function updateStats(containerId, data, unit, label) {
     const min = Math.min(...validData);
     
     document.getElementById(containerId).innerHTML = `
-        <div class="stat-card"><div class="stat-label">📊 总${label}</div><div class="stat-value">${total.toFixed(1)}<span class="stat-unit">${unit}</span></div></div>
-        <div class="stat-card"><div class="stat-label">⚡ 平均${label}</div><div class="stat-value">${avg}<span class="stat-unit">${unit}</span></div></div>
-        <div class="stat-card"><div class="stat-label">📈 最大${label}</div><div class="stat-value">${max}<span class="stat-unit">${unit}</span></div></div>
-        <div class="stat-card"><div class="stat-label">📉 最小${label}</div><div class="stat-value">${min}<span class="stat-unit">${unit}</span></div></div>
+        <div class="stat-card">
+            <div class="stat-label">📊 总${label}</div>
+            <div class="stat-value">${total.toFixed(1)}<span class="stat-unit">${unit}</span></div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">⚡ 平均${label}</div>
+            <div class="stat-value">${avg}<span class="stat-unit">${unit}</span></div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">📈 最大${label}</div>
+            <div class="stat-value">${max}<span class="stat-unit">${unit}</span></div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">📉 最小${label}</div>
+            <div class="stat-value">${min}<span class="stat-unit">${unit}</span></div>
+        </div>
     `;
 }
 
-// 优化版图表渲染 - 支持MR更新高亮
-function renderEChartOptimized(chartType, dataKey, color, highlightColor, yAxisName, yAxisFormatter = null) {
+function renderMultiModeChart(chartObject, dataKey, color, highlightColor, yAxisName, statsContainerId, yAxisFormatter = null) {
     const toolData = getCurrentToolDataOptimized();
     if (!toolData) {
-        if (charts[chartType]) {
-            charts[chartType].clear();
-        }
+        if (chartObject && !chartObject.isDisposed()) chartObject.clear();
         return;
     }
-    
-    const filteredData = getFilteredToolData(toolData);
-    const dates = filteredData.dates;
-    const values = filteredData[dataKey];
-    
-    const dataHash = simpleHash(JSON.stringify({dates, values, currentRule, selectedDates: selectedDates.slice(), mrUpdateDates}));
-    if (lastRenderedDataHash[chartType] === dataHash && charts[chartType] && !charts[chartType].isDisposed()) {
-        return;
+
+    const threadMetrics = toolData.thread_metrics || {};
+    const selectedThreadCounts = getSelectedThreadCounts();
+    const threadIds = Object.keys(threadMetrics)
+        .filter(id => selectedThreadCounts.includes(id))
+        .sort((a, b) => parseInt(a, 10) - parseInt(b, 10));
+
+    if (!threadIds.length) {
+        threadIds.push('0');
     }
-    lastRenderedDataHash[chartType] = dataHash;
-    
-    const validValues = values.filter(v => v !== null && v !== undefined);
-    
-    let unit = dataKey === 'runtimes' ? '秒' : (dataKey === 'memories' ? 'MB' : '核心');
-    let label = dataKey === 'runtimes' ? 'Runtime' : (dataKey === 'memories' ? 'Memory' : 'CPU核心数');
-    updateStats(`stats-${chartType}`, values, unit, label);
-    
-    const avgValue = validValues.length > 0 
-        ? (validValues.reduce((a, b) => a + b, 0) / validValues.length).toFixed(1)
-        : 0;
-    
-    // 构建数据点样式 - 有MR更新的点用红色
-    const seriesData = values.map((value, index) => {
-        const date = dates[index];
-        const hasMrUpdate = mrUpdateDates[date] && mrUpdateDates[date] !== 'undefined';
-        
+
+    const selectedDateList = selectedDates.length ? selectedDates : [toolData.dates[toolData.dates.length - 1]];
+    const dateIndices = selectedDateList
+        .map(date => ({ date, index: toolData.dates.indexOf(date) }))
+        .filter(item => item.index >= 0);
+
+    const seriesList = dateIndices.map((item, idx) => {
+        const values = threadIds.map(threadId => {
+            const threadInfo = threadMetrics[threadId] || {};
+            const metrics = threadInfo[dataKey] || [];
+            return metrics[item.index] != null ? metrics[item.index] : null;
+        });
+        const palette = ['#3b82f6', '#f97316', '#10b981', '#8b5cf6', '#eab308', '#06b6d4', '#fb7185', '#a855f7'];
         return {
-            value: value,
-            itemStyle: hasMrUpdate ? {
-                color: highlightColor,
-                borderColor: '#fff',
-                borderWidth: 2
-            } : undefined,
-            symbol: hasMrUpdate ? 'circle' : 'circle',
-            symbolSize: hasMrUpdate ? 10 : 6
+            name: item.date,
+            type: 'line',
+            data: values,
+            smooth: false,
+            lineStyle: { width: 2, color: palette[idx % palette.length] },
+            showSymbol: true,
+            symbol: 'circle',
+            symbolSize: 6,
+            connectNulls: false
         };
     });
+
+    const allValues = seriesList.flatMap(series => series.data).filter(v => v !== null && v !== undefined && v > 0);
+    updateStats(statsContainerId, allValues, dataKey === 'runtimes' ? '秒' : 'MB', dataKey === 'runtimes' ? 'Runtime' : 'Memory');
+    updateDateSelectionInfo();
+
+    const option = {
+        backgroundColor: 'transparent',
+        tooltip: {
+            trigger: 'axis',
+            axisPointer: { type: 'shadow' },
+            backgroundColor: 'rgba(15, 23, 42, 0.96)',
+            borderColor: '#3b82f6',
+            borderWidth: 1,
+            textStyle: { color: '#f1f5f9', fontSize: 12 },
+            formatter: (params) => {
+                if (!params || !params.length) return '';
+                const lines = params.map(p => `${p.seriesName}: ${p.value != null ? p.value : '−'} ${dataKey === 'runtimes' ? '秒' : 'MB'}`);
+                return `<strong>线程数: ${params[0]?.axisValue || ''}</strong><br/>${lines.join('<br/>')}`;
+            }
+        },
+        grid: { left: '8%', right: '5%', top: '12%', bottom: '8%', containLabel: true },
+        xAxis: {
+            type: 'category',
+            data: threadIds.map(id => `线程 ${id}`),
+            axisLabel: { color: '#94a3b8', fontSize: 11 },
+            axisLine: { lineStyle: { color: '#475569' } }
+        },
+        yAxis: {
+            type: 'value',
+            name: yAxisName,
+            nameTextStyle: { color: '#cbd5e1', fontSize: 12 },
+            axisLabel: { color: '#94a3b8', fontSize: 11, formatter: yAxisFormatter },
+            axisLine: { lineStyle: { color: '#475569' } },
+            splitLine: { lineStyle: { color: 'rgba(71, 85, 105, 0.3)', type: 'dashed' } }
+        },
+        legend: {
+            data: seriesList.map(item => item.name),
+            textStyle: { color: '#cbd5e1', fontSize: 11 },
+            right: 10,
+            top: 0
+        },
+        toolbox: {
+            feature: {
+                saveAsImage: { title: '保存为图片', backgroundColor: 'rgba(15, 23, 42, 0.8)' }
+            }
+        },
+        series: seriesList
+    };
+
+    if (chartObject && !chartObject.isDisposed()) {
+        chartObject.setOption(option, { notMerge: false, lazyUpdate: true });
+    }
+}
+
+function renderEChartOptimized(chartObject, chartKey, dataKey, color, highlightColor, yAxisName, statsContainerId, yAxisFormatter = null) {
+    const toolData = getCurrentToolDataOptimized();
+    if (!toolData) {
+        if (chartObject && !chartObject.isDisposed()) chartObject.clear();
+        return;
+    }
+
+    const filteredData = getFilteredToolData(toolData);
+    const dates = filteredData.dates;
+
+    const threadMetrics = toolData.thread_metrics || {};
+    if (!threadMetrics['0'] && filteredData.runtimes && filteredData.runtimes.length) {
+        threadMetrics['0'] = {
+            runtimes: filteredData.runtimes,
+            memories: filteredData.memories,
+            cores: filteredData.cores
+        };
+    }
+
+    const threadIds = Object.keys(threadMetrics).sort((a, b) => parseInt(a, 10) - parseInt(b, 10));
+    const selectedThreadCounts = getSelectedThreadCounts();
+    const legendSelectedMap = {};
+    threadIds.forEach(threadId => {
+        legendSelectedMap[`线程 ${threadId}`] = selectedThreadCounts.includes(threadId);
+    });
+
+    const palette = ['#3b82f6', '#f97316', '#10b981', '#8b5cf6', '#eab308', '#06b6d4', '#fb7185', '#a855f7'];
     
+    const seriesList = threadIds.map((threadId, index) => {
+        const threadInfo = threadMetrics[threadId] || {
+            runtimes: new Array(dates.length).fill(null),
+            memories: new Array(dates.length).fill(null),
+            cores: new Array(dates.length).fill(null)
+        };
+        const values = threadInfo[dataKey] || new Array(dates.length).fill(null);
+        const seriesColor = palette[index % palette.length];
+
+        return {
+            name: `线程 ${threadId}`,
+            type: 'line',
+            data: values.map((value, idx) => {
+                const date = dates[idx];
+                const hasMrUpdate = mrUpdateDates[date] && mrUpdateDates[date] !== 'undefined';
+                return {
+                    value: value,
+                    itemStyle: hasMrUpdate ? { color: highlightColor, borderColor: '#fff', borderWidth: 2 } : undefined,
+                    symbol: 'circle',
+                    symbolSize: hasMrUpdate ? 10 : 6
+                };
+            }),
+            smooth: false,
+            lineStyle: { width: 2, color: seriesColor, shadowBlur: 4, shadowColor: seriesColor },
+            areaStyle: { opacity: 0.06, color: seriesColor },
+            connectNulls: false,
+            animation: false,
+            showSymbol: false
+        };
+    });
+
+    const allValues = seriesList
+        .filter(series => selectedThreadCounts.includes(series.name.replace('线程 ', '')))
+        .flatMap(series => series.data.map(item => item.value))
+        .filter(v => v !== null && v !== undefined && v > 0);
+    
+    updateStats(statsContainerId, allValues, dataKey === 'runtimes' ? '秒' : 'MB', dataKey === 'runtimes' ? 'Runtime' : 'Memory');
+    updateDateSelectionInfo();
+
+    const avgValue = allValues.length > 0 ? (allValues.reduce((a, b) => a + b, 0) / allValues.length).toFixed(1) : 0;
+
     const option = {
         backgroundColor: 'transparent',
         tooltip: {
@@ -298,52 +575,28 @@ function renderEChartOptimized(chartType, dataKey, color, highlightColor, yAxisN
             backgroundColor: 'rgba(15, 23, 42, 0.96)',
             borderColor: color,
             borderWidth: 1,
-            textStyle: { color: '#f1f5f9', fontSize: 12, fontFamily: 'monospace' },
+            textStyle: { color: '#f1f5f9', fontSize: 12 },
             formatter: function(params) {
                 if (!params || params.length === 0) return '';
-                const dataPoint = params[0];
-                const value = dataPoint.value;
-                const date = dataPoint.axisValue;
-                let valueText = '';
-                let mrComment = mrUpdateDates[date] || '';
-                
-                if (dataKey === 'runtimes') {
-                    valueText = `${value} 秒`;
-                } else if (dataKey === 'memories') {
-                    valueText = `${value} MB`;
-                } else {
-                    valueText = `${value} 核心`;
-                }
-                
+                const rows = params.map(point => {
+                    const value = point.value?.value ?? point.value;
+                    return `<div style="margin-bottom:4px;"><strong>${point.seriesName}</strong> ${value} ${dataKey === 'runtimes' ? '秒' : 'MB'}</div>`;
+                }).join('');
+                const date = params[0].axisValue;
+                const mrComment = mrUpdateDates[date] || '';
                 const hasMr = mrComment && mrComment !== 'undefined';
-                const mrStyle = hasMr ? 'color: #ef4444; font-weight: bold;' : 'color: #94a3b8;';
-                
                 return `
                     <strong>📅 ${date}</strong><br/>
-                    <span style="color: ${color};">${label}: ${valueText}</span><br/>
-                    <span style="${mrStyle}">🔧 MR更新: ${mrComment || '无'}</span><br/>
-                    <span style="color: #94a3b8;">📊 阶段: ${currentRule}</span>
+                    ${rows}
+                    <span style="${hasMr ? 'color: #ef4444;' : 'color: #94a3b8;'}">🔧 MR更新: ${mrComment || '无'}</span>
                 `;
             }
         },
-        grid: {
-            left: '8%',
-            right: '5%',
-            top: '15%',
-            bottom: '10%',
-            containLabel: true,
-            backgroundColor: 'rgba(15, 23, 42, 0.3)',
-            borderWidth: 0
-        },
+        grid: { left: '8%', right: '5%', top: '12%', bottom: '8%', containLabel: true },
         xAxis: {
             type: 'category',
             data: dates,
-            axisLabel: {
-                rotate: dates.length > 10 ? 30 : 0,
-                color: '#94a3b8',
-                fontSize: 11,
-                interval: Math.floor(dates.length / 10)
-            },
+            axisLabel: { rotate: dates.length > 10 ? 30 : 0, color: '#94a3b8', fontSize: 11, interval: Math.floor(dates.length / 10) },
             axisLine: { lineStyle: { color: '#475569' } },
             axisTick: { show: false }
         },
@@ -351,43 +604,17 @@ function renderEChartOptimized(chartType, dataKey, color, highlightColor, yAxisN
             type: 'value',
             name: yAxisName,
             nameTextStyle: { color: '#cbd5e1', fontSize: 12 },
-            axisLabel: {
-                color: '#94a3b8',
-                fontSize: 11,
-                formatter: yAxisFormatter
-            },
+            axisLabel: { color: '#94a3b8', fontSize: 11, formatter: yAxisFormatter },
             axisLine: { lineStyle: { color: '#475569' } },
             splitLine: { lineStyle: { color: 'rgba(71, 85, 105, 0.3)', type: 'dashed' } }
         },
         series: [
-            {
-                name: label,
-                type: 'line',
-                data: seriesData,
-                smooth: false,
-                lineStyle: { 
-                    width: 2, 
-                    color: color, 
-                    shadowBlur: 8, 
-                    shadowColor: color 
-                },
-                areaStyle: {
-                    opacity: 0.15,
-                    color: color
-                },
-                connectNulls: false,
-                animation: false
-            },
+            ...seriesList,
             {
                 name: '平均值',
                 type: 'line',
                 data: new Array(dates.length).fill(parseFloat(avgValue)),
-                lineStyle: {
-                    width: 1.5,
-                    color: '#f59e0b',
-                    type: 'dashed',
-                    shadowBlur: 0
-                },
+                lineStyle: { width: 1.5, color: '#f59e0b', type: 'dashed' },
                 symbol: 'none',
                 smooth: false,
                 emphasis: { scale: false },
@@ -395,93 +622,121 @@ function renderEChartOptimized(chartType, dataKey, color, highlightColor, yAxisN
             }
         ],
         legend: {
+            data: seriesList.map(s => s.name),
+            selected: legendSelectedMap,
+            selectedMode: 'multiple',
             textStyle: { color: '#cbd5e1', fontSize: 11 },
             right: 10,
             top: 0,
             itemWidth: 25,
-            itemHeight: 12
+            itemHeight: 12,
+            formatter: name => name.replace('线程 ', '')
         },
         toolbox: {
             feature: {
                 saveAsImage: { title: '保存为图片', backgroundColor: 'rgba(15, 23, 42, 0.8)' },
                 zoom: { title: { zoom: '区域缩放', back: '还原' } }
             },
-            iconStyle: { borderColor: '#94a3b8' },
-            emphasis: { iconStyle: { borderColor: color } }
+            iconStyle: { borderColor: '#94a3b8' }
         }
     };
-    
-    if (charts[chartType] && !charts[chartType].isDisposed()) {
-        charts[chartType].setOption(option, {
-            notMerge: false,
-            lazyUpdate: true
-        });
+
+    const newHash = simpleHash(JSON.stringify({ dates, selectedThreads, currentRule, mrUpdateDates, chartKey, dataKey, allValues }));
+    if (lastRenderedDataHash[chartKey] === newHash && chartObject && !chartObject.isDisposed()) {
+        return;
+    }
+    lastRenderedDataHash[chartKey] = newHash;
+
+    if (chartObject && !chartObject.isDisposed()) {
+        chartObject.setOption(option, { notMerge: false, lazyUpdate: true });
     }
 }
+
+const throttledRefresh = throttle(() => {
+    if (currentRule) refreshAllCharts();
+}, 100);
 
 function refreshAllCharts() {
     if (!currentRule) {
         clearCharts();
         return;
     }
-    
+
     requestAnimationFrame(() => {
-        renderEChartOptimized('runtime', 'runtimes', chartColors.runtime, chartColors.runtimeHighlight, 'Runtime (秒)');
-        renderEChartOptimized('memory', 'memories', chartColors.memory, chartColors.memory, 'Memory (MB)', function(value) {
-            if (value >= 1024) {
-                return (value / 1024).toFixed(1) + ' GB';
-            }
-            return value + ' MB';
-        });
+        if (activeSection === 'section-thread') {
+            renderMultiModeChart(charts.threadRuntime, 'runtimes', chartColors.runtime, chartColors.runtimeHighlight, 'Runtime (秒)', 'stats-thread-runtime');
+            renderMultiModeChart(charts.threadMemory, 'memories', chartColors.memory, chartColors.memory, 'Memory (MB)', 'stats-thread-memory', 
+                value => value >= 1024 ? (value / 1024).toFixed(1) + ' GB' : value + ' MB');
+        } else if (activeSection === 'section-time') {
+            renderEChartOptimized(charts.timeRuntime, 'timeRuntime', 'runtimes', chartColors.runtime, chartColors.runtimeHighlight, 'Runtime (秒)', 'stats-time-runtime');
+            renderEChartOptimized(charts.timeMemory, 'timeMemory', 'memories', chartColors.memory, chartColors.memory, 'Memory (MB)', 'stats-time-memory',
+                value => value >= 1024 ? (value / 1024).toFixed(1) + ' GB' : value + ' MB');
+        }
     });
 }
 
 function initCharts() {
-    const runtimeChartDom = document.getElementById('chart-runtime');
-    const memoryChartDom = document.getElementById('chart-memory');
-    const coresChartDom = document.getElementById('chart-cores');
+    const chartDoms = {
+        timeRuntime: 'chart-time-runtime',
+        timeMemory: 'chart-time-memory',
+        threadRuntime: 'chart-thread-runtime',
+        threadMemory: 'chart-thread-memory',
+        cores: 'chart-cores'
+    };
 
-    if (runtimeChartDom && !charts.runtime) {
-        charts.runtime = echarts.init(runtimeChartDom, null, {
-            renderer: 'canvas',
-            useDirtyRect: false
+    Object.entries(chartDoms).forEach(([key, id]) => {
+        const dom = document.getElementById(id);
+        if (dom && !charts[key]) {
+            charts[key] = echarts.init(dom, null, { renderer: 'canvas', useDirtyRect: false });
+        }
+    });
+
+    function attachLegendSync(chart) {
+        if (!chart || chart._legendSyncAttached) return;
+        chart.on('legendselectchanged', (params) => {
+            const selectedThreadNames = Object.entries(params.selected)
+                .filter(([name, selected]) => selected && name.startsWith('线程 '))
+                .map(([name]) => name.replace('线程 ', ''));
+            const normalizedThreads = selectedThreadNames.length ? selectedThreadNames : ['0'];
+            const sortedOld = [...selectedThreads].sort();
+            const sortedNew = [...normalizedThreads].sort();
+            if (sortedOld.join(',') !== sortedNew.join(',')) {
+                selectedThreads = normalizedThreads;
+                refreshAllCharts();
+            }
         });
+        chart._legendSyncAttached = true;
     }
-    if (memoryChartDom && !charts.memory) {
-        charts.memory = echarts.init(memoryChartDom, null, {
-            renderer: 'canvas',
-            useDirtyRect: false
-        });
-    }
-    if (coresChartDom && !charts.cores) {
-        charts.cores = echarts.init(coresChartDom, null, {
-            renderer: 'canvas',
-            useDirtyRect: false
-        });
-    }
+
+    attachLegendSync(charts.timeRuntime);
+    attachLegendSync(charts.timeMemory);
+    attachLegendSync(charts.threadRuntime);
+    attachLegendSync(charts.threadMemory);
     
     const resizeHandler = debounce(() => {
         Object.values(charts).forEach(chart => {
-            if (chart && !chart.isDisposed()) {
-                chart.resize();
-            }
+            if (chart && !chart.isDisposed()) chart.resize();
         });
     }, 200);
     window.addEventListener('resize', resizeHandler);
+
+    buildThreadFilter();
+    document.querySelectorAll('.mode-btn').forEach(btn => {
+        btn.addEventListener('click', () => setMode(btn.dataset.mode));
+    });
 }
 
 function showNotification(message, isError = false) {
     const notification = document.createElement('div');
-    notification.className = 'notification' + (isError ? ' error' : '');
-    notification.innerHTML = isError ? '❌ ' + message : '✅ ' + message;
+    notification.className = `notification ${isError ? 'error' : 'success'}`;
+    notification.innerHTML = isError ? `❌ ${message}` : `✅ ${message}`;
     document.body.appendChild(notification);
     setTimeout(() => {
-        notification.style.animation = 'slideIn 0.3s ease reverse';
+        notification.style.animation = 'slideInRight 0.3s ease reverse';
         setTimeout(() => notification.remove(), 300);
     }, 3000);
 }
 
-// 检查数据更新（轻量级）
 async function checkForUpdates() {
     try {
         const response = await fetch('/api/check_update', {
@@ -489,27 +744,28 @@ async function checkForUpdates() {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 tool: 'elint',
-                thread: 'single',
+                thread: currentMode,
                 version: currentDataVersion
             })
         });
         
         const result = await response.json();
         
+        const indicator = document.querySelector('.refresh-indicator');
         if (result.has_update) {
-            const refreshIndicator = document.querySelector('.refresh-indicator');
-            refreshIndicator.classList.add('has-update');
-            refreshIndicator.title = '发现新数据，点击刷新按钮更新';
+            if (indicator) {
+                indicator.classList.add('has-update');
+                indicator.title = '发现新数据，点击刷新按钮更新';
+            }
             showNotification('发现新数据，点击刷新按钮更新', false);
-        } else {
-            document.querySelector('.refresh-indicator')?.classList.remove('has-update');
+        } else if (indicator) {
+            indicator.classList.remove('has-update');
         }
     } catch (error) {
         console.error('检查更新失败:', error);
     }
 }
 
-// 完全刷新数据
 async function refreshData() {
     const refreshBtn = document.getElementById('refreshBtn');
     const originalText = refreshBtn?.innerHTML;
@@ -524,7 +780,7 @@ async function refreshData() {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 tool: 'elint',
-                thread: 'single'
+                thread: currentMode
             })
         });
         const result = await response.json();
@@ -533,14 +789,10 @@ async function refreshData() {
             Object.assign(projectsData, result.data);
             currentDataVersion = result.version;
             
-            // 更新MR更新映射
             mrUpdateDates = buildMrUpdateMap(result.perf);
-            
             cachedToolData = {};
             lastRenderedDataHash = {
-                runtime: '',
-                memory: '',
-                cores: ''
+                timeRuntime: '', timeMemory: '', threadRuntime: '', threadMemory: '', cores: ''
             };
             
             document.getElementById('lastUpdateTime').innerHTML = `最后更新: ${result.last_update}`;
@@ -568,8 +820,7 @@ async function refreshData() {
             
             updateRuleSelect();
             updateProjectStats();
-            populateDateSelector(getCurrentProjectData());
-            showNotification(`数据刷新成功！`);
+            showNotification('数据刷新成功！');
         } else {
             throw new Error(result.message || '刷新失败');
         }
@@ -605,24 +856,47 @@ function updateProjectStats() {
     }
     const avgRuntime = runtimeCount > 0 ? (totalRuntime / runtimeCount).toFixed(0) : 0;
     
-    document.getElementById('projectStats').innerHTML = `
+    const summaryHtml = `
         <div class="badge-item"><span>📊</span> 阶段数: ${rulesCount}</div>
         <div class="badge-item"><span>📅</span> 天数: ${datesCount}</div>
         <div class="badge-item"><span>⏱️</span> 平均Runtime: ${avgRuntime} min</div>
     `;
-    document.getElementById('dateRange').innerText = projectData.dates[0] + ' 至 ' + projectData.dates[projectData.dates.length - 1];
-    document.getElementById('dataPoints').innerText = projectData.dates.length;
+    document.getElementById('projectStats').innerHTML = summaryHtml;
+    const rightSummary = document.getElementById('rightSummary');
+    if (rightSummary) {
+        rightSummary.innerHTML = `
+            <div class="summary-card"><div class="stat-label">阶段数</div><div class="stat-value">${rulesCount}</div></div>
+            <div class="summary-card"><div class="stat-label">天数</div><div class="stat-value">${datesCount}</div></div>
+            <div class="summary-card"><div class="stat-label">平均 Runtime</div><div class="stat-value">${avgRuntime} min</div></div>
+        `;
+    }
+    updateDateSelectionInfo();
 }
 
 function setupSearchListener() {
     const searchInput = document.getElementById('ruleSearch');
-    const debouncedUpdate = debounce(() => {
-        updateRuleSelect();
-    }, 300);
-    
+    const debouncedUpdate = debounce(() => updateRuleSelect(), 300);
     if (searchInput) {
         searchInput.addEventListener('input', debouncedUpdate);
     }
+}
+
+function switchSection(sectionId) {
+    activeSection = sectionId;
+    document.querySelectorAll('.sidebar-item').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.section === sectionId);
+    });
+    document.querySelectorAll('.section-panel').forEach(panel => {
+        panel.classList.toggle('active', panel.id === sectionId);
+    });
+
+    if (sectionId === 'section-thread') {
+        setMode('multi');
+    } else if (sectionId === 'section-time') {
+        setMode('single');
+    }
+
+    refreshAllCharts();
 }
 
 function switchTab(tabId) {
@@ -632,21 +906,13 @@ function switchTab(tabId) {
     document.querySelector(`.tab-btn[data-tab="${tabId}"]`).classList.add('active');
     
     setTimeout(() => {
-        const chart = charts[tabId];
-        if (chart && !chart.isDisposed()) {
-            chart.resize();
-        }
+        const chart = charts[tabId === 'runtime' ? 'runtime' : 'memory'];
+        if (chart && !chart.isDisposed()) chart.resize();
     }, 100);
 }
 
-// 页面刷新前检查数据变化
 function setupBeforeUnloadHandler() {
-    let hasPendingRefresh = false;
-    
-    window.addEventListener('beforeunload', function(e) {
-        if (hasPendingRefresh) return;
-        
-        // 异步刷新数据（不会阻塞页面关闭）
+    window.addEventListener('beforeunload', function() {
         fetch('/api/check_update', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -658,19 +924,14 @@ function setupBeforeUnloadHandler() {
         }).then(response => response.json())
           .then(result => {
               if (result.has_update) {
-                  // 数据有更新，在页面加载完成后刷新
                   sessionStorage.setItem('needsRefresh', 'true');
               }
-          })
-          .catch(() => {});
+          }).catch(() => {});
     });
     
-    // 页面加载完成后检查是否需要刷新
     if (sessionStorage.getItem('needsRefresh') === 'true') {
         sessionStorage.removeItem('needsRefresh');
-        setTimeout(() => {
-            refreshData();
-        }, 500);
+        setTimeout(() => refreshData(), 500);
     }
 }
 
@@ -679,6 +940,15 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
     btn.addEventListener('click', () => switchTab(btn.dataset.tab));
 });
 
+document.querySelectorAll('.sidebar-item').forEach(btn => {
+    btn.addEventListener('click', () => switchSection(btn.dataset.section));
+});
+
+const openComparePageBtn = document.getElementById('openComparePageBtn');
+if (openComparePageBtn) {
+    openComparePageBtn.addEventListener('click', () => window.open('/compare', '_blank'));
+}
+
 const caseSelect = document.getElementById('caseSelect');
 if (caseSelect) {
     caseSelect.addEventListener('change', (e) => {
@@ -686,13 +956,87 @@ if (caseSelect) {
         currentRule = null;
         cachedToolData = {};
         lastRenderedDataHash = {
-            runtime: '',
-            memory: '',
-            cores: ''
+            timeRuntime: '', timeMemory: '', threadRuntime: '', threadMemory: '', cores: ''
         };
         updateRuleSelect();
+        buildDateSelect();
         updateProjectStats();
-        populateDateSelector(getCurrentProjectData());
+    });
+}
+
+const dateFilterInput = document.getElementById('dateFilterInput');
+if (dateFilterInput) {
+    dateFilterInput.addEventListener('input', debounce(() => buildDateSelect(true), 150));
+}
+
+const openDatePickerBtn = document.getElementById('openDatePickerBtn');
+if (openDatePickerBtn) {
+    openDatePickerBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        openDatePickerModal();
+    });
+}
+
+const closeDatePickerBtn = document.getElementById('closeDatePickerBtn');
+if (closeDatePickerBtn) {
+    closeDatePickerBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        closeDatePickerModal();
+    });
+}
+
+const cancelDateSelectionBtn = document.getElementById('cancelDateSelectionBtn');
+if (cancelDateSelectionBtn) {
+    cancelDateSelectionBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        closeDatePickerModal();
+    });
+}
+
+const confirmDateSelectionBtn = document.getElementById('confirmDateSelectionBtn');
+if (confirmDateSelectionBtn) {
+    confirmDateSelectionBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        confirmDatePickerSelection();
+    });
+}
+
+const datePickerOverlay = document.getElementById('datePickerOverlay');
+if (datePickerOverlay) {
+    datePickerOverlay.addEventListener('click', () => closeDatePickerModal());
+}
+
+const modalRecentBtn = document.getElementById('modalRecentBtn');
+if (modalRecentBtn) {
+    modalRecentBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        pendingSelectedDates = availableDates.slice(-MAX_DEFAULT_POINTS);
+        buildDateSelect(true);
+    });
+}
+
+const modalAllDatesBtn = document.getElementById('modalAllDatesBtn');
+if (modalAllDatesBtn) {
+    modalAllDatesBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        pendingSelectedDates = [...availableDates];
+        buildDateSelect(true);
+    });
+}
+
+const selectRecentBtn = document.getElementById('selectRecentBtn');
+if (selectRecentBtn) {
+    selectRecentBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        resetDateSelection(false);
+    });
+}
+
+const selectAllDatesBtn = document.getElementById('selectAllDatesBtn');
+if (selectAllDatesBtn) {
+    selectAllDatesBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        resetDateSelection(true);
     });
 }
 
@@ -710,45 +1054,6 @@ if (ruleSelect) {
     });
 }
 
-const dateSelect = document.getElementById('dateSelect');
-if (dateSelect) {
-    dateSelect.addEventListener('change', () => {
-        updateSelectedDatesFromSelector();
-        debouncedRenderCharts();
-    });
-}
-
-const selectQorDatesBtn = document.getElementById('selectQorDatesBtn');
-if (selectQorDatesBtn) {
-    selectQorDatesBtn.addEventListener('click', () => {
-        const projectData = getCurrentProjectData();
-        if (!projectData || !projectData.available_dates) return;
-        setDateSelectValues(projectData.available_dates);
-        debouncedRenderCharts();
-    });
-}
-
-const selectLatest51Btn = document.getElementById('selectLatest51Btn');
-if (selectLatest51Btn) {
-    selectLatest51Btn.addEventListener('click', () => {
-        const projectData = getCurrentProjectData();
-        if (!projectData) return;
-        const defaultSelection = getDefaultSelectedDates(projectData);
-        setDateSelectValues(defaultSelection);
-        debouncedRenderCharts();
-    });
-}
-
-const selectAllDatesBtn = document.getElementById('selectAllDatesBtn');
-if (selectAllDatesBtn) {
-    selectAllDatesBtn.addEventListener('click', () => {
-        const projectData = getCurrentProjectData();
-        if (!projectData) return;
-        setDateSelectValues(projectData.dates || []);
-        debouncedRenderCharts();
-    });
-}
-
 const refreshBtn = document.getElementById('refreshBtn');
 if (refreshBtn) {
     refreshBtn.addEventListener('click', () => refreshData());
@@ -757,24 +1062,15 @@ if (refreshBtn) {
 // 初始化
 initCharts();
 setupSearchListener();
-
-populateDateSelector(getCurrentProjectData());
-
-// 初始化MR更新映射
 mrUpdateDates = buildMrUpdateMap(perf);
-
 updateRuleSelect();
 updateProjectStats();
 
 // 启动定期检查更新（每30秒）
 setInterval(checkForUpdates, 30000);
-
-// 设置页面刷新处理
 setupBeforeUnloadHandler();
 
 // 延迟首次渲染
 setTimeout(() => {
-    if (currentRule) {
-        refreshAllCharts();
-    }
+    if (currentRule) refreshAllCharts();
 }, 200);

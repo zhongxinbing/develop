@@ -25,6 +25,7 @@ def open_browser():
 # ==================================================
 if __name__ == '__main__':
     local_ip = get_local_ip()
+
     log(f"启动服务器: http://{local_ip}:{CONFIG['port']}")
     log(f"本地访问: http://127.0.0.1:{CONFIG['port']}")
     

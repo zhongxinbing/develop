@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>现代网页布局设计 | 经典结构示例</title>
+    <!-- 使用简洁的CSS重置 + 自定义布局样式 -->
+    <style>
+        /* ---------- RESET & 基础变量 ---------- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: system-ui, 'Segoe UI', 'Roboto', 'Helvetica Neue', sans-serif;
+            background-color: #f5f7fb;
+            color: #1e293b;
+            line-height: 1.5;
+        }
+
+        /* 容器：限制最大宽度并居中 */
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* 通用样式辅助 */
+        img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        /* 按钮风格 */
+        .btn {
+            display: inline-block;
+            background-color: #3b82f6;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 40px;
+            font-weight: 500;
+            transition: background 0.2s ease;
+            border: none;
+            cursor: pointer;
+            font-size: 0.95rem;
+        }
+
+        .btn:hover {
+            background-color: #2563eb;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid #3b82f6;
+            color: #3b82f6;
+        }
+
+        .btn-outline:hover {
+            background: #3b82f6;
+            color: white;
+        }
+
+        /* ---------- 头部导航 (Flex布局) ---------- */
+        .header {
+            background-color: white;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            padding: 16px 0;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #3b82f6, #06b6d4);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            letter-spacing: -0.5px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+            font-weight: 500;
+        }
+
+        .nav-links a {
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: #3b82f6;
+        }
+
+        /* 移动端菜单简单适配 (flex wrap 友好) */
+        @media (max-width: 680px) {
+            .navbar {
+                flex-direction: column;
+                gap: 12px;
+            }
+            .nav-links {
+                gap: 1.2rem;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+        }
+
+        /* ---------- Hero区块 (网格 / Flex 混合) ---------- */
+        .hero {
+            background: linear-gradient(120deg, #eef2ff, #ffffff);
+            padding: 60px 0;
+            margin-bottom: 40px;
+            border-radius: 0 0 32px 32px;
+        }
+
+        .hero-grid {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 40px;
+        }
+
+        .hero-content {
+            flex: 1.2;
+            min-width: 260px;
+        }
+
+        .hero-content h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            line-height: 1.2;
+            margin-bottom: 1rem;
+            background: linear-gradient(145deg, #1e293b, #3b82f6);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .hero-content p {
+            font-size: 1.2rem;
+            color: #475569;
+            margin-bottom: 2rem;
+        }
+
+        .hero-image {
+            flex: 0.9;
+            background: #cbd5e1;
+            border-radius: 32px;
+            overflow: hidden;
+            box-shadow: 0 20px 30px -12px rgba(0,0,0,0.1);
+        }
+
+        /* ---------- 特性卡片区域 (Grid网格布局) 经典三列 ---------- */
+        .section-title {
+            text-align: center;
+            font-size: 2rem;
+            font-weight: 700;
+            margin: 48px 0 32px 0;
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            display: block;
+            width: 70px;
+            height: 4px;
+            background: #3b82f6;
+            margin: 12px auto 0;
+            border-radius: 4px;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 32px;
+            margin-bottom: 60px;
+        }
+
+        .feature-card {
+            background: white;
+            border-radius: 24px;
+            padding: 28px 20px;
+            text-align: center;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+            border: 1px solid #e9eef3;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 20px 25px -12px rgba(0,0,0,0.1);
+            border-color: #cbdffc;
+        }
+
+        .feature-icon {
+            font-size: 2.8rem;
+            margin-bottom: 18px;
+        }
+
+        .feature-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 12px;
+        }
+
+        .feature-card p {
+            color: #4b5563;
+        }
+
+        /* ---------- 双栏内容区 (Flex / 典型布局示例) ---------- */
+        .two-columns {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 40px;
+            margin: 40px 0 60px;
+            background: white;
+            border-radius: 32px;
+            padding: 40px 32px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.02);
+            border: 1px solid #eef2f8;
+        }
+
+        .col {
+            flex: 1;
+            min-width: 240px;
+        }
+
+        .col h2 {
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+            border-left: 5px solid #3b82f6;
+            padding-left: 20px;
+        }
+
+        .col p {
+            margin-bottom: 1rem;
+            color: #334155;
+        }
+
+        .info-list {
+            list-style: none;
+            margin-top: 20px;
+        }
+
+        .info-list li {
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .info-list li::before {
+            content: "✓";
+            color: #3b82f6;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        /* ---------- 卡片列表 (混合布局 / 简单网格) ---------- */
+        .gallery {
+            margin: 40px 0 60px;
+        }
+
+        .cards-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 28px;
+        }
+
+        .blog-card {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            transition: all 0.2s;
+            box-shadow: 0 6px 14px rgba(0,0,0,0.05);
+        }
+
+        .blog-card:hover {
+            transform: scale(1.02);
+            box-shadow: 0 20px 28px -12px rgba(0,0,0,0.15);
+        }
+
+        .card-img {
+            background: #94a3b8;
+            height: 160px;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .card-content {
+            padding: 20px;
+        }
+
+        .card-content h4 {
+            margin-bottom: 8px;
+            font-size: 1.25rem;
+        }
+
+        /* ---------- 侧边栏 + 主内容混合 (经典两列不对称) 使用grid 灵活展示 ---------- */
+        .mixed-layout {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 32px;
+            margin: 40px 0 60px;
+        }
+
+        .main-content {
+            background: white;
+            border-radius: 28px;
+            padding: 32px;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.02);
+            border: 1px solid #edf2f7;
+        }
+
+        .sidebar {
+            background: #f8fafc;
+            border-radius: 28px;
+            padding: 28px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .sidebar h3 {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #cbd5e1;
+            padding-bottom: 8px;
+        }
+
+        .sidebar ul {
+            list-style: none;
+        }
+
+        .sidebar li {
+            margin-bottom: 14px;
+            padding: 8px 0;
+            border-bottom: 1px dashed #cbd5e6;
+        }
+
+        .sidebar a:hover {
+            color: #3b82f6;
+        }
+
+        @media (max-width: 800px) {
+            .mixed-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* ---------- 页脚 (多列布局) ---------- */
+        .footer {
+            background-color: #0f172a;
+            color: #cbd5e1;
+            padding: 48px 0 24px;
+            margin-top: 60px;
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .footer-col h4 {
+            color: white;
+            margin-bottom: 20px;
+            font-size: 1.2rem;
+        }
+
+        .footer-col p, .footer-col a {
+            color: #94a3b8;
+            line-height: 1.6;
+        }
+
+        .footer-col a:hover {
+            color: white;
+        }
+
+        .copyright {
+            text-align: center;
+            padding-top: 24px;
+            border-top: 1px solid #1e293b;
+            font-size: 0.9rem;
+        }
+
+        /* 响应式微调 */
+        @media (max-width: 640px) {
+            .container {
+                padding: 0 20px;
+            }
+            .hero-content h1 {
+                font-size: 2.2rem;
+            }
+            .two-columns {
+                padding: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- 头部：导航栏布局 -->
+<header class="header">
+    <div class="container">
+        <nav class="navbar">
+            <div class="logo">LayoutHub</div>
+            <ul class="nav-links">
+                <li><a href="#">首页</a></li>
+                <li><a href="#">布局</a></li>
+                <li><a href="#">组件</a></li>
+                <li><a href="#">案例</a></li>
+                <li><a href="#">文档</a></li>
+            </ul>
+            <a href="#" class="btn" style="background: #1e293b;">开始设计</a>
+        </nav>
+    </div>
+</header>
+
+<main>
+    <!-- Hero区块：Flex 左右布局 -->
+    <section class="hero">
+        <div class="container hero-grid">
+            <div class="hero-content">
+                <h1>优雅、现代的<br>网页布局设计</h1>
+                <p>掌握网格、弹性盒与响应式技巧，构建灵活且富有层次的页面结构。从经典双栏到卡片网格，这里展示真实场景布局范例。</p>
+                <a href="#" class="btn">探索布局方式 →</a>
+                <a href="#" class="btn btn-outline" style="margin-left: 12px;">学习原理</a>
+            </div>
+            <div class="hero-image">
+                <!-- 示意占位图，或svg装饰 -->
+                <svg width="100%" height="220" viewBox="0 0 500 220" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+                    <rect width="500" height="220" fill="#e0e7ff" />
+                    <text x="25%" y="50%" font-size="24" fill="#3b82f6" font-weight="bold" dominant-baseline="middle">现代网页布局</text>
+                    <text x="25%" y="70%" font-size="16" fill="#475569">响应式 + 灵活网格</text>
+                </svg>
+            </div>
+        </div>
+    </section>
+
+    <div class="container">
+        <!-- 特性卡片区域 (Grid布局: 自适应列) -->
+        <h2 class="section-title">核心布局技术</h2>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">📐</div>
+                <h3>Flexbox</h3>
+                <p>一维布局神器，导航栏、侧边栏与内容对齐，灵活弹性，简洁强大。</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🧩</div>
+                <h3>CSS Grid</h3>
+                <p>二维布局系统，轻松构建复杂网格、卡片墙和整体页面骨架。</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📱</div>
+                <h3>响应式设计</h3>
+                <p>Media query + 相对单位，完美适配手机、平板和桌面端。</p>
+            </div>
+        </div>
+
+        <!-- 双栏内容区: Flex 典型布局示例 (文字+列表) -->
+        <div class="two-columns">
+            <div class="col">
+                <h2>为什么布局至关重要？</h2>
+                <p>好的网页布局不仅提升用户体验，还影响信息传达效率和SEO。结构清晰的HTML结合现代CSS能够让你的网站兼具美学与实用性。</p>
+                <p>从经典的文档流到浮动、定位，再到弹性盒与网格，每一次演进都赋予设计师更大的自由度。本示例整合了多种布局模式，提供参考与实践指南。</p>
+            </div>
+            <div class="col">
+                <h2>布局设计要点</h2>
+                <ul class="info-list">
+                    <li>明确的内容层级与视觉流</li>
+                    <li>合理的留白与间距系统</li>
+                    <li>移动优先的响应式策略</li>
+                    <li>可访问性与语义化HTML</li>
+                    <li>组件复用与模块化思路</li>
+                </ul>
+                <a href="#" class="btn" style="margin-top: 16px; background: #0f172a;">了解更多设计原则</a>
+            </div>
+        </div>
+
+        <!-- 卡片列表区域: 博客/动态新闻网格布局 -->
+        <div class="gallery">
+            <h2 class="section-title">最新设计案例</h2>
+            <div class="cards-group">
+                <article class="blog-card">
+                    <div class="card-img" style="background-image: linear-gradient(145deg, #60a5fa, #3b82f6);"></div>
+                    <div class="card-content">
+                        <h4>网格布局艺术</h4>
+                        <p>深入探讨Grid与auto-fit的高级用法，创造自适应的杂志风格页面。</p>
+                        <a href="#" style="color:#3b82f6; font-weight: 500;">阅读更多 →</a>
+                    </div>
+                </article>
+                <article class="blog-card">
+                    <div class="card-img" style="background-image: linear-gradient(145deg, #a78bfa, #8b5cf6);"></div>
+                    <div class="card-content">
+                        <h4>弹性盒实战</h4>
+                        <p>使用Flex实现完美导航、媒体对象与灵活的卡片组，告别浮动。</p>
+                        <a href="#" style="color:#3b82f6; font-weight: 500;">阅读更多 →</a>
+                    </div>
+                </article>
+                <article class="blog-card">
+                    <div class="card-img" style="background-image: linear-gradient(145deg, #f97316, #f59e0b);"></div>
+                    <div class="card-content">
+                        <h4>响应式布局技巧</h4>
+                        <p>从容器查询到视口单位，全面适配各种屏幕尺寸的新方法。</p>
+                        <a href="#" style="color:#3b82f6; font-weight: 500;">阅读更多 →</a>
+                    </div>
+                </article>
+            </div>
+        </div>
+
+        <!-- 混合布局: 主内容 + 侧边栏 (经典企业博客布局) -->
+        <div class="mixed-layout">
+            <div class="main-content">
+                <h2 style="margin-bottom: 1rem;">深入理解现代网页布局设计</h2>
+                <p style="margin-bottom: 1rem;">布局设计不仅仅是将元素放在合适的位置，更关乎内容的优先级与用户行为路径。随着CSS Grid和Flex的广泛支持，我们可以抛弃过去hack式的浮动清除，转而使用更直观的声明式布局。</p>
+                <p style="margin-bottom: 1rem;">例如，在复杂的仪表盘或内容密集页面，使用Grid定义整体框架，再配合Flex处理局部细节，是当前最主流的高效策略。同时使用媒体查询调整断点，确保在小屏设备上折叠为单列，提升可读性。</p>
+                <p>本页面本身展示了几种核心结构：弹性导航（Flex）、特性网格（Grid）、双栏文本区（Flex）、卡片组（Grid）以及主侧边栏（Grid + 独立组合）。这些模块可以任意组合，以适应不同场景的需求。</p>
+                <a href="#" class="btn" style="margin-top: 24px;">完整布局指南 →</a>
+            </div>
+            <aside class="sidebar">
+                <h3>布局资源推荐</h3>
+                <ul>
+                    <li><a href="#">📘 CSS Grid完全指南</a></li>
+                    <li><a href="#">🎨 Flexbox小游戏学习</a></li>
+                    <li><a href="#">📱 响应式断点设计模式</a></li>
+                    <li><a href="#">🛠 现代布局工具库对比</a></li>
+                    <li><a href="#">✨ 12列网格系统手写教程</a></li>
+                </ul>
+                <div style="margin-top: 30px;">
+                    <h3 style="font-size: 1.2rem; margin-bottom: 12px;">📢 小提示</h3>
+                    <p style="font-size: 0.9rem;">使用grid-template-areas可以让布局代码更具可读性，尤其适合复杂页面原型设计。</p>
+                </div>
+            </aside>
+        </div>
+        
+        <!-- 额外附加：横向CTA横幅 (简单布局示例) -->
+        <div style="background: linear-gradient(110deg, #1e293b, #0f172a); border-radius: 40px; padding: 40px 32px; margin: 40px 0; text-align: center; color: white;">
+            <h3 style="font-size: 1.8rem; margin-bottom: 12px;">开始构建您的响应式布局</h3>
+            <p style="margin-bottom: 24px; opacity: 0.9;">结合Flex与Grid，创造任何你想象得到的网页结构，灵活控制每一处间距和排列。</p>
+            <a href="#" class="btn" style="background: #facc15; color: #0f172a;">查看布局模板库 →</a>
+        </div>
+    </div>
+</main>
+
+<!-- 页脚部分：多列网格布局 -->
+<footer class="footer">
+    <div class="container">
+        <div class="footer-grid">
+            <div class="footer-col">
+                <h4>LayoutHub</h4>
+                <p>现代网页布局学习与实践平台，提供真实场景示例、代码片段以及设计趋势。</p>
+            </div>
+            <div class="footer-col">
+                <h4>布局模块</h4>
+                <p><a href="#">Flex 导航</a></p>
+                <p><a href="#">网格图库</a></p>
+                <p><a href="#">侧边栏结构</a></p>
+                <p><a href="#">响应式卡片</a></p>
+            </div>
+            <div class="footer-col">
+                <h4>资源</h4>
+                <p><a href="#">MDN布局文档</a></p>
+                <p><a href="#">现代CSS解决方案</a></p>
+                <p><a href="#">示例项目</a></p>
+            </div>
+            <div class="footer-col">
+                <h4>联系</h4>
+                <p>hello@layouthub.com</p>
+                <p>@设计实验室</p>
+            </div>
+        </div>
+        <div class="copyright">
+            <p>&copy; 2025 LayoutHub | 灵感源于真实项目，展示高效网页布局设计 | 推荐使用现代浏览器</p>
+        </div>
+    </div>
+</footer>
+</body>
+</html>

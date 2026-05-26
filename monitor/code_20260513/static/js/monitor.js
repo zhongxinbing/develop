@@ -41,6 +41,50 @@ function buildMrUpdateMap(perfData) {
     return mrMap;
 }
 
+function setMode(mode) {
+    currentMode = mode;
+    document.getElementById('modeSingleBtn')?.classList.toggle('active', mode === 'single');
+    document.getElementById('modeMultiBtn')?.classList.toggle('active', mode === 'multi');
+    document.getElementById('multiConfigPanel')?.classList.toggle('hidden', mode !== 'multi');
+    document.querySelector('.date-control-tip').textContent = mode === 'multi'
+        ? '多线程模式：x轴为线程数，y轴为 runtime 或 memory。可选多天进行比对。'
+        : '默认显示最近 54 条，点击图例可切换不同线程线。';
+    refreshAllCharts();
+}
+
+function buildThreadFilter() {
+    const container = document.getElementById('threadFilterContainer');
+    if (!container) return;
+
+    container.innerHTML = '';
+    const activeThreadSet = new Set(selectedThreads);
+
+    AVAILABLE_THREAD_OPTIONS.forEach(thread => {
+        const label = document.createElement('label');
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.value = thread;
+        checkbox.checked = activeThreadSet.has(thread);
+        checkbox.addEventListener('change', (event) => {
+            if (event.target.checked) {
+                if (!selectedThreads.includes(thread)) {
+                    selectedThreads.push(thread);
+                }
+            } else {
+                selectedThreads = selectedThreads.filter(item => item !== thread);
+            }
+            if (!selectedThreads.length) {
+                selectedThreads = ['0'];
+                buildThreadFilter();
+            }
+            refreshAllCharts();
+        });
+        label.appendChild(checkbox);
+        label.appendChild(document.createTextNode(` ${thread}`));
+        container.appendChild(label);
+    });
+}
+
 function getSelectedThreadCounts() {
     if (selectedThreads && selectedThreads.length) {
         return selectedThreads;
@@ -48,12 +92,13 @@ function getSelectedThreadCounts() {
     return ['0'];
 }
 
+let currentMode = 'single';
 let selectedDates = [];
 let pendingSelectedDates = [];
 let availableDates = [];
 let selectedThreads = ['0'];
 const AVAILABLE_THREAD_OPTIONS = ['0', '2', '4', '6', '8', '16', '24', '32', '64', '128'];
-const MAX_DEFAULT_POINTS = 51;
+const MAX_DEFAULT_POINTS = 54;
 
 function updateDateSelectionInfo() {
     const current = selectedDates.length ? selectedDates : availableDates.slice(-MAX_DEFAULT_POINTS);
@@ -284,7 +329,7 @@ function clearCharts() {
         }
     });
     
-    ['stats-runtime', 'stats-memory', 'stats-cores'].forEach(id => {
+    ['stats-time-runtime', 'stats-time-memory', 'stats-thread-runtime', 'stats-thread-memory', 'stats-cores'].forEach(id => {
         const element = document.getElementById(id);
         if (element) {
             element.innerHTML = '<div class="stat-card">请选择阶段</div>';
@@ -292,8 +337,10 @@ function clearCharts() {
     });
     
     lastRenderedDataHash = {
-        runtime: '',
-        memory: '',
+        timeRuntime: '',
+        timeMemory: '',
+        threadRuntime: '',
+        threadMemory: '',
         cores: ''
     };
 }
@@ -317,12 +364,115 @@ function updateStats(containerId, data, unit, label) {
     `;
 }
 
-// 优化版图表渲染 - 支持多线程曲线与MR更新高亮
-function renderEChartOptimized(chartType, dataKey, color, highlightColor, yAxisName, yAxisFormatter = null) {
+function renderMultiModeChart(chartObject, dataKey, color, highlightColor, yAxisName, statsContainerId, yAxisFormatter = null) {
     const toolData = getCurrentToolDataOptimized();
     if (!toolData) {
-        if (charts[chartType]) {
-            charts[chartType].clear();
+        if (chartObject) chartObject.clear();
+        return;
+    }
+
+    const threadMetrics = toolData.thread_metrics || {};
+    const selectedThreadCounts = getSelectedThreadCounts();
+    const threadIds = Object.keys(threadMetrics)
+        .filter(id => selectedThreadCounts.includes(id))
+        .sort((a, b) => parseInt(a, 10) - parseInt(b, 10));
+
+    if (!threadIds.length) {
+        threadIds.push('0');
+    }
+
+    const selectedDateList = selectedDates.length ? selectedDates : [toolData.dates[toolData.dates.length - 1]];
+    const dateIndices = selectedDateList
+        .map(date => ({ date, index: toolData.dates.indexOf(date) }))
+        .filter(item => item.index >= 0);
+
+    const seriesList = dateIndices.map((item, idx) => {
+        const values = threadIds.map(threadId => {
+            const threadInfo = threadMetrics[threadId] || {};
+            const metrics = threadInfo[dataKey] || [];
+            return metrics[item.index] != null ? metrics[item.index] : null;
+        });
+        return {
+            name: item.date,
+            type: 'line',
+            data: values,
+            smooth: false,
+            lineStyle: {
+                width: 2,
+                color: ['#3b82f6', '#f97316', '#10b981', '#8b5cf6', '#eab308', '#06b6d4'][idx % 6]
+            },
+            showSymbol: true,
+            symbol: 'circle',
+            symbolSize: 8,
+            connectNulls: false
+        };
+    });
+
+    const allValues = seriesList.flatMap(series => series.data).filter(v => v !== null && v !== undefined && v > 0);
+    updateStats(statsContainerId, allValues, dataKey === 'runtimes' ? '秒' : 'MB', dataKey === 'runtimes' ? 'Runtime' : 'Memory');
+    updateDateSelectionInfo();
+
+    const option = {
+        backgroundColor: 'transparent',
+        tooltip: {
+            trigger: 'axis',
+            axisPointer: { type: 'shadow' },
+            formatter: function(params) {
+                if (!params || !params.length) return '';
+                const lines = params.map(point => `${point.seriesName}: ${point.value != null ? point.value : '−'} ${dataKey === 'runtimes' ? '秒' : 'MB'}`);
+                const axisLabel = params[0]?.axisValue || '';
+                return `<strong>线程数: ${axisLabel}</strong><br/>${lines.join('<br/>')}`;
+            }
+        },
+        grid: {
+            left: '8%',
+            right: '5%',
+            top: '15%',
+            bottom: '10%',
+            containLabel: true
+        },
+        xAxis: {
+            type: 'category',
+            data: threadIds.map(id => `线程 ${id}`),
+            axisLabel: { color: '#94a3b8' },
+            axisLine: { lineStyle: { color: '#475569' } }
+        },
+        yAxis: {
+            type: 'value',
+            name: yAxisName,
+            nameTextStyle: { color: '#cbd5e1', fontSize: 12 },
+            axisLabel: {
+                color: '#94a3b8',
+                formatter: yAxisFormatter
+            },
+            axisLine: { lineStyle: { color: '#475569' } },
+            splitLine: { lineStyle: { color: 'rgba(71, 85, 105, 0.3)', type: 'dashed' } }
+        },
+        legend: {
+            data: seriesList.map(item => item.name),
+            textStyle: { color: '#cbd5e1', fontSize: 11 },
+            right: 10,
+            top: '8%'
+        },
+        toolbox: {
+            feature: {
+                saveAsImage: { title: '保存为图片', backgroundColor: 'rgba(15, 23, 42, 0.8)' }
+            }
+        },
+        series: seriesList
+    };
+
+    if (chartObject && !chartObject.isDisposed()) {
+        chartObject.setOption(option, { notMerge: false, lazyUpdate: true });
+    }
+}
+
+// 优化版图表渲染 - 支持多线程曲线与MR更新高亮
+function renderEChartOptimized(chartObject, chartKey, dataKey, color, highlightColor, yAxisName, statsContainerId, yAxisFormatter = null) {
+    const toolData = getCurrentToolDataOptimized();
+    if (!toolData) {
+        if (chartObject) {
+            chartObject.clear();
         }
         return;
     }
@@ -402,7 +552,7 @@ function renderEChartOptimized(chartType, dataKey, color, highlightColor, yAxisN
         .filter(v => v !== null && v !== undefined && v > 0);
     let unit = dataKey === 'runtimes' ? '秒' : (dataKey === 'memories' ? 'MB' : '核心');
     let label = dataKey === 'runtimes' ? 'Runtime' : (dataKey === 'memories' ? 'Memory' : 'CPU核心数');
-    updateStats(`stats-${chartType}`, allValues, unit, label);
+    updateStats(statsContainerId, allValues, unit, label);
     updateDateSelectionInfo();
 
     const avgValue = allValues.length > 0 ? (allValues.reduce((a, b) => a + b, 0) / allValues.length).toFixed(1) : 0;
@@ -516,14 +666,14 @@ function renderEChartOptimized(chartType, dataKey, color, highlightColor, yAxisN
         }
     };
 
-    const newHash = simpleHash(JSON.stringify({dates, selectedThreads, currentRule, mrUpdateDates, chartType, dataKey, allValues}));
-    if (lastRenderedDataHash[chartType] === newHash && charts[chartType] && !charts[chartType].isDisposed()) {
+    const newHash = simpleHash(JSON.stringify({dates, selectedThreads, currentRule, mrUpdateDates, chartKey, dataKey, allValues}));
+    if (lastRenderedDataHash[chartKey] === newHash && chartObject && !chartObject.isDisposed()) {
         return;
     }
-    lastRenderedDataHash[chartType] = newHash;
+    lastRenderedDataHash[chartKey] = newHash;
 
-    if (charts[chartType] && !charts[chartType].isDisposed()) {
-        charts[chartType].setOption(option, {
+    if (chartObject && !chartObject.isDisposed()) {
+        chartObject.setOption(option, {
             notMerge: false,
             lazyUpdate: true
         });
@@ -535,31 +685,55 @@ function refreshAllCharts() {
         clearCharts();
         return;
     }
-    
+
     requestAnimationFrame(() => {
-        renderEChartOptimized('runtime', 'runtimes', chartColors.runtime, chartColors.runtimeHighlight, 'Runtime (秒)');
-        renderEChartOptimized('memory', 'memories', chartColors.memory, chartColors.memory, 'Memory (MB)', function(value) {
-            if (value >= 1024) {
-                return (value / 1024).toFixed(1) + ' GB';
-            }
-            return value + ' MB';
-        });
+        if (activeSection === 'section-thread') {
+            renderMultiModeChart(charts.threadRuntime, 'runtimes', chartColors.runtime, chartColors.runtimeHighlight, 'Runtime (秒)', 'stats-thread-runtime');
+            renderMultiModeChart(charts.threadMemory, 'memories', chartColors.memory, chartColors.memory, 'Memory (MB)', 'stats-thread-memory', function(value) {
+                if (value >= 1024) {
+                    return (value / 1024).toFixed(1) + ' GB';
+                }
+                return value + ' MB';
+            });
+        } else if (activeSection === 'section-time') {
+            renderEChartOptimized(charts.timeRuntime, 'timeRuntime', 'runtimes', chartColors.runtime, chartColors.runtimeHighlight, 'Runtime (秒)', 'stats-time-runtime');
+            renderEChartOptimized(charts.timeMemory, 'timeMemory', 'memories', chartColors.memory, chartColors.memory, 'Memory (MB)', 'stats-time-memory', function(value) {
+                if (value >= 1024) {
+                    return (value / 1024).toFixed(1) + ' GB';
+                }
+                return value + ' MB';
+            });
+        }
     });
 }
 
 function initCharts() {
-    const runtimeChartDom = document.getElementById('chart-runtime');
-    const memoryChartDom = document.getElementById('chart-memory');
+    const timeRuntimeChartDom = document.getElementById('chart-time-runtime');
+    const timeMemoryChartDom = document.getElementById('chart-time-memory');
+    const threadRuntimeChartDom = document.getElementById('chart-thread-runtime');
+    const threadMemoryChartDom = document.getElementById('chart-thread-memory');
     const coresChartDom = document.getElementById('chart-cores');
 
-    if (runtimeChartDom && !charts.runtime) {
-        charts.runtime = echarts.init(runtimeChartDom, null, {
+    if (timeRuntimeChartDom && !charts.timeRuntime) {
+        charts.timeRuntime = echarts.init(timeRuntimeChartDom, null, {
             renderer: 'canvas',
             useDirtyRect: false
         });
     }
-    if (memoryChartDom && !charts.memory) {
-        charts.memory = echarts.init(memoryChartDom, null, {
+    if (timeMemoryChartDom && !charts.timeMemory) {
+        charts.timeMemory = echarts.init(timeMemoryChartDom, null, {
+            renderer: 'canvas',
+            useDirtyRect: false
+        });
+    }
+    if (threadRuntimeChartDom && !charts.threadRuntime) {
+        charts.threadRuntime = echarts.init(threadRuntimeChartDom, null, {
+            renderer: 'canvas',
+            useDirtyRect: false
+        });
+    }
+    if (threadMemoryChartDom && !charts.threadMemory) {
+        charts.threadMemory = echarts.init(threadMemoryChartDom, null, {
             renderer: 'canvas',
             useDirtyRect: false
         });
@@ -588,8 +762,10 @@ function initCharts() {
         chart._legendSyncAttached = true;
     }
 
-    attachLegendSync(charts.runtime);
-    attachLegendSync(charts.memory);
+    attachLegendSync(charts.timeRuntime);
+    attachLegendSync(charts.timeMemory);
+    attachLegendSync(charts.threadRuntime);
+    attachLegendSync(charts.threadMemory);
     
     const resizeHandler = debounce(() => {
         Object.values(charts).forEach(chart => {
@@ -599,6 +775,11 @@ function initCharts() {
         });
     }, 200);
     window.addEventListener('resize', resizeHandler);
+
+    buildThreadFilter();
+    document.querySelectorAll('.mode-btn').forEach(btn => {
+        btn.addEventListener('click', () => setMode(btn.dataset.mode));
+    });
 }
 
 function showNotification(message, isError = false) {
@@ -620,7 +801,7 @@ async function checkForUpdates() {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 tool: 'elint',
-                thread: 'single',
+                thread: currentMode,
                 version: currentDataVersion
             })
         });
@@ -655,7 +836,7 @@ async function refreshData() {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 tool: 'elint',
-                thread: 'single'
+                thread: currentMode
             })
         });
         const result = await response.json();
@@ -735,11 +916,20 @@ function updateProjectStats() {
     }
     const avgRuntime = runtimeCount > 0 ? (totalRuntime / runtimeCount).toFixed(0) : 0;
     
-    document.getElementById('projectStats').innerHTML = `
+    const summaryHtml = `
         <div class="badge-item"><span>📊</span> 阶段数: ${rulesCount}</div>
         <div class="badge-item"><span>📅</span> 天数: ${datesCount}</div>
         <div class="badge-item"><span>⏱️</span> 平均Runtime: ${avgRuntime} min</div>
     `;
+    document.getElementById('projectStats').innerHTML = summaryHtml;
+    const rightSummary = document.getElementById('rightSummary');
+    if (rightSummary) {
+        rightSummary.innerHTML = `
+            <div class="summary-card"><div class="stat-label">阶段数</div><div class="stat-value">${rulesCount}</div></div>
+            <div class="summary-card"><div class="stat-label">天数</div><div class="stat-value">${datesCount}</div></div>
+            <div class="summary-card"><div class="stat-label">平均 Runtime</div><div class="stat-value">${avgRuntime} min</div></div>
+        `;
+    }
     updateDateSelectionInfo();
 }
 
@@ -752,6 +942,29 @@ function setupSearchListener() {
     if (searchInput) {
         searchInput.addEventListener('input', debouncedUpdate);
     }
+}
+
+function switchSection(sectionId) {
+    activeSection = sectionId;
+    document.querySelectorAll('.sidebar-item').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.section === sectionId);
+    });
+    document.querySelectorAll('.section-panel').forEach(panel => {
+        panel.classList.toggle('active', panel.id === sectionId);
+    });
+
+    if (sectionId === 'section-thread') {
+        setMode('multi');
+    } else if (sectionId === 'section-time') {
+        setMode('single');
+    }
+
+    const compareBtn = document.getElementById('openComparePageBtn');
+    if (sectionId === 'section-compare' && compareBtn) {
+        compareBtn.focus();
+    }
+
+    refreshAllCharts();
 }
 
 function switchTab(tabId) {
@@ -807,6 +1020,15 @@ function setupBeforeUnloadHandler() {
 document.querySelectorAll('.tab-btn').forEach(btn => {
     btn.addEventListener('click', () => switchTab(btn.dataset.tab));
 });
+
+document.querySelectorAll('.sidebar-item').forEach(btn => {
+    btn.addEventListener('click', () => switchSection(btn.dataset.section));
+});
+
+const openComparePageBtn = document.getElementById('openComparePageBtn');
+if (openComparePageBtn) {
+    openComparePageBtn.addEventListener('click', () => window.open('/compare', '_blank'));
+}
 
 const caseSelect = document.getElementById('caseSelect');
 if (caseSelect) {

@@ -1,0 +1,35 @@
+{
+    "openc910-main": {
+        "project_id": "openc910-main",
+        "rule_name": "all",
+        "date1": "20260508",
+        "date2": "20260509",
+        "tolerance_runtime": 20.0,
+        "tolerance_memory": 30.0,
+        "tolerance_mode": "absolute",
+        "timestamp": "2026-05-20 15:05:01",
+        "summary": {
+            "total_rules": 3,
+            "rules_with_data": 3,
+            "rules_without_data": 0,
+            "runtime": {
+                "total_increase": 1,
+                "total_decrease": 0,
+                "avg_change_pct": 442.83,
+                "max_increase_rule": "DoUniquify",
+                "max_decrease_rule": null,
+                "max_increase_pct": 900.0,
+                "max_decrease_pct": 0
+            },
+            "memory": {
+                "total_increase": 0,
+                "total_decrease": 0,
+                "avg_change_pct": 116.47,
+                "max_increase_rule": "Analysis",
+                "max_decrease_rule": "DoUniquify",
+                "max_increase_pct": 177.0,
+                "max_decrease_pct": -58.6078431372549
+            }
+        }
+    }
+}

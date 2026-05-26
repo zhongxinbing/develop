@@ -177,6 +177,8 @@ def get_elint_data(jsonDataFile, original_path):
         # 如果存在 json 文件,获取上一次的数据
         if "dataFiles" not in lastCaseData:
             lastDataFiles = []
+        elif lastCaseData["dataFiles"] == None:
+            lastDataFiles = []
         else:
             lastDataFiles = lastCaseData["dataFiles"]
         # print("lastDataFiles: ",lastDataFiles)
@@ -191,7 +193,7 @@ def get_elint_data(jsonDataFile, original_path):
             
             # 合并并去重
             newDataFiles = list(dict.fromkeys(currentDataFiles + lastDataFiles))
-            newCaseData["dataFiles"] = newDataFiles.sort()
+            newCaseData["dataFiles"] = sorted(newDataFiles)
             save_json(jsonDataFile, newCaseData)
         else:
             log("数据不需要更新")

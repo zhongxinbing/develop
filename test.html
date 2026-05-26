@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>现代网页常用显示方式 - 完整演示</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            background: #f1f5f9;
+            padding: 20px;
+            line-height: 1.5;
+        }
+
+        /* 页面容器 */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* 每个演示区块 */
+        .demo-block {
+            background: white;
+            border-radius: 24px;
+            padding: 24px;
+            margin-bottom: 32px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .demo-block:hover {
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .demo-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #0f172a;
+        }
+
+        .demo-desc {
+            color: #475569;
+            font-size: 0.875rem;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        /* ========== 1. Flex 布局演示 ========== */
+        .flex-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #0f172a;
+            padding: 16px 24px;
+            border-radius: 16px;
+            color: white;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 24px;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: #38bdf8;
+        }
+
+        .flex-cards {
+            display: flex;
+            gap: 20px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .card {
+            background: #f8fafc;
+            padding: 20px;
+            border-radius: 16px;
+            flex: 1;
+            min-width: 150px;
+            text-align: center;
+            border: 1px solid #e2e8f0;
+            transition: transform 0.2s;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+        }
+
+        /* ========== 2. Grid 布局演示 ========== */
+        .grid-demo {
+            display: grid;
+            grid-template-columns: 240px 1fr 240px;
+            gap: 20px;
+            background: #f1f5f9;
+            border-radius: 16px;
+            overflow: hidden;
+        }
+
+        .grid-sidebar {
+            background: #e2e8f0;
+            padding: 20px;
+        }
+
+        .grid-main {
+            background: white;
+            padding: 20px;
+            min-height: 200px;
+        }
+
+        .grid-right {
+            background: #e2e8f0;
+            padding: 20px;
+        }
+
+        /* 响应式：手机变成1列 */
+        @media (max-width: 768px) {
+            .grid-demo {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* ========== 3. Sticky 粘性定位 ========== */
+        .sticky-container {
+            background: #fef3c7;
+            border-radius: 16px;
+            overflow: auto;
+            max-height: 300px;
+        }
+
+        .sticky-header {
+            position: sticky;
+            top: 0;
+            background: #d97706;
+            color: white;
+            padding: 12px;
+            font-weight: bold;
+            z-index: 10;
+        }
+
+        .sticky-content {
+            padding: 16px;
+        }
+
+        .sticky-item {
+            padding: 12px;
+            border-bottom: 1px solid #fde68a;
+        }
+
+        /* ========== 4. 毛玻璃效果 ========== */
+        .glass-container {
+            position: relative;
+            background-image: url('https://picsum.photos/id/104/800/400');
+            background-size: cover;
+            background-position: center;
+            border-radius: 24px;
+            padding: 60px 30px;
+            overflow: hidden;
+        }
+
+        .glass-card {
+            backdrop-filter: blur(12px);
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 24px;
+            padding: 32px;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            color: white;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+        }
+
+        /* ========== 5. 响应式卡片网格 ========== */
+        .responsive-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .product-card {
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid #e2e8f0;
+            transition: all 0.3s;
+        }
+
+        .product-card:hover {
+            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1);
+            transform: scale(1.02);
+        }
+
+        .product-img {
+            background: #334155;
+            height: 160px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 3rem;
+        }
+
+        .product-info {
+            padding: 16px;
+        }
+
+        /* ========== 6. 过渡和变换 ========== */
+        .transform-demo {
+            display: flex;
+            gap: 30px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .transform-box {
+            width: 100px;
+            height: 100px;
+            background: #3b82f6;
+            border-radius: 16px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            cursor: pointer;
+        }
+
+        .transform-box:hover {
+            transform: scale(1.1) rotate(5deg);
+            background: #2563eb;
+        }
+
+        /* 固定比例的容器 */
+        .aspect-box {
+            aspect-ratio: 16 / 9;
+            background: #22c55e;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.25rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 style="margin-bottom: 32px; font-size: 2rem;">✨ 现代网页常用显示方式</h1>
+
+        <!-- 1. Flex 布局 -->
+        <div class="demo-block">
+            <div class="demo-title">① Flexbox 弹性布局</div>
+            <div class="demo-desc">最常用的布局方式：导航栏、卡片列表、元素对齐</div>
+            <div class="flex-nav">
+                <div class="logo">🪄 Logo</div>
+                <div class="nav-links">
+                    <a href="#">首页</a>
+                    <a href="#">产品</a>
+                    <a href="#">关于</a>
+                    <a href="#">联系</a>
+                </div>
+            </div>
+            <div class="flex-cards">
+                <div class="card">📦 卡片 1<br>flex: 1</div>
+                <div class="card">📦 卡片 2<br>flex: 1</div>
+                <div class="card">📦 卡片 3<br>flex: 1</div>
+            </div>
+        </div>
+
+        <!-- 2. Grid 布局 -->
+        <div class="demo-block">
+            <div class="demo-title">② Grid 网格布局</div>
+            <div class="demo-desc">两遍固定宽度，中间自适应（经典后台布局）</div>
+            <div class="grid-demo">
+                <div class="grid-sidebar">📁 左侧菜单栏<br>240px 固定</div>
+                <div class="grid-main">📄 主要内容区<br>自动占满剩余宽度</div>
+                <div class="grid-right">🔔 右侧边栏<br>240px 固定</div>
+            </div>
+        </div>
+
+        <!-- 3. Sticky 粘性定位 -->
+        <div class="demo-block">
+            <div class="demo-title">③ Sticky 粘性定位</div>
+            <div class="demo-desc">滚动时表头会"粘"在顶部，直到列表结束</div>
+            <div class="sticky-container">
+                <div class="sticky-header">📌 我是粘性表头（滚动我试试）</div>
+                <div class="sticky-content">
+                    <div class="sticky-item">第 1 行数据</div>
+                    <div class="sticky-item">第 2 行数据</div>
+                    <div class="sticky-item">第 3 行数据</div>
+                    <div class="sticky-item">第 4 行数据</div>
+                    <div class="sticky-item">第 5 行数据</div>
+                    <div class="sticky-item">第 6 行数据</div>
+                    <div class="sticky-item">第 7 行数据</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. 毛玻璃效果 -->
+        <div class="demo-block">
+            <div class="demo-title">④ 毛玻璃效果 (backdrop-filter)</div>
+            <div class="demo-desc">背景模糊 + 半透明，现代网页常用质感</div>
+            <div class="glass-container">
+                <div class="glass-card">
+                    <h3>✨ 毛玻璃卡片</h3>
+                    <p>背景是模糊的，但文字清晰可见。这种效果在现代化网页、Apple 风格中非常常见。</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 5. 响应式网格（auto-fit 自动适配） -->
+        <div class="demo-block">
+            <div class="demo-title">⑤ 响应式卡片网格</div>
+            <div class="demo-desc">📱 手机：1列 &nbsp;&nbsp;|&nbsp;&nbsp; 💻 平板：2列 &nbsp;&nbsp;|&nbsp;&nbsp; 🖥️ 电脑：自动适配</div>
+            <div class="responsive-grid">
+                <div class="product-card">
+                    <div class="product-img">🖼️</div>
+                    <div class="product-info">
+                        <h4>产品名称</h4>
+                        <p>这是一个响应式卡片，宽度自动适配。</p>
+                    </div>
+                </div>
+                <div class="product-card">
+                    <div class="product-img">🎨</div>
+                    <div class="product-info">
+                        <h4>创意设计</h4>
+                        <p>随着屏幕宽度变化，卡片会自动换行。</p>
+                    </div>
+                </div>
+                <div class="product-card">
+                    <div class="product-img">⚡</div>
+                    <div class="product-info">
+                        <h4>快速响应</h4>
+                        <p>无需写死列数，grid-template-columns: repeat(auto-fit, minmax(250px, 1fr))</p>
+                    </div>
+                </div>
+                <div class="product-card">
+                    <div class="product-img">📱</div>
+                    <div class="product-info">
+                        <h4>移动优先</h4>
+                        <p>现代网页开发的标配写法。</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 6. 变换与过渡 -->
+        <div class="demo-block">
+            <div class="demo-title">⑥ 变换 (transform) + 过渡 (transition)</div>
+            <div class="demo-desc">鼠标悬停试试：缩放 + 旋转 + 颜色变化</div>
+            <div class="transform-demo">
+                <div class="transform-box">悬停我</div>
+                <div class="transform-box">✨</div>
+                <div class="transform-box">🎯</div>
+            </div>
+        </div>
+
+        <!-- 7. 固定宽高比 -->
+        <div class="demo-block">
+            <div class="demo-title">⑦ 固定宽高比 (aspect-ratio)</div>
+            <div class="demo-desc">16:9 比例，无论宽度如何变化，高度自动计算</div>
+            <div class="aspect-box">
+                16:9 视频/图片容器
+            </div>
+            <p style="margin-top: 12px; font-size: 14px; color: #475569;">💡 调整浏览器窗口宽度，这个绿色块的高度会自动跟随变化，始终保持 16:9。</p>
+        </div>
+
+    </div>
+
+    <div style="text-align: center; padding: 32px; color: #64748b; font-size: 14px;">
+        🎉 以上是现代网页开发中最常用的显示方式 | 调整浏览器窗口大小体验响应式效果
+    </div>
+</body>
+</html>
