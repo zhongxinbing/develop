@@ -706,23 +706,7 @@ function initCharts() {
 
 
 let statsTooltip = null;
-// function initStatsTooltips() {
-//     if (!statsTooltip) {
-//         statsTooltip = document.createElement('div');
-//         statsTooltip.id = 'statsTooltip';
-//         statsTooltip.style.cssText = `position: fixed; visibility: hidden; opacity: 0; background: var(--bg-card); border: 1px solid var(--primary); border-radius: var(--radius-md); padding: 0; font-size: 0.7rem; z-index: 10000; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(99, 102, 241, 0.3); color: var(--text-primary); pointer-events: none; backdrop-filter: blur(8px); transition: opacity 0.15s ease, visibility 0.15s ease; max-width: 350px; min-width: 220px;`;
-//         document.body.appendChild(statsTooltip);
-//     }
-//     const statItems = document.querySelectorAll('#compareRuntimeStats .stat-item, #compareMemoryStats .stat-item');
-//     statItems.forEach(item => {
-//         item.removeEventListener('mouseenter', handleStatsMouseEnter);
-//         item.removeEventListener('mouseleave', handleStatsMouseLeave);
-//         item.removeEventListener('mousemove', handleStatsMouseMove);
-//         item.addEventListener('mouseenter', handleStatsMouseEnter);
-//         item.addEventListener('mouseleave', handleStatsMouseLeave);
-//         item.addEventListener('mousemove', handleStatsMouseMove);
-//     });
-// }
+
 
 function handleStatsMouseEnter(e) {
     const item = e.currentTarget;
