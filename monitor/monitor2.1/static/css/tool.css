@@ -1,6 +1,8 @@
 /* ==================================================
     工具页面样式 - Flexbox + Grid 混合布局
+    优化响应式设计
 ================================================== */
+
 * {
     margin: 0;
     padding: 0;
@@ -26,6 +28,7 @@
     --border: #334155;
     --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
     --glow: 0 0 20px rgba(99, 102, 241, 0.3);
+    --radius-sm: 0.5rem;
     --radius-md: 0.75rem;
     --radius-lg: 1rem;
     --radius-xl: 1.5rem;
@@ -261,15 +264,6 @@ select:disabled, input:disabled {
     background: rgba(15, 23, 42, 0.4);
 }
 
-.search-input {
-    width: 100%;
-    padding: 0.625rem 0.875rem;
-    background: rgba(15, 23, 42, 0.8);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-md);
-    color: var(--text-primary);
-}
-
 /* 按钮样式 */
 .btn {
     padding: 0.625rem 1.25rem;
@@ -373,25 +367,6 @@ select:disabled, input:disabled {
     margin-top: 0.25rem;
 }
 
-/* Tooltip 样式 */
-.stat-item[data-tooltip]:hover::after {
-    content: attr(data-tooltip);
-    position: absolute;
-    bottom: 100%;
-    left: 50%;
-    transform: translateX(-50%);
-    background: var(--bg-card);
-    border: 1px solid var(--primary);
-    border-radius: var(--radius-md);
-    padding: 0.5rem 1rem;
-    font-size: 0.75rem;
-    white-space: pre;
-    z-index: 1000;
-    box-shadow: var(--glow);
-    color: var(--text-primary);
-    margin-bottom: 8px;
-}
-
 /* 状态颜色 */
 .status-increase { color: #ef4444; font-weight: 600; }
 .status-decrease { color: #10b981; font-weight: 600; }
@@ -432,7 +407,17 @@ select:disabled, input:disabled {
     overflow-y: auto;
 }
 
-.date-option {
+/* 线程选择区域 */
+.thread-checkbox-group {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 0.5rem;
+    margin: 1rem 0;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.thread-checkbox {
     display: flex;
     align-items: center;
     gap: 0.5rem;
@@ -441,48 +426,32 @@ select:disabled, input:disabled {
     cursor: pointer;
 }
 
-.date-option:hover {
+.thread-checkbox:hover {
     background: rgba(99, 102, 241, 0.1);
 }
 
-/* 筛选栏 */
-.filter-bar {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    margin-bottom: 1rem;
-    padding: 0.5rem;
-    background: rgba(15, 23, 42, 0.6);
+.thread-checkbox.selected {
+    background: rgba(99, 102, 241, 0.15);
+    border-left: 2px solid var(--primary);
+}
+
+/* 线程选择按钮 */
+.thread-selector-btn {
+    width: 100%;
+    padding: 0.625rem 0.875rem;
+    background: rgba(99, 102, 241, 0.15);
+    border: 1px solid var(--primary);
     border-radius: var(--radius-md);
-    flex-wrap: wrap;
-}
-
-.filter-bar input[type="text"] {
-    flex: 1;
-    min-width: 150px;
-    padding: 0.5rem 0.75rem;
-    font-size: 0.8rem;
-    margin-bottom: 0;
-}
-
-.filter-bar input[type="checkbox"],
-.filter-bar input[type="radio"] {
-    width: auto;
-    margin: 0;
-}
-
-.filter-bar label {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
+    color: var(--primary-light);
+    font-size: 0.875rem;
     cursor: pointer;
-    padding: 0.25rem 0.5rem;
-    border-radius: var(--radius-sm);
     transition: var(--transition);
+    text-align: center;
 }
 
-.filter-bar label:hover {
-    background: rgba(99, 102, 241, 0.1);
+.thread-selector-btn:hover {
+    background: var(--primary);
+    color: white;
 }
 
 /* 表格容器 */
@@ -514,86 +483,6 @@ select:disabled, input:disabled {
     background: rgba(99, 102, 241, 0.05);
 }
 
-/* 信息栏 */
-.info-bar {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1rem;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0.75rem 1rem;
-    background: rgba(15, 23, 42, 0.6);
-    border-radius: var(--radius-lg);
-    margin-top: 1rem;
-}
-
-/* 线程选择区域 */
-.thread-checkbox-group {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-    gap: 0.5rem;
-    margin: 1rem 0;
-    max-height: 300px;
-    overflow-y: auto;
-}
-
-.thread-checkbox {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.5rem;
-    border-radius: var(--radius-md);
-    cursor: pointer;
-}
-
-.thread-checkbox span {
-    white-space: nowrap;
-    display: inline;
-}
-
-.thread-checkbox:hover {
-    background: rgba(99, 102, 241, 0.1);
-}
-
-.thread-checkbox.selected {
-    background: rgba(99, 102, 241, 0.15);
-    border-left: 2px solid var(--primary);
-}
-
-/* 线程选择按钮 */
-.thread-selector-btn {
-    width: 100%;
-    padding: 0.625rem 0.875rem;
-    background: rgba(99, 102, 241, 0.15);
-    border: 1px solid var(--primary);
-    border-radius: var(--radius-md);
-    color: var(--primary-light);
-    font-size: 0.875rem;
-    cursor: pointer;
-    transition: var(--transition);
-    text-align: center;
-}
-
-.thread-selector-btn:hover {
-    background: var(--primary);
-    color: white;
-}
-
-/* 警告占位符 */
-.warning-placeholder {
-    background: rgba(245, 158, 11, 0.1);
-    border: 1px dashed rgba(245, 158, 11, 0.3);
-    border-radius: var(--radius-lg);
-    padding: 2rem;
-    text-align: center;
-    color: var(--text-secondary);
-}
-
-.warning-placeholder .icon {
-    font-size: 3rem;
-    margin-bottom: 1rem;
-}
-
 /* 对比结果统计行 */
 .stats-row-compare {
     background: rgba(15, 23, 42, 0.4);
@@ -612,9 +501,53 @@ select:disabled, input:disabled {
     font-weight: 600;
 }
 
+/* 表格筛选栏 */
+.table-filter-bar {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    padding: 0.75rem 1rem;
+    background: rgba(15, 23, 42, 0.6);
+    border-radius: var(--radius-lg);
+    flex-wrap: wrap;
+}
+
+/* Case配置列表样式 */
+.case-config-list {
+    background: rgba(15, 23, 42, 0.4);
+    border-radius: var(--radius-md);
+    padding: 0.5rem;
+}
+
+.case-config-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    background: rgba(15, 23, 42, 0.6);
+    border-radius: var(--radius-md);
+    margin-bottom: 0.5rem;
+    transition: var(--transition);
+}
+
+.case-config-item:hover {
+    background: rgba(99, 102, 241, 0.1);
+}
+
 /* 隐藏类 */
 .hidden {
     display: none !important;
+}
+
+/* 警告占位符 */
+.warning-placeholder {
+    background: rgba(245, 158, 11, 0.1);
+    border: 1px dashed rgba(245, 158, 11, 0.3);
+    border-radius: var(--radius-lg);
+    padding: 2rem;
+    text-align: center;
+    color: var(--text-secondary);
 }
 
 /* 动画 */
@@ -635,6 +568,26 @@ select:disabled, input:disabled {
 @keyframes slideIn {
     from { transform: translateX(100%); opacity: 0; }
     to { transform: translateX(0); opacity: 1; }
+}
+
+/* 自定义 Tooltip */
+#statsTooltip {
+    position: fixed;
+    visibility: hidden;
+    opacity: 0;
+    background: var(--bg-card);
+    border: 1px solid var(--primary);
+    border-radius: var(--radius-md);
+    padding: 8px 12px;
+    font-size: 0.7rem;
+    z-index: 10000;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    color: var(--text-primary);
+    pointer-events: none;
+    backdrop-filter: blur(8px);
+    transition: opacity 0.15s ease, visibility 0.15s ease;
+    max-width: 350px;
+    min-width: 220px;
 }
 
 /* 响应式设计 - 移动端适配 */
@@ -665,132 +618,31 @@ select:disabled, input:disabled {
     .thread-checkbox-group {
         grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
     }
-}
-
-/* 自定义 Tooltip */
-#statsTooltip {
-    position: fixed;
-    visibility: hidden;
-    opacity: 0;
-    background: var(--bg-card);
-    border: 1px solid var(--primary);
-    border-radius: var(--radius-md);
-    padding: 0;
-    font-size: 0.7rem;
-    z-index: 10000;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(99, 102, 241, 0.3);
-    color: var(--text-primary);
-    pointer-events: none;
-    backdrop-filter: blur(8px);
-    transition: opacity 0.15s ease, visibility 0.15s ease;
-    max-width: 350px;
-    min-width: 220px;
-}
-
-#statsTooltip::-webkit-scrollbar {
-    width: 4px;
-}
-
-#statsTooltip::-webkit-scrollbar-track {
-    background: var(--bg-dark);
-    border-radius: 4px;
-}
-
-#statsTooltip::-webkit-scrollbar-thumb {
-    background: var(--primary);
-    border-radius: 4px;
-}
-
-#statsTooltip .stat-tooltip-item {
-    display: flex;
-    justify-content: space-between;
-    gap: 12px;
-    padding: 6px 0;
-    font-size: 0.7rem;
-    border-bottom: 1px solid rgba(51, 65, 85, 0.3);
-}
-
-/* tool.css 末尾添加 */
-.table-filter-bar {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    margin-bottom: 1rem;
-    padding: 0.75rem 1rem;
-    background: rgba(15, 23, 42, 0.6);
-    border-radius: var(--radius-lg);
-    flex-wrap: wrap;
-}
-
-.table-filter-bar input,
-.table-filter-bar select {
-    background: rgba(0, 0, 0, 0.3);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-md);
-    color: var(--text-primary);
-    padding: 0.5rem 0.75rem;
-}
-
-#statsTooltip::-webkit-scrollbar {
-    width: 4px;
-}
-
-#statsTooltip::-webkit-scrollbar-track {
-    background: var(--bg-dark);
-    border-radius: 4px;
-}
-
-#statsTooltip::-webkit-scrollbar-thumb {
-    background: var(--primary);
-    border-radius: 4px;
-}
-
-/* Case配置列表样式 */
-.case-config-list {
-    background: rgba(15, 23, 42, 0.4);
-    border-radius: var(--radius-md);
-    padding: 0.5rem;
-}
-
-.case-config-item {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    padding: 0.75rem;
-    background: rgba(15, 23, 42, 0.6);
-    border-radius: var(--radius-md);
-    margin-bottom: 0.5rem;
-    transition: var(--transition);
-}
-
-.case-config-item:hover {
-    background: rgba(99, 102, 241, 0.1);
-}
-
-.case-config-item:last-child {
-    margin-bottom: 0;
-}
-
-/* 响应式调整 */
-@media (max-width: 768px) {
-    .case-config-item {
-        flex-wrap: wrap;
+    
+    .btn-group {
+        flex-direction: column;
     }
     
-    .case-config-item span {
+    .chart-type-buttons {
+        flex-direction: column;
+    }
+    
+    .chart-type-buttons .btn {
         width: 100%;
-        word-break: break-all;
     }
 }
 
-/* 按钮组增强 */
-.btn-group {
-    display: flex;
-    gap: 0.75rem;
-    flex-wrap: wrap;
-}
-
-/* 统一按钮最小宽度 */
-.btn {
-    min-width: 80px;
+/* 平板适配 */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .control-bar {
+        gap: 0.75rem;
+    }
+    
+    .control-group {
+        min-width: 150px;
+    }
+    
+    .stats-grid {
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    }
 }

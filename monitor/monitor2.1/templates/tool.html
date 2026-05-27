@@ -87,12 +87,12 @@
 
                 <!-- 图表区域 -->
                 <div class="card">
-                    <div id="chartTypeButtons" class="chart-type-buttons">
-                        <button class="btn btn-primary chart-type-btn" data-type="runtime">⏱️ Runtime</button>
-                        <button class="btn btn-secondary chart-type-btn" data-type="memory">💾 Memory</button>
+                    <div class="chart-type-buttons">
+                        <button class="btn btn-primary chart-type-btn" id="timelineChartRuntimeBtn">⏱️ Runtime</button>
+                        <button class="btn btn-secondary chart-type-btn" id="timelineChartMemoryBtn">💾 Memory</button>
                     </div>
                     <div class="card-header">
-                        <div class="card-title" id="chartCardTitle">⏱️ Runtime 性能曲线</div>
+                        <div class="card-title" id="timelineChartCardTitle">⏱️ Runtime 性能曲线</div>
                     </div>
                     <div id="chart-runtime" class="chart-container"></div>
                     <div id="chart-memory" class="chart-container hidden"></div>
@@ -290,89 +290,88 @@
             </div>
 
             <!-- ========== 自定义曲线图视图 ========== -->
-            <!-- ========== 自定义曲线图视图 ========== -->
-<div id="customView" class="view-container">
-    <div class="card">
-        <div class="card-header">
-            <div class="card-title">📝 自定义数据加载</div>
-        </div>
-        
-        <!-- 按钮区域 - 使用 Flexbox 布局 -->
-        <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
-            <button class="btn btn-primary" id="addCaseBtn" style="flex: 1; min-width: 120px;">
-                ➕ 添加Case
-            </button>
-            <button class="btn btn-primary" id="toggleDataSourceBtn" style="flex: 1; min-width: 120px;">
-                🔄 切换显示混合模式
-            </button>
-        </div>
-        
-        <div class="config-hint" style="margin-top: 0.75rem; padding: 0.5rem; background: rgba(99, 102, 241, 0.1); border-radius: var(--radius-md);">
-            💡 提示：点击"添加Case"按钮可添加多个Case路径，点击确认后加载所有Case数据。
-        </div>
-    </div>
+            <div id="customView" class="view-container">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">📝 自定义数据加载</div>
+                    </div>
+                    
+                    <!-- 按钮区域 - 使用 Flexbox 布局 -->
+                    <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                        <button class="btn btn-primary" id="addCaseBtn" style="flex: 1; min-width: 120px;">
+                            ➕ 添加Case
+                        </button>
+                        <button class="btn btn-primary" id="toggleDataSourceBtn" style="flex: 1; min-width: 120px;">
+                            🔄 切换显示混合模式
+                        </button>
+                    </div>
+                    
+                    <div class="config-hint" style="margin-top: 0.75rem; padding: 0.5rem; background: rgba(99, 102, 241, 0.1); border-radius: var(--radius-md);">
+                        💡 提示：点击"添加Case"按钮可添加多个Case路径，点击确认后加载所有Case数据。
+                    </div>
+                </div>
 
-    <div id="customLoadingIndicator" class="card" style="display: none;">
-        <div style="text-align: center; padding: 1rem;">
-            <div class="spinner" style="width: 30px; height: 30px; margin: 0 auto 0.5rem;"></div>
-            <div>正在加载用户数据...</div>
-        </div>
-    </div>
+                <div id="customLoadingIndicator" class="card" style="display: none;">
+                    <div style="text-align: center; padding: 1rem;">
+                        <div class="spinner" style="width: 30px; height: 30px; margin: 0 auto 0.5rem;"></div>
+                        <div>正在加载用户数据...</div>
+                    </div>
+                </div>
 
-    <div class="card">
-        <div class="card-header">
-            <div class="card-title">🎛️ 数据筛选</div>
-        </div>
-        <div class="control-bar">
-            <div class="control-group">
-                <label class="control-label">📁 选择项目</label>
-                <select id="customCaseSelect">
-                    <option value="">-- 请先加载数据 --</option>
-                </select>
-            </div>
-            <div class="control-group">
-                <label class="control-label">📋 选择阶段</label>
-                <select id="customRuleSelect" disabled>
-                    <option value="">-- 请先选择项目 --</option>
-                </select>
-            </div>
-            <div class="control-group">
-                <label class="control-label">🔍 搜索阶段</label>
-                <input type="text" id="customRuleSearch" placeholder="输入阶段名称..." class="search-input" disabled>
-            </div>
-            <div class="control-group">
-                <label class="control-label">📅 日期范围</label>
-                <div class="btn-group">
-                    <button class="btn btn-secondary" id="customOpenDatePickerBtn" disabled>📅 选择日期</button>
-                    <button class="btn btn-secondary" id="customSelectRecentBtn" disabled>📆 最近50天</button>
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">🎛️ 数据筛选</div>
+                    </div>
+                    <div class="control-bar">
+                        <div class="control-group">
+                            <label class="control-label">📁 选择项目</label>
+                            <select id="customCaseSelect">
+                                <option value="">-- 请先加载数据 --</option>
+                            </select>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label">📋 选择阶段</label>
+                            <select id="customRuleSelect" disabled>
+                                <option value="">-- 请先选择项目 --</option>
+                            </select>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label">🔍 搜索阶段</label>
+                            <input type="text" id="customRuleSearch" placeholder="输入阶段名称..." class="search-input" disabled>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label">📅 日期范围</label>
+                            <div class="btn-group">
+                                <button class="btn btn-secondary" id="customOpenDatePickerBtn" disabled>📅 选择日期</button>
+                                <button class="btn btn-secondary" id="customSelectRecentBtn" disabled>📆 最近50天</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="chart-type-buttons">
+                        <button class="btn btn-primary chart-type-btn" id="customChartRuntimeBtn">⏱️ Runtime</button>
+                        <button class="btn btn-secondary chart-type-btn" id="customChartMemoryBtn">💾 Memory</button>
+                    </div>
+                    <div class="card-header">
+                        <div class="card-title" id="customChartCardTitle">⏱️ Runtime 性能曲线 - 用户数据</div>
+                    </div>
+                    <div id="custom-chart-runtime" class="chart-container"></div>
+                    <div id="custom-chart-memory" class="chart-container hidden"></div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">📊 性能统计 - <span id="customCurrentRuleName">未选择</span></div>
+                        <div class="info-text">
+                            <span>📅 日期范围: <span id="customDateRange">-</span></span>
+                            <span style="margin-left: 1rem;">📊 数据点数: <span id="customDataPoints">0</span></span>
+                        </div>
+                    </div>
+                    <div class="stats-grid" id="customStatsMain"></div>
                 </div>
             </div>
-        </div>
-    </div>
-
-    <div class="card">
-        <div id="customChartTypeButtons" class="chart-type-buttons">
-            <button class="btn btn-primary chart-type-btn" data-type="runtime">⏱️ Runtime</button>
-            <button class="btn btn-secondary chart-type-btn" data-type="memory">💾 Memory</button>
-        </div>
-        <div class="card-header">
-            <div class="card-title" id="customChartCardTitle">⏱️ Runtime 性能曲线 - 用户数据</div>
-        </div>
-        <div id="custom-chart-runtime" class="chart-container"></div>
-        <div id="custom-chart-memory" class="chart-container hidden"></div>
-    </div>
-
-    <div class="card">
-        <div class="card-header">
-            <div class="card-title">📊 性能统计 - <span id="customCurrentRuleName">未选择</span></div>
-            <div class="info-text">
-                <span>📅 日期范围: <span id="customDateRange">-</span></span>
-                <span style="margin-left: 1rem;">📊 数据点数: <span id="customDataPoints">0</span></span>
-            </div>
-        </div>
-        <div class="stats-grid" id="customStatsMain"></div>
-    </div>
-</div>
         </main>
     </div>
 
@@ -396,7 +395,7 @@
         </div>
     </div>
 
-        <!-- ========== 添加Case模态框 ========== -->
+    <!-- 添加Case模态框 -->
     <div id="addCaseModal" class="modal hidden">
         <div class="modal-content" style="max-width: 700px;">
             <div class="modal-header">
@@ -502,14 +501,15 @@
 
     <script>
         // 传递给 JS 的数据 - 只保留一处
-        const projectsData = {{ projects_data_json | tojson }};
-        const perf = {{ perf | tojson }};
-        const toolId = '{{ tool_id }}';
-        const toolName = '{{ tool_name }}';
-        const initialMode = '{{ request.args.get("mode", "single") }}';
+        window.projectsData = {{ projects_data_json | tojson }};
+        window.perf = {{ perf | tojson }};
+        window.toolId = '{{ tool_id }}';
+        window.toolName = '{{ tool_name }}';
+        window.initialMode = '{{ request.args.get("mode", "single") }}';
+        // 全局变量
+        const charts = {};
     </script>
     
-    <!-- <script src="{{ url_for('static', filename='js/echarts.min.js') }}"></script> -->
     <script src="{{ url_for('static', filename='js/utils.js') }}"></script>
     <script src="{{ url_for('static', filename='js/chart-utils.js') }}"></script>
     <script src="{{ url_for('static', filename='js/timeline.js') }}"></script>

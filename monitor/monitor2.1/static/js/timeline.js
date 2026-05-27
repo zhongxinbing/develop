@@ -3,7 +3,7 @@
  */
 
 // 时序曲线图全局变量
-let timelineState = {
+const timelineState = {
     currentProjectId: null,
     currentRule: null,
     selectedDates: [],
@@ -79,7 +79,15 @@ function getMrComment(date) {
 
 function updateTimelineRuleSelect() {
     const projectData = getCurrentTimelineProjectData();
-    if (!projectData) return;
+    console.log('updateTimelineRuleSelect called:', {
+        currentProjectId: timelineState.currentProjectId,
+        projectDataExists: !!projectData,
+        projectsDataKeys: window.projectsData ? Object.keys(window.projectsData) : []
+    });
+    if (!projectData) {
+        console.warn('未找到当前项目数据，无法更新阶段选择');
+        return;
+    }
     
     const rules = projectData.rules || [];
     const searchText = document.getElementById('ruleSearch')?.value.toLowerCase() || '';
@@ -155,7 +163,7 @@ function buildDatePicker(usePending = false) {
     const container = document.getElementById('dateOptionsContainer');
     if (!container) return;
     
-    const currentSelection = usePending ? window.pendingSelectedDates : timelineState.selectedDates;
+    const currentSelection = usePending ? pendingSelectedDates : timelineState.selectedDates;
     const filterText = document.getElementById('dateFilterInput')?.value || '';
     const filteredDates = timelineState.availableDates.filter(date => 
         date.toLowerCase().includes(filterText.toLowerCase())
@@ -172,19 +180,19 @@ function buildDatePicker(usePending = false) {
         cb.addEventListener('change', (e) => {
             const date = e.target.value;
             if (e.target.checked) {
-                if (!window.pendingSelectedDates.includes(date)) window.pendingSelectedDates.push(date);
+                if (!pendingSelectedDates.includes(date)) pendingSelectedDates.push(date);
             } else {
-                window.pendingSelectedDates = window.pendingSelectedDates.filter(d => d !== date);
+                pendingSelectedDates = pendingSelectedDates.filter(d => d !== date);
             }
         });
     });
 }
 
 function confirmTimelineDateSelection() {
-    if (window.pendingSelectedDates.length === 0) {
-        window.pendingSelectedDates = timelineState.availableDates.slice(-51);
+    if (pendingSelectedDates.length === 0) {
+        pendingSelectedDates = timelineState.availableDates.slice(-51);
     }
-    timelineState.selectedDates = [...window.pendingSelectedDates];
+    timelineState.selectedDates = [...pendingSelectedDates];
     updateTimelineDateInfo();
     refreshTimelineCharts();
     closeTimelineDatePickerModal();
@@ -201,10 +209,10 @@ function selectAllTimelineDates() {
     if (!container) return;
     
     const checkboxes = container.querySelectorAll('input[type="checkbox"]');
-    window.pendingSelectedDates = [];
+    pendingSelectedDates = [];
     checkboxes.forEach(cb => {
         cb.checked = true;
-        window.pendingSelectedDates.push(cb.value);
+        pendingSelectedDates.push(cb.value);
     });
 }
 
@@ -213,7 +221,7 @@ function deselectAllTimelineDates() {
     if (!container) return;
     
     const checkboxes = container.querySelectorAll('input[type="checkbox"]');
-    window.pendingSelectedDates = [];
+    pendingSelectedDates = [];
     checkboxes.forEach(cb => {
         cb.checked = false;
     });
@@ -224,31 +232,44 @@ function inverseSelectTimelineDates() {
     if (!container) return;
     
     const checkboxes = container.querySelectorAll('input[type="checkbox"]');
-    window.pendingSelectedDates = [];
+    pendingSelectedDates = [];
     checkboxes.forEach(cb => {
         cb.checked = !cb.checked;
         if (cb.checked) {
-            window.pendingSelectedDates.push(cb.value);
+            pendingSelectedDates.push(cb.value);
         }
     });
 }
 
 // ==================================================
-// 图表类型切换
+// 图表类型切换 - 统一使用按钮方式
 // ==================================================
 
+/**
+ * 更新时序曲线图图表类型按钮状态
+ */
 function updateTimelineChartTypeButtons() {
-    const buttons = document.querySelectorAll('#chartTypeButtons .chart-type-btn');
-    buttons.forEach(btn => {
-        const type = btn.dataset.type;
-        if (type === timelineState.currentChartType) {
-            btn.classList.add('btn-primary');
-            btn.classList.remove('btn-secondary');
+    const runtimeBtn = document.getElementById('timelineChartRuntimeBtn');
+    const memoryBtn = document.getElementById('timelineChartMemoryBtn');
+    
+    if (runtimeBtn) {
+        if (timelineState.currentChartType === 'runtime') {
+            runtimeBtn.classList.add('btn-primary');
+            runtimeBtn.classList.remove('btn-secondary');
         } else {
-            btn.classList.add('btn-secondary');
-            btn.classList.remove('btn-primary');
+            runtimeBtn.classList.add('btn-secondary');
+            runtimeBtn.classList.remove('btn-primary');
         }
-    });
+    }
+    if (memoryBtn) {
+        if (timelineState.currentChartType === 'memory') {
+            memoryBtn.classList.add('btn-primary');
+            memoryBtn.classList.remove('btn-secondary');
+        } else {
+            memoryBtn.classList.add('btn-secondary');
+            memoryBtn.classList.remove('btn-primary');
+        }
+    }
     
     const runtimeContainer = document.getElementById('chart-runtime');
     const memoryContainer = document.getElementById('chart-memory');
@@ -262,19 +283,18 @@ function updateTimelineChartTypeButtons() {
         }
     }
     
-    const chartCardTitle = document.getElementById('chartCardTitle');
+    const chartCardTitle = document.getElementById('timelineChartCardTitle');
     if (chartCardTitle) {
         chartCardTitle.innerText = timelineState.currentChartType === 'runtime' 
             ? '⏱️ Runtime 性能曲线' 
             : '💾 Memory 使用曲线';
     }
-    
-    const chart = timelineState.currentChartType === 'runtime' 
-        ? ChartManager.get('chart-runtime') 
-        : ChartManager.get('chart-memory');
-    if (chart) chart.resize();
 }
 
+/**
+ * 切换时序曲线图图表类型
+ * @param {string} type - 图表类型 ('runtime' 或 'memory')
+ */
 function selectTimelineChartType(type) {
     if (timelineState.currentChartType === type) return;
     timelineState.currentChartType = type;
@@ -283,16 +303,9 @@ function selectTimelineChartType(type) {
 }
 
 // ==================================================
-// 统一图表渲染（带平均值和参考线）
+// 图表渲染
 // ==================================================
 
-/**
- * 渲染时序曲线图 - 统一折线图样式
- * @param {string} chartType - 图表类型 (runtime/memory)
- * @param {string} dataKey - 数据键名 (runtimes/memories)
- * @param {string} color - 颜色
- * @param {string} yAxisName - Y轴名称
- */
 function renderTimelineChart(chartType, dataKey, color, yAxisName) {
     const toolData = getCurrentTimelineToolData();
     if (!toolData) {
@@ -331,9 +344,8 @@ function renderTimelineChart(chartType, dataKey, color, yAxisName) {
     }
     
     const dates = filteredData.dates;
-    
-    // 构建线程数据
     const threadMetrics = toolData.thread_metrics || {};
+    
     if (!threadMetrics['0'] && filteredData.runtimes?.length) {
         threadMetrics['0'] = {
             runtimes: filteredData.runtimes,
@@ -351,7 +363,6 @@ function renderTimelineChart(chartType, dataKey, color, yAxisName) {
         const threadInfo = threadMetrics[threadId];
         let values = threadInfo?.[dataKey] || [];
         
-        // 映射数据到选中的日期
         const mappedValues = [];
         const originalDates = toolData.dates || [];
         
@@ -380,20 +391,15 @@ function renderTimelineChart(chartType, dataKey, color, yAxisName) {
             showSymbol: true,
             symbol: 'circle',
             symbolSize: 6,
-            // 为有MR更新的数据点添加特殊标记
             itemStyle: {
                 color: (params) => {
                     const date = dates[params.dataIndex];
-                    if (date && hasMrUpdate(date)) {
-                        return '#ef4444';
-                    }
+                    if (date && hasMrUpdate(date)) return '#ef4444';
                     return seriesColor;
                 },
                 borderColor: (params) => {
                     const date = dates[params.dataIndex];
-                    if (date && hasMrUpdate(date)) {
-                        return '#ffffff';
-                    }
+                    if (date && hasMrUpdate(date)) return '#ffffff';
                     return 'transparent';
                 },
                 borderWidth: (params) => {
@@ -411,12 +417,10 @@ function renderTimelineChart(chartType, dataKey, color, yAxisName) {
         updateStatsCard('stats-main', allValues, unit, label);
     }
     
-    // 计算平均值
     const avgValue = allValues.length > 0 
         ? (allValues.reduce((a, b) => a + b, 0) / allValues.length).toFixed(1) 
         : 0;
     
-    // 计算参考线值（使用中位数）
     let referenceValue = avgValue;
     if (dataKey === 'memories' && allValues.length > 0) {
         const sorted = [...allValues].sort((a, b) => a - b);
@@ -424,14 +428,12 @@ function renderTimelineChart(chartType, dataKey, color, yAxisName) {
         referenceValue = sorted[mid];
     }
     
-    // 图例默认选中状态（默认只显示线程0）
     const legendSelected = {};
     threadIds.forEach((threadId, idx) => {
         const seriesName = threadId === '0' ? '线程0' : `其他线程${threadId}`;
         legendSelected[seriesName] = (threadId === '0');
     });
     
-    // 自定义tooltip格式化函数
     const tooltipFormatter = function(params) {
         if (!params?.length) return '';
         const unit = dataKey === 'runtimes' ? '秒' : 'MB';
@@ -449,7 +451,6 @@ function renderTimelineChart(chartType, dataKey, color, yAxisName) {
         return `<strong>📅 ${date}</strong>${rows}<div style="margin-top: 6px; padding-top: 4px; border-top: 1px solid #334155;"><span style="${mrStyle}">${mrIcon} ${hasMr ? mrComment : '无MR更新'}</span></div>`;
     };
     
-    // 使用统一配置生成图表
     const option = ChartConfig.getCompleteLineChartConfig(
         dates, seriesList, yAxisName, avgValue, referenceValue, legendSelected, tooltipFormatter
     );
@@ -457,7 +458,6 @@ function renderTimelineChart(chartType, dataKey, color, yAxisName) {
     const chart = ChartManager.get(`chart-${chartType}`);
     if (chart) {
         chart.setOption(option, { notMerge: true, lazyUpdate: true });
-        // 添加图例控制按钮
         setTimeout(() => addLegendControlButtons(chart, `chart-${chartType}`), 100);
     }
 }
@@ -469,16 +469,11 @@ function refreshTimelineCharts() {
     renderTimelineChart('memory', 'memories', '#10b981', 'Memory (MB)');
     updateTimelineChartTypeButtons();
     
-    // 强制刷新图表
     setTimeout(() => {
         if (charts.runtime) charts.runtime.resize();
         if (charts.memory) charts.memory.resize();
     }, 100);
 }
-
-// ==================================================
-// 项目统计
-// ==================================================
 
 function updateTimelineProjectStats() {
     const projectData = getCurrentTimelineProjectData();
@@ -499,7 +494,6 @@ function updateTimelineProjectStats() {
 // ==================================================
 
 function bindTimelineEvents() {
-    // 项目选择
     const caseSelect = document.getElementById('caseSelect');
     if (caseSelect) {
         caseSelect.addEventListener('change', (e) => {
@@ -513,7 +507,6 @@ function bindTimelineEvents() {
         });
     }
     
-    // 规则选择
     const ruleSelect = document.getElementById('ruleSelect');
     if (ruleSelect) {
         ruleSelect.addEventListener('change', (e) => {
@@ -526,19 +519,21 @@ function bindTimelineEvents() {
         });
     }
     
-    // 规则搜索
     const ruleSearch = document.getElementById('ruleSearch');
     if (ruleSearch) {
         ruleSearch.addEventListener('input', debounce(() => updateTimelineRuleSelect(), 300));
     }
     
-    // 图表类型切换
-    const chartTypeBtns = document.querySelectorAll('#chartTypeButtons .chart-type-btn');
-    chartTypeBtns.forEach(btn => {
-        btn.addEventListener('click', () => selectTimelineChartType(btn.dataset.type));
-    });
+    // 图表类型切换按钮
+    const timelineChartRuntimeBtn = document.getElementById('timelineChartRuntimeBtn');
+    if (timelineChartRuntimeBtn) {
+        timelineChartRuntimeBtn.addEventListener('click', () => selectTimelineChartType('runtime'));
+    }
+    const timelineChartMemoryBtn = document.getElementById('timelineChartMemoryBtn');
+    if (timelineChartMemoryBtn) {
+        timelineChartMemoryBtn.addEventListener('click', () => selectTimelineChartType('memory'));
+    }
     
-    // 日期选择按钮
     const openDatePickerBtn = document.getElementById('openDatePickerBtn');
     if (openDatePickerBtn) openDatePickerBtn.addEventListener('click', openTimelineDatePickerModal);
     
@@ -571,4 +566,6 @@ window.timelineState = timelineState;
 window.updateTimelineRuleSelect = updateTimelineRuleSelect;
 window.refreshTimelineCharts = refreshTimelineCharts;
 window.selectTimelineChartType = selectTimelineChartType;
-window.pendingSelectedDates = [];
+window.updateTimelineProjectStats = updateTimelineProjectStats;
+window.updateTimelineDateInfo = updateTimelineDateInfo;
+window.pendingSelectedDates = pendingSelectedDates;

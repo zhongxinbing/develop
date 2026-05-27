@@ -594,6 +594,7 @@ function removeCaseConfig(index) {
     renderCaseConfigList();
     showNotification('Case路径已删除');
 }
+
 /**
  * 重置日期选择为最近N天
  * @param {number} days - 天数，默认50
@@ -615,6 +616,7 @@ function resetCustomDateToRecent(days = 50) {
 
 // 导出函数
 window.resetCustomDateToRecent = resetCustomDateToRecent;
+
 /**
  * 加载默认数据（用于混合模式比较）
  */
@@ -735,6 +737,7 @@ async function confirmLoadCaseData() {
         closeAddCaseModal();
     }
 }
+
 /**
  * 切换数据源模式
  */
@@ -818,21 +821,34 @@ async function preloadDefaultDataForCustom() {
 }
 
 // ==================================================
-// 图表类型切换
+// 图表类型切换 - 统一使用按钮方式
 // ==================================================
 
+/**
+ * 更新自定义图表类型按钮状态
+ */
 function updateCustomChartTypeButtons() {
-    const buttons = document.querySelectorAll('#customChartTypeButtons .chart-type-btn');
-    buttons.forEach(btn => {
-        const type = btn.dataset.type;
-        if (type === customState.currentChartType) {
-            btn.classList.add('btn-primary');
-            btn.classList.remove('btn-secondary');
+    const runtimeBtn = document.getElementById('customChartRuntimeBtn');
+    const memoryBtn = document.getElementById('customChartMemoryBtn');
+    
+    if (runtimeBtn) {
+        if (customState.currentChartType === 'runtime') {
+            runtimeBtn.classList.add('btn-primary');
+            runtimeBtn.classList.remove('btn-secondary');
         } else {
-            btn.classList.add('btn-secondary');
-            btn.classList.remove('btn-primary');
+            runtimeBtn.classList.add('btn-secondary');
+            runtimeBtn.classList.remove('btn-primary');
         }
-    });
+    }
+    if (memoryBtn) {
+        if (customState.currentChartType === 'memory') {
+            memoryBtn.classList.add('btn-primary');
+            memoryBtn.classList.remove('btn-secondary');
+        } else {
+            memoryBtn.classList.add('btn-secondary');
+            memoryBtn.classList.remove('btn-primary');
+        }
+    }
     
     const runtimeContainer = document.getElementById('custom-chart-runtime');
     const memoryContainer = document.getElementById('custom-chart-memory');
@@ -854,11 +870,13 @@ function updateCustomChartTypeButtons() {
     }
 }
 
+/**
+ * 切换自定义图表类型
+ * @param {string} type - 图表类型 ('runtime' 或 'memory')
+ */
 function selectCustomChartType(type) {
     if (customState.currentChartType === type) return;
-    
     customState.currentChartType = type;
-    
     updateCustomChartTypeButtons();
     refreshCustomCharts();
 }
@@ -1219,11 +1237,16 @@ function bindCustomChartEvents() {
     }
     
     // 图表类型切换
-    const customChartTypeBtns = document.querySelectorAll('#customChartTypeButtons .chart-type-btn');
-    customChartTypeBtns.forEach(btn => {
-        btn.removeEventListener('click', () => selectCustomChartType(btn.dataset.type));
-        btn.addEventListener('click', () => selectCustomChartType(btn.dataset.type));
-    });
+    const customChartRuntimeBtn = document.getElementById('customChartRuntimeBtn');
+    if (customChartRuntimeBtn) {
+        customChartRuntimeBtn.removeEventListener('click', () => selectCustomChartType('runtime'));
+        customChartRuntimeBtn.addEventListener('click', () => selectCustomChartType('runtime'));
+    }
+    const customChartMemoryBtn = document.getElementById('customChartMemoryBtn');
+    if (customChartMemoryBtn) {
+        customChartMemoryBtn.removeEventListener('click', () => selectCustomChartType('memory'));
+        customChartMemoryBtn.addEventListener('click', () => selectCustomChartType('memory'));
+    }
     
     // 日期选择
     const customOpenDatePickerBtn = document.getElementById('customOpenDatePickerBtn');
@@ -1354,6 +1377,7 @@ function handleCustomCaseChange(e) {
         }
     }
 }
+
 function handleCustomRuleChange(e) {
     customState.currentRule = e.target.value;
     if (customState.currentRule) {
