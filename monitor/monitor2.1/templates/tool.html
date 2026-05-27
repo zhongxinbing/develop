@@ -290,89 +290,89 @@
             </div>
 
             <!-- ========== 自定义曲线图视图 ========== -->
-            <div id="customView" class="view-container">
-                <div class="card">
-                    <div class="card-header">
-                        <div class="card-title">📝 自定义数据加载</div>
-                    </div>
-                    <div class="control-bar">
-                        <div class="control-group" style="flex: 2;">
-                            <label class="control-label">🔗 User Case 路径</label>
-                            <input type="text" id="customCasePath" class="search-input" placeholder="输入用户数据的路径..." style="width: 100%;">
-                        </div>
-                        <div class="control-group">
-                            <label class="control-label">&nbsp;</label>
-                            <div class="btn-group">
-                                <button class="btn btn-primary" id="loadCustomDataBtn">✅ 确认加载</button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="config-hint" style="margin-top: 0.5rem; padding: 0.5rem; background: rgba(99, 102, 241, 0.1); border-radius: var(--radius-md);">
-                        💡 提示：输入用户数据的路径后点击确认，系统将获取数据并显示曲线图。
-                    </div>
-                </div>
+            <!-- ========== 自定义曲线图视图 ========== -->
+<div id="customView" class="view-container">
+    <div class="card">
+        <div class="card-header">
+            <div class="card-title">📝 自定义数据加载</div>
+        </div>
+        
+        <!-- 按钮区域 - 使用 Flexbox 布局 -->
+        <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+            <button class="btn btn-primary" id="addCaseBtn" style="flex: 1; min-width: 120px;">
+                ➕ 添加Case
+            </button>
+            <button class="btn btn-primary" id="toggleDataSourceBtn" style="flex: 1; min-width: 120px;">
+                🔄 切换显示混合模式
+            </button>
+        </div>
+        
+        <div class="config-hint" style="margin-top: 0.75rem; padding: 0.5rem; background: rgba(99, 102, 241, 0.1); border-radius: var(--radius-md);">
+            💡 提示：点击"添加Case"按钮可添加多个Case路径，点击确认后加载所有Case数据。
+        </div>
+    </div>
 
-                <div id="customLoadingIndicator" class="card" style="display: none;">
-                    <div style="text-align: center; padding: 1rem;">
-                        <div class="spinner" style="width: 30px; height: 30px; margin: 0 auto 0.5rem;"></div>
-                        <div>正在加载用户数据...</div>
-                    </div>
-                </div>
+    <div id="customLoadingIndicator" class="card" style="display: none;">
+        <div style="text-align: center; padding: 1rem;">
+            <div class="spinner" style="width: 30px; height: 30px; margin: 0 auto 0.5rem;"></div>
+            <div>正在加载用户数据...</div>
+        </div>
+    </div>
 
-                <div class="card">
-                    <div class="card-header">
-                        <div class="card-title">🎛️ 数据筛选</div>
-                    </div>
-                    <div class="control-bar">
-                        <div class="control-group">
-                            <label class="control-label">📁 选择项目</label>
-                            <select id="customCaseSelect">
-                                <option value="">-- 请先加载数据 --</option>
-                            </select>
-                        </div>
-                        <div class="control-group">
-                            <label class="control-label">📋 选择阶段</label>
-                            <select id="customRuleSelect" disabled>
-                                <option value="">-- 请先选择项目 --</option>
-                            </select>
-                        </div>
-                        <div class="control-group">
-                            <label class="control-label">🔍 搜索阶段</label>
-                            <input type="text" id="customRuleSearch" placeholder="输入阶段名称..." class="search-input" disabled>
-                        </div>
-                        <div class="control-group">
-                            <label class="control-label">📅 日期范围</label>
-                            <div class="btn-group">
-                                <button class="btn btn-secondary" id="customOpenDatePickerBtn" disabled>📅 选择日期</button>
-                                <button class="btn btn-secondary" id="customSelectRecentBtn" disabled>📆 最近50天</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="card">
-                    <div id="customChartTypeButtons" class="chart-type-buttons">
-                        <button class="btn btn-primary chart-type-btn" data-type="runtime">⏱️ Runtime</button>
-                        <button class="btn btn-secondary chart-type-btn" data-type="memory">💾 Memory</button>
-                    </div>
-                    <div class="card-header">
-                        <div class="card-title" id="customChartCardTitle">⏱️ Runtime 性能曲线 - 用户数据</div>
-                    </div>
-                    <div id="custom-chart-runtime" class="chart-container"></div>
-                    <div id="custom-chart-memory" class="chart-container hidden"></div>
-                </div>
-
-                <div class="card">
-                    <div class="card-header">
-                        <div class="card-title">📊 性能统计 - <span id="customCurrentRuleName">未选择</span></div>
-                        <div class="info-text">
-                            <span>📅 日期范围: <span id="customDateRange">-</span></span>
-                            <span style="margin-left: 1rem;">📊 数据点数: <span id="customDataPoints">0</span></span>
-                        </div>
-                    </div>
-                    <div class="stats-grid" id="customStatsMain"></div>
+    <div class="card">
+        <div class="card-header">
+            <div class="card-title">🎛️ 数据筛选</div>
+        </div>
+        <div class="control-bar">
+            <div class="control-group">
+                <label class="control-label">📁 选择项目</label>
+                <select id="customCaseSelect">
+                    <option value="">-- 请先加载数据 --</option>
+                </select>
+            </div>
+            <div class="control-group">
+                <label class="control-label">📋 选择阶段</label>
+                <select id="customRuleSelect" disabled>
+                    <option value="">-- 请先选择项目 --</option>
+                </select>
+            </div>
+            <div class="control-group">
+                <label class="control-label">🔍 搜索阶段</label>
+                <input type="text" id="customRuleSearch" placeholder="输入阶段名称..." class="search-input" disabled>
+            </div>
+            <div class="control-group">
+                <label class="control-label">📅 日期范围</label>
+                <div class="btn-group">
+                    <button class="btn btn-secondary" id="customOpenDatePickerBtn" disabled>📅 选择日期</button>
+                    <button class="btn btn-secondary" id="customSelectRecentBtn" disabled>📆 最近50天</button>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div id="customChartTypeButtons" class="chart-type-buttons">
+            <button class="btn btn-primary chart-type-btn" data-type="runtime">⏱️ Runtime</button>
+            <button class="btn btn-secondary chart-type-btn" data-type="memory">💾 Memory</button>
+        </div>
+        <div class="card-header">
+            <div class="card-title" id="customChartCardTitle">⏱️ Runtime 性能曲线 - 用户数据</div>
+        </div>
+        <div id="custom-chart-runtime" class="chart-container"></div>
+        <div id="custom-chart-memory" class="chart-container hidden"></div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <div class="card-title">📊 性能统计 - <span id="customCurrentRuleName">未选择</span></div>
+            <div class="info-text">
+                <span>📅 日期范围: <span id="customDateRange">-</span></span>
+                <span style="margin-left: 1rem;">📊 数据点数: <span id="customDataPoints">0</span></span>
+            </div>
+        </div>
+        <div class="stats-grid" id="customStatsMain"></div>
+    </div>
+</div>
         </main>
     </div>
 
@@ -392,6 +392,45 @@
             <div class="btn-group" style="margin-top: 1rem; justify-content: flex-end;">
                 <button class="btn btn-secondary" id="closeDateModalBtn">取消</button>
                 <button class="btn btn-primary" id="confirmDateBtn">确认</button>
+            </div>
+        </div>
+    </div>
+
+        <!-- ========== 添加Case模态框 ========== -->
+    <div id="addCaseModal" class="modal hidden">
+        <div class="modal-content" style="max-width: 700px;">
+            <div class="modal-header">
+                <h3>📁 添加Case路径</h3>
+                <button class="btn btn-secondary close-modal-btn" style="padding: 0.25rem 0.5rem;">✕</button>
+            </div>
+            
+            <div style="margin-bottom: 1rem;">
+                <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+                    <input type="text" id="newCasePathInput" class="form-input" placeholder="输入Case路径..." style="flex: 2; min-width: 200px;">
+                    <button class="btn btn-primary" id="addCaseConfigBtn" style="flex-shrink: 0;">➕ 添加路径</button>
+                </div>
+                <div class="config-hint" style="margin-top: 0.5rem;">
+                    💡 支持JSON文件路径或目录路径，例如：./data/elint.json
+                </div>
+            </div>
+            
+            <div style="margin-bottom: 1rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                    <span style="font-weight: 600;">📋 Case列表</span>
+                    <span style="font-size: 0.7rem; color: var(--text-muted);">共 <span id="caseCount">0</span> 个Case</span>
+                </div>
+                <div id="caseConfigContainer" class="case-config-list" style="max-height: 300px; overflow-y: auto;">
+                    <!-- Case配置列表会动态渲染 -->
+                    <div style="text-align: center; padding: 2rem; color: var(--text-muted);">
+                        <div>📁 暂无Case配置</div>
+                        <div style="font-size: 0.8rem; margin-top: 0.5rem;">点击上方按钮添加Case路径</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="btn-group" style="margin-top: 1rem; justify-content: flex-end; gap: 0.75rem;">
+                <button class="btn btn-secondary close-modal-btn">取消</button>
+                <button class="btn btn-primary" id="confirmLoadCaseBtn">✅ 确认加载</button>
             </div>
         </div>
     </div>
@@ -434,7 +473,7 @@
             </div>
         </div>
     </div>
-
+    
     <!-- 线程选择模态框 -->
     <div id="threadSelectorModal" class="modal hidden">
         <div class="modal-content">

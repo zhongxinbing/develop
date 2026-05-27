@@ -744,3 +744,53 @@ select:disabled, input:disabled {
     background: var(--primary);
     border-radius: 4px;
 }
+
+/* Case配置列表样式 */
+.case-config-list {
+    background: rgba(15, 23, 42, 0.4);
+    border-radius: var(--radius-md);
+    padding: 0.5rem;
+}
+
+.case-config-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    background: rgba(15, 23, 42, 0.6);
+    border-radius: var(--radius-md);
+    margin-bottom: 0.5rem;
+    transition: var(--transition);
+}
+
+.case-config-item:hover {
+    background: rgba(99, 102, 241, 0.1);
+}
+
+.case-config-item:last-child {
+    margin-bottom: 0;
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+    .case-config-item {
+        flex-wrap: wrap;
+    }
+    
+    .case-config-item span {
+        width: 100%;
+        word-break: break-all;
+    }
+}
+
+/* 按钮组增强 */
+.btn-group {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+/* 统一按钮最小宽度 */
+.btn {
+    min-width: 80px;
+}

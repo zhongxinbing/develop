@@ -353,7 +353,19 @@ function renderTimelineChart(chartType, dataKey, color, yAxisName, yAxisFormatte
         charts[chartType].setOption(option, { notMerge: false, lazyUpdate: true });
     }
 }
-
+/**
+ * 获取当前活动的视图ID
+ */
+function getActiveViewId() {
+    const activeContainer = document.querySelector('.view-container.active');
+    if (!activeContainer) return null;
+    
+    if (activeContainer.id === 'timelineView') return 'timeline';
+    if (activeContainer.id === 'multithreadView') return 'multithread';
+    if (activeContainer.id === 'compareView') return 'compare';
+    if (activeContainer.id === 'customView') return 'custom';
+    return null;
+}
 function refreshTimelineCharts() {
     if (!timelineState.currentRule) return;
     renderTimelineChart('runtime', 'runtimes', '#6366f1', 'Runtime (秒)');
@@ -609,6 +621,7 @@ function switchView(viewId) {
         item.classList.remove('active');
         if (item.dataset.view === viewId) item.classList.add('active');
     });
+    
     if (viewId === 'multithread') {
         setTimeout(() => {
             if (charts.multiRuntime) charts.multiRuntime.resize();
@@ -619,9 +632,49 @@ function switchView(viewId) {
             }
         }, 100);
     } else if (viewId === 'timeline') {
-        setTimeout(() => { if (charts.runtime) charts.runtime.resize(); if (charts.memory) charts.memory.resize(); }, 100);
+        setTimeout(() => { 
+            if (charts.runtime) charts.runtime.resize(); 
+            if (charts.memory) charts.memory.resize(); 
+        }, 100);
     } else if (viewId === 'custom') {
-        setTimeout(() => { if (customCharts.runtime) customCharts.runtime.resize(); if (customCharts.memory) customCharts.memory.resize(); }, 100);
+        setTimeout(() => { 
+            // 强制刷新自定义图表
+            if (typeof refreshCustomCharts === 'function') {
+                // 如果已经有选中的项目且有阶段，直接刷新图表
+                if (customState && customState.currentProjectId && customState.currentRule) {
+                    console.log('切换到自定义图表视图，刷新图表数据');
+                    // 确保日期选择为最近50天
+                    if (customState.selectedDates.length === 0 && customState.availableDates.length > 0) {
+                        customState.selectedDates = customState.availableDates.slice(-51);
+                        if (typeof updateCustomDateInfo === 'function') {
+                            updateCustomDateInfo();
+                        }
+                    }
+                    refreshCustomCharts();
+                } else if (customState && customState.currentProjectId && !customState.currentRule) {
+                    // 有项目但无阶段，尝试更新阶段列表
+                    if (typeof updateCustomRuleSelect === 'function') {
+                        updateCustomRuleSelect();
+                    }
+                    // 确保日期选择为最近50天
+                    if (customState.selectedDates.length === 0 && customState.availableDates.length > 0) {
+                        customState.selectedDates = customState.availableDates.slice(-51);
+                        if (typeof updateCustomDateInfo === 'function') {
+                            updateCustomDateInfo();
+                        }
+                    }
+                } else if (customState && customState.availableDates && customState.availableDates.length > 0) {
+                    // 有可用日期但没有选中项目，设置日期选择
+                    customState.selectedDates = customState.availableDates.slice(-51);
+                    if (typeof updateCustomDateInfo === 'function') {
+                        updateCustomDateInfo();
+                    }
+                }
+            }
+            // 调整图表大小
+            if (customCharts && customCharts.runtime) customCharts.runtime.resize();
+            if (customCharts && customCharts.memory) customCharts.memory.resize();
+        }, 150);
     }
 }
 
@@ -970,6 +1023,12 @@ async function init() {
     initCharts();
     initCustomCharts();
     bindEvents();
+    bindCustomChartEvents();  // 绑定自定义图表事件
+    
+    if (typeof preloadDefaultDataForCustom === 'function') {
+        await preloadDefaultDataForCustom();
+    }
+
     await autoRefreshOnLoad();
     const caseSelect = document.getElementById('caseSelect');
     if (caseSelect && caseSelect.options.length > 0) {

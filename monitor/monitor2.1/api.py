@@ -1,5 +1,5 @@
 """
-Flask API路由模块
+Flask API路由模块 - 添加批量获取用户数据接口
 """
 from flask import Flask, render_template, request, jsonify, send_from_directory
 from flask_cors import CORS
@@ -9,7 +9,7 @@ from typing import Dict, Any, List, Optional
 import json
 
 from common import log, load_json, save_json, get_local_ip
-from tool.elint.elint import get_elint_data, get_perf
+from tool.elint.elint import get_elint_data, get_perf, get_user_data_batch
 from tool.elint.parse import parse_project_data, refresh_parsed_projects, parsed_projects, project_list
 from data_cache import data_cache, version_manager
 from compare import comparator
@@ -635,6 +635,90 @@ def api_multi_thread_data():
 
 
 # ==================================================
+# 批量获取用户自定义数据API
+# ==================================================
+
+@app.route('/api/fetch_user_data_batch', methods=['POST'])
+def api_fetch_user_data_batch():
+    """批量获取用户自定义数据API"""
+    try:
+        data = request.get_json() or {}
+        case_paths = data.get('case_paths', [])
+        
+        if not case_paths:
+            return jsonify({'success': False, 'error': '请提供至少一个用户数据路径'}), 400
+        
+        from tool.elint.elint import get_user_data_batch
+        
+        # 调用批量获取函数
+        result = get_user_data_batch(case_paths)
+        
+        if result:
+            # 解析数据
+            parsed_result = {}
+            for project_id, project_data in result.items():
+                parsed_result[project_id] = parse_project_data(project_data, project_id)
+                parsed_result[project_id]['project_name'] = project_data.get('project_name', project_id)
+                parsed_result[project_id]['description'] = project_data.get('description', '')
+            
+            return jsonify({
+                'success': True,
+                'data': parsed_result,
+                'message': f'成功加载 {len(case_paths)} 个case数据'
+            })
+        else:
+            return jsonify({'success': False, 'error': '获取数据失败，请检查路径'}), 500
+            
+    except ImportError:
+        return jsonify({
+            'success': False,
+            'error': 'get_user_data_batch 函数尚未实现，请先在 elint.py 中实现该函数'
+        }), 501
+    except Exception as e:
+        log(f"获取用户数据失败: {e}")
+        import traceback
+        traceback.print_exc()
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+@app.route('/api/fetch_default_user_data', methods=['POST'])
+def api_fetch_default_user_data():
+    """获取默认用户数据API"""
+    try:
+        data = request.get_json() or {}
+        tool = data.get('tool', 'elint')
+        
+        tool_config = CASE_CONFIG.get(tool, {})
+        json_path = tool_config.get('json_path', '')
+        
+        if not json_path:
+            return jsonify({'success': False, 'error': '未配置默认数据路径'}), 400
+        
+        from tool.elint.elint import get_elint_data
+        
+        # 获取默认数据
+        projects_data = get_elint_data(json_path, '')
+        
+        parsed_result = {}
+        for project_id, project_data in projects_data.items():
+            if project_id != 'dataFiles':  # 跳过临时字段
+                parsed_result[project_id] = parse_project_data(project_data, project_id)
+                parsed_result[project_id]['project_name'] = project_data.get('project_name', project_id)
+                parsed_result[project_id]['description'] = project_data.get('description', '')
+        
+        return jsonify({
+            'success': True,
+            'data': parsed_result,
+            'message': '成功加载默认数据'
+        })
+    except Exception as e:
+        log(f"获取默认数据失败: {e}")
+        import traceback
+        traceback.print_exc()
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+# ==================================================
 # 对比API
 # ==================================================
 
@@ -793,48 +877,3 @@ def api_export_compare():
 def download_file(filename: str):
     """下载文件"""
     return send_from_directory(comparator.export_dir, filename, as_attachment=True)
-
-
-# ==================================================
-# 自定义曲线图API
-# ==================================================
-
-@app.route('/api/fetch_user_data', methods=['POST'])
-def api_fetch_user_data():
-    """获取用户自定义数据API"""
-    try:
-        data = request.get_json() or {}
-        case_path = data.get('case_path', '')
-        
-        if not case_path:
-            return jsonify({'success': False, 'error': '请提供用户数据路径'}), 400
-        
-        from tool.elint.elint import get_user_data
-        
-        result = get_user_data(case_path)
-        
-        if result and isinstance(result, dict):
-            parsed_projects_result = {}
-            for project_id, project_data in result.items():
-                parsed_projects_result[project_id] = parse_project_data(project_data, project_id)
-                parsed_projects_result[project_id]['project_name'] = project_data.get('project_name', project_id)
-                parsed_projects_result[project_id]['description'] = project_data.get('description', '')
-            
-            return jsonify({
-                'success': True,
-                'data': parsed_projects_result,
-                'message': '数据加载成功'
-            })
-        else:
-            return jsonify({'success': False, 'error': '获取数据失败，请检查路径'}), 500
-            
-    except ImportError:
-        return jsonify({
-            'success': False,
-            'error': 'get_user_data 函数尚未实现，请先在 elint.py 中实现该函数'
-        }), 501
-    except Exception as e:
-        log(f"获取用户数据失败: {e}")
-        import traceback
-        traceback.print_exc()
-        return jsonify({'success': False, 'error': str(e)}), 500
