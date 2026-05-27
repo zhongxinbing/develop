@@ -182,26 +182,26 @@ function handleCardClick(e) {
 /**
  * 显示通知
  */
-function showNotification(message, isError = false) {
-    const notification = document.createElement('div');
-    notification.textContent = isError ? `❌ ${message}` : `✅ ${message}`;
-    notification.style.cssText = `
-        position: fixed;
-        bottom: 20px;
-        right: 20px;
-        padding: 12px 20px;
-        background: ${isError ? '#ef4444' : '#10b981'};
-        color: white;
-        border-radius: 8px;
-        z-index: 10000;
-        animation: slideIn 0.3s ease;
-        font-size: 14px;
-        font-weight: 500;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-    `;
-    document.body.appendChild(notification);
-    setTimeout(() => notification.remove(), 3000);
-}
+// function showNotification(message, isError = false) {
+//     const notification = document.createElement('div');
+//     notification.textContent = isError ? `❌ ${message}` : `✅ ${message}`;
+//     notification.style.cssText = `
+//         position: fixed;
+//         bottom: 20px;
+//         right: 20px;
+//         padding: 12px 20px;
+//         background: ${isError ? '#ef4444' : '#10b981'};
+//         color: white;
+//         border-radius: 8px;
+//         z-index: 10000;
+//         animation: slideIn 0.3s ease;
+//         font-size: 14px;
+//         font-weight: 500;
+//         box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+//     `;
+//     document.body.appendChild(notification);
+//     setTimeout(() => notification.remove(), 3000);
+// }
 
 /**
  * 页面初始化

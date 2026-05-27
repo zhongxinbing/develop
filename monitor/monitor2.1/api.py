@@ -22,9 +22,9 @@ app = Flask(__name__)
 CORS(app)
 
 # 全局变量
-parsed_projects: Dict = {}
-project_list: List = []
-current_projects_data: Dict = {}
+# parsed_projects: Dict = {}
+# project_list: List = []
+# current_projects_data: Dict = {}
 
 
 # ==================================================

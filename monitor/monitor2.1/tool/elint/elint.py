@@ -282,6 +282,7 @@ def get_perf(mem, cpu):
         dict: 性能数据字典
     """
     try:
+        git_pull()
         mem_data = read_csv(Path(mem)) if mem else {}
         cpu_data = read_csv(Path(cpu)) if cpu else {}
         perf = {
