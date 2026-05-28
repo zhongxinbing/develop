@@ -827,6 +827,8 @@ async function preloadDefaultDataForCustom() {
 /**
  * 更新自定义图表类型按钮状态
  */
+// 在 custom-chart.js 中替换 updateCustomChartTypeButtons 函数
+
 function updateCustomChartTypeButtons() {
     const runtimeBtn = document.getElementById('customChartRuntimeBtn');
     const memoryBtn = document.getElementById('customChartMemoryBtn');
@@ -867,6 +869,13 @@ function updateCustomChartTypeButtons() {
         chartCardTitle.innerText = customState.currentChartType === 'runtime' 
             ? '⏱️ Runtime 性能曲线' 
             : '💾 Memory 使用曲线';
+    }
+    
+    // 切换后重新渲染并确保尺寸正确
+    if (customState.currentProjectId && customState.currentRule) {
+        setTimeout(() => {
+            refreshCustomCharts();
+        }, 50);
     }
 }
 
@@ -909,11 +918,13 @@ function updateCustomStatsCard(containerId, values, unit, label) {
     `;
 }
 
+// 在 custom-chart.js 中替换 renderCustomChart 函数
+
 function renderCustomChart(chartType, dataKey, color, yAxisName) {
     const toolData = getCurrentCustomToolData();
     if (!toolData) {
         const chart = customCharts[chartType];
-        if (chart) {
+        if (chart && !chart.isDisposed()) {
             chart.clear();
             chart.setOption({
                 title: {
@@ -931,7 +942,7 @@ function renderCustomChart(chartType, dataKey, color, yAxisName) {
     const filteredData = getFilteredCustomToolData(toolData);
     if (!filteredData || filteredData.dates.length === 0) {
         const chart = customCharts[chartType];
-        if (chart) {
+        if (chart && !chart.isDisposed()) {
             chart.clear();
             chart.setOption({
                 title: {
@@ -947,6 +958,12 @@ function renderCustomChart(chartType, dataKey, color, yAxisName) {
     }
     
     const dates = filteredData.dates;
+    
+    // 在设置新数据前，先确保容器尺寸正确
+    const container = document.getElementById(`custom-chart-${chartType}`);
+    if (container && container.offsetWidth > 0 && customCharts[chartType] && !customCharts[chartType].isDisposed()) {
+        customCharts[chartType].resize();
+    }
     
     const threadMetrics = toolData.thread_metrics || {};
     if (!threadMetrics['0'] && filteredData.runtimes?.length) {
@@ -1132,10 +1149,19 @@ function renderCustomChart(chartType, dataKey, color, yAxisName) {
     };
     
     const chart = customCharts[chartType];
-    if (chart) {
+    if (chart && !chart.isDisposed()) {
         chart.setOption(option, { notMerge: true, lazyUpdate: false });
     }
+    
+    // 渲染后再次确保尺寸正确
+    setTimeout(() => {
+        if (chart && !chart.isDisposed()) {
+            chart.resize();
+        }
+    }, 50);
 }
+
+// 在 custom-chart.js 中替换 refreshCustomCharts 函数
 
 function refreshCustomCharts() {
     // 检查当前是否在自定义图表视图
@@ -1154,18 +1180,43 @@ function refreshCustomCharts() {
     
     console.log('刷新自定义图表:', customState.currentProjectId, customState.currentRule);
     
+    // 先确保容器可见并调整尺寸
+    const runtimeContainer = document.getElementById('custom-chart-runtime');
+    const memoryContainer = document.getElementById('custom-chart-memory');
+    
+    if (runtimeContainer && runtimeContainer.offsetWidth > 0) {
+        if (customCharts.runtime && !customCharts.runtime.isDisposed()) {
+            customCharts.runtime.resize();
+        }
+    }
+    if (memoryContainer && memoryContainer.offsetWidth > 0) {
+        if (customCharts.memory && !customCharts.memory.isDisposed()) {
+            customCharts.memory.resize();
+        }
+    }
+    
+    // 渲染图表
     renderCustomChart('runtime', 'runtimes', '#6366f1', 'Runtime (秒)');
     renderCustomChart('memory', 'memories', '#10b981', 'Memory (MB)');
     
     updateCustomChartTypeButtons();
     
+    // 多次确保尺寸正确（处理动画和过渡效果）
     setTimeout(() => {
-        if (customState.currentChartType === 'runtime' && customCharts.runtime) {
+        if (customState.currentChartType === 'runtime' && customCharts.runtime && !customCharts.runtime.isDisposed()) {
             customCharts.runtime.resize();
-        } else if (customState.currentChartType === 'memory' && customCharts.memory) {
+        } else if (customState.currentChartType === 'memory' && customCharts.memory && !customCharts.memory.isDisposed()) {
             customCharts.memory.resize();
         }
-    }, 50);
+    }, 100);
+    
+    setTimeout(() => {
+        if (customState.currentChartType === 'runtime' && customCharts.runtime && !customCharts.runtime.isDisposed()) {
+            customCharts.runtime.resize();
+        } else if (customState.currentChartType === 'memory' && customCharts.memory && !customCharts.memory.isDisposed()) {
+            customCharts.memory.resize();
+        }
+    }, 200);
 }
 
 // ==================================================

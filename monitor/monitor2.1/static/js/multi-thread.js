@@ -198,6 +198,7 @@ let multiRuleSearchHandler = debounce(() => {
 /**
  * 渲染多线程图表（单日期对比线程性能）
  */
+// 在 multi-thread.js 中替换 renderMultiThreadChart 函数
 function renderMultiThreadChart() {
     if (!multiState.currentData || multiState.currentData.length === 0) return;
     
@@ -207,7 +208,7 @@ function renderMultiThreadChart() {
         const chart = multiState.currentChartType === 'runtime' 
             ? ChartManager.get('chart-multi-runtime') 
             : ChartManager.get('chart-multi-memory');
-        if (chart) {
+        if (chart && !chart.isDisposed()) {
             chart.setOption({
                 title: {
                     show: true,
@@ -228,7 +229,13 @@ function renderMultiThreadChart() {
     const yAxisName = isRuntime ? 'Runtime (秒)' : 'Memory (MB)';
     const chart = isRuntime ? ChartManager.get('chart-multi-runtime') : ChartManager.get('chart-multi-memory');
     
-    if (!chart) return;
+    if (!chart || chart.isDisposed()) return;
+    
+    // 在设置新数据前，先确保容器尺寸正确
+    const container = document.getElementById(isRuntime ? 'chart-multi-runtime' : 'chart-multi-memory');
+    if (container && container.offsetWidth > 0) {
+        chart.resize();
+    }
     
     // 计算所有值用于参考线
     const allValues = chartData.filter(v => v !== null && v !== undefined && v > 0);
@@ -340,7 +347,13 @@ function renderMultiThreadChart() {
     };
     
     chart.setOption(option, { notMerge: true });
-    setTimeout(() => chart.resize(), 50);
+    
+    // 渲染后再次确保尺寸正确
+    setTimeout(() => {
+        if (chart && !chart.isDisposed()) {
+            chart.resize();
+        }
+    }, 50);
 }
 
 /**
@@ -381,12 +394,19 @@ function updateMultiStats(threadsData) {
 /**
  * 渲染多日期对比图表（趋势图）- 统一折线图样式
  */
+// 在 multi-thread.js 中替换 renderMultiThreadComparisonChart 函数
 function renderMultiThreadComparisonChart() {
     if (!multiState.currentData || multiState.currentData.length === 0) return;
     
     const isRuntime = multiState.currentChartType === 'runtime';
     const chart = isRuntime ? ChartManager.get('chart-multi-runtime') : ChartManager.get('chart-multi-memory');
-    if (!chart) return;
+    if (!chart || chart.isDisposed()) return;
+    
+    // 在设置新数据前，先确保容器尺寸正确
+    const container = document.getElementById(isRuntime ? 'chart-multi-runtime' : 'chart-multi-memory');
+    if (container && container.offsetWidth > 0) {
+        chart.resize();
+    }
     
     const dates = multiState.currentData.map(d => d.date);
     const selectedThreadIds = multiState.selectedThreads;
@@ -429,7 +449,7 @@ function renderMultiThreadComparisonChart() {
         referenceValue = sorted[mid];
     }
     
-    // 图例默认选中状态（默认只显示线程0）
+    // 图例默认选中状态（默认只显示第一个线程）
     const legendSelected = {};
     seriesList.forEach((series, idx) => {
         legendSelected[series.name] = (idx === 0);
@@ -457,7 +477,7 @@ function renderMultiThreadComparisonChart() {
             type: 'category',
             name: '日期',
             data: dates,
-            axisLabel: { rotate: 30, color: '#94a3b8', fontSize: 11 },
+            axisLabel: { rotate: dates.length > 10 ? 30 : 0, color: '#94a3b8', fontSize: 11 },
             axisLine: { lineStyle: { color: '#475569' } }
         },
         yAxis: {
@@ -516,7 +536,13 @@ function renderMultiThreadComparisonChart() {
     };
     
     chart.setOption(option, { notMerge: true });
-    setTimeout(() => chart.resize(), 50);
+    
+    // 渲染后再次确保尺寸正确
+    setTimeout(() => {
+        if (chart && !chart.isDisposed()) {
+            chart.resize();
+        }
+    }, 50);
 }
 
 /**
@@ -541,6 +567,7 @@ async function selectLatestMultiDate() {
 /**
  * 更新多线程图表类型按钮状态
  */
+// 在 multi-thread.js 中替换 updateMultiChartTypeButtons 函数
 function updateMultiChartTypeButtons() {
     const runtimeBtn = document.getElementById('multiChartRuntimeBtn');
     const memoryBtn = document.getElementById('multiChartMemoryBtn');
@@ -579,6 +606,17 @@ function updateMultiChartTypeButtons() {
     const multiChartCardTitle = document.getElementById('multiChartCardTitle');
     if (multiChartCardTitle) {
         multiChartCardTitle.innerText = multiState.currentChartType === 'runtime' ? '⏱️ Runtime 性能曲线' : '💾 Memory 使用曲线';
+    }
+    
+    // 切换后重新渲染并确保尺寸正确
+    if (multiState.currentData && multiState.currentData.length > 0) {
+        setTimeout(() => {
+            if (Array.isArray(multiState.currentData) && multiState.currentData[0]?.date) {
+                renderMultiThreadComparisonChart();
+            } else {
+                renderMultiThreadChart();
+            }
+        }, 50);
     }
 }
 

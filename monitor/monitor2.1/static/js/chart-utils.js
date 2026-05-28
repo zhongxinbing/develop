@@ -10,14 +10,29 @@ const ChartManager = {
     charts: {},
     
     get(id, createIfNotExist = true) {
+        // 检查已有图表是否有效
+        if (this.charts[id] && (this.charts[id].isDisposed && this.charts[id].isDisposed())) {
+            console.log(`[ChartManager] Chart ${id} was disposed, removing reference`);
+            delete this.charts[id];
+        }
+        
         if (!this.charts[id] && createIfNotExist) {
             const dom = document.getElementById(id);
             if (dom && typeof echarts !== 'undefined') {
-                if (this.charts[id]) {
-                    this.charts[id].dispose();
+                // 确保容器可见后再初始化
+                if (dom.offsetWidth > 0 && dom.offsetHeight > 0) {
+                    this.charts[id] = echarts.init(dom);
+                    console.log(`[ChartManager] Created chart for ${id}`);
+                } else {
+                    // console.warn(`[ChartManager] Container ${id} is not visible (size: ${dom.offsetWidth}x${dom.offsetHeight}), will retry`);
+                    // 延迟重试
+                    setTimeout(() => {
+                        if (dom.offsetWidth > 0 && dom.offsetHeight > 0) {
+                            this.charts[id] = echarts.init(dom);
+                            console.log(`[ChartManager] Created chart for ${id} (retry)`);
+                        }
+                    }, 100);
                 }
-                this.charts[id] = echarts.init(dom);
-                console.log(`[ChartManager] Created chart for ${id}`);
             } else if (!dom) {
                 console.warn(`[ChartManager] DOM element not found: ${id}`);
             } else if (typeof echarts === 'undefined') {

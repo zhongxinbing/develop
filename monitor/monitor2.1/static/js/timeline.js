@@ -306,6 +306,13 @@ function selectTimelineChartType(type) {
 // 图表渲染
 // ==================================================
 
+/**
+ * 渲染时序曲线图 - 统一折线图样式（与 multi-thread.js 风格一致）
+ * @param {string} chartType - 图表类型 ('runtime' 或 'memory')
+ * @param {string} dataKey - 数据键 ('runtimes' 或 'memories')
+ * @param {string} color - 主色调（保留参数用于兼容）
+ * @param {string} yAxisName - Y轴名称
+ */
 function renderTimelineChart(chartType, dataKey, color, yAxisName) {
     const toolData = getCurrentTimelineToolData();
     if (!toolData) {
@@ -346,6 +353,7 @@ function renderTimelineChart(chartType, dataKey, color, yAxisName) {
     const dates = filteredData.dates;
     const threadMetrics = toolData.thread_metrics || {};
     
+    // 确保有默认线程数据
     if (!threadMetrics['0'] && filteredData.runtimes?.length) {
         threadMetrics['0'] = {
             runtimes: filteredData.runtimes,
@@ -363,50 +371,45 @@ function renderTimelineChart(chartType, dataKey, color, yAxisName) {
         const threadInfo = threadMetrics[threadId];
         let values = threadInfo?.[dataKey] || [];
         
-        const mappedValues = [];
+        // 构建映射后的数据值数组
         const originalDates = toolData.dates || [];
-        
-        dates.forEach(selectedDate => {
+        const seriesData = dates.map((selectedDate, idx) => {
             const dateIndex = originalDates.indexOf(selectedDate);
+            let value = null;
             if (dateIndex !== -1 && values[dateIndex] !== undefined) {
-                const val = values[dateIndex];
-                mappedValues.push(val);
-                if (val !== null && val !== undefined && val > 0) allValues.push(val);
-            } else {
-                mappedValues.push(null);
+                value = values[dateIndex];
+                if (value !== null && value !== undefined && value > 0) allValues.push(value);
             }
+            
+            // 检查是否有MR更新
+            const hasMr = hasMrUpdate(selectedDate);
+            
+            return {
+                value: value,
+                itemStyle: hasMr ? {
+                    color: '#ef4444',
+                    borderColor: '#ffffff',
+                    borderWidth: 2
+                } : undefined,
+                symbol: 'circle',
+                symbolSize: hasMr ? 10 : 6
+            };
         });
         
-        const threadLabel = threadId === '0' ? '线程0' : `其他线程${threadId}`;
+        const threadLabel = threadId === '0' ? '线程0' : `线程${threadId}`;
         const seriesColor = palette[index % palette.length];
         
         seriesList.push({
             name: threadLabel,
             type: 'line',
-            data: mappedValues,
+            data: seriesData,
             smooth: false,
             lineStyle: { width: 2, color: seriesColor },
             areaStyle: { opacity: 0.08, color: seriesColor },
             connectNulls: false,
             showSymbol: true,
             symbol: 'circle',
-            symbolSize: 6,
-            itemStyle: {
-                color: (params) => {
-                    const date = dates[params.dataIndex];
-                    if (date && hasMrUpdate(date)) return '#ef4444';
-                    return seriesColor;
-                },
-                borderColor: (params) => {
-                    const date = dates[params.dataIndex];
-                    if (date && hasMrUpdate(date)) return '#ffffff';
-                    return 'transparent';
-                },
-                borderWidth: (params) => {
-                    const date = dates[params.dataIndex];
-                    return date && hasMrUpdate(date) ? 2 : 0;
-                }
-            }
+            symbolSize: 6
         });
     });
     
@@ -417,6 +420,7 @@ function renderTimelineChart(chartType, dataKey, color, yAxisName) {
         updateStatsCard('stats-main', allValues, unit, label);
     }
     
+    // 计算平均值和参考线
     const avgValue = allValues.length > 0 
         ? (allValues.reduce((a, b) => a + b, 0) / allValues.length).toFixed(1) 
         : 0;
@@ -428,13 +432,16 @@ function renderTimelineChart(chartType, dataKey, color, yAxisName) {
         referenceValue = sorted[mid];
     }
     
+    // 图例默认选中状态（默认只显示线程0）
     const legendSelected = {};
-    threadIds.forEach((threadId, idx) => {
-        const seriesName = threadId === '0' ? '线程0' : `其他线程${threadId}`;
-        legendSelected[seriesName] = (threadId === '0');
+    seriesList.forEach((series, idx) => {
+        legendSelected[series.name] = (idx === 0);
     });
+    legendSelected['平均值'] = true;
+    legendSelected['参考线'] = true;
     
-    const tooltipFormatter = function(params) {
+    // Tooltip格式化函数
+    const tooltipFormatter = (params) => {
         if (!params?.length) return '';
         const unit = dataKey === 'runtimes' ? '秒' : 'MB';
         const date = params[0].axisValue;
@@ -442,7 +449,10 @@ function renderTimelineChart(chartType, dataKey, color, yAxisName) {
             if (p.value === null || p.value === undefined) {
                 return `<div>${p.seriesName}: N/A</div>`;
             }
-            return `<div>${p.seriesName}: ${p.value.toFixed(2)} ${unit}</div>`;
+            let displayValue = dataKey === 'runtimes' 
+                ? p.value.toFixed(2) 
+                : (p.value >= 1024 ? (p.value / 1024).toFixed(2) + ' GB' : p.value.toFixed(0));
+            return `<div>${p.seriesName}: ${displayValue} ${unit}</div>`;
         }).join('');
         const mrComment = getMrComment(date);
         const hasMr = mrComment !== '';
@@ -451,28 +461,158 @@ function renderTimelineChart(chartType, dataKey, color, yAxisName) {
         return `<strong>📅 ${date}</strong>${rows}<div style="margin-top: 6px; padding-top: 4px; border-top: 1px solid #334155;"><span style="${mrStyle}">${mrIcon} ${hasMr ? mrComment : '无MR更新'}</span></div>`;
     };
     
-    const option = ChartConfig.getCompleteLineChartConfig(
-        dates, seriesList, yAxisName, avgValue, referenceValue, legendSelected, tooltipFormatter
-    );
+    // 构建完整配置（与 multi-thread.js 风格一致）
+    const option = {
+        backgroundColor: 'transparent',
+        tooltip: {
+            trigger: 'axis',
+            backgroundColor: 'rgba(30, 41, 59, 0.95)',
+            borderWidth: 1,
+            textStyle: { color: '#f1f5f9', fontSize: 12 },
+            formatter: tooltipFormatter
+        },
+        grid: {
+            left: '8%',
+            right: '8%',
+            top: '18%',
+            bottom: '10%',
+            containLabel: true
+        },
+        xAxis: {
+            type: 'category',
+            name: '日期',
+            data: dates,
+            axisLabel: {
+                rotate: dates.length > 10 ? 30 : 0,
+                color: '#94a3b8',
+                fontSize: 11
+            },
+            axisLine: { lineStyle: { color: '#475569' } },
+            boundaryGap: false
+        },
+        yAxis: {
+            type: 'value',
+            name: yAxisName,
+            nameTextStyle: { color: '#cbd5e1', fontSize: 12 },
+            axisLabel: {
+                color: '#94a3b8',
+                fontSize: 11,
+                formatter: (value) => {
+                    if (dataKey === 'memories' && value >= 1024) {
+                        return (value / 1024).toFixed(1) + ' GB';
+                    }
+                    if (dataKey === 'runtimes') {
+                        return value.toFixed(2);
+                    }
+                    return value;
+                }
+            },
+            splitLine: {
+                lineStyle: { color: 'rgba(71, 85, 105, 0.3)', type: 'dashed' }
+            }
+        },
+        series: [
+            ...seriesList,
+            {
+                name: '平均值',
+                type: 'line',
+                data: new Array(dates.length).fill(parseFloat(avgValue)),
+                lineStyle: { width: 1.5, color: '#f59e0b', type: 'dashed' },
+                symbol: 'none',
+                tooltip: { show: false }
+            },
+            {
+                name: '参考线',
+                type: 'line',
+                data: new Array(dates.length).fill(parseFloat(referenceValue)),
+                lineStyle: { width: 1, color: '#06b6d4', type: 'dotted' },
+                symbol: 'none',
+                tooltip: { show: true, formatter: () => `📊 参考线: ${referenceValue.toFixed(2)} ${dataKey === 'runtimes' ? '秒' : 'MB'}` }
+            }
+        ],
+        legend: {
+            data: seriesList.map(s => s.name).concat(['平均值', '参考线']),
+            selected: legendSelected,
+            textStyle: { color: '#cbd5e1', fontSize: 11 },
+            orient: 'horizontal',
+            right: 10,
+            top: 0,
+            itemWidth: 25,
+            itemHeight: 12
+        },
+        toolbox: {
+            feature: {
+                saveAsImage: { title: '保存为图片' },
+                zoom: { title: { zoom: '区域缩放', back: '还原' } },
+                restore: { title: '重置' }
+            },
+            iconStyle: { borderColor: '#94a3b8' },
+            right: 10,
+            bottom: 10
+        }
+    };
     
     const chart = ChartManager.get(`chart-${chartType}`);
     if (chart) {
-        chart.setOption(option, { notMerge: true, lazyUpdate: true });
-        setTimeout(() => addLegendControlButtons(chart, `chart-${chartType}`), 100);
+        chart.setOption(option, { notMerge: true, lazyUpdate: false });
+        setTimeout(() => addLegendControlButtons(chart, `chart-${chartType}`), 50);
     }
 }
 
+// 在 timeline.js 中优化 refreshTimelineCharts
+// 在 timeline.js 中替换 refreshTimelineCharts 函数
+
 function refreshTimelineCharts() {
-    if (!timelineState.currentRule) return;
+    if (!timelineState.currentRule) {
+        console.log('No rule selected, skipping chart refresh');
+        return;
+    }
     
+    console.log('Refreshing charts with current state:', {
+        currentProjectId: timelineState.currentProjectId,
+        currentRule: timelineState.currentRule,
+    });
+    
+    // 先确保容器尺寸正确
+    const runtimeContainer = document.getElementById('chart-runtime');
+    const memoryContainer = document.getElementById('chart-memory');
+    
+    // 如果图表实例存在但容器刚显示，先 resize
+    if (charts.runtime && runtimeContainer && runtimeContainer.offsetWidth > 0) {
+        charts.runtime.resize();
+    }
+    if (charts.memory && memoryContainer && memoryContainer.offsetWidth > 0) {
+        charts.memory.resize();
+    }
+    
+    // 渲染图表
     renderTimelineChart('runtime', 'runtimes', '#6366f1', 'Runtime (秒)');
     renderTimelineChart('memory', 'memories', '#10b981', 'Memory (MB)');
     updateTimelineChartTypeButtons();
     
+    // 再次确保 resize - 修复 ChartManager.resizeAll 不存在的问题
     setTimeout(() => {
-        if (charts.runtime) charts.runtime.resize();
-        if (charts.memory) charts.memory.resize();
+        if (charts.runtime && !charts.runtime.isDisposed()) {
+            charts.runtime.resize();
+        }
+        if (charts.memory && !charts.memory.isDisposed()) {
+            charts.memory.resize();
+        }
+        // 使用安全调用方式
+        if (typeof ChartManager !== 'undefined' && ChartManager.resizeAll) {
+            ChartManager.resizeAll();
+        }
     }, 100);
+    
+    // 额外的延迟重试，处理动画/过渡效果
+    setTimeout(() => {
+        if (charts.runtime && !charts.runtime.isDisposed()) {
+            charts.runtime.resize();
+        }
+        if (charts.memory && !charts.memory.isDisposed()) {
+            charts.memory.resize();
+        }
+    }, 300);
 }
 
 function updateTimelineProjectStats() {

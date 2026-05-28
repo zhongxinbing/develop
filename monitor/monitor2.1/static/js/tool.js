@@ -253,6 +253,8 @@ async function autoRefreshOnLoad() {
 // 视图切换
 // ==================================================
 
+// 在 tool.js 中替换 switchView 函数
+
 function switchView(viewId) {
     const containers = document.querySelectorAll('.view-container');
     containers.forEach(view => view.classList.remove('active'));
@@ -265,48 +267,109 @@ function switchView(viewId) {
         if (item.dataset.view === viewId) item.classList.add('active');
     });
     
-    // 视图切换后的布局调整
+    // 使用 requestAnimationFrame 确保 DOM 更新完成后再 resize
+    const resizeAllCharts = () => {
+        // 重新调整所有已存在图表的大小
+        if (charts.runtime && !charts.runtime.isDisposed()) charts.runtime.resize();
+        if (charts.memory && !charts.memory.isDisposed()) charts.memory.resize();
+        if (charts.multiRuntime && !charts.multiRuntime.isDisposed()) charts.multiRuntime.resize();
+        if (charts.multiMemory && !charts.multiMemory.isDisposed()) charts.multiMemory.resize();
+        if (customCharts && customCharts.runtime && !customCharts.runtime.isDisposed()) customCharts.runtime.resize();
+        if (customCharts && customCharts.memory && !customCharts.memory.isDisposed()) customCharts.memory.resize();
+        
+        // 使用安全调用方式
+        if (typeof ChartManager !== 'undefined' && ChartManager.resizeAll) {
+            ChartManager.resizeAll();
+        }
+    };
+    
+    // 延迟执行，等待 CSS 过渡/动画完成
+    setTimeout(() => {
+        requestAnimationFrame(resizeAllCharts);
+    }, 50);
+    
+    // 视图切换后的特定逻辑
     if (viewId === 'multithread') {
         setTimeout(() => {
-            if (charts.multiRuntime) charts.multiRuntime.resize();
-            if (charts.multiMemory) charts.multiMemory.resize();
-            if (multiState.currentData && multiState.currentData.length > 0) {
-                if (Array.isArray(multiState.currentData) && multiState.currentData[0]?.date) {
-                    renderMultiThreadComparisonChart();
-                } else {
-                    renderMultiThreadChart();
-                }
+        // 先确保容器可见并调整尺寸
+        const multiRuntimeContainer = document.getElementById('chart-multi-runtime');
+        const multiMemoryContainer = document.getElementById('chart-multi-memory');
+        
+        if (multiRuntimeContainer && multiRuntimeContainer.offsetWidth > 0) {
+            if (charts.multiRuntime && !charts.multiRuntime.isDisposed()) {
+                charts.multiRuntime.resize();
             }
-        }, 100);
+        }
+        if (multiMemoryContainer && multiMemoryContainer.offsetWidth > 0) {
+            if (charts.multiMemory && !charts.multiMemory.isDisposed()) {
+                charts.multiMemory.resize();
+            }
+        }
+        
+        // 重新渲染数据
+        if (multiState.currentData && multiState.currentData.length > 0) {
+            if (Array.isArray(multiState.currentData) && multiState.currentData[0]?.date) {
+                renderMultiThreadComparisonChart();
+            } else {
+                renderMultiThreadChart();
+            }
+        }
+        
+        // 再次确保图表尺寸正确
+        requestAnimationFrame(() => {
+            if (charts.multiRuntime && !charts.multiRuntime.isDisposed()) charts.multiRuntime.resize();
+            if (charts.multiMemory && !charts.multiMemory.isDisposed()) charts.multiMemory.resize();
+        });
+    }, 100);
     } else if (viewId === 'timeline') {
         setTimeout(() => { 
-            if (charts.runtime) charts.runtime.resize(); 
-            if (charts.memory) charts.memory.resize(); 
+            if (typeof refreshTimelineCharts === 'function' && timelineState.currentRule) {
+                refreshTimelineCharts();
+            }
+            requestAnimationFrame(() => {
+                if (charts.runtime && !charts.runtime.isDisposed()) charts.runtime.resize();
+                if (charts.memory && !charts.memory.isDisposed()) charts.memory.resize();
+            });
         }, 100);
     } else if (viewId === 'custom') {
         setTimeout(() => { 
-            if (typeof refreshCustomCharts === 'function') {
-                if (customState && customState.currentProjectId && customState.currentRule) {
-                    console.log('切换到自定义图表视图，刷新图表数据');
-                    if (customState.selectedDates.length === 0 && customState.availableDates.length > 0) {
-                        customState.selectedDates = customState.availableDates.slice(-51);
-                        if (typeof updateCustomDateInfo === 'function') updateCustomDateInfo();
-                    }
-                    refreshCustomCharts();
-                } else if (customState && customState.currentProjectId && !customState.currentRule) {
-                    if (typeof updateCustomRuleSelect === 'function') updateCustomRuleSelect();
-                    if (customState.selectedDates.length === 0 && customState.availableDates.length > 0) {
-                        customState.selectedDates = customState.availableDates.slice(-51);
-                        if (typeof updateCustomDateInfo === 'function') updateCustomDateInfo();
-                    }
-                } else if (customState && customState.availableDates && customState.availableDates.length > 0) {
+        // 先确保容器可见并调整尺寸
+        const customRuntimeContainer = document.getElementById('custom-chart-runtime');
+        const customMemoryContainer = document.getElementById('custom-chart-memory');
+        
+        if (customRuntimeContainer && customRuntimeContainer.offsetWidth > 0) {
+            if (customCharts.runtime && !customCharts.runtime.isDisposed()) {
+                customCharts.runtime.resize();
+            }
+        }
+        if (customMemoryContainer && customMemoryContainer.offsetWidth > 0) {
+            if (customCharts.memory && !customCharts.memory.isDisposed()) {
+                customCharts.memory.resize();
+            }
+        }
+        
+        // 重新渲染数据
+        if (typeof refreshCustomCharts === 'function') {
+            if (customState && customState.currentProjectId && customState.currentRule) {
+                refreshCustomCharts();
+            } else if (customState && customState.availableDates && customState.availableDates.length > 0) {
+                // 如果有可用日期但未选择阶段，先更新阶段选择
+                if (typeof updateCustomRuleSelect === 'function') {
+                    updateCustomRuleSelect();
+                }
+                if (customState.selectedDates.length === 0 && customState.availableDates.length > 0) {
                     customState.selectedDates = customState.availableDates.slice(-51);
                     if (typeof updateCustomDateInfo === 'function') updateCustomDateInfo();
                 }
             }
-            if (customCharts && customCharts.runtime) customCharts.runtime.resize();
-            if (customCharts && customCharts.memory) customCharts.memory.resize();
-        }, 150);
+        }
+        
+        // 再次确保图表尺寸正确
+        requestAnimationFrame(() => {
+            if (customCharts && customCharts.runtime && !customCharts.runtime.isDisposed()) customCharts.runtime.resize();
+            if (customCharts && customCharts.memory && !customCharts.memory.isDisposed()) customCharts.memory.resize();
+        });
+    }, 150);
     }
 }
 
