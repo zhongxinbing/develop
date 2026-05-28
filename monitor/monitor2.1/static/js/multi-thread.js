@@ -641,6 +641,10 @@ function selectMultiChartType(type) {
 // 线程选择
 // ==================================================
 
+// ==================================================
+// 线程选择 - 与日期选择器风格一致
+// ==================================================
+
 /**
  * 打开线程选择模态框
  */
@@ -664,7 +668,7 @@ function closeThreadSelectorModal() {
 }
 
 /**
- * 构建线程选择模态框内容
+ * 构建线程选择模态框内容 - 与日期选择器风格一致
  */
 function buildThreadSelectorModal() {
     const container = document.getElementById('threadSelectorModalContent');
@@ -675,37 +679,68 @@ function buildThreadSelectorModal() {
         thread.toLowerCase().includes(filterText.toLowerCase())
     );
     
+    // 使用与 date-option 一致的 CSS 类名
     container.innerHTML = filteredThreads.map(threadId => {
         const isChecked = multiState.selectedThreads.includes(threadId);
         const displayName = threadId === '0' ? '线程0' : `线程 ${threadId}`;
         return `
-            <label class="thread-checkbox ${isChecked ? 'selected' : ''}" data-thread="${threadId}">
+            <label class="thread-option ${isChecked ? 'selected' : ''}" data-thread="${threadId}">
                 <input type="checkbox" value="${threadId}" ${isChecked ? 'checked' : ''}>
-                <span>${displayName}</span>
+                <span>${escapeHtml(displayName)}</span>
             </label>
         `;
     }).join('');
     
-    container.querySelectorAll('.thread-checkbox input').forEach(cb => {
+    // 方式1：监听 input 的 change 事件 - 更新选中样式
+    container.querySelectorAll('.thread-option input').forEach(cb => {
         cb.addEventListener('change', (e) => {
-            const label = e.target.closest('.thread-checkbox');
+            const label = e.target.closest('.thread-option');
             if (label) {
-                label.classList.toggle('selected', e.target.checked);
+                if (e.target.checked) {
+                    label.classList.add('selected');
+                } else {
+                    label.classList.remove('selected');
+                }
             }
+            // 阻止事件冒泡，避免与 label 的 click 事件重复触发
+            e.stopPropagation();
         });
     });
     
-    container.querySelectorAll('.thread-checkbox').forEach(label => {
-        label.addEventListener('click', (e) => {
-            if (e.target.tagName !== 'INPUT') {
-                const checkbox = label.querySelector('input');
-                if (checkbox) {
-                    checkbox.checked = !checkbox.checked;
-                    label.classList.toggle('selected', checkbox.checked);
-                }
-            }
-        });
+    // 方式2：监听整个 label 的 click 事件 - 切换 checkbox 状态
+    container.querySelectorAll('.thread-option').forEach(label => {
+        // 移除旧的监听器避免重复
+        label.removeEventListener('click', handleThreadOptionClick);
+        // 添加新的监听器
+        label.addEventListener('click', handleThreadOptionClick);
     });
+}
+
+/**
+ * 线程选项点击处理函数
+ */
+// 在 multi-thread.js 中，替换 handleThreadOptionClick 函数
+
+function handleThreadOptionClick(e) {
+    // 如果点击的是 input 元素本身，不重复处理
+    if (e.target.tagName === 'INPUT') {
+        return;
+    }
+    
+    const label = e.currentTarget;
+    const checkbox = label.querySelector('input');
+    if (checkbox) {
+        // 浏览器会自动切换 checkbox.checked 状态，不需要手动切换
+        // 只需根据新状态更新 label 的样式类
+        if (checkbox.checked) {
+            label.classList.add('selected');
+        } else {
+            label.classList.remove('selected');
+        }
+        // 触发 change 事件
+        const changeEvent = new Event('change', { bubbles: true });
+        checkbox.dispatchEvent(changeEvent);
+    }
 }
 
 /**
@@ -716,7 +751,7 @@ function updateSelectedThreadsFromModal() {
     if (!modalContent) return;
     
     multiState.selectedThreads = [];
-    modalContent.querySelectorAll('.thread-checkbox input:checked').forEach(cb => {
+    modalContent.querySelectorAll('.thread-option input:checked').forEach(cb => {
         multiState.selectedThreads.push(cb.value);
     });
 }
@@ -728,10 +763,10 @@ function selectAllThreadsInModal() {
     const modalContent = document.getElementById('threadSelectorModalContent');
     if (!modalContent) return;
     
-    const checkboxes = modalContent.querySelectorAll('.thread-checkbox input');
+    const checkboxes = modalContent.querySelectorAll('.thread-option input');
     checkboxes.forEach(cb => {
         cb.checked = true;
-        const label = cb.closest('.thread-checkbox');
+        const label = cb.closest('.thread-option');
         if (label) label.classList.add('selected');
     });
     updateSelectedThreadsFromModal();
@@ -744,10 +779,10 @@ function deselectAllThreadsInModal() {
     const modalContent = document.getElementById('threadSelectorModalContent');
     if (!modalContent) return;
     
-    const checkboxes = modalContent.querySelectorAll('.thread-checkbox input');
+    const checkboxes = modalContent.querySelectorAll('.thread-option input');
     checkboxes.forEach(cb => {
         cb.checked = false;
-        const label = cb.closest('.thread-checkbox');
+        const label = cb.closest('.thread-option');
         if (label) label.classList.remove('selected');
     });
     updateSelectedThreadsFromModal();
@@ -760,11 +795,17 @@ function inverseSelectThreadsInModal() {
     const modalContent = document.getElementById('threadSelectorModalContent');
     if (!modalContent) return;
     
-    const checkboxes = modalContent.querySelectorAll('.thread-checkbox input');
+    const checkboxes = modalContent.querySelectorAll('.thread-option input');
     checkboxes.forEach(cb => {
         cb.checked = !cb.checked;
-        const label = cb.closest('.thread-checkbox');
-        if (label) label.classList.toggle('selected', cb.checked);
+        const label = cb.closest('.thread-option');
+        if (label) {
+            if (cb.checked) {
+                label.classList.add('selected');
+            } else {
+                label.classList.remove('selected');
+            }
+        }
     });
     updateSelectedThreadsFromModal();
 }
@@ -778,13 +819,14 @@ function confirmThreadSelection() {
         multiState.selectedThreads = [...multiState.availableThreads];
         showNotification('未选择任何线程，已自动全选');
     }
+    // 刷新图表
     if (Array.isArray(multiState.currentData) && multiState.currentData[0]?.date) {
         renderMultiThreadComparisonChart();
     } else {
         renderMultiThreadChart();
     }
     closeThreadSelectorModal();
-}
+}  closeThreadSelectorModal();
 
 // ==================================================
 // 日期选择
@@ -987,7 +1029,7 @@ function bindMultiThreadEvents() {
         multiDateFilterInput.addEventListener('input', debounce(() => buildMultiDatePicker(true), 150));
     }
     
-    // 线程选择
+    // 线程选择按钮
     const openThreadSelectorBtn = document.getElementById('openThreadSelectorBtn');
     if (openThreadSelectorBtn) openThreadSelectorBtn.addEventListener('click', openThreadSelectorModal);
     

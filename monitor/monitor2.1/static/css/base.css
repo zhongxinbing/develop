@@ -177,3 +177,7 @@ body {
     border-radius: 50%;
     animation: spin 1s linear infinite;
 }
+.thread-checkbox span {
+    white-space: nowrap;
+    display: inline;
+}

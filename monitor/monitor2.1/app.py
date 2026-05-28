@@ -9,7 +9,12 @@ import webbrowser
 import threading
 import time
 
-from api import app, CONFIG
+from api import create_app
+from config import CONFIG
+from common import get_local_ip, log
+
+
+app = create_app()
 
 
 def open_browser():
@@ -23,7 +28,6 @@ def open_browser():
 # 应用启动入口
 # ==================================================
 if __name__ == '__main__':
-    from common import get_local_ip, log
     
     local_ip = get_local_ip()
 

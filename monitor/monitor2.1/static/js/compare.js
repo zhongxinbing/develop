@@ -239,7 +239,10 @@ function getCurrentCompareConfig() {
 }
 
 async function executeCompare() {
+    console.warn('projectsData:', window.projectsData);
+    console.warn('projectsData keys:', Object.keys(window.projectsData || {}));
     const projectId = document.getElementById('compareCaseSelect')?.value;
+    console.log('projectId:', projectId);
     if (!projectId) {
         showNotification('请先选择一个项目', true);
         return;
@@ -265,8 +268,11 @@ async function executeCompare() {
     const config = getCurrentCompareConfig();
     
     showLoading(true);
-    
+    console.log('准备发送请求...');
+    const url = '/api/compare';
+    console.log('请求 URL:', url);
     try {
+        
         const response = await fetch('/api/compare', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },

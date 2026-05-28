@@ -124,10 +124,10 @@ def parse_project_data(project_data: Dict, project_id: str) -> Dict:
         'rules': all_rules,
         'rule_data': rule_data
     }
+
+
 def refresh_parsed_projects(current_projects_data: Dict) -> Tuple[Dict, List]:
     """刷新解析后的项目数据"""
-    global parsed_projects, project_list
-    
     log("整理数据")
     parsed_projects = {}
     
@@ -142,8 +142,3 @@ def refresh_parsed_projects(current_projects_data: Dict) -> Tuple[Dict, List]:
     ]
     
     return parsed_projects, project_list
-
-
-# 全局变量
-parsed_projects: Dict = {}
-project_list: List = []
