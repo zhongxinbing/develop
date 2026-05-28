@@ -690,7 +690,7 @@ select:disabled, input:disabled {
 
 /* ==================================================
    线程选择器样式 - 与日期选择器保持一致
-================================================== */
+   ================================================== */
 
 .thread-options {
     display: grid;
@@ -742,4 +742,22 @@ select:disabled, input:disabled {
 #threadSelectorModalContent {
     max-height: 350px;
     overflow-y: auto;
+}
+
+.thread-selector-btn {
+    width: 100%;
+    padding: 0.625rem 0.875rem;
+    background: rgba(99, 102, 241, 0.15);
+    border: 1px solid var(--primary);
+    border-radius: var(--radius-md);
+    color: var(--primary-light);
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: var(--transition);
+    text-align: center;
+}
+
+.thread-selector-btn:hover {
+    background: var(--primary);
+    color: white;
 }

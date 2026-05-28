@@ -1,5 +1,6 @@
 /**
  * 自定义曲线图模块 - 支持多Case批量添加和混合模式显示
+ * 样式与多线程对比图保持一致
  */
 
 // 自定义曲线图全局变量
@@ -12,10 +13,10 @@ let customState = {
     currentChartType: 'runtime',
     cachedToolData: {},
     pendingSelectedDates: [],
-    casePaths: [],           // 存储用户添加的case路径
-    showUserData: true,      // 是否显示用户数据
-    defaultProjectsData: {}, // 存储默认数据（用于混合模式）
-    isMixedMode: true        // 是否是混合模式（默认混合模式）
+    casePaths: [],
+    showUserData: true,
+    defaultProjectsData: {},
+    isMixedMode: true
 };
 
 // 自定义图表实例
@@ -60,7 +61,6 @@ function getCurrentCustomProjectData() {
         
         if (!defaultData && !userData) return null;
         
-        // 合并数据
         return mergeProjectData(defaultData, userData, customState.currentProjectId);
     }
     
@@ -78,9 +78,6 @@ function getCurrentCustomProjectData() {
     return projectData;
 }
 
-/**
- * 合并默认数据和用户数据
- */
 function mergeProjectData(defaultData, userData, projectId) {
     if (!defaultData && !userData) return null;
     if (!defaultData) return parseProjectDataIfNeeded(userData, projectId);
@@ -89,21 +86,17 @@ function mergeProjectData(defaultData, userData, projectId) {
     const parsedDefault = parseProjectDataIfNeeded(defaultData, projectId);
     const parsedUser = parseProjectDataIfNeeded(userData, projectId);
     
-    // 合并规则数据
     const mergedRules = new Set([...(parsedDefault.rules || []), ...(parsedUser.rules || [])]);
     const mergedRuleData = {};
     const allDates = new Set();
     
-    // 收集所有日期
     (parsedDefault.dates || []).forEach(d => allDates.add(d));
     (parsedUser.dates || []).forEach(d => allDates.add(d));
     const sortedDates = Array.from(allDates).sort();
     
-    // 为每个规则合并数据
     mergedRules.forEach(rule => {
         const defaultRuleData = parsedDefault.rule_data?.[rule] || {};
         const userRuleData = parsedUser.rule_data?.[rule] || {};
-        
         mergedRuleData[rule] = mergeRuleData(defaultRuleData, userRuleData, sortedDates);
     });
     
@@ -118,9 +111,6 @@ function mergeProjectData(defaultData, userData, projectId) {
     };
 }
 
-/**
- * 解析项目数据（如果需要）
- */
 function parseProjectDataIfNeeded(data, projectId) {
     if (!data) return null;
     if (data.rule_data) return data;
@@ -130,9 +120,6 @@ function parseProjectDataIfNeeded(data, projectId) {
     return data;
 }
 
-/**
- * 合并单个规则的数据
- */
 function mergeRuleData(defaultData, userData, allDates) {
     const result = {
         dates: [...allDates],
@@ -142,7 +129,6 @@ function mergeRuleData(defaultData, userData, allDates) {
         thread_metrics: {}
     };
     
-    // 合并 thread_metrics
     const allThreads = new Set();
     const defaultThreads = defaultData.thread_metrics || {};
     const userThreads = userData.thread_metrics || {};
@@ -150,14 +136,12 @@ function mergeRuleData(defaultData, userData, allDates) {
     Object.keys(defaultThreads).forEach(t => allThreads.add(t));
     Object.keys(userThreads).forEach(t => allThreads.add(t));
     
-    // 构建日期索引映射
     const defaultDateMap = new Map();
     const userDateMap = new Map();
     
     (defaultData.dates || []).forEach((date, idx) => defaultDateMap.set(date, idx));
     (userData.dates || []).forEach((date, idx) => userDateMap.set(date, idx));
     
-    // 为每个线程构建数据
     allThreads.forEach(threadId => {
         const defaultThread = defaultThreads[threadId] || { runtimes: [], memories: [], cores: [] };
         const userThread = userThreads[threadId] || { runtimes: [], memories: [], cores: [] };
@@ -172,7 +156,6 @@ function mergeRuleData(defaultData, userData, allDates) {
             const defaultIdx = defaultDateMap.get(date);
             const userIdx = userDateMap.get(date);
             
-            // 优先使用用户数据（如果存在且有效），否则使用默认数据
             let runtime = null;
             let memory = null;
             let cores = null;
@@ -260,13 +243,8 @@ function getFilteredCustomToolData(toolData) {
     return filtered;
 }
 
-/**
- * 获取可用于显示的合并项目列表
- * 混合模式下只显示在默认数据中存在的项目
- */
 function getDisplayableProjects() {
     if (customState.isMixedMode && customState.showUserData) {
-        // 混合模式：只显示在默认数据中存在的项目
         const defaultProjectIds = new Set(Object.keys(customState.defaultProjectsData));
         const displayProjects = {};
         
@@ -282,9 +260,6 @@ function getDisplayableProjects() {
     return customState.projectsData;
 }
 
-/**
- * 更新项目选择下拉框（根据当前模式过滤）
- */
 function updateCustomCaseSelect() {
     const caseSelect = document.getElementById('customCaseSelect');
     if (!caseSelect) return;
@@ -311,7 +286,6 @@ function updateCustomCaseSelect() {
         customState.currentProjectId = null;
     }
     
-    // 启用/禁用控件
     const hasProjects = projectIds.length > 0;
     const ruleSelect = document.getElementById('customRuleSelect');
     const ruleSearch = document.getElementById('customRuleSearch');
@@ -383,13 +357,14 @@ function updateCustomRuleSelect() {
 // ==================================================
 // 日期选择
 // ==================================================
+
 function updateCustomDateInfo() {
     const projectData = getCurrentCustomProjectData();
     if (!projectData) {
         customState.availableDates = [];
         customState.selectedDates = [];
         const dateRangeSpan = document.getElementById('customDateRange');
-        if (dateRangeSpan) dateRangeSpan.innerText = '无数据';
+        if (dateRangeSpan) dateRangeSpan.innerText = '无';
         const dataPointsSpan = document.getElementById('customDataPoints');
         if (dataPointsSpan) dataPointsSpan.innerText = '0';
         return;
@@ -397,16 +372,13 @@ function updateCustomDateInfo() {
     
     customState.availableDates = projectData.available_dates || projectData.dates || [];
     
-    // 如果选中的日期为空，设置为最近50天
     if (customState.selectedDates.length === 0 && customState.availableDates.length > 0) {
         customState.selectedDates = customState.availableDates.slice(-51);
     }
     
-    // 过滤掉不在可用日期中的选中日期
     const availableSet = new Set(customState.availableDates);
     customState.selectedDates = customState.selectedDates.filter(date => availableSet.has(date));
     
-    // 如果过滤后为空，重新设置为最近50天
     if (customState.selectedDates.length === 0 && customState.availableDates.length > 0) {
         customState.selectedDates = customState.availableDates.slice(-51);
     }
@@ -521,27 +493,32 @@ function inverseSelectCustomDates() {
     });
 }
 
+function resetCustomDateToRecent(days = 50) {
+    if (!customState.availableDates || customState.availableDates.length === 0) {
+        customState.selectedDates = [];
+        return;
+    }
+    
+    const recentDays = Math.min(days, customState.availableDates.length);
+    customState.selectedDates = customState.availableDates.slice(-recentDays);
+    customState.pendingSelectedDates = [...customState.selectedDates];
+    updateCustomDateInfo();
+    refreshCustomCharts();
+}
+
 // ==================================================
 // Case 管理
 // ==================================================
 
 function openAddCaseModal() {
-    console.log('openAddCaseModal called');
     renderCaseConfigList();
     const modal = document.getElementById('addCaseModal');
-    if (modal) {
-        modal.classList.remove('hidden');
-        console.log('Modal opened');
-    } else {
-        console.error('Modal element not found: addCaseModal');
-    }
+    if (modal) modal.classList.remove('hidden');
 }
 
 function closeAddCaseModal() {
     const modal = document.getElementById('addCaseModal');
-    if (modal) {
-        modal.classList.add('hidden');
-    }
+    if (modal) modal.classList.add('hidden');
 }
 
 function renderCaseConfigList() {
@@ -595,31 +572,6 @@ function removeCaseConfig(index) {
     showNotification('Case路径已删除');
 }
 
-/**
- * 重置日期选择为最近N天
- * @param {number} days - 天数，默认50
- */
-function resetCustomDateToRecent(days = 50) {
-    if (!customState.availableDates || customState.availableDates.length === 0) {
-        customState.selectedDates = [];
-        return;
-    }
-    
-    const recentDays = Math.min(days, customState.availableDates.length);
-    customState.selectedDates = customState.availableDates.slice(-recentDays);
-    customState.pendingSelectedDates = [...customState.selectedDates];
-    updateCustomDateInfo();
-    refreshCustomCharts();
-    
-    console.log(`日期已重置为最近 ${customState.selectedDates.length} 天`);
-}
-
-// 导出函数
-window.resetCustomDateToRecent = resetCustomDateToRecent;
-
-/**
- * 加载默认数据（用于混合模式比较）
- */
 async function loadDefaultData() {
     showLoading(true);
     const loadingIndicator = document.getElementById('customLoadingIndicator');
@@ -637,7 +589,6 @@ async function loadDefaultData() {
         if (result.success) {
             customState.defaultProjectsData = result.data;
             
-            // 如果当前是混合模式且已有选中的项目，重置日期选择
             if (customState.isMixedMode && customState.showUserData && customState.currentProjectId) {
                 const projectData = getCurrentCustomProjectData();
                 if (projectData) {
@@ -647,10 +598,8 @@ async function loadDefaultData() {
                 }
             }
             
-            // 如果当前是混合模式且需要更新项目选择框
             if (customState.isMixedMode && customState.showUserData) {
                 updateCustomCaseSelect();
-                // 保持当前选中的项目
                 if (customState.currentProjectId) {
                     updateCustomRuleSelect();
                     updateCustomDateInfo();
@@ -671,9 +620,6 @@ async function loadDefaultData() {
     }
 }
 
-/**
- * 确认加载所有Case数据
- */
 async function confirmLoadCaseData() {
     if (customState.casePaths.length === 0) {
         showNotification('请先添加至少一个Case路径', true);
@@ -695,22 +641,15 @@ async function confirmLoadCaseData() {
         
         if (result.success) {
             customState.projectsData = result.data;
-            
-            // 加载默认数据用于混合模式比较
             await loadDefaultData();
             
-            // 重置日期选择为最近50天
             customState.selectedDates = [];
             customState.pendingSelectedDates = [];
-            
-            // 更新项目选择框（根据当前模式过滤）
             updateCustomCaseSelect();
             
-            // 检查当前是否在自定义图表视图
             const customView = document.getElementById('customView');
             const isCustomViewActive = customView && customView.classList.contains('active');
             
-            // 如果有项目且当前在自定义视图，自动选中第一个项目
             const caseSelect = document.getElementById('customCaseSelect');
             if (caseSelect && caseSelect.options.length > 1 && isCustomViewActive) {
                 customState.currentProjectId = caseSelect.options[1].value;
@@ -738,12 +677,9 @@ async function confirmLoadCaseData() {
     }
 }
 
-/**
- * 切换数据源模式
- */
 async function toggleDataSource() {
     customState.showUserData = !customState.showUserData;
-    customState.isMixedMode = customState.showUserData;  // 确保混合模式状态同步
+    customState.isMixedMode = customState.showUserData;
     
     const toggleBtn = document.getElementById('toggleDataSourceBtn');
     if (toggleBtn) {
@@ -754,34 +690,21 @@ async function toggleDataSource() {
         }
     }
     
-    // 清空缓存，强制重新获取数据
     customState.cachedToolData = {};
-    
-    // 重置日期选择为最近50天
     customState.selectedDates = [];
     customState.pendingSelectedDates = [];
-    
-    // 更新项目选择框（根据当前模式过滤）
     updateCustomCaseSelect();
     
-    // 如果当前有选中的项目，刷新图表
     if (customState.currentProjectId) {
-        // 重新获取项目数据
         const projectData = getCurrentCustomProjectData();
         if (projectData) {
-            // 更新可用日期
             customState.availableDates = projectData.available_dates || projectData.dates || [];
-            // 设置最近50个日期
             customState.selectedDates = customState.availableDates.slice(-51);
-            // 更新日期显示
             updateCustomDateInfo();
-            // 更新阶段列表
             updateCustomRuleSelect();
-            // 刷新图表
             refreshCustomCharts();
         }
     } else if (customState.casePaths.length > 0) {
-        // 如果有已加载的Case但没有选中项目，尝试选中第一个
         const caseSelect = document.getElementById('customCaseSelect');
         if (caseSelect && caseSelect.options.length > 1) {
             customState.currentProjectId = caseSelect.options[1].value;
@@ -799,9 +722,6 @@ async function toggleDataSource() {
     showNotification(customState.showUserData ? '已切换到混合模式，显示最近50天数据' : '已切换到仅用户数据模式，显示最近50天数据');
 }
 
-/**
- * 预加载默认数据（初始化时调用）
- */
 async function preloadDefaultDataForCustom() {
     try {
         const response = await fetch('/api/fetch_default_user_data', {
@@ -821,13 +741,8 @@ async function preloadDefaultDataForCustom() {
 }
 
 // ==================================================
-// 图表类型切换 - 统一使用按钮方式
+// 图表类型切换
 // ==================================================
-
-/**
- * 更新自定义图表类型按钮状态
- */
-// 在 custom-chart.js 中替换 updateCustomChartTypeButtons 函数
 
 function updateCustomChartTypeButtons() {
     const runtimeBtn = document.getElementById('customChartRuntimeBtn');
@@ -870,19 +785,8 @@ function updateCustomChartTypeButtons() {
             ? '⏱️ Runtime 性能曲线' 
             : '💾 Memory 使用曲线';
     }
-    
-    // 切换后重新渲染并确保尺寸正确
-    if (customState.currentProjectId && customState.currentRule) {
-        setTimeout(() => {
-            refreshCustomCharts();
-        }, 50);
-    }
 }
 
-/**
- * 切换自定义图表类型
- * @param {string} type - 图表类型 ('runtime' 或 'memory')
- */
 function selectCustomChartType(type) {
     if (customState.currentChartType === type) return;
     customState.currentChartType = type;
@@ -891,7 +795,7 @@ function selectCustomChartType(type) {
 }
 
 // ==================================================
-// 图表渲染
+// 图表渲染 - 与多线程对比图样式一致
 // ==================================================
 
 function updateCustomStatsCard(containerId, values, unit, label) {
@@ -918,10 +822,9 @@ function updateCustomStatsCard(containerId, values, unit, label) {
     `;
 }
 
-// 在 custom-chart.js 中替换 renderCustomChart 函数
-
-function renderCustomChart(chartType, dataKey, color, yAxisName) {
+function renderCustomChart(chartType, dataKey, yAxisName) {
     const toolData = getCurrentCustomToolData();
+    
     if (!toolData) {
         const chart = customCharts[chartType];
         if (chart && !chart.isDisposed()) {
@@ -959,7 +862,6 @@ function renderCustomChart(chartType, dataKey, color, yAxisName) {
     
     const dates = filteredData.dates;
     
-    // 在设置新数据前，先确保容器尺寸正确
     const container = document.getElementById(`custom-chart-${chartType}`);
     if (container && container.offsetWidth > 0 && customCharts[chartType] && !customCharts[chartType].isDisposed()) {
         customCharts[chartType].resize();
@@ -979,7 +881,6 @@ function renderCustomChart(chartType, dataKey, color, yAxisName) {
     const allValues = [];
     const palette = ['#6366f1', '#f59e0b', '#10b981', '#ef4444', '#06b6d4', '#8b5cf6', '#ec4899', '#84cc16'];
     
-    // 判断是否是混合模式
     const projectData = getCurrentCustomProjectData();
     const isMerged = projectData && projectData._isMerged;
     
@@ -987,27 +888,21 @@ function renderCustomChart(chartType, dataKey, color, yAxisName) {
         const threadInfo = threadMetrics[threadId];
         let values = threadInfo?.[dataKey] || [];
         
-        const mappedValues = [];
         const originalDates = toolData.dates || [];
-        
-        dates.forEach(selectedDate => {
+        const seriesData = dates.map(selectedDate => {
             const dateIndex = originalDates.indexOf(selectedDate);
-            if (dateIndex !== -1 && values[dateIndex] !== undefined) {
-                const val = values[dateIndex];
-                mappedValues.push(val);
-                if (val !== null && val !== undefined && val > 0) allValues.push(val);
-            } else {
-                mappedValues.push(null);
-            }
+            const val = (dateIndex !== -1 && values[dateIndex] !== undefined) ? values[dateIndex] : null;
+            if (val !== null && val !== undefined && val > 0) allValues.push(val);
+            return val;
         });
         
         const threadLabel = threadId === '0' ? '线程0' : `线程 ${threadId}`;
-        // 混合模式下使用橙色系区分
         const seriesColor = isMerged ? '#f59e0b' : palette[index % palette.length];
+        
         seriesList.push({
             name: threadLabel,
             type: 'line',
-            data: mappedValues,
+            data: seriesData,
             smooth: false,
             lineStyle: { width: 2, color: seriesColor },
             areaStyle: { opacity: 0.08, color: seriesColor },
@@ -1040,6 +935,8 @@ function renderCustomChart(chartType, dataKey, color, yAxisName) {
         const seriesName = threadId === '0' ? '线程0' : `线程 ${threadId}`;
         legendSelected[seriesName] = (threadId === '0');
     });
+    legendSelected['平均值'] = true;
+    legendSelected['参考线'] = true;
     
     const tooltipFormatter = (params) => {
         if (!params?.length) return '';
@@ -1084,7 +981,7 @@ function renderCustomChart(chartType, dataKey, color, yAxisName) {
                 fontSize: 11
             },
             axisLine: { lineStyle: { color: '#475569' } },
-            boundaryGap: false
+            boundaryGap: true
         },
         yAxis: {
             type: 'value',
@@ -1128,7 +1025,7 @@ function renderCustomChart(chartType, dataKey, color, yAxisName) {
         ],
         legend: {
             data: seriesList.map(s => s.name).concat(['平均值', '参考线']),
-            selected: { ...legendSelected, '平均值': true, '参考线': true },
+            selected: legendSelected,
             textStyle: { color: '#cbd5e1', fontSize: 11 },
             orient: 'horizontal',
             right: 10,
@@ -1153,7 +1050,6 @@ function renderCustomChart(chartType, dataKey, color, yAxisName) {
         chart.setOption(option, { notMerge: true, lazyUpdate: false });
     }
     
-    // 渲染后再次确保尺寸正确
     setTimeout(() => {
         if (chart && !chart.isDisposed()) {
             chart.resize();
@@ -1161,10 +1057,7 @@ function renderCustomChart(chartType, dataKey, color, yAxisName) {
     }, 50);
 }
 
-// 在 custom-chart.js 中替换 refreshCustomCharts 函数
-
 function refreshCustomCharts() {
-    // 检查当前是否在自定义图表视图
     const customView = document.getElementById('customView');
     const isCustomViewActive = customView && customView.classList.contains('active');
     
@@ -1180,7 +1073,6 @@ function refreshCustomCharts() {
     
     console.log('刷新自定义图表:', customState.currentProjectId, customState.currentRule);
     
-    // 先确保容器可见并调整尺寸
     const runtimeContainer = document.getElementById('custom-chart-runtime');
     const memoryContainer = document.getElementById('custom-chart-memory');
     
@@ -1195,13 +1087,10 @@ function refreshCustomCharts() {
         }
     }
     
-    // 渲染图表
-    renderCustomChart('runtime', 'runtimes', '#6366f1', 'Runtime (秒)');
-    renderCustomChart('memory', 'memories', '#10b981', 'Memory (MB)');
-    
+    renderCustomChart('runtime', 'runtimes', 'Runtime (秒)');
+    renderCustomChart('memory', 'memories', 'Memory (MB)');
     updateCustomChartTypeButtons();
     
-    // 多次确保尺寸正确（处理动画和过渡效果）
     setTimeout(() => {
         if (customState.currentChartType === 'runtime' && customCharts.runtime && !customCharts.runtime.isDisposed()) {
             customCharts.runtime.resize();
@@ -1224,70 +1113,60 @@ function refreshCustomCharts() {
 // ==================================================
 
 function bindCustomChartEvents() {
-    // 添加Case按钮
     const addCaseBtn = document.getElementById('addCaseBtn');
     if (addCaseBtn) {
         addCaseBtn.removeEventListener('click', openAddCaseModal);
         addCaseBtn.addEventListener('click', openAddCaseModal);
     }
     
-    // 确认加载Case数据按钮
     const confirmLoadCaseBtn = document.getElementById('confirmLoadCaseBtn');
     if (confirmLoadCaseBtn) {
         confirmLoadCaseBtn.removeEventListener('click', confirmLoadCaseData);
         confirmLoadCaseBtn.addEventListener('click', confirmLoadCaseData);
     }
     
-    // 所有关闭模态框按钮
     const closeModalBtns = document.querySelectorAll('#addCaseModal .close-modal-btn, #closeCaseModalBtn, #closeCaseModalBtn2');
     closeModalBtns.forEach(btn => {
         btn.removeEventListener('click', closeAddCaseModal);
         btn.addEventListener('click', closeAddCaseModal);
     });
     
-    // 添加Case配置按钮
     const addCaseConfigBtn = document.getElementById('addCaseConfigBtn');
     if (addCaseConfigBtn) {
         addCaseConfigBtn.removeEventListener('click', addCaseConfig);
         addCaseConfigBtn.addEventListener('click', addCaseConfig);
     }
     
-    // Case路径输入框回车
     const newCasePathInput = document.getElementById('newCasePathInput');
     if (newCasePathInput) {
         newCasePathInput.removeEventListener('keypress', handleCasePathKeypress);
         newCasePathInput.addEventListener('keypress', handleCasePathKeypress);
     }
     
-    // 切换数据源按钮
     const toggleDataSourceBtn = document.getElementById('toggleDataSourceBtn');
     if (toggleDataSourceBtn) {
         toggleDataSourceBtn.removeEventListener('click', toggleDataSource);
         toggleDataSourceBtn.addEventListener('click', toggleDataSource);
     }
     
-    // 项目选择
     const customCaseSelect = document.getElementById('customCaseSelect');
     if (customCaseSelect) {
         customCaseSelect.removeEventListener('change', handleCustomCaseChange);
         customCaseSelect.addEventListener('change', handleCustomCaseChange);
     }
     
-    // 规则选择
     const customRuleSelect = document.getElementById('customRuleSelect');
     if (customRuleSelect) {
         customRuleSelect.removeEventListener('change', handleCustomRuleChange);
         customRuleSelect.addEventListener('change', handleCustomRuleChange);
     }
     
-    // 规则搜索
     const customRuleSearch = document.getElementById('customRuleSearch');
     if (customRuleSearch) {
         customRuleSearch.removeEventListener('input', customRuleSearchHandler);
         customRuleSearch.addEventListener('input', customRuleSearchHandler);
     }
     
-    // 图表类型切换
     const customChartRuntimeBtn = document.getElementById('customChartRuntimeBtn');
     if (customChartRuntimeBtn) {
         customChartRuntimeBtn.removeEventListener('click', () => selectCustomChartType('runtime'));
@@ -1299,7 +1178,6 @@ function bindCustomChartEvents() {
         customChartMemoryBtn.addEventListener('click', () => selectCustomChartType('memory'));
     }
     
-    // 日期选择
     const customOpenDatePickerBtn = document.getElementById('customOpenDatePickerBtn');
     if (customOpenDatePickerBtn) {
         customOpenDatePickerBtn.removeEventListener('click', openCustomDatePickerModal);
@@ -1348,12 +1226,10 @@ function bindCustomChartEvents() {
         customDateFilterInput.addEventListener('input', customDateFilterHandler);
     }
     
-    // 窗口大小调整
     window.removeEventListener('resize', customChartResizeHandler);
     window.addEventListener('resize', customChartResizeHandler);
 }
 
-// 事件处理函数
 function handleCasePathKeypress(e) {
     if (e.key === 'Enter') addCaseConfig();
 }
@@ -1361,7 +1237,6 @@ function handleCasePathKeypress(e) {
 function handleCustomCaseChange(e) {
     const newProjectId = e.target.value;
     
-    // 如果项目没有变化，跳过
     if (customState.currentProjectId === newProjectId) {
         return;
     }
@@ -1369,8 +1244,6 @@ function handleCustomCaseChange(e) {
     customState.currentProjectId = newProjectId;
     customState.currentRule = null;
     customState.cachedToolData = {};
-    
-    // 重置日期选择为最近50天
     customState.selectedDates = [];
     customState.pendingSelectedDates = [];
     
@@ -1379,27 +1252,19 @@ function handleCustomCaseChange(e) {
         
         const projectData = getCurrentCustomProjectData();
         if (projectData) {
-            // 更新可用日期
             customState.availableDates = projectData.available_dates || projectData.dates || [];
-            // 设置最近50个日期
             customState.selectedDates = customState.availableDates.slice(-51);
-            // 更新日期显示
             updateCustomDateInfo();
-            // 更新阶段选择框
             updateCustomRuleSelect();
-            // 更新图表类型按钮状态
             updateCustomChartTypeButtons();
-            // 刷新图表
             refreshCustomCharts();
         }
     } else {
-        // 清空日期显示
         const dateRangeSpan = document.getElementById('customDateRange');
         if (dateRangeSpan) dateRangeSpan.innerText = '无';
         const dataPointsSpan = document.getElementById('customDataPoints');
         if (dataPointsSpan) dataPointsSpan.innerText = '0';
         
-        // 清空图表
         const runtimeChart = customCharts.runtime;
         const memoryChart = customCharts.memory;
         if (runtimeChart) {
@@ -1468,3 +1333,4 @@ window.confirmLoadCaseData = confirmLoadCaseData;
 window.toggleDataSource = toggleDataSource;
 window.preloadDefaultDataForCustom = preloadDefaultDataForCustom;
 window.updateCustomCaseSelect = updateCustomCaseSelect;
+window.resetCustomDateToRecent = resetCustomDateToRecent;

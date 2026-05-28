@@ -10,33 +10,22 @@ const ChartManager = {
     charts: {},
     
     get(id, createIfNotExist = true) {
-        // 检查已有图表是否有效
         if (this.charts[id] && (this.charts[id].isDisposed && this.charts[id].isDisposed())) {
-            console.log(`[ChartManager] Chart ${id} was disposed, removing reference`);
             delete this.charts[id];
         }
         
         if (!this.charts[id] && createIfNotExist) {
             const dom = document.getElementById(id);
             if (dom && typeof echarts !== 'undefined') {
-                // 确保容器可见后再初始化
                 if (dom.offsetWidth > 0 && dom.offsetHeight > 0) {
                     this.charts[id] = echarts.init(dom);
-                    console.log(`[ChartManager] Created chart for ${id}`);
                 } else {
-                    // console.warn(`[ChartManager] Container ${id} is not visible (size: ${dom.offsetWidth}x${dom.offsetHeight}), will retry`);
-                    // 延迟重试
                     setTimeout(() => {
                         if (dom.offsetWidth > 0 && dom.offsetHeight > 0) {
                             this.charts[id] = echarts.init(dom);
-                            console.log(`[ChartManager] Created chart for ${id} (retry)`);
                         }
                     }, 100);
                 }
-            } else if (!dom) {
-                console.warn(`[ChartManager] DOM element not found: ${id}`);
-            } else if (typeof echarts === 'undefined') {
-                console.error('[ChartManager] ECharts not loaded');
             }
         }
         return this.charts[id];
@@ -77,7 +66,6 @@ const ChartManager = {
 const ChartConfig = {
     /**
      * 获取基础配置
-     * @returns {object} 基础配置
      */
     getBaseConfig() {
         return {
@@ -104,9 +92,6 @@ const ChartConfig = {
     
     /**
      * 获取X轴配置
-     * @param {Array} data - X轴数据
-     * @param {string} name - X轴名称
-     * @returns {object} X轴配置
      */
     getXAxisConfig(data, name = '') {
         return {
@@ -119,15 +104,12 @@ const ChartConfig = {
                 fontSize: 11
             },
             axisLine: { lineStyle: { color: '#475569' } },
-            boundaryGap: false
+            boundaryGap: true
         };
     },
     
     /**
      * 获取Y轴配置
-     * @param {string} name - Y轴名称
-     * @param {string} unit - 单位
-     * @returns {object} Y轴配置
      */
     getYAxisConfig(name, unit = '') {
         return {
@@ -155,9 +137,6 @@ const ChartConfig = {
     
     /**
      * 获取图例配置
-     * @param {Array} data - 图例数据
-     * @param {object} selected - 选中状态
-     * @returns {object} 图例配置
      */
     getLegendConfig(data, selected = {}) {
         return {
@@ -174,9 +153,6 @@ const ChartConfig = {
     
     /**
      * 获取Tooltip配置
-     * @param {string} unit - 单位
-     * @param {Function} customFormatter - 自定义格式化函数
-     * @returns {object} Tooltip配置
      */
     getTooltipConfig(unit, customFormatter = null) {
         const baseConfig = {
@@ -202,12 +178,7 @@ const ChartConfig = {
     },
     
     /**
-     * 获取系列配置 - 统一折线图样式
-     * @param {string} name - 系列名称
-     * @param {Array} data - 数据
-     * @param {string} color - 颜色
-     * @param {object} options - 额外选项
-     * @returns {object} 系列配置
+     * 获取系列配置
      */
     getSeriesConfig(name, data, color, options = {}) {
         return {
@@ -226,9 +197,6 @@ const ChartConfig = {
     
     /**
      * 获取平均值参考线配置
-     * @param {Array} dates - 日期数组
-     * @param {number} avgValue - 平均值
-     * @returns {object} 参考线配置
      */
     getAverageLineConfig(dates, avgValue) {
         return {
@@ -243,11 +211,6 @@ const ChartConfig = {
     
     /**
      * 获取水平参考线配置
-     * @param {Array} dates - 日期数组
-     * @param {number} referenceValue - 参考线值
-     * @param {string} name - 线名称
-     * @param {string} color - 颜色
-     * @returns {object} 参考线配置
      */
     getReferenceLineConfig(dates, referenceValue, name = '参考线', color = '#06b6d4') {
         return {
@@ -262,17 +225,8 @@ const ChartConfig = {
     
     /**
      * 获取完整的折线图配置（带平均值和参考线）
-     * @param {Array} dates - X轴日期数据
-     * @param {Array} seriesList - 系列列表
-     * @param {string} yAxisName - Y轴名称
-     * @param {number} avgValue - 平均值
-     * @param {number} referenceValue - 参考线值
-     * @param {object} legendSelected - 图例选中状态
-     * @param {Function} tooltipFormatter - 自定义tooltip格式化函数
-     * @returns {object} 完整的ECharts配置
      */
     getCompleteLineChartConfig(dates, seriesList, yAxisName, avgValue, referenceValue, legendSelected = {}, tooltipFormatter = null) {
-        // 构建系列列表，添加平均值和参考线
         const allSeries = [...seriesList];
         
         if (avgValue !== null && avgValue !== undefined && !isNaN(avgValue)) {
@@ -283,7 +237,6 @@ const ChartConfig = {
             allSeries.push(this.getReferenceLineConfig(dates, referenceValue));
         }
         
-        // 构建图例数据
         const legendData = seriesList.map(s => s.name);
         if (avgValue !== null && avgValue !== undefined && !isNaN(avgValue)) {
             legendData.push('平均值');
@@ -297,7 +250,6 @@ const ChartConfig = {
         legendData.forEach((name, idx) => {
             defaultSelected[name] = idx === 0;
         });
-        // 平均值和参考线默认显示
         if (avgValue !== null && avgValue !== undefined && !isNaN(avgValue)) {
             defaultSelected['平均值'] = true;
         }
@@ -333,7 +285,7 @@ const ChartConfig = {
                     fontSize: 11
                 },
                 axisLine: { lineStyle: { color: '#475569' } },
-                boundaryGap: false
+                boundaryGap: true
             },
             yAxis: {
                 type: 'value',
