@@ -1,3 +1,8 @@
+// ==================================================
+// 文件: static/js/chart-utils.js
+// 修改: 将 boundaryGap 改为 true（默认值）
+// ==================================================
+
 /**
  * 图表工具函数模块 - 统一的折线图样式（带平均值和参考线）
  */
@@ -92,8 +97,11 @@ const ChartConfig = {
     
     /**
      * 获取X轴配置
+     * @param {Array} data - X轴数据
+     * @param {string} name - X轴名称
+     * @param {boolean} boundaryGap - 是否留白边界，默认为true（曲线不接触边线）
      */
-    getXAxisConfig(data, name = '') {
+    getXAxisConfig(data, name = '', boundaryGap = true) {
         return {
             type: 'category',
             name: name,
@@ -104,7 +112,7 @@ const ChartConfig = {
                 fontSize: 11
             },
             axisLine: { lineStyle: { color: '#475569' } },
-            boundaryGap: true
+            boundaryGap: boundaryGap
         };
     },
     
@@ -225,8 +233,16 @@ const ChartConfig = {
     
     /**
      * 获取完整的折线图配置（带平均值和参考线）
+     * @param {Array} dates - X轴日期数据
+     * @param {Array} seriesList - 系列列表
+     * @param {string} yAxisName - Y轴名称
+     * @param {number} avgValue - 平均值
+     * @param {number} referenceValue - 参考线值
+     * @param {Object} legendSelected - 图例选中状态
+     * @param {Function} tooltipFormatter - 自定义tooltip格式化函数
+     * @param {boolean} boundaryGap - X轴是否留白，默认true
      */
-    getCompleteLineChartConfig(dates, seriesList, yAxisName, avgValue, referenceValue, legendSelected = {}, tooltipFormatter = null) {
+    getCompleteLineChartConfig(dates, seriesList, yAxisName, avgValue, referenceValue, legendSelected = {}, tooltipFormatter = null, boundaryGap = true) {
         const allSeries = [...seriesList];
         
         if (avgValue !== null && avgValue !== undefined && !isNaN(avgValue)) {
@@ -285,7 +301,7 @@ const ChartConfig = {
                     fontSize: 11
                 },
                 axisLine: { lineStyle: { color: '#475569' } },
-                boundaryGap: true
+                boundaryGap: boundaryGap
             },
             yAxis: {
                 type: 'value',
@@ -298,7 +314,10 @@ const ChartConfig = {
                         if (yAxisName.includes('MB') && value >= 1024) {
                             return (value / 1024).toFixed(1) + ' GB';
                         }
-                        return value.toFixed(2);
+                        if (yAxisName.includes('秒') || yAxisName.includes('Runtime')) {
+                            return value.toFixed(2);
+                        }
+                        return value;
                     }
                 },
                 splitLine: {
