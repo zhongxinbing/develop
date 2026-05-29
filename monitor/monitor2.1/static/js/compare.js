@@ -618,7 +618,7 @@ function addTableFilter() {
             <input type="text" id="tableFilterInput" placeholder="筛选阶段名称..." style="width: 250px; padding: 0.5rem 0.75rem; background: rgba(0,0,0,0.3); border: 1px solid var(--border); border-radius: var(--radius-md); color: var(--text-primary);">
         </div>
         <div style="display: flex; align-items: center; gap: 0.5rem;">
-            <span>📊 显示:</span>
+            <span style="white-space: nowrap;display: inline;">📊 显示:</span>
             <select id="filterStatusSelect" style="padding: 0.5rem 0.75rem; background: rgba(0,0,0,0.3); border: 1px solid var(--border); border-radius: var(--radius-md); color: var(--text-primary);">
                 <option value="all">全部阶段</option>
                 <option value="increase">仅显示增加</option>
@@ -627,7 +627,7 @@ function addTableFilter() {
             </select>
         </div>
         <div style="display: flex; align-items: center; gap: 0.5rem;">
-            <span>📈 排序:</span>
+            <span style="white-space: nowrap;display: inline;">📈 排序:</span>
             <select id="filterSortSelect" style="padding: 0.5rem 0.75rem; background: rgba(0,0,0,0.3); border: 1px solid var(--border); border-radius: var(--radius-md); color: var(--text-primary);">
                 <option value="none">无排序</option>
                 <option value="runtime_inc">Runtime 增加最多</option>
