@@ -1,23 +1,30 @@
 """
-数据API路由模块 - 刷新、项目、日期等
+数据API路由模块 - 刷新、项目、日期等（优化版）
 """
 from flask import Blueprint, request, jsonify
 from datetime import datetime
+import time
 
 from api.utils import log
 from api.services.tool_config import load_tool_config
 from api.services.global_state import global_state
 from config import CONFIG
-from data_cache import data_cache, version_manager
+from data_cache import data_cache, version_manager, async_loader
 from tool.elint.elint import get_elint_data, get_perf
 from tool.elint.parse import refresh_parsed_projects
 
 data_bp = Blueprint('data', __name__)
 
 
+def _get_cache_key(tool: str, mode: str) -> str:
+    """生成缓存键"""
+    return f"{tool}_{mode}_projects_data"
+
+
 @data_bp.route('/api/refresh', methods=['POST'])
 def api_refresh():
-    """刷新数据API接口"""
+    """刷新数据API接口（优化版）"""
+    start_time = time.time()
     log("刷新数据中...")
     
     try:
@@ -38,18 +45,38 @@ def api_refresh():
         
         config = {
             'json_path': json_path,
-            'original_path': original_path
+            'original_path': original_path,
+            'mem': tool_config.get('mem', ''),
+            'cpu': tool_config.get('cpu', '')
         }
         
-        cache_key = f"{tool}_{mode}_projects_data"
+        cache_key = _get_cache_key(tool, mode)
         
         # 检查数据是否有变化
-        if version_manager.check_changes(config):
-            data_cache.invalidate(cache_key)
-            
+        has_changes = version_manager.check_changes(config)
+        current_projects_data = None
+        parsed_projects = None
+        project_list = None
+        used_cache = False
+        
+        if not has_changes and CONFIG['cache_enabled']:
+            cached = data_cache.get(cache_key, ttl=CONFIG['cache_ttl'])
+            if cached:
+                current_projects_data = cached.get('projects_data')
+                parsed_projects = cached.get('parsed_projects')
+                project_list = cached.get('project_list')
+                used_cache = True
+                # 从缓存恢复全局状态
+                if parsed_projects:
+                    global_state.parsed_projects = parsed_projects
+                if project_list:
+                    global_state.project_list = project_list
+                log("使用缓存数据")
+        
+        if not used_cache:
+            # 加载数据
             projects_data = get_elint_data(json_path, original_path)
             current_projects_data = projects_data.copy()
-            # 使用全局状态管理器刷新数据
             parsed_projects, project_list = global_state.refresh_projects(current_projects_data)
             
             if CONFIG['cache_enabled']:
@@ -57,36 +84,26 @@ def api_refresh():
                     'projects_data': current_projects_data,
                     'parsed_projects': parsed_projects,
                     'project_list': project_list,
-                    'timestamp': datetime.now().timestamp()
-                })
-        else:
-            cached = data_cache.get(cache_key)
-            
-            if cached and (datetime.now().timestamp() - cached.get('timestamp', 0) < CONFIG['cache_ttl']):
-                current_projects_data = cached['projects_data']
-                # 从缓存恢复全局状态
-                global_state.parsed_projects = cached.get('parsed_projects', {})
-                global_state.project_list = cached.get('project_list', [])
-                log("使用缓存数据")
-            else:
-                projects_data = get_elint_data(json_path, original_path)
-                current_projects_data = projects_data.copy()
-                parsed_projects, project_list = global_state.refresh_projects(current_projects_data)
-                
-                if CONFIG['cache_enabled']:
-                    data_cache.set(cache_key, {
-                        'projects_data': current_projects_data,
-                        'parsed_projects': parsed_projects,
-                        'project_list': project_list,
-                        'timestamp': datetime.now().timestamp()
-                    })
+                    'timestamp': datetime.now().timestamp(),
+                    'version': version_manager.get_data_signature(config)
+                }, ttl=CONFIG['cache_ttl'])
         
+        # 获取性能数据（带缓存）
         mem_path = tool_config.get('mem', '')
         cpu_path = tool_config.get('cpu', '')
-        perf = get_perf(mem_path, cpu_path)
+        perf_cache_key = f"{tool}_perf"
+        perf = data_cache.get(perf_cache_key)
+        if perf is None:
+            perf = get_perf(mem_path, cpu_path)
+            data_cache.set(perf_cache_key, perf, ttl=CONFIG['cache_ttl'])
         
-        # 构建返回数据 - 使用全局状态中的 parsed_projects
-        parsed_projects = global_state.parsed_projects
+        # 使用全局状态中的 parsed_projects
+        if not parsed_projects:
+            parsed_projects = global_state.parsed_projects
+        if not project_list:
+            project_list = global_state.project_list
+        
+        # 构建返回数据
         projects_data_json = {
             pid: {
                 'dates': info.get('dates', []),
@@ -106,6 +123,9 @@ def api_refresh():
             for pid, info in parsed_projects.items()
         ]
         
+        elapsed = time.time() - start_time
+        log(f"数据刷新完成，耗时: {elapsed:.3f}秒")
+        
         return jsonify({
             'success': True,
             'data': projects_data_json,
@@ -113,7 +133,9 @@ def api_refresh():
             'last_update': last_update,
             'message': '数据刷新成功',
             'perf': perf,
-            'version': version_manager.get_data_signature(config)
+            'version': version_manager.get_data_signature(config),
+            'elapsed': round(elapsed, 3),
+            'from_cache': used_cache
         })
     except Exception as e:
         log(f"刷新失败: {e}")

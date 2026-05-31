@@ -13,7 +13,12 @@ CONFIG = {
     'debug': True,
     'auto_open_browser': False,
     'cache_enabled': True,
-    'cache_ttl': 300
+    'cache_ttl': 300,           # 缓存生存时间（秒）
+    'cache_max_size': 100,      # 最大缓存条目数
+    'preload_data': True,       # 预加载数据
+    'async_loading': True,      # 异步加载
+    'batch_size': 500,          # 分批处理大小
+    'request_timeout': 30       # 请求超时时间
 }
 
 # 路径配置
