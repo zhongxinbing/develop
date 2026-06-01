@@ -467,6 +467,16 @@ def get_perf_data_from_log(caseData, log):
 
 
 def get_multi_data(path, caseData):
+    """
+    获取性能数据（MR更新信息）
+    
+    参数:
+        path: 工具配置中的 multi_original_path 
+        caseData: elint.json 数据字典
+    
+    返回:
+        dict: 性能数据字典
+    """
     print(path)
     logs = find(path, maxdepth=6, name_pattern=r"elint.log", file_type="f")
     if "multi" not in caseData:
