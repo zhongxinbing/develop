@@ -1,5 +1,5 @@
 """
-数据API路由模块 - 刷新、项目、日期等（优化版）
+数据API路由模块 - 刷新、项目、日期等（增量解析优化版）
 """
 from flask import Blueprint, request, jsonify
 from datetime import datetime
@@ -11,7 +11,7 @@ from api.services.global_state import global_state
 from config import CONFIG
 from data_cache import data_cache, version_manager, async_loader
 from tool.elint.elint import get_elint_data, get_perf
-from tool.elint.parse import refresh_parsed_projects
+from tool.elint.parse import refresh_parsed_projects, get_data_signature
 
 data_bp = Blueprint('data', __name__)
 
@@ -23,7 +23,7 @@ def _get_cache_key(tool: str, mode: str) -> str:
 
 @data_bp.route('/api/refresh', methods=['POST'])
 def api_refresh():
-    """刷新数据API接口（优化版）"""
+    """刷新数据API接口（增量解析优化版）"""
     start_time = time.time()
     log("刷新数据中...")
     
@@ -33,6 +33,7 @@ def api_refresh():
         data = request.get_json() or {}
         tool = data.get('tool', 'elint')
         mode = data.get('mode', 'single')
+        force_full = data.get('force_full', False)  # 强制全量解析参数
         
         tool_config = CASE_CONFIG.get(tool, {})
         
@@ -59,7 +60,17 @@ def api_refresh():
         project_list = None
         used_cache = False
         
-        if not has_changes and CONFIG['cache_enabled']:
+        # 如果全局状态已有数据且不是强制全量，则尝试使用增量解析
+        if global_state.has_data() and not force_full:
+            # 获取当前原始数据
+            current_projects_data = get_elint_data(json_path, original_path)
+            
+            # 使用增量解析刷新（基于缓存数据）
+            parsed_projects, project_list = global_state.refresh_projects(current_projects_data, force_full=False)
+            used_cache = False
+            log("使用增量解析模式")
+        elif not has_changes and CONFIG['cache_enabled'] and not force_full:
+            # 使用缓存
             cached = data_cache.get(cache_key, ttl=CONFIG['cache_ttl'])
             if cached:
                 current_projects_data = cached.get('projects_data')
@@ -73,11 +84,17 @@ def api_refresh():
                     global_state.project_list = project_list
                 log("使用缓存数据")
         
-        if not used_cache:
-            # 加载数据
-            projects_data = get_elint_data(json_path, original_path)
-            current_projects_data = projects_data.copy()
-            parsed_projects, project_list = global_state.refresh_projects(current_projects_data)
+        if not used_cache and current_projects_data is None:
+            # 加载原始数据
+            current_projects_data = get_elint_data(json_path, original_path)
+            
+            # 使用增量解析（如果已有缓存数据）
+            if global_state.has_data() and not force_full:
+                parsed_projects, project_list = global_state.refresh_projects(current_projects_data, force_full=False)
+            else:
+                parsed_projects, project_list = refresh_parsed_projects(current_projects_data, global_state.get_cached_parsed())
+                global_state.parsed_projects = parsed_projects
+                global_state.project_list = project_list
             
             if CONFIG['cache_enabled']:
                 data_cache.set(cache_key, {
@@ -135,7 +152,8 @@ def api_refresh():
             'perf': perf,
             'version': version_manager.get_data_signature(config),
             'elapsed': round(elapsed, 3),
-            'from_cache': used_cache
+            'from_cache': used_cache,
+            'incremental': not used_cache and not force_full and global_state.has_data()
         })
     except Exception as e:
         log(f"刷新失败: {e}")

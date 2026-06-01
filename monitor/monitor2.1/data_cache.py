@@ -1,12 +1,12 @@
 """
-数据缓存模块 - LRU缓存 + 数据版本管理 + 异步加载
+数据缓存模块 - LRU缓存 + 数据版本管理 + 异步加载 + 增量解析支持
 """
 import hashlib
 import threading
 import time
 from collections import OrderedDict
 from threading import Lock, RLock
-from typing import Dict, Any, Optional, Callable, List
+from typing import Dict, Any, Optional, Callable, List, Tuple
 from pathlib import Path
 from dataclasses import dataclass, field
 from datetime import datetime
@@ -21,6 +21,7 @@ class CacheEntry:
     timestamp: float
     version: int = 1
     size: int = 0
+    data_signature: str = ""  # 数据签名，用于检测变化
     
     def is_expired(self, ttl: int) -> bool:
         """检查是否过期"""
@@ -39,7 +40,8 @@ class DataCache:
         self._stats = {
             'hits': 0,
             'misses': 0,
-            'evictions': 0
+            'evictions': 0,
+            'incremental_updates': 0
         }
     
     def get(self, key: str, ttl: int = None) -> Optional[Any]:
@@ -63,6 +65,30 @@ class DataCache:
             self._stats['misses'] += 1
             return None
     
+    def get_with_signature(self, key: str, ttl: int = None) -> Tuple[Optional[Any], Optional[str]]:
+        """
+        获取缓存数据和签名
+        
+        返回:
+            Tuple[Optional[Any], Optional[str]]: (缓存值, 数据签名)
+        """
+        if ttl is None:
+            ttl = self._default_ttl
+            
+        with self._lock:
+            if key in self._cache:
+                entry = self._cache[key]
+                if not entry.is_expired(ttl):
+                    self._cache.move_to_end(key)
+                    self._stats['hits'] += 1
+                    return entry.value, entry.data_signature
+                else:
+                    del self._cache[key]
+                    self._stats['misses'] += 1
+                    return None, None
+            self._stats['misses'] += 1
+            return None, None
+    
     def get_or_set(self, key: str, factory: Callable, ttl: int = None) -> Any:
         """获取缓存，如果不存在则通过factory创建"""
         value = self.get(key, ttl)
@@ -71,7 +97,7 @@ class DataCache:
             self.set(key, value, ttl)
         return value
     
-    def set(self, key: str, value: Any, ttl: int = None) -> None:
+    def set(self, key: str, value: Any, ttl: int = None, data_signature: str = "") -> None:
         """设置缓存数据"""
         if ttl is None:
             ttl = self._default_ttl
@@ -89,12 +115,37 @@ class DataCache:
                 except:
                     size = 1
             
-            self._cache[key] = CacheEntry(value, time.time(), self._version, size)
+            self._cache[key] = CacheEntry(value, time.time(), self._version, size, data_signature)
             
             # LRU 淘汰
             while len(self._cache) > self._max_size:
                 self._cache.popitem(last=False)
                 self._stats['evictions'] += 1
+    
+    def update_if_changed(self, key: str, new_value: Any, new_signature: str, ttl: int = None) -> bool:
+        """
+        如果签名变化则更新缓存
+        
+        参数:
+            key: 缓存键
+            new_value: 新值
+            new_signature: 新签名
+            ttl: 过期时间
+            
+        返回:
+            bool: 是否更新了缓存
+        """
+        with self._lock:
+            if key in self._cache:
+                entry = self._cache[key]
+                if entry.data_signature == new_signature:
+                    # 签名相同，数据未变
+                    return False
+            
+            # 签名不同或不存在，更新缓存
+            self.set(key, new_value, ttl, new_signature)
+            self._stats['incremental_updates'] += 1
+            return True
     
     def invalidate(self, key: str = None) -> None:
         """使缓存失效"""
@@ -126,6 +177,8 @@ class DataVersionManager:
         self._dir_hashes: Dict[str, str] = {}
         self._lock = Lock()
         self._watch_tasks: Dict[str, Callable] = {}
+        self._last_check_time: Dict[str, float] = {}
+        self._check_interval = 5  # 检查间隔（秒）
     
     @staticmethod
     def _compute_file_hash(file_path: str) -> str:
@@ -168,16 +221,30 @@ class DataVersionManager:
             
             # 检查 JSON 文件
             if "json_path" in config and config["json_path"]:
-                current_hashes["json"] = self._compute_file_hash(config["json_path"])
+                json_key = "json"
+                current_hashes[json_key] = self._compute_file_hash(config["json_path"])
+                
+                # 检查是否在冷却期内
+                last_check = self._last_check_time.get(json_key, 0)
+                if time.time() - last_check < self._check_interval:
+                    return False
+                self._last_check_time[json_key] = time.time()
             
             # 检查原始数据目录
             if "original_path" in config and config["original_path"]:
-                current_hashes["original"] = self._compute_dir_hash(config["original_path"], "*.txt")
+                orig_key = "original"
+                current_hashes[orig_key] = self._compute_dir_hash(config["original_path"], "*.txt")
+                
+                last_check = self._last_check_time.get(orig_key, 0)
+                if time.time() - last_check < self._check_interval:
+                    return False
+                self._last_check_time[orig_key] = time.time()
             
             # 检查 CSV 文件
             for csv_type in ["mem", "cpu"]:
                 if csv_type in config and config[csv_type]:
-                    current_hashes[csv_type] = self._compute_file_hash(config[csv_type])
+                    csv_key = f"csv_{csv_type}"
+                    current_hashes[csv_key] = self._compute_file_hash(config[csv_type])
             
             # 检查是否有变化
             has_changed = current_hashes != self._file_hashes
