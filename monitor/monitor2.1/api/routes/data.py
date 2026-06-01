@@ -1,5 +1,5 @@
 """
-数据API路由模块 - 刷新、项目、日期等（增量解析优化版）
+数据API路由模块 - 刷新、项目、日期等（增量解析优化版 - 支持多线程）
 """
 from flask import Blueprint, request, jsonify
 from datetime import datetime
@@ -10,7 +10,7 @@ from api.services.tool_config import load_tool_config
 from api.services.global_state import global_state
 from config import CONFIG
 from data_cache import data_cache, version_manager, async_loader
-from tool.elint.elint import get_elint_data, get_perf
+from tool.elint.elint import get_elint_data, get_perf, get_multi_data, get_combined_data
 from tool.elint.parse import refresh_parsed_projects, get_data_signature
 
 data_bp = Blueprint('data', __name__)
@@ -23,7 +23,7 @@ def _get_cache_key(tool: str, mode: str) -> str:
 
 @data_bp.route('/api/refresh', methods=['POST'])
 def api_refresh():
-    """刷新数据API接口（增量解析优化版）"""
+    """刷新数据API接口（增量解析优化版 - 支持多线程）"""
     start_time = time.time()
     log("刷新数据中...")
     
@@ -43,10 +43,12 @@ def api_refresh():
             original_path = tool_config.get('multi_original_path', '')
         
         json_path = tool_config.get('json_path', '')
+        multi_original_path = tool_config.get('multi_original_path', '')
         
         config = {
             'json_path': json_path,
             'original_path': original_path,
+            'multi_original_path': multi_original_path,
             'mem': tool_config.get('mem', ''),
             'cpu': tool_config.get('cpu', '')
         }
@@ -62,8 +64,8 @@ def api_refresh():
         
         # 如果全局状态已有数据且不是强制全量，则尝试使用增量解析
         if global_state.has_data() and not force_full:
-            # 获取当前原始数据
-            current_projects_data = get_elint_data(json_path, original_path)
+            # 获取合并数据（单线程 + 多线程）
+            current_projects_data = get_combined_data(json_path, original_path, multi_original_path)
             
             # 使用增量解析刷新（基于缓存数据）
             parsed_projects, project_list = global_state.refresh_projects(current_projects_data, force_full=False)
@@ -85,8 +87,8 @@ def api_refresh():
                 log("使用缓存数据")
         
         if not used_cache and current_projects_data is None:
-            # 加载原始数据
-            current_projects_data = get_elint_data(json_path, original_path)
+            # 加载合并数据（单线程 + 多线程）
+            current_projects_data = get_combined_data(json_path, original_path, multi_original_path)
             
             # 使用增量解析（如果已有缓存数据）
             if global_state.has_data() and not force_full:
@@ -182,7 +184,8 @@ def api_check_update():
         
         config = {
             'json_path': tool_config.get('json_path', ''),
-            'original_path': original_path
+            'original_path': original_path,
+            'multi_original_path': tool_config.get('multi_original_path', '')
         }
         new_version = version_manager.get_data_signature(config)
         
@@ -303,4 +306,36 @@ def api_multi_thread_data():
         log(f"获取多线程数据失败: {e}")
         import traceback
         traceback.print_exc()
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+@data_bp.route('/api/multi_data_info', methods=['POST'])
+def api_multi_data_info():
+    """获取多线程数据信息（是否有数据、可用日期等）"""
+    parsed_projects = global_state.parsed_projects
+    
+    try:
+        data = request.get_json() or {}
+        project_id = data.get('project_id')
+        rule_name = data.get('rule_name')
+        
+        if project_id not in parsed_projects:
+            return jsonify({'success': False, 'error': '项目不存在'}), 404
+        
+        project_info = parsed_projects[project_id]
+        rule_info = project_info.get('rule_data', {}).get(rule_name, {})
+        
+        if not rule_info:
+            return jsonify({'success': True, 'has_multi_data': False})
+        
+        dates = rule_info.get('dates', [])
+        thread_metrics = rule_info.get('thread_metrics', {})
+        
+        return jsonify({
+            'success': True,
+            'has_multi_data': len(thread_metrics) > 1 or (len(thread_metrics) == 1 and '0' not in thread_metrics),
+            'available_dates': dates,
+            'thread_count': len(thread_metrics)
+        })
+    except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500

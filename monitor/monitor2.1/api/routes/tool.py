@@ -1,5 +1,5 @@
 """
-工具页面路由模块（优化版）
+工具页面路由模块（优化版 - 支持多线程数据）
 """
 from flask import Blueprint, render_template, request
 from datetime import datetime
@@ -11,7 +11,7 @@ from api.services.tool_config import get_tool_config
 from api.services.global_state import global_state
 from config import CONFIG
 from data_cache import data_cache, version_manager
-from tool.elint.elint import get_elint_data, get_perf
+from tool.elint.elint import get_elint_data, get_perf, get_multi_data, get_combined_data
 from tool.elint.parse import refresh_parsed_projects
 
 tool_bp = Blueprint('tool', __name__)
@@ -27,7 +27,7 @@ def _get_cache_key(tool_id: str, mode: str = 'single') -> str:
 
 @tool_bp.route('/tool/<tool_id>')
 def tool_page(tool_id: str):
-    """工具主页面（优化版）"""
+    """工具主页面（优化版 - 支持多线程数据）"""
     start_time = time.time()
     
     from config import CASE_CONFIG
@@ -40,6 +40,7 @@ def tool_page(tool_id: str):
     mem_path = tool_info.get('mem', '')
     cpu_path = tool_info.get('cpu', '')
     single_original_path = tool_info.get('single_original_path', '')
+    multi_original_path = tool_info.get('multi_original_path', '')
     
     cache_key = _get_cache_key(tool_id, 'single')
     
@@ -62,13 +63,8 @@ def tool_page(tool_id: str):
             log("使用缓存数据")
     
     if not used_cache:
-        # 检查数据变化
-        config = {
-            'json_path': json_path,
-            'original_path': single_original_path
-        }
-        
-        projects_data = get_elint_data(json_path, single_original_path)
+        # 获取合并数据（单线程 + 多线程）
+        projects_data = get_combined_data(json_path, single_original_path, multi_original_path)
         _current_projects_data = projects_data.copy()
         parsed_projects, project_list = refresh_parsed_projects(_current_projects_data)
         
@@ -102,8 +98,6 @@ def tool_page(tool_id: str):
         }
         for pid, info in parsed_projects.items()
     }
-    
-    multi_original_path = tool_info.get('multi_original_path', '')
     
     elapsed = time.time() - start_time
     log(f"工具页面加载完成: {tool_id}, 耗时: {elapsed:.3f}秒")

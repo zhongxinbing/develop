@@ -395,25 +395,37 @@ def get_user_data_batch(case_paths: list):
 
 
 ##########################################################################################################################################################################################
-## 多线程
+## 多线程数据加载
 ##########################################################################################################################################################################################
 
-def get_data_json(rule_data,data,thread):
-    # rule_data = {}
+def get_data_json(rule_data, data, thread):
+    """
+    从多线程日志中解析性能数据
+    
+    参数:
+        rule_data: 当前规则数据（会被修改）
+        data: 解析出的性能数据列表
+        thread: 线程数
+    
+    返回:
+        dict: 更新后的 rule_data
+    """
     for item in data:
-        # print(item[0])
         rule = item[0]
         cpu = float(item[1].replace(',', ''))
         real = float(item[2].replace(',', ''))
         peak = float(item[3].replace(',', ''))
         inc = float(item[4].replace(',', ''))
+        
         if rule == "sched(local)]":
             continue
-        if re.fullmatch(r'^\[.*',rule):
-            rule = re.findall(r'\[.*\]\[(.*)\]',rule)[0]
+        
+        if re.fullmatch(r'^\[.*', rule):
+            rule = re.findall(r'\[.*\]\[(.*)\]', rule)[0]
+        
         if rule not in rule_data:
             rule_data[rule] = {
-                "thread_metrics" : {
+                "thread_metrics": {
                     thread: {
                         "runtime": cpu,
                         "memory": peak,
@@ -422,7 +434,6 @@ def get_data_json(rule_data,data,thread):
                 }
             }
         else:
-            
             rule_data[rule]["thread_metrics"][thread] = {
                 "runtime": cpu,
                 "memory": peak,
@@ -430,76 +441,169 @@ def get_data_json(rule_data,data,thread):
             }
     return rule_data
 
-def get_perf_data_from_log(caseData, log):
 
-    casename = re.findall(r'/([^/]+)/elint.log',log)[0]
-    date = re.findall(r'/([0-9-]+)/',log)[0]
-    date = datetime.strptime(date, "%Y-%m-%d-%H").strftime("%Y%m%d")
+def get_perf_data_from_log(caseData, log_path):
+    """
+    从单个日志文件解析性能数据
     
-    with open(log, "r", errors='ignore') as f:
+    参数:
+        caseData: 已有的项目数据字典
+        log_path: 日志文件路径
+    
+    返回:
+        dict: 更新后的 caseData
+    """
+    # 提取 casename 和 date
+    # 路径格式示例: /path/to/elint.log 或 /path/to/project/elint.log
+    path_str = str(log_path)
+    
+    # 尝试从路径中提取 casename
+    parts = Path(path_str).parts
+    if len(parts) >= 2:
+        casename = parts[-2]  # 取上一级目录名作为 casename
+    else:
+        casename = "unknown"
+    
+    # 提取日期 - 多种格式支持
+    date_match = re.findall(r'/(\d{8})/', path_str) or re.findall(r'/(\d{4}-\d{2}-\d{2}).*/', path_str)
+    print(f"解析日志路径: {path_str}, 提取 casename: {casename}, 日期匹配结果: {date_match}")
+    if date_match:
+        date_str = date_match[0]
+        if '-' in date_str:
+            date = datetime.strptime(date_str, "%Y-%m-%d").strftime("%Y%m%d")
+        else:
+            date = date_str
+    else:
+        date = datetime.now().strftime("%Y%m%d")
+    
+    with open(log_path, "r", errors='ignore') as f:
         content = f.read()
-        rulePerf = re.findall(r' ([^\s]+) done: CpuTime\(([0-9.,]+)s\); RealTime\(([0-9.,]+)s\); PeakMem\(([0-9.,]+)M\); IncMem\(([0-9.,]+)M\)',content)
+        rulePerf = re.findall(r' ([^\s]+) done: CpuTime\(([0-9.,]+)s\); RealTime\(([0-9.,]+)s\); PeakMem\(([0-9.,]+)M\); IncMem\(([0-9.,]+)M\)', content)
+    
     thread = re.findall(r'Current Threads : (\d+)', content)
     if len(thread) == 0:
         thread = -1
     else:
-        thread = thread[0]
-
+        thread = int(thread[0])
+    
     if casename not in caseData:
         caseData[casename] = {
             "casename": casename,
             "daily_metrics": {
-                date: {
-
-                }
+                date: {}
             },
             "available_dates": [date]
         }
     else:
         if date not in caseData[casename]["daily_metrics"]:
             caseData[casename]["daily_metrics"][date] = {}
-        caseData[casename]["available_dates"].append(date)
-
-
-    caseData[casename]["daily_metrics"][date] = get_data_json(caseData[casename]["daily_metrics"][date],rulePerf,thread)
+        if date not in caseData[casename]["available_dates"]:
+            caseData[casename]["available_dates"].append(date)
+    
+    caseData[casename]["daily_metrics"][date] = get_data_json(
+        caseData[casename]["daily_metrics"][date], rulePerf, thread
+    )
     return caseData
 
 
-
-def get_multi_data(path, caseData):
+def get_multi_data(path: str, caseData: Dict = None) -> Tuple[Dict, List[str]]:
     """
-    获取性能数据（MR更新信息）
+    获取多线程性能数据
     
     参数:
-        path: 工具配置中的 multi_original_path 
-        caseData: elint.json 数据字典
+        path: 多线程原始数据目录路径
+        caseData: 已有的项目数据字典（可选，用于增量更新）
     
     返回:
-        dict: 性能数据字典
+        Tuple[Dict, List[str]]: (更新后的 caseData, 日志文件列表)
     """
-    print(path)
-    logs = find(path, maxdepth=6, name_pattern=r"elint.log", file_type="f")
-    if "multi" not in caseData:
-        caseData["multi"] = logs
-        for logpath in logs:
-            if bool(re.search(r'.*/signal/.*' ,logpath)):
-                continue
-            print(logpath)
-            caseData = get_perf_data_from_log(caseData, logpath)
-    else:
-        if caseData["multi"] != logs:
-            caseData["multi"] = logs
-            addLog = set(logs) - set(caseData["multi"])
-            for log in addLog:
-                if bool(re.search(r'.*/signal/.*' ,logpath)):
-                    continue
-                caseData = get_perf_data_from_log(caseData, logpath)
-    save_json("a.json", caseData["aes"])
-    return caseData
-
-
-
-
- 
-   
+    start = time.time()
+    log(f"开始获取多线程数据，路径: {path}")
     
+    if caseData is None:
+        caseData = {}
+    
+    # 查找所有 elint.log 文件
+    logs = find(path, maxdepth=6, name_pattern=r"elint.log", file_type="f")
+    
+    # 过滤掉 signal 目录下的日志（如果有）
+    filtered_logs = [log_path for log_path in logs if not re.search(r'.*/signal/.*', str(log_path))]
+    
+    # 记录已处理的日志列表
+    processed_key = "__multi_processed_logs__"
+    existing_logs = set(caseData.get(processed_key, []))
+    new_logs = [log_path for log_path in filtered_logs if str(log_path) not in existing_logs]
+    
+    if not new_logs:
+        log(f"没有新的多线程日志文件，跳过处理")
+        if processed_key in caseData:
+            caseData[processed_key] = filtered_logs
+        return caseData, filtered_logs
+    
+    log(f"发现 {len(new_logs)} 个新的多线程日志文件")
+    
+    # 处理新日志
+    for log_path in new_logs:
+        log(f"处理多线程日志: {log_path}")
+        caseData = get_perf_data_from_log(caseData, log_path)
+    
+    # 更新已处理日志列表
+    caseData[processed_key] = filtered_logs
+    
+    end = time.time()
+    log(f"多线程数据获取完成，耗时: {end - start:.4f} 秒")
+    
+    return caseData, filtered_logs
+
+
+def get_combined_data(
+    json_path: str, 
+    single_original_path: str, 
+    multi_original_path: str = None
+) -> Dict:
+    """
+    获取合并后的数据（单线程 + 多线程）
+    
+    参数:
+        json_path: JSON数据文件路径
+        single_original_path: 单线程原始数据路径
+        multi_original_path: 多线程原始数据路径（可选）
+    
+    返回:
+        dict: 合并后的项目数据
+    """
+    # 获取单线程数据
+    single_data = get_elint_data(json_path, single_original_path)
+    
+    # 如果有多线程路径，获取多线程数据并合并
+    if multi_original_path and multi_original_path.strip():
+        multi_data, _ = get_multi_data(multi_original_path, single_data.copy())
+        
+        # 合并多线程数据到单线程数据
+        for casename, case_info in multi_data.items():
+            if casename == "__multi_processed_logs__":
+                continue
+            
+            if casename not in single_data:
+                single_data[casename] = case_info
+            else:
+                # 合并 daily_metrics
+                for date, metrics in case_info.get('daily_metrics', {}).items():
+                    if date not in single_data[casename]['daily_metrics']:
+                        single_data[casename]['daily_metrics'][date] = metrics
+                    else:
+                        for rule, rule_data in metrics.items():
+                            if rule not in single_data[casename]['daily_metrics'][date]:
+                                single_data[casename]['daily_metrics'][date][rule] = rule_data
+                
+                # 合并 available_dates
+                existing_dates = set(single_data[casename].get('available_dates', []))
+                new_dates = set(case_info.get('available_dates', []))
+                single_data[casename]['available_dates'] = sorted(existing_dates | new_dates)
+        
+        log(f"合并完成: 单线程 {len([k for k in single_data.keys() if k != '__multi_processed_logs__'])} 个项目，"
+            f"多线程新增 {len([k for k in multi_data.keys() if k != '__multi_processed_logs__' and k not in single_data])} 个项目")
+    save_json(json_path, single_data)
+
+
+    return single_data

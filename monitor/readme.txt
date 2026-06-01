@@ -432,4 +432,8 @@
 1. 当用户进入tool 页面时；根据工具页面设置的配置 获取对应线程下的数据
     单线程调用： get_elint_data; 参数：jsonDataFile：保存获取到的数据的文件路径；original_path单线程原始数据的路径
     多线程调用： get_multi_data；参数：path：多线程原始数据文件的路径。caseData：与单线程共用的数据
+
+    函数和页面对应关系：
+        时序曲线图：中的数据来自函数 get_elint_data 和 get_multi_data
+        多线程对比：中的数据来自函数 get_elint_data 和 get_multi_data
 2. 需要将 get_multi_data 加载项目中；使得多线程数据 也能及时跟新
