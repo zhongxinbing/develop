@@ -14,8 +14,6 @@ if (toolsConfig && toolsConfig.length > 0) {
         if (tool.has_single) modeCount++;
         if (tool.has_multi) modeCount++;
     });
-} else {
-    console.warn('没有找到工具配置');
 }
 
 // 更新统计显示

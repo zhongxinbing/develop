@@ -149,7 +149,6 @@ function getFormData() {
         name: toolName,
         description: document.getElementById('toolDesc').value.trim(),
         icon: toolIcon,
-        json_path: document.getElementById('jsonPath').value.trim(),
         mem: document.getElementById('memPath').value.trim(),
         cpu: document.getElementById('cpuPath').value.trim(),
         single_original_path: singleOriginalPath,
@@ -178,7 +177,6 @@ function getEditFormData() {
         name: toolName,
         description: document.getElementById('editToolDesc').value.trim(),
         icon: toolIcon,
-        json_path: document.getElementById('editJsonPath').value.trim(),
         mem: document.getElementById('editMemPath').value.trim(),
         cpu: document.getElementById('editCpuPath').value.trim(),
         single_original_path: singleOriginalPath,
@@ -224,7 +222,6 @@ function renderToolsGrid() {
                     </span>
                 </div>
                 <div style="font-size: 0.7rem; color: var(--text-muted);">
-                    <div>📁 JSON: ${tool.json_path || '未配置'}</div>
                     <div>📈 Single Original: ${tool.single_original_path || '未配置'}</div>
                     ${tool.multi_original_path ? `<div>🔄 Multi Original: ${tool.multi_original_path}</div>` : ''}
                 </div>
@@ -250,7 +247,6 @@ async function openEditModal(toolId) {
     document.getElementById('editToolDesc').value = tool.description || '';
     document.getElementById('editToolIcon').value = tool.icon || '🔧';
     
-    document.getElementById('editJsonPath').value = tool.json_path || '';
     document.getElementById('editMemPath').value = tool.mem || '';
     document.getElementById('editCpuPath').value = tool.cpu || '';
     document.getElementById('editSingleOriginalPath').value = tool.single_original_path || '';

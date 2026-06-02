@@ -177,8 +177,9 @@ def api_check_update():
        
         single_original_path = tool_config.get('single_original_path', '')
         multi_original_path = tool_config.get('multi_original_path', '')
+        # 使用运行时全局 json 路径，而非工具配置里的字段
         config = {
-            'json_path': tool_config.get('json_path', ''),
+            'json_path': global_state.json_path,
             'original_path': single_original_path,
             'multi_original_path': multi_original_path
         }

@@ -27,7 +27,7 @@ def api_get_tools():
                 'icon': tool_info.get('icon', '🔧'),
                 'has_single': bool(tool_info.get('single_original_path')),
                 'has_multi': bool(tool_info.get('multi_original_path')),
-                'json_path': tool_info.get('json_path', ''),
+                    # json_path 已移除，运行时使用全局路径
                 'mem': tool_info.get('mem', ''),
                 'cpu': tool_info.get('cpu', ''),
                 'single_original_path': tool_info.get('single_original_path', ''),
@@ -51,12 +51,12 @@ def api_tool_config(tool_id: str):
             config = get_tool_config(tool_id)
             return jsonify({
                 'success': True,
-                'tool': {
+                    'tool': {
                     'id': tool_id,
                     'name': config.get('name', tool_id),
                     'description': config.get('description', ''),
                     'icon': config.get('icon', '🔧'),
-                    'json_path': config.get('json_path', ''),
+                    # json_path 已从配置API中移除
                     'mem': config.get('mem', ''),
                     'cpu': config.get('cpu', ''),
                     'single_original_path': config.get('single_original_path', ''),
@@ -72,7 +72,7 @@ def api_tool_config(tool_id: str):
                 'name': data.get('name', tool_id),
                 'description': data.get('description', ''),
                 'icon': data.get('icon', '🔧'),
-                'json_path': data.get('json_path', ''),
+                # 前端不再传 json_path，运行时使用全局路径
                 'mem': data.get('mem', ''),
                 'cpu': data.get('cpu', ''),
                 'single_original_path': data.get('single_original_path', ''),

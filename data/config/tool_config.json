@@ -1,0 +1,13 @@
+{
+    "elint": {
+        "name": "Elint",
+        "description": "1",
+        "icon": "🔧",
+        "json_path": "",
+        "mem": "C:\\Users\\xbzhong\\Desktop\\lint\\script\\monitor\\develop\\monitor\\monitor2.1\\data\\lint_mem.csv",
+        "cpu": "",
+        "single_original_path": "C:\\Users\\xbzhong\\Desktop\\lint\\script\\monitor\\develop\\monitor\\test\\signal",
+        "multi_original_path": "C:\\Users\\xbzhong\\Desktop\\lint\\script\\monitor\\develop\\monitor\\test\\multi",
+        "last_updated": "2026-06-02 16:35:16"
+    }
+}

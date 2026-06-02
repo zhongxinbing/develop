@@ -22,8 +22,9 @@ CONFIG = {
 }
 
 # 路径配置
-TOOL_CONFIG_PATH = Path('./data/config/tool_config.json')
-DATA_DIR = Path('./data')
+BASE_DIR = Path(__file__).resolve().parent
+DATA_DIR = BASE_DIR / 'data'
+TOOL_CONFIG_PATH = DATA_DIR / 'config' / 'tool_config.json'
 COMPARE_CONFIG_FILE = DATA_DIR / 'compare.json'
 
 # 确保目录存在
