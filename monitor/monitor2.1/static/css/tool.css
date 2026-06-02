@@ -46,6 +46,7 @@ body {
 /* Flexbox 主布局 */
 .app-container {
     display: flex;
+    flex-wrap: wrap;
     min-height: 100vh;
 }
 
@@ -163,6 +164,8 @@ body {
 /* 主内容区域 - Flexbox 弹性布局 */
 .main-content {
     flex: 1;
+    width: calc(100% - 280px);
+    min-width: 0;
     margin-left: 280px;
     padding: 1.5rem;
     min-height: 100vh;
@@ -314,6 +317,8 @@ select:disabled, input:disabled {
 /* 图表容器 */
 .chart-container {
     width: 100%;
+    max-width: 100%;
+    min-height: 320px;
     height: 450px;
     border-radius: var(--radius-lg);
     background: rgba(15, 23, 42, 0.5);
@@ -685,6 +690,43 @@ select:disabled, input:disabled {
     
     .stats-grid {
         grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    }
+    .main-content {
+        width: calc(100% - 70px);
+        margin-left: 70px;
+    }
+}
+
+@media (max-width: 768px) {
+    .app-container {
+        flex-direction: column;
+    }
+    .sidebar {
+        position: relative;
+        width: 100%;
+    }
+    .sidebar-header h1 span:not(.tool-icon),
+    .nav-label,
+    .sidebar-footer {
+        display: none;
+    }
+    .main-content {
+        width: 100%;
+        margin-left: 0;
+        padding: 1rem;
+    }
+    .tools-grid,
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+    .chart-container {
+        height: 320px;
+    }
+    .chart-type-buttons {
+        flex-direction: column;
+    }
+    .chart-type-buttons .btn {
+        width: 100%;
     }
 }
 

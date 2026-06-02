@@ -9,6 +9,30 @@
 // ==================================================
 window.charts = {};
 
+function resizeAllCharts() {
+    if (window.charts) {
+        Object.values(window.charts).forEach(chart => {
+            if (chart && typeof chart.resize === 'function') {
+                chart.resize();
+            }
+        });
+    }
+    if (window.customCharts) {
+        Object.values(window.customCharts).forEach(chart => {
+            if (chart && typeof chart.resize === 'function') {
+                chart.resize();
+            }
+        });
+    }
+    if (typeof ChartManager !== 'undefined' && ChartManager.resizeAll) {
+        ChartManager.resizeAll();
+    }
+}
+
+window.addEventListener('resize', debounce(() => {
+    requestAnimationFrame(resizeAllCharts);
+}, 150));
+
 function showLoading(show) {
     const overlay = document.getElementById('loadingOverlay');
     if (overlay) {

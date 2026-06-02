@@ -52,6 +52,7 @@ body {
 
 .container {
     max-width: 1400px;
+    width: min(100%, 1400px);
     margin: 0 auto;
     padding: 2rem;
 }
@@ -119,7 +120,7 @@ body {
 /* 工具卡片网格 - CSS Grid 布局核心 */
 .tools-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: 1.5rem;
     margin-bottom: 3rem;
 }

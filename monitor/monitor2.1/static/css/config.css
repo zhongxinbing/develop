@@ -44,6 +44,7 @@ body {
 /* 应用容器 - Flexbox 布局 */
 .app-container {
     display: flex;
+    flex-wrap: wrap;
     min-height: 100vh;
 }
 
@@ -125,6 +126,8 @@ body {
 /* 主内容区域 */
 .main-content {
     flex: 1;
+    width: calc(100% - 280px);
+    min-width: 0;
     margin-left: 280px;
     padding: 1.5rem;
 }
@@ -204,7 +207,7 @@ body {
 /* 工具卡片网格 - Grid 布局 */
 .tools-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: 1.25rem;
 }
 
