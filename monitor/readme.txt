@@ -437,3 +437,8 @@
         时序曲线图：中的数据来自函数 get_elint_data 和 get_multi_data
         多线程对比：中的数据来自函数 get_elint_data 和 get_multi_data
 2. 需要将 get_multi_data 加载项目中；使得多线程数据 也能及时跟新
+
+
+
+1. get_elint_data 中txt的数量会很多、请帮我在功能不变的情况下优化提取速度
+2. get_multi_data 中log的数目会很多、请帮我在功能不变的情况下优化提取速度
