@@ -16,7 +16,9 @@ let customState = {
     casePaths: [],
     showUserData: true,
     defaultProjectsData: {},
-    isMixedMode: true
+    isMixedMode: true,
+    availableThreads: [],      // 可用的线程列表
+    selectedThreads: []        // 选中的线程
 };
 
 // 自定义图表实例
@@ -202,6 +204,24 @@ function getCurrentCustomToolData() {
     
     let toolData = projectData.rule_data[customState.currentRule];
     
+    // 提取可用线程
+    if (toolData && toolData.thread_metrics) {
+        const threadIds = Object.keys(toolData.thread_metrics);
+        customState.availableThreads = threadIds.sort((a, b) => parseInt(a) - parseInt(b));
+        
+        // 同步选中线程
+        if (customState.selectedThreads.length === 0) {
+            customState.selectedThreads = [...customState.availableThreads];
+        } else {
+            customState.selectedThreads = customState.selectedThreads.filter(
+                t => customState.availableThreads.includes(t)
+            );
+            if (customState.selectedThreads.length === 0 && customState.availableThreads.length > 0) {
+                customState.selectedThreads = [customState.availableThreads[0]];
+            }
+        }
+    }
+    
     if (!toolData.thread_metrics) {
         toolData.thread_metrics = {
             '0': {
@@ -210,6 +230,8 @@ function getCurrentCustomToolData() {
                 cores: toolData.cores || []
             }
         };
+        customState.availableThreads = ['0'];
+        customState.selectedThreads = ['0'];
     }
     
     customState.cachedToolData[customState.currentRule] = {
@@ -315,6 +337,8 @@ function updateCustomRuleSelect() {
         if (ruleSelect) {
             ruleSelect.innerHTML = '<option value="">-- 请选择阶段 --</option>';
         }
+        customState.availableThreads = [];
+        customState.selectedThreads = [];
         return;
     }
     
@@ -398,6 +422,10 @@ function updateCustomDateInfo() {
 }
 
 function openCustomDatePickerModal() {
+    if (!customState.availableDates || customState.availableDates.length === 0) {
+        showNotification('暂无可用日期', true);
+        return;
+    }
     customState.pendingSelectedDates = [...customState.selectedDates];
     buildCustomDatePicker(true);
     const modal = document.getElementById('customDatePickerModal');
@@ -645,6 +673,8 @@ async function confirmLoadCaseData() {
             
             customState.selectedDates = [];
             customState.pendingSelectedDates = [];
+            customState.availableThreads = [];
+            customState.selectedThreads = [];
             updateCustomCaseSelect();
             
             const customView = document.getElementById('customView');
@@ -693,6 +723,8 @@ async function toggleDataSource() {
     customState.cachedToolData = {};
     customState.selectedDates = [];
     customState.pendingSelectedDates = [];
+    customState.availableThreads = [];
+    customState.selectedThreads = [];
     updateCustomCaseSelect();
     
     if (customState.currentProjectId) {
@@ -868,15 +900,18 @@ function renderCustomChart(chartType, dataKey, yAxisName) {
     }
     
     const threadMetrics = toolData.thread_metrics || {};
-    if (!threadMetrics['0'] && filteredData.runtimes?.length) {
-        threadMetrics['0'] = {
-            runtimes: filteredData.runtimes,
-            memories: filteredData.memories,
-            cores: filteredData.cores
-        };
+    
+    // 使用选中的线程
+    const selectedThreadsSet = new Set(customState.selectedThreads);
+    const threadIds = Object.keys(threadMetrics)
+        .filter(tid => selectedThreadsSet.has(tid))
+        .sort((a, b) => parseInt(a) - parseInt(b));
+    
+    // 如果没有选中的线程，使用所有线程
+    if (threadIds.length === 0) {
+        threadIds.push(...Object.keys(threadMetrics).sort((a, b) => parseInt(a) - parseInt(b)));
     }
     
-    const threadIds = Object.keys(threadMetrics).sort((a, b) => parseInt(a) - parseInt(b));
     const seriesList = [];
     const allValues = [];
     const palette = ['#6366f1', '#f59e0b', '#10b981', '#ef4444', '#06b6d4', '#8b5cf6', '#ec4899', '#84cc16'];
@@ -931,9 +966,8 @@ function renderCustomChart(chartType, dataKey, yAxisName) {
     }
     
     const legendSelected = {};
-    threadIds.forEach(threadId => {
-        const seriesName = threadId === '0' ? '线程0' : `线程 ${threadId}`;
-        legendSelected[seriesName] = (threadId === '0');
+    seriesList.forEach((series, idx) => {
+        legendSelected[series.name] = (idx === 0);
     });
     legendSelected['平均值'] = true;
     legendSelected['参考线'] = true;
@@ -1246,6 +1280,8 @@ function handleCustomCaseChange(e) {
     customState.cachedToolData = {};
     customState.selectedDates = [];
     customState.pendingSelectedDates = [];
+    customState.availableThreads = [];
+    customState.selectedThreads = [];
     
     if (customState.currentProjectId) {
         console.log('切换到项目:', customState.currentProjectId);

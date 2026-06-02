@@ -10,7 +10,9 @@ const timelineState = {
     availableDates: [],
     currentChartType: 'runtime',
     cachedToolData: {},
-    mrUpdateDates: {}
+    mrUpdateDates: {},
+    availableThreads: [],      // 可用的线程列表
+    selectedThreads: []        // 选中的线程
 };
 
 let pendingSelectedDates = [];
@@ -34,12 +36,32 @@ function getCurrentTimelineToolData() {
     const projectData = getCurrentTimelineProjectData();
     if (!projectData?.rule_data?.[timelineState.currentRule]) return null;
     
+    // 获取规则数据并提取可用线程
+    const ruleData = projectData.rule_data[timelineState.currentRule];
+    if (ruleData && ruleData.thread_metrics) {
+        // 更新可用线程列表
+        const threadIds = Object.keys(ruleData.thread_metrics);
+        timelineState.availableThreads = threadIds.sort((a, b) => parseInt(a) - parseInt(b));
+        
+        // 同步选中线程（保留已选中的线程）
+        if (timelineState.selectedThreads.length === 0) {
+            timelineState.selectedThreads = [...timelineState.availableThreads];
+        } else {
+            timelineState.selectedThreads = timelineState.selectedThreads.filter(
+                t => timelineState.availableThreads.includes(t)
+            );
+            if (timelineState.selectedThreads.length === 0 && timelineState.availableThreads.length > 0) {
+                timelineState.selectedThreads = [timelineState.availableThreads[0]];
+            }
+        }
+    }
+    
     timelineState.cachedToolData[timelineState.currentRule] = {
         projectId: timelineState.currentProjectId,
-        data: projectData.rule_data[timelineState.currentRule]
+        data: ruleData
     };
     
-    return projectData.rule_data[timelineState.currentRule];
+    return ruleData;
 }
 
 function getFilteredTimelineData(toolData) {
@@ -112,6 +134,7 @@ function updateTimelineRuleSelect() {
         const ruleNameSpan = document.getElementById('currentRuleName');
         if (ruleNameSpan) ruleNameSpan.innerText = timelineState.currentRule;
         updateTimelineDateInfo();
+        updateTimelineThreadInfo();  // 更新线程信息
         refreshTimelineCharts();
     }
 }
@@ -122,12 +145,27 @@ function updateTimelineRuleSelect() {
 
 function updateTimelineDateInfo() {
     const projectData = getCurrentTimelineProjectData();
-    if (!projectData) return;
+    if (!projectData) {
+        timelineState.availableDates = [];
+        timelineState.selectedDates = [];
+        const dateRangeSpan = document.getElementById('dateRange');
+        if (dateRangeSpan) dateRangeSpan.innerText = '无';
+        const dataPointsSpan = document.getElementById('dataPoints');
+        if (dataPointsSpan) dataPointsSpan.innerText = '0';
+        return;
+    }
     
     timelineState.availableDates = projectData.available_dates || projectData.dates || [];
     
-    if (timelineState.selectedDates.length === 0) {
+    // 确保选中的日期在可用日期范围内
+    if (timelineState.selectedDates.length === 0 && timelineState.availableDates.length > 0) {
         timelineState.selectedDates = timelineState.availableDates.slice(-51);
+    } else {
+        const availableSet = new Set(timelineState.availableDates);
+        timelineState.selectedDates = timelineState.selectedDates.filter(date => availableSet.has(date));
+        if (timelineState.selectedDates.length === 0 && timelineState.availableDates.length > 0) {
+            timelineState.selectedDates = timelineState.availableDates.slice(-51);
+        }
     }
     
     const dateRangeSpan = document.getElementById('dateRange');
@@ -140,7 +178,33 @@ function updateTimelineDateInfo() {
     }
 }
 
+// ==================================================
+// 线程信息更新
+// ==================================================
+
+function updateTimelineThreadInfo() {
+    // 获取当前阶段的数据，这会自动更新 availableThreads
+    getCurrentTimelineToolData();
+    
+    // 可选：更新线程选择UI（如果需要）
+    const threadInfoSpan = document.getElementById('timelineThreadInfo');
+    if (threadInfoSpan) {
+        if (timelineState.availableThreads.length > 1) {
+            const selectedInfo = timelineState.selectedThreads.length === timelineState.availableThreads.length 
+                ? '全部' 
+                : timelineState.selectedThreads.length;
+            threadInfoSpan.innerHTML = `🧵 线程: ${selectedInfo}/${timelineState.availableThreads.length}`;
+        } else {
+            threadInfoSpan.innerHTML = '';
+        }
+    }
+}
+
 function openTimelineDatePickerModal() {
+    if (!timelineState.availableDates || timelineState.availableDates.length === 0) {
+        showNotification('暂无可用日期', true);
+        return;
+    }
     pendingSelectedDates = [...timelineState.selectedDates];
     buildDatePicker(true);
     const modal = document.getElementById('datePickerModal');
@@ -333,16 +397,12 @@ function renderTimelineChart(chartType, dataKey, yAxisName) {
     const dates = filteredData.dates;
     const threadMetrics = toolData.thread_metrics || {};
     
-    // 确保有默认线程数据
-    if (!threadMetrics['0'] && filteredData.runtimes?.length) {
-        threadMetrics['0'] = {
-            runtimes: filteredData.runtimes,
-            memories: filteredData.memories,
-            cores: filteredData.cores
-        };
-    }
+    // 使用选中的线程
+    const selectedThreadsSet = new Set(timelineState.selectedThreads);
+    const threadIds = Object.keys(threadMetrics)
+        .filter(tid => selectedThreadsSet.has(tid))
+        .sort((a, b) => parseInt(a) - parseInt(b));
     
-    const threadIds = Object.keys(threadMetrics).sort((a, b) => parseInt(a) - parseInt(b));
     const seriesList = [];
     const allValues = [];
     const palette = ['#6366f1', '#f59e0b', '#10b981', '#ef4444', '#06b6d4', '#8b5cf6', '#ec4899', '#84cc16'];
@@ -391,6 +451,35 @@ function renderTimelineChart(chartType, dataKey, yAxisName) {
         });
     });
     
+    // 如果没有选中的线程，使用默认线程0
+    if (seriesList.length === 0 && threadMetrics['0']) {
+        const threadInfo = threadMetrics['0'];
+        let values = threadInfo?.[dataKey] || [];
+        const originalDates = toolData.dates || [];
+        const seriesData = dates.map((selectedDate, idx) => {
+            const dateIndex = originalDates.indexOf(selectedDate);
+            let value = null;
+            if (dateIndex !== -1 && values[dateIndex] !== undefined) {
+                value = values[dateIndex];
+                if (value !== null && value !== undefined && value > 0) allValues.push(value);
+            }
+            return value;
+        });
+        
+        seriesList.push({
+            name: '线程0',
+            type: 'line',
+            data: seriesData,
+            smooth: false,
+            lineStyle: { width: 2, color: palette[0] },
+            areaStyle: { opacity: 0.08, color: palette[0] },
+            connectNulls: false,
+            showSymbol: true,
+            symbol: 'circle',
+            symbolSize: 6
+        });
+    }
+    
     // 更新统计卡片
     if (chartType === timelineState.currentChartType) {
         const unit = dataKey === 'runtimes' ? '秒' : 'MB';
@@ -410,7 +499,7 @@ function renderTimelineChart(chartType, dataKey, yAxisName) {
         referenceValue = sorted[mid];
     }
     
-    // 图例默认选中状态（默认只显示线程0）
+    // 图例默认选中状态（默认只显示线程0或第一个选中的线程）
     const legendSelected = {};
     seriesList.forEach((series, idx) => {
         legendSelected[series.name] = (idx === 0);
@@ -599,9 +688,12 @@ function bindTimelineEvents() {
             timelineState.currentRule = null;
             timelineState.cachedToolData = {};
             timelineState.selectedDates = [];
+            timelineState.selectedThreads = [];      // 重置线程选择
+            timelineState.availableThreads = [];     // 重置可用线程
             updateTimelineRuleSelect();
             updateTimelineProjectStats();
             updateTimelineDateInfo();
+            updateTimelineThreadInfo();
         });
     }
     
@@ -614,6 +706,7 @@ function bindTimelineEvents() {
                 if (ruleNameSpan) ruleNameSpan.innerText = timelineState.currentRule;
                 refreshTimelineCharts();
             }
+            updateTimelineThreadInfo();
         });
     }
     
@@ -665,4 +758,5 @@ window.refreshTimelineCharts = refreshTimelineCharts;
 window.selectTimelineChartType = selectTimelineChartType;
 window.updateTimelineProjectStats = updateTimelineProjectStats;
 window.updateTimelineDateInfo = updateTimelineDateInfo;
+window.updateTimelineThreadInfo = updateTimelineThreadInfo;
 window.pendingSelectedDates = pendingSelectedDates;

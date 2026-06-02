@@ -37,24 +37,49 @@ async function loadMultiThreadData(projectId, ruleName, date) {
         const result = await response.json();
         
         if (result.success && result.threads_data) {
+            // 更新可用线程列表
             multiState.availableThreads = result.threads_data.map(d => d.threads.toString()).sort((a, b) => parseInt(a) - parseInt(b));
             
-            if (multiState.selectedThreads.length === 0) {
-                multiState.selectedThreads = [...multiState.availableThreads];
-            } else {
-                multiState.selectedThreads = multiState.selectedThreads.filter(t => multiState.availableThreads.includes(t));
-                if (multiState.selectedThreads.length === 0) {
-                    multiState.selectedThreads = [...multiState.availableThreads];
-                }
-            }
+            // 默认显示所有线程
+            multiState.selectedThreads = [...multiState.availableThreads];
             
             multiState.currentData = result.threads_data;
             renderMultiThreadChart();
             updateMultiStats(multiState.currentData);
+        } else {
+            // 无数据时清空
+            multiState.availableThreads = [];
+            multiState.selectedThreads = [];
+            multiState.currentData = [];
+            const chart = multiState.currentChartType === 'runtime' 
+                ? ChartManager.get('chart-multi-runtime') 
+                : ChartManager.get('chart-multi-memory');
+            if (chart && !chart.isDisposed()) {
+                chart.clear();
+                chart.setOption({
+                    title: {
+                        show: true,
+                        text: '所选日期无数据',
+                        textStyle: { color: '#94a3b8' },
+                        left: 'center',
+                        top: 'center'
+                    }
+                }, true);
+            }
+            const statsContainer = document.getElementById('multiStats');
+            if (statsContainer) {
+                statsContainer.innerHTML = '<div class="stat-item"><div class="stat-value">-</div><div class="stat-label">暂无数据</div></div>';
+            }
+            const detailContainer = document.getElementById('multiStatsDetail');
+            if (detailContainer) {
+                detailContainer.innerHTML = '';
+            }
         }
     } catch (error) {
         console.error('加载多线程数据失败:', error);
         showNotification('加载多线程数据失败', true);
+        multiState.availableThreads = [];
+        multiState.selectedThreads = [];
     } finally {
         showLoading(false);
     }
@@ -66,24 +91,57 @@ async function loadMultiThreadData(projectId, ruleName, date) {
  * @param {string} ruleName - 阶段名称
  */
 async function loadMultiDates(projectId, ruleName) {
-    if (!ruleName) return;
+    if (!ruleName) {
+        multiState.availableDates = [];
+        multiState.currentDate = null;
+        const currentDateSpan = document.getElementById('multiCurrentDate');
+        if (currentDateSpan) currentDateSpan.innerText = '请先选择阶段';
+        return;
+    }
     
     try {
         const response = await fetch(`/api/project/${projectId}`);
         const data = await response.json();
         
+        // 获取指定阶段的可用日期
         const ruleData = data?.rule_data?.[ruleName];
         if (ruleData?.dates?.length) {
             multiState.availableDates = ruleData.dates;
+            // 默认选择最新日期
             multiState.currentDate = multiState.availableDates[multiState.availableDates.length - 1];
             
             const currentDateSpan = document.getElementById('multiCurrentDate');
             if (currentDateSpan) currentDateSpan.innerText = multiState.currentDate;
             
+            // 同时获取线程数据
             await loadMultiThreadData(projectId, ruleName, multiState.currentDate);
+        } else {
+            multiState.availableDates = [];
+            multiState.currentDate = null;
+            const currentDateSpan = document.getElementById('multiCurrentDate');
+            if (currentDateSpan) currentDateSpan.innerText = '无可用日期';
+            showNotification('所选阶段无可用数据', true);
+            
+            // 清空图表
+            const chart = multiState.currentChartType === 'runtime' 
+                ? ChartManager.get('chart-multi-runtime') 
+                : ChartManager.get('chart-multi-memory');
+            if (chart && !chart.isDisposed()) {
+                chart.clear();
+                chart.setOption({
+                    title: {
+                        show: true,
+                        text: '所选阶段无数据',
+                        textStyle: { color: '#94a3b8' },
+                        left: 'center',
+                        top: 'center'
+                    }
+                }, true);
+            }
         }
     } catch (error) {
         console.error('加载日期失败:', error);
+        multiState.availableDates = [];
     }
 }
 
@@ -101,12 +159,25 @@ async function loadMultiRules(projectId) {
             ruleSelect.innerHTML = '<option value="">-- 请选择阶段 --</option>' + 
                 data.rules.map(rule => `<option value="${rule}">${rule}</option>`).join('');
             
+            // 重置线程选择（默认显示所有线程）
+            multiState.selectedThreads = [];
+            multiState.availableThreads = [];
+            
             if (data.rules.length > 0 && !multiState.currentRule) {
                 const firstRule = data.rules[0];
                 ruleSelect.value = firstRule;
                 multiState.currentRule = firstRule;
                 await loadMultiDates(projectId, firstRule);
+            } else if (multiState.currentRule && data.rules.includes(multiState.currentRule)) {
+                ruleSelect.value = multiState.currentRule;
+                await loadMultiDates(projectId, multiState.currentRule);
             }
+        } else if (ruleSelect) {
+            ruleSelect.innerHTML = '<option value="">-- 请选择阶段 --</option>';
+            multiState.currentRule = null;
+            multiState.availableDates = [];
+            multiState.selectedThreads = [];
+            multiState.availableThreads = [];
         }
         
         // 搜索功能
@@ -140,11 +211,19 @@ async function loadMultiRules(projectId) {
                     
                     if (currentValue && filteredRules.includes(currentValue)) {
                         ruleSelect.value = currentValue;
-                        multiState.currentRule = currentValue;
-                        loadMultiDates(multiState.currentProjectId, currentValue);
+                        if (multiState.currentRule !== currentValue) {
+                            multiState.currentRule = currentValue;
+                            // 重置线程选择
+                            multiState.selectedThreads = [];
+                            multiState.availableThreads = [];
+                            loadMultiDates(multiState.currentProjectId, currentValue);
+                        }
                     } else if (filteredRules.length > 0 && !multiState.currentRule) {
                         ruleSelect.value = filteredRules[0];
                         multiState.currentRule = filteredRules[0];
+                        // 重置线程选择
+                        multiState.selectedThreads = [];
+                        multiState.availableThreads = [];
                         loadMultiDates(multiState.currentProjectId, multiState.currentRule);
                     }
                 }
@@ -181,11 +260,19 @@ let multiRuleSearchHandler = debounce(() => {
         
         if (currentValue && filteredRules.includes(currentValue)) {
             ruleSelect.value = currentValue;
-            multiState.currentRule = currentValue;
-            loadMultiDates(multiState.currentProjectId, currentValue);
+            if (multiState.currentRule !== currentValue) {
+                multiState.currentRule = currentValue;
+                // 重置线程选择
+                multiState.selectedThreads = [];
+                multiState.availableThreads = [];
+                loadMultiDates(multiState.currentProjectId, currentValue);
+            }
         } else if (filteredRules.length > 0 && !multiState.currentRule) {
             ruleSelect.value = filteredRules[0];
             multiState.currentRule = filteredRules[0];
+            // 重置线程选择
+            multiState.selectedThreads = [];
+            multiState.availableThreads = [];
             loadMultiDates(multiState.currentProjectId, multiState.currentRule);
         }
     }
@@ -198,11 +285,31 @@ let multiRuleSearchHandler = debounce(() => {
 /**
  * 渲染多线程图表（单日期对比线程性能）
  */
-// 在 multi-thread.js 中替换 renderMultiThreadChart 函数
 function renderMultiThreadChart() {
-    if (!multiState.currentData || multiState.currentData.length === 0) return;
+    if (!multiState.currentData || multiState.currentData.length === 0) {
+        const chart = multiState.currentChartType === 'runtime' 
+            ? ChartManager.get('chart-multi-runtime') 
+            : ChartManager.get('chart-multi-memory');
+        if (chart && !chart.isDisposed()) {
+            chart.setOption({
+                title: {
+                    show: true,
+                    text: '请先选择项目和阶段',
+                    textStyle: { color: '#94a3b8' },
+                    left: 'center',
+                    top: 'center'
+                },
+                series: []
+            }, true);
+        }
+        return;
+    }
     
-    const filteredData = multiState.currentData.filter(d => multiState.selectedThreads.includes(d.threads.toString()));
+    // 使用选中的线程，如果没选中任何线程则显示所有
+    let filteredData = multiState.currentData;
+    if (multiState.selectedThreads.length > 0) {
+        filteredData = multiState.currentData.filter(d => multiState.selectedThreads.includes(d.threads.toString()));
+    }
     
     if (filteredData.length === 0) {
         const chart = multiState.currentChartType === 'runtime' 
@@ -364,6 +471,18 @@ function updateMultiStats(threadsData) {
     const runtimes = threadsData.map(d => d.runtime).filter(v => v !== null && v !== undefined);
     const memories = threadsData.map(d => d.memory).filter(v => v !== null && v !== undefined);
     
+    if (runtimes.length === 0 && memories.length === 0) {
+        const statsContainer = document.getElementById('multiStats');
+        if (statsContainer) {
+            statsContainer.innerHTML = '<div class="stat-item"><div class="stat-value">-</div><div class="stat-label">暂无数据</div></div>';
+        }
+        const detailContainer = document.getElementById('multiStatsDetail');
+        if (detailContainer) {
+            detailContainer.innerHTML = '';
+        }
+        return;
+    }
+    
     const avgRuntime = runtimes.length ? (runtimes.reduce((a, b) => a + b, 0) / runtimes.length).toFixed(1) : '-';
     const avgMemory = memories.length ? (memories.reduce((a, b) => a + b, 0) / memories.length).toFixed(1) : '-';
     const maxRuntime = runtimes.length ? Math.max(...runtimes).toFixed(1) : '-';
@@ -394,7 +513,6 @@ function updateMultiStats(threadsData) {
 /**
  * 渲染多日期对比图表（趋势图）- 统一折线图样式
  */
-// 在 multi-thread.js 中替换 renderMultiThreadComparisonChart 函数
 function renderMultiThreadComparisonChart() {
     if (!multiState.currentData || multiState.currentData.length === 0) return;
     
@@ -409,7 +527,23 @@ function renderMultiThreadComparisonChart() {
     }
     
     const dates = multiState.currentData.map(d => d.date);
-    const selectedThreadIds = multiState.selectedThreads;
+    // 获取所有可用的线程ID
+    let allThreadIds = new Set();
+    multiState.currentData.forEach(dayData => {
+        dayData.threads_data.forEach(t => allThreadIds.add(t.threads.toString()));
+    });
+    const availableThreadIds = Array.from(allThreadIds).sort((a, b) => parseInt(a) - parseInt(b));
+    
+    // 更新全局可用线程列表
+    multiState.availableThreads = availableThreadIds;
+    
+    // 使用选中的线程，如果没选中任何线程则显示所有
+    let selectedThreadIds = multiState.selectedThreads;
+    if (selectedThreadIds.length === 0 && availableThreadIds.length > 0) {
+        selectedThreadIds = availableThreadIds;
+        multiState.selectedThreads = availableThreadIds;
+    }
+    
     const yAxisName = isRuntime ? 'Runtime (秒)' : 'Memory (MB)';
     const palette = ['#6366f1', '#f59e0b', '#10b981', '#ef4444', '#06b6d4', '#8b5cf6', '#ec4899', '#84cc16'];
     
@@ -449,7 +583,7 @@ function renderMultiThreadComparisonChart() {
         referenceValue = sorted[mid];
     }
     
-    // 图例默认选中状态（默认只显示第一个线程）
+    // 图例默认选中状态（默认只显示第一个线程，避免图例过多）
     const legendSelected = {};
     seriesList.forEach((series, idx) => {
         legendSelected[series.name] = (idx === 0);
@@ -567,7 +701,6 @@ async function selectLatestMultiDate() {
 /**
  * 更新多线程图表类型按钮状态
  */
-// 在 multi-thread.js 中替换 updateMultiChartTypeButtons 函数
 function updateMultiChartTypeButtons() {
     const runtimeBtn = document.getElementById('multiChartRuntimeBtn');
     const memoryBtn = document.getElementById('multiChartMemoryBtn');
@@ -641,10 +774,6 @@ function selectMultiChartType(type) {
 // 线程选择
 // ==================================================
 
-// ==================================================
-// 线程选择 - 与日期选择器风格一致
-// ==================================================
-
 /**
  * 打开线程选择模态框
  */
@@ -679,7 +808,6 @@ function buildThreadSelectorModal() {
         thread.toLowerCase().includes(filterText.toLowerCase())
     );
     
-    // 使用与 date-option 一致的 CSS 类名
     container.innerHTML = filteredThreads.map(threadId => {
         const isChecked = multiState.selectedThreads.includes(threadId);
         const displayName = threadId === '0' ? '线程0' : `线程 ${threadId}`;
@@ -691,7 +819,6 @@ function buildThreadSelectorModal() {
         `;
     }).join('');
     
-    // 方式1：监听 input 的 change 事件 - 更新选中样式
     container.querySelectorAll('.thread-option input').forEach(cb => {
         cb.addEventListener('change', (e) => {
             const label = e.target.closest('.thread-option');
@@ -702,16 +829,12 @@ function buildThreadSelectorModal() {
                     label.classList.remove('selected');
                 }
             }
-            // 阻止事件冒泡，避免与 label 的 click 事件重复触发
             e.stopPropagation();
         });
     });
     
-    // 方式2：监听整个 label 的 click 事件 - 切换 checkbox 状态
     container.querySelectorAll('.thread-option').forEach(label => {
-        // 移除旧的监听器避免重复
         label.removeEventListener('click', handleThreadOptionClick);
-        // 添加新的监听器
         label.addEventListener('click', handleThreadOptionClick);
     });
 }
@@ -719,10 +842,7 @@ function buildThreadSelectorModal() {
 /**
  * 线程选项点击处理函数
  */
-// 在 multi-thread.js 中，替换 handleThreadOptionClick 函数
-
 function handleThreadOptionClick(e) {
-    // 如果点击的是 input 元素本身，不重复处理
     if (e.target.tagName === 'INPUT') {
         return;
     }
@@ -730,14 +850,11 @@ function handleThreadOptionClick(e) {
     const label = e.currentTarget;
     const checkbox = label.querySelector('input');
     if (checkbox) {
-        // 浏览器会自动切换 checkbox.checked 状态，不需要手动切换
-        // 只需根据新状态更新 label 的样式类
         if (checkbox.checked) {
             label.classList.add('selected');
         } else {
             label.classList.remove('selected');
         }
-        // 触发 change 事件
         const changeEvent = new Event('change', { bubbles: true });
         checkbox.dispatchEvent(changeEvent);
     }
@@ -754,6 +871,11 @@ function updateSelectedThreadsFromModal() {
     modalContent.querySelectorAll('.thread-option input:checked').forEach(cb => {
         multiState.selectedThreads.push(cb.value);
     });
+    
+    if (multiState.selectedThreads.length === 0 && multiState.availableThreads.length > 0) {
+        multiState.selectedThreads = [...multiState.availableThreads];
+        showNotification('未选择任何线程，已自动全选');
+    }
 }
 
 /**
@@ -815,18 +937,13 @@ function inverseSelectThreadsInModal() {
  */
 function confirmThreadSelection() {
     updateSelectedThreadsFromModal();
-    if (multiState.selectedThreads.length === 0) {
-        multiState.selectedThreads = [...multiState.availableThreads];
-        showNotification('未选择任何线程，已自动全选');
-    }
-    // 刷新图表
     if (Array.isArray(multiState.currentData) && multiState.currentData[0]?.date) {
         renderMultiThreadComparisonChart();
     } else {
         renderMultiThreadChart();
     }
     closeThreadSelectorModal();
-}  closeThreadSelectorModal();
+}
 
 // ==================================================
 // 日期选择
@@ -956,9 +1073,8 @@ async function loadMultiThreadDataForMultipleDates(projectId, ruleName, dates) {
         });
         multiState.availableThreads = Array.from(allThreads).sort((a, b) => parseInt(a) - parseInt(b));
         
-        if (multiState.selectedThreads.length === 0) {
-            multiState.selectedThreads = [...multiState.availableThreads];
-        }
+        // 默认显示所有线程
+        multiState.selectedThreads = [...multiState.availableThreads];
         
         multiState.currentData = validResults;
         renderMultiThreadComparisonChart();
@@ -986,6 +1102,40 @@ function bindMultiThreadEvents() {
             multiState.currentRule = null;
             multiState.selectedThreads = [];
             multiState.availableThreads = [];
+            multiState.currentData = [];
+            multiState.availableDates = [];
+            multiState.currentDate = null;
+            
+            const currentDateSpan = document.getElementById('multiCurrentDate');
+            if (currentDateSpan) currentDateSpan.innerText = '请选择阶段';
+            
+            const chartRuntime = ChartManager.get('chart-multi-runtime');
+            const chartMemory = ChartManager.get('chart-multi-memory');
+            if (chartRuntime && !chartRuntime.isDisposed()) {
+                chartRuntime.clear();
+                chartRuntime.setOption({
+                    title: {
+                        show: true,
+                        text: '请选择项目和阶段',
+                        textStyle: { color: '#94a3b8' },
+                        left: 'center',
+                        top: 'center'
+                    }
+                }, true);
+            }
+            if (chartMemory && !chartMemory.isDisposed()) {
+                chartMemory.clear();
+                chartMemory.setOption({
+                    title: {
+                        show: true,
+                        text: '请选择项目和阶段',
+                        textStyle: { color: '#94a3b8' },
+                        left: 'center',
+                        top: 'center'
+                    }
+                }, true);
+            }
+            
             await loadMultiRules(multiState.currentProjectId);
         });
     }
@@ -994,8 +1144,11 @@ function bindMultiThreadEvents() {
     const multiRuleSelect = document.getElementById('multiRuleSelect');
     if (multiRuleSelect) {
         multiRuleSelect.addEventListener('change', async (e) => {
-            multiState.currentRule = e.target.value;
-            if (multiState.currentRule) {
+            const newRule = e.target.value;
+            if (newRule && newRule !== multiState.currentRule) {
+                multiState.currentRule = newRule;
+                multiState.selectedThreads = [];
+                multiState.availableThreads = [];
                 await loadMultiDates(multiState.currentProjectId, multiState.currentRule);
             }
         });

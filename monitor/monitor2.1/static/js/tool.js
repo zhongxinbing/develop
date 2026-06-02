@@ -575,7 +575,9 @@ async function init() {
         updateTimelineDateInfo();
         updateTimelineChartTypeButtons();
     }
-    
+    if (timelineState.currentProjectId && timelineState.currentRule) {
+        updateTimelineThreadInfo();
+    }
     // 初始化多线程
     const multiCaseSelect = document.getElementById('multiCaseSelect');
     if (multiCaseSelect && multiCaseSelect.options.length > 0) {
