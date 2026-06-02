@@ -340,11 +340,15 @@
                             <input type="text" id="customRuleSearch" placeholder="输入阶段名称..." class="search-input" disabled>
                         </div>
                         <div class="control-group">
-                            <label class="control-label">📅 日期范围</label>
-                            <div class="btn-group">
-                                <button class="btn btn-secondary" id="customOpenDatePickerBtn" disabled>📅 选择日期</button>
-                                <button class="btn btn-secondary" id="customSelectRecentBtn" disabled>📆 最近50天</button>
-                            </div>
+                            <label class="control-label">📊 X轴选择</label>
+                            <select id="customXAxisSelect" class="xaxis-select">
+                                <option value="date">📅 日期</option>
+                                <option value="thread">🧵 线程</option>
+                            </select>
+                        </div>
+                        <div class="control-group" id="customThreadSelectGroup" style="display: none;">
+                            <label class="control-label">🧵 选择线程</label>
+                            <div class="thread-selector-btn" id="customOpenThreadSelectorBtn">🎯 选择线程</div>
                         </div>
                     </div>
                 </div>
@@ -474,27 +478,48 @@
     </div>
     
     <!-- 线程选择模态框 -->
-    <!-- 线程选择模态框 - 统一风格 -->
-<div id="threadSelectorModal" class="modal hidden">
-    <div class="modal-content">
-        <h3 style="margin-bottom: 1rem;">🧵 选择线程</h3>
-        <div class="filter-bar" style="margin-bottom: 0.75rem;">
-            <input type="text" id="threadFilterInput" placeholder="筛选线程..." style="flex: 1;">
-            <div class="btn-group" style="flex-shrink: 0;">
-                <button class="btn btn-secondary" id="selectAllThreadsBtn" style="padding: 0.4rem 0.8rem;">☑️ 全选</button>
-                <button class="btn btn-secondary" id="deselectAllThreadsBtn" style="padding: 0.4rem 0.8rem;">⬜ 全不选</button>
-                <button class="btn btn-secondary" id="inverseThreadsBtn" style="padding: 0.4rem 0.8rem;">🔄 反选</button>
+    <div id="threadSelectorModal" class="modal hidden">
+        <div class="modal-content">
+            <h3 style="margin-bottom: 1rem;">🧵 选择线程</h3>
+            <div class="filter-bar" style="margin-bottom: 0.75rem;">
+                <input type="text" id="threadFilterInput" placeholder="筛选线程..." style="flex: 1;">
+                <div class="btn-group" style="flex-shrink: 0;">
+                    <button class="btn btn-secondary" id="selectAllThreadsBtn" style="padding: 0.4rem 0.8rem;">☑️ 全选</button>
+                    <button class="btn btn-secondary" id="deselectAllThreadsBtn" style="padding: 0.4rem 0.8rem;">⬜ 全不选</button>
+                    <button class="btn btn-secondary" id="inverseThreadsBtn" style="padding: 0.4rem 0.8rem;">🔄 反选</button>
+                </div>
+            </div>
+            <div id="threadSelectorModalContent" class="thread-options">
+                <!-- 线程选项会动态渲染 -->
+            </div>
+            <div class="btn-group" style="margin-top: 1rem; justify-content: flex-end; gap: 0.75rem;">
+                <button class="btn btn-secondary" id="closeThreadModalBtn">取消</button>
+                <button class="btn btn-primary" id="confirmThreadModalBtn">确认</button>
             </div>
         </div>
-        <div id="threadSelectorModalContent" class="thread-options">
-            <!-- 线程选项会动态渲染 -->
-        </div>
-        <div class="btn-group" style="margin-top: 1rem; justify-content: flex-end; gap: 0.75rem;">
-            <button class="btn btn-secondary" id="closeThreadModalBtn">取消</button>
-            <button class="btn btn-primary" id="confirmThreadModalBtn">确认</button>
+    </div>
+
+    <!-- 自定义曲线图线程选择模态框 -->
+    <div id="customThreadSelectorModal" class="modal hidden">
+        <div class="modal-content">
+            <h3 style="margin-bottom: 1rem;">🧵 选择线程（X轴模式为线程时生效）</h3>
+            <div class="filter-bar" style="margin-bottom: 0.75rem;">
+                <input type="text" id="customThreadFilterInput" placeholder="筛选线程..." style="flex: 1;">
+                <div class="btn-group" style="flex-shrink: 0;">
+                    <button class="btn btn-secondary" id="customSelectAllThreadsBtn" style="padding: 0.4rem 0.8rem;">☑️ 全选</button>
+                    <button class="btn btn-secondary" id="customDeselectAllThreadsBtn" style="padding: 0.4rem 0.8rem;">⬜ 全不选</button>
+                    <button class="btn btn-secondary" id="customInverseThreadsBtn" style="padding: 0.4rem 0.8rem;">🔄 反选</button>
+                </div>
+            </div>
+            <div id="customThreadSelectorModalContent" class="thread-options">
+                <!-- 线程选项会动态渲染 -->
+            </div>
+            <div class="btn-group" style="margin-top: 1rem; justify-content: flex-end; gap: 0.75rem;">
+                <button class="btn btn-secondary" id="customCloseThreadModalBtn">取消</button>
+                <button class="btn btn-primary" id="customConfirmThreadModalBtn">确认</button>
+            </div>
         </div>
     </div>
-</div>
 
     <!-- 加载遮罩 -->
     <div id="loadingOverlay" class="modal hidden" style="z-index: 10000;">

@@ -267,6 +267,17 @@ select:disabled, input:disabled {
     background: rgba(15, 23, 42, 0.4);
 }
 
+/* X轴选择器特殊样式 */
+.xaxis-select {
+    background: rgba(99, 102, 241, 0.1);
+    border-color: var(--primary);
+    cursor: pointer;
+}
+
+.xaxis-select:hover {
+    background: rgba(99, 102, 241, 0.2);
+}
+
 /* 按钮样式 */
 .btn {
     padding: 0.625rem 1.25rem;
@@ -421,8 +432,8 @@ select:disabled, input:disabled {
     cursor: pointer;
 }
 
-/* 线程选择区域
-.thread-checkbox-group {
+/* 线程选择器样式 - 与日期选择器保持一致 */
+.thread-options {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
     gap: 0.5rem;
@@ -431,30 +442,50 @@ select:disabled, input:disabled {
     overflow-y: auto;
 }
 
-.thread-checkbox {
+.thread-option {
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    padding: 0.5rem;
+    padding: 0.5rem 0.75rem;
     border-radius: var(--radius-md);
     cursor: pointer;
+    transition: var(--transition);
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid transparent;
 }
 
-.thread-checkbox:hover {
+.thread-option:hover {
     background: rgba(99, 102, 241, 0.1);
+    border-color: var(--primary);
 }
 
-.thread-checkbox.selected {
+.thread-option.selected {
     background: rgba(99, 102, 241, 0.15);
     border-left: 2px solid var(--primary);
+    border-color: var(--primary);
 }
 
-.thread-checkbox span {
-    white-space: nowrap;
-    display: inline;
-} */
+.thread-option input {
+    width: auto;
+    margin: 0;
+    cursor: pointer;
+    accent-color: var(--primary);
+}
 
-/* 线程选择按钮 */
+.thread-option span {
+    flex: 1;
+    font-size: 0.875rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+#threadSelectorModalContent,
+#customThreadSelectorModalContent {
+    max-height: 350px;
+    overflow-y: auto;
+}
+
 .thread-selector-btn {
     width: 100%;
     padding: 0.625rem 0.875rem;
@@ -546,7 +577,6 @@ select:disabled, input:disabled {
     margin: 0;
 }
 
-.filter-bar 
 /* 表格筛选栏 */
 .table-filter-bar {
     display: flex;
@@ -661,7 +691,7 @@ select:disabled, input:disabled {
     }
     
     .date-options,
-    .thread-checkbox-group {
+    .thread-options {
         grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
     }
     
@@ -728,78 +758,4 @@ select:disabled, input:disabled {
     .chart-type-buttons .btn {
         width: 100%;
     }
-}
-
-/* ==================================================
-   线程选择器样式 - 与日期选择器保持一致
-   ================================================== */
-
-.thread-options {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-    gap: 0.5rem;
-    margin: 1rem 0;
-    max-height: 300px;
-    overflow-y: auto;
-}
-
-.thread-option {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.5rem 0.75rem;
-    border-radius: var(--radius-md);
-    cursor: pointer;
-    transition: var(--transition);
-    background: rgba(15, 23, 42, 0.6);
-    border: 1px solid transparent;
-}
-
-.thread-option:hover {
-    background: rgba(99, 102, 241, 0.1);
-    border-color: var(--primary);
-}
-
-.thread-option.selected {
-    background: rgba(99, 102, 241, 0.15);
-    border-left: 2px solid var(--primary);
-    border-color: var(--primary);
-}
-
-.thread-option input {
-    width: auto;
-    margin: 0;
-    cursor: pointer;
-    accent-color: var(--primary);
-}
-
-.thread-option span {
-    flex: 1;
-    font-size: 0.875rem;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-#threadSelectorModalContent {
-    max-height: 350px;
-    overflow-y: auto;
-}
-
-.thread-selector-btn {
-    width: 100%;
-    padding: 0.625rem 0.875rem;
-    background: rgba(99, 102, 241, 0.15);
-    border: 1px solid var(--primary);
-    border-radius: var(--radius-md);
-    color: var(--primary-light);
-    font-size: 0.875rem;
-    cursor: pointer;
-    transition: var(--transition);
-    text-align: center;
-}
-
-.thread-selector-btn:hover {
-    background: var(--primary);
-    color: white;
 }
