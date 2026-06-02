@@ -62,7 +62,7 @@ if __name__ == '__main__':
     
     # 保存应用实例引用
     _app_instance = app
-    
+    log(f"服务器已启动，访问地址: http://{local_ip}:{CONFIG['port']}")
     app.run(
         host=CONFIG['host'],
         port=CONFIG['port'],

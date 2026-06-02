@@ -29,6 +29,7 @@ class GlobalState:
         self._data_versions: Dict = {}  # 项目数据版本缓存
         self._last_refresh_time: float = 0
         self._initialized = True
+        self.json_path = ""
     
     @property
     def parsed_projects(self) -> Dict:

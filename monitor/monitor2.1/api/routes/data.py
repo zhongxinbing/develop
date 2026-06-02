@@ -37,17 +37,14 @@ def api_refresh():
         
         tool_config = CASE_CONFIG.get(tool, {})
         
-        if mode == 'single':
-            original_path = tool_config.get('single_original_path', '')
-        else:
-            original_path = tool_config.get('multi_original_path', '')
         
-        json_path = tool_config.get('json_path', '')
+        json_path = global_state.json_path
+        single_original_path = tool_config.get('single_original_path', '')
         multi_original_path = tool_config.get('multi_original_path', '')
         
         config = {
             'json_path': json_path,
-            'original_path': original_path,
+            'original_path': single_original_path,
             'multi_original_path': multi_original_path,
             'mem': tool_config.get('mem', ''),
             'cpu': tool_config.get('cpu', '')
@@ -65,7 +62,7 @@ def api_refresh():
         # 如果全局状态已有数据且不是强制全量，则尝试使用增量解析
         if global_state.has_data() and not force_full:
             # 获取合并数据（单线程 + 多线程）
-            current_projects_data = get_combined_data(json_path, original_path, multi_original_path)
+            current_projects_data = get_combined_data(json_path, single_original_path, multi_original_path)
             
             # 使用增量解析刷新（基于缓存数据）
             parsed_projects, project_list = global_state.refresh_projects(current_projects_data, force_full=False)
@@ -88,7 +85,7 @@ def api_refresh():
         
         if not used_cache and current_projects_data is None:
             # 加载合并数据（单线程 + 多线程）
-            current_projects_data = get_combined_data(json_path, original_path, multi_original_path)
+            current_projects_data = get_combined_data(json_path, single_original_path, multi_original_path)
             
             # 使用增量解析（如果已有缓存数据）
             if global_state.has_data() and not force_full:
@@ -177,15 +174,13 @@ def api_check_update():
         CASE_CONFIG = load_tool_config()
         tool_config = CASE_CONFIG.get(tool, {})
         
-        if mode == 'single':
-            original_path = tool_config.get('single_original_path', '')
-        else:
-            original_path = tool_config.get('multi_original_path', '')
-        
+       
+        single_original_path = tool_config.get('single_original_path', '')
+        multi_original_path = tool_config.get('multi_original_path', '')
         config = {
             'json_path': tool_config.get('json_path', ''),
-            'original_path': original_path,
-            'multi_original_path': tool_config.get('multi_original_path', '')
+            'original_path': single_original_path,
+            'multi_original_path': multi_original_path
         }
         new_version = version_manager.get_data_signature(config)
         

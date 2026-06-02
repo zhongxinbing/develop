@@ -130,7 +130,10 @@ def get_elint_performance(original_path, jsonDataFile) -> Tuple[Dict, List[str]]
     caseData = {}
     caseData = get_date_from_txt_signal(dataFiles, caseData)
     caseData["dataFiles"] = sorted(dataFiles)
-    save_json(jsonDataFile, caseData)
+    if jsonDataFile:
+        save_json(jsonDataFile, caseData)
+    else:
+        log("未提供 JSON 保存路径，跳过保存 elint 数据")
 
     end = time.time()
     print(f"运行时间: {end - start:.4f} 秒")
@@ -197,30 +200,30 @@ def get_incremental_data(
 def get_elint_data(jsonDataFile, original_path) -> Dict:
     """
     获取 elint 数据，支持增量更新
-    
+
     参数:
         jsonDataFile: JSON数据文件路径（可以是字符串或Path对象）
         original_path: 原始数据文件路径
-    
+
     返回:
         dict: 项目数据
     """
     # 统一转换为 Path 对象
     jsonDataFile = Path(jsonDataFile) if isinstance(jsonDataFile, str) else jsonDataFile
     jsonPath = jsonDataFile.resolve() if jsonDataFile else None
-    
+
     # 获取当前所有的 txt 文件
     currentDataFiles = sorted(find(original_path, maxdepth=3, name_pattern=r"^\d{8}_[^/]+\.txt$", file_type="f"))
-    
+
     # 检查文件是否存在
     if jsonPath and jsonPath.exists():
         try:
             lastCaseData = load_json(jsonPath)
             lastDataFiles = lastCaseData.get("dataFiles", [])
-            
+
             # 计算新增的文件
             addDataFiles = list(set(currentDataFiles) - set(lastDataFiles))
-            
+
             if addDataFiles:
                 # 有新增文件，进行增量更新
                 newCaseData, merged_files = get_incremental_data(
@@ -233,42 +236,16 @@ def get_elint_data(jsonDataFile, original_path) -> Dict:
             log(f"读取JSON文件失败: {e}，将重新获取")
             newCaseData, _ = get_elint_performance(original_path, jsonPath)
     else:
-        # JSON文件不存在，全量获取
-        log("JSON文件不存在，将创建新文件")
+        if jsonPath:
+            log("JSON文件不存在，将创建新文件")
+        else:
+            log("JSON路径未配置，将直接从原始数据读取，不保存JSON")
         newCaseData, _ = get_elint_performance(original_path, jsonPath)
-    
-    # 移除临时字段
+
     if "dataFiles" in newCaseData:
         del newCaseData["dataFiles"]
 
     return newCaseData
-
-
-def git_pull():
-    """
-    执行git pull拉取最新数据（已注释，暂不使用）
-    """
-    try:
-        result = subprocess.run(
-            ['git', 'pull', 'origin', 'develop'],
-            cwd='./data/rd_perf',
-            capture_output=True,
-            text=True,
-            check=False
-        )
-        
-        if result.returncode == 0:
-            print("✅ 拉取成功")
-            print(result.stdout)
-        else:
-            print("❌ 拉取失败")
-            print(result.stderr)
-            
-        return result
-        
-    except Exception as e:
-        print(f"执行异常: {e}")
-        return None
 
 
 def read_csv(path):
@@ -465,17 +442,23 @@ def get_perf_data_from_log(caseData, log_path):
         casename = "unknown"
     
     # 提取日期 - 多种格式支持
-    date_match = re.findall(r'/(\d{8})/', path_str) or re.findall(r'/(\d{4}-\d{2}-\d{2}).*/', path_str)
-    print(f"解析日志路径: {path_str}, 提取 casename: {casename}, 日期匹配结果: {date_match}")
+    date_match = re.search(r'(\d{8})|(\d{4}-\d{2}-\d{2})', path_str)
+    print(f"解析日志文件: {log_path}, 提取 casename: {casename}, date_match: {date_match.group(0) if date_match else '未找到日期'}")
     if date_match:
-        date_str = date_match[0]
+        date_str = date_match.group(1) or date_match.group(2)
         if '-' in date_str:
             date = datetime.strptime(date_str, "%Y-%m-%d").strftime("%Y%m%d")
         else:
             date = date_str
     else:
-        date = datetime.now().strftime("%Y%m%d")
-    
+        try:
+            mtime = Path(log_path).stat().st_mtime
+            date = datetime.fromtimestamp(mtime).strftime("%Y%m%d")
+            log(f"未从日志路径提取到日期，使用文件修改时间作为日期: {date}")
+        except Exception:
+            date = datetime.now().strftime("%Y%m%d")
+            log(f"未从日志路径提取到日期，使用当前日期作为日期: {date}")
+    print(f"最终解析结果 - casename: {casename}, date: {date}")
     with open(log_path, "r", errors='ignore') as f:
         content = f.read()
         rulePerf = re.findall(r' ([^\s]+) done: CpuTime\(([0-9.,]+)s\); RealTime\(([0-9.,]+)s\); PeakMem\(([0-9.,]+)M\); IncMem\(([0-9.,]+)M\)', content)
@@ -603,7 +586,10 @@ def get_combined_data(
         
         log(f"合并完成: 单线程 {len([k for k in single_data.keys() if k != '__multi_processed_logs__'])} 个项目，"
             f"多线程新增 {len([k for k in multi_data.keys() if k != '__multi_processed_logs__' and k not in single_data])} 个项目")
-    save_json(json_path, single_data)
-
+    
+    if json_path:
+        save_json(json_path, single_data)
+    else:
+        log("未提供 JSON 保存路径，跳过保存合并数据")
 
     return single_data

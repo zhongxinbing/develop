@@ -3,7 +3,6 @@
         "name": "Elint",
         "description": "静态功能检查",
         "icon": "🔧",
-        "json_path": "./data/elint.json",
         "mem": "./data/lint_mem.csv",
         "cpu": "./data/lint_cpu.csv",
         "single_original_path": "C:\\Users\\xbzhong\\Desktop\\lint\\script\\monitor\\develop\\monitor\\test/signal",

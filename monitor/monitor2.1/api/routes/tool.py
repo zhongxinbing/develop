@@ -5,7 +5,7 @@ from flask import Blueprint, render_template, request
 from datetime import datetime
 from typing import Dict
 import time
-
+from pathlib import Path
 from api.utils import log
 from api.services.tool_config import get_tool_config
 from api.services.global_state import global_state
@@ -35,8 +35,14 @@ def tool_page(tool_id: str):
         return "工具不存在", 404
     
     tool_info = CASE_CONFIG[tool_id]
-    
-    json_path = tool_info.get('json_path', '')
+    log(f"加载工具页面: {tool_id} - {tool_info.get('name', '未知工具')}")
+    # json_path = tool_info.get('json_path', '')
+
+    Path("./data").resolve().joinpath(tool_id).mkdir(parents=True, exist_ok=True)
+    global_state.json_path = str(Path("./data").resolve().joinpath(tool_id).joinpath("data.json"))
+
+    log(f"工具数据路径: {global_state.json_path}")
+
     mem_path = tool_info.get('mem', '')
     cpu_path = tool_info.get('cpu', '')
     single_original_path = tool_info.get('single_original_path', '')
@@ -51,6 +57,7 @@ def tool_page(tool_id: str):
     used_cache = False
     
     if cached and (datetime.now().timestamp() - cached.get('timestamp', 0) < CONFIG['cache_ttl']):
+        log("缓存数据有效，正在使用缓存")
         _current_projects_data = cached.get('projects_data', {})
         parsed_projects = cached.get('parsed_projects', {})
         project_list = cached.get('project_list', [])
@@ -62,9 +69,12 @@ def tool_page(tool_id: str):
             used_cache = True
             log("使用缓存数据")
     
+    log(f"缓存使用状态: {'使用缓存' if used_cache else '未使用缓存'}")
+
     if not used_cache:
+        log("缓存无效或不存在，正在重新加载数据")
         # 获取合并数据（单线程 + 多线程）
-        projects_data = get_combined_data(json_path, single_original_path, multi_original_path)
+        projects_data = get_combined_data(global_state.json_path, single_original_path, multi_original_path)
         _current_projects_data = projects_data.copy()
         parsed_projects, project_list = refresh_parsed_projects(_current_projects_data)
         
@@ -114,7 +124,7 @@ def tool_page(tool_id: str):
         perf=perf,
         single_original_path=single_original_path,
         multi_original_path=multi_original_path,
-        json_path=json_path,
+        json_path=global_state.json_path,
         mem_path=mem_path,
         cpu_path=cpu_path
     )
