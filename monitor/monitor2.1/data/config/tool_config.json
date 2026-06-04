@@ -3,10 +3,11 @@
         "name": "Elint",
         "description": "静态功能检查",
         "icon": "🔧",
+        "json_path": "",
         "mem": "./data/lint_mem.csv",
         "cpu": "./data/lint_cpu.csv",
         "single_original_path": "../test/signal",
         "multi_original_path": "../test/multi",
-        "last_updated": "2026-06-01 21:16:38"
+        "last_updated": "2026-06-04 10:16:27"
     }
 }

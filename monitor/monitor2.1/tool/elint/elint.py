@@ -10,7 +10,7 @@ import csv
 
 from tool.elint.find import *
 from pathlib import Path
-from datetime import datetime
+from datetime import datetime, timedelta
 import subprocess
 from typing import Dict, List, Any, Optional, Tuple
 
@@ -23,7 +23,7 @@ def save_json(json_path, data):
         json_path: JSON文件路径
         data: 要保存的数据
     """
-    log("保存新的 json 文件中...")
+    log(f"正在保存数据到 JSON 文件: {json_path}")
     with open(json_path, 'w', encoding='utf-8') as f:
         json.dump(data, f, ensure_ascii=False, indent=4)
 
@@ -75,7 +75,7 @@ def gen_dict_data(caseData, data, thread):
                 thread: {
                     "runtime": cputime,
                     "memory": peakmem,
-                    "cores": thread
+                    # "cores": thread
                 }
             }
         }
@@ -242,8 +242,8 @@ def get_elint_data(jsonDataFile, original_path) -> Dict:
             log("JSON路径未配置，将直接从原始数据读取，不保存JSON")
         newCaseData, _ = get_elint_performance(original_path, jsonPath)
 
-    if "dataFiles" in newCaseData:
-        del newCaseData["dataFiles"]
+    # if "dataFiles" in newCaseData:
+    #     del newCaseData["dataFiles"]
 
     return newCaseData
 
@@ -291,7 +291,7 @@ def get_perf(mem, cpu):
         }
         return perf
     except Exception as e:
-        print(f"执行异常: {e}")
+        log(f"执行异常: {e}")
         return {
             "mem": {},
             "cpu": {}
@@ -387,26 +387,33 @@ def get_data_json(rule_data, data, thread):
     返回:
         dict: 更新后的 rule_data
     """
+    print(data,thread)
     for item in data:
+        if len(item) == 0:
+            continue
+        command = ["read_design", "check_lint", "Overall", "save_json"]
         rule = item[0]
         cpu = float(item[1].replace(',', ''))
         real = float(item[2].replace(',', ''))
         peak = float(item[3].replace(',', ''))
-        inc = float(item[4].replace(',', ''))
-        
+
+        if rule in command:
+            inc = peak
+        else:
+            inc = float(item[4].replace(',', ''))
+
         if rule == "sched(local)]":
             continue
         
         if re.fullmatch(r'^\[.*', rule):
             rule = re.findall(r'\[.*\]\[(.*)\]', rule)[0]
-        
         if rule not in rule_data:
             rule_data[rule] = {
                 "thread_metrics": {
                     thread: {
                         "runtime": cpu,
                         "memory": peak,
-                        "cores": thread
+                        # "cores": thread
                     }
                 }
             }
@@ -414,8 +421,9 @@ def get_data_json(rule_data, data, thread):
             rule_data[rule]["thread_metrics"][thread] = {
                 "runtime": cpu,
                 "memory": peak,
-                "cores": thread
+                # "cores": thread
             }
+
     return rule_data
 
 
@@ -443,7 +451,6 @@ def get_perf_data_from_log(caseData, log_path):
     
     # 提取日期 - 多种格式支持
     date_match = re.search(r'(\d{8})|(\d{4}-\d{2}-\d{2})', path_str)
-    print(f"解析日志文件: {log_path}, 提取 casename: {casename}, date_match: {date_match.group(0) if date_match else '未找到日期'}")
     if date_match:
         date_str = date_match.group(1) or date_match.group(2)
         if '-' in date_str:
@@ -458,17 +465,18 @@ def get_perf_data_from_log(caseData, log_path):
         except Exception:
             date = datetime.now().strftime("%Y%m%d")
             log(f"未从日志路径提取到日期，使用当前日期作为日期: {date}")
-    print(f"最终解析结果 - casename: {casename}, date: {date}")
+
     with open(log_path, "r", errors='ignore') as f:
         content = f.read()
         rulePerf = re.findall(r' ([^\s]+) done: CpuTime\(([0-9.,]+)s\); RealTime\(([0-9.,]+)s\); PeakMem\(([0-9.,]+)M\); IncMem\(([0-9.,]+)M\)', content)
+        rulePerf = rulePerf + get_runtime(content)
     
     thread = re.findall(r'Current Threads : (\d+)', content)
     if len(thread) == 0:
-        thread = -1
+        thread = re.findall(r'thread_(\d+)', log_path)[0]
     else:
         thread = int(thread[0])
-    
+
     if casename not in caseData:
         caseData[casename] = {
             "casename": casename,
@@ -486,6 +494,7 @@ def get_perf_data_from_log(caseData, log_path):
     caseData[casename]["daily_metrics"][date] = get_data_json(
         caseData[casename]["daily_metrics"][date], rulePerf, thread
     )
+
     return caseData
 
 
@@ -529,7 +538,7 @@ def get_multi_data(path: str, caseData: Dict = None) -> Tuple[Dict, List[str]]:
     for log_path in new_logs:
         log(f"处理多线程日志: {log_path}")
         caseData = get_perf_data_from_log(caseData, log_path)
-    
+
     # 更新已处理日志列表
     caseData[processed_key] = filtered_logs
     
@@ -560,14 +569,15 @@ def get_combined_data(
     
     # 如果有多线程路径，获取多线程数据并合并
     if multi_original_path and multi_original_path.strip():
-        multi_data, _ = get_multi_data(multi_original_path, single_data.copy())
+        multi_data, multiLogs = get_multi_data(multi_original_path, single_data.copy())
         
         # 合并多线程数据到单线程数据
         for casename, case_info in multi_data.items():
-            if casename == "__multi_processed_logs__":
+            if casename == "__multi_processed_logs__" or casename == "dataFiles":
                 continue
-            
+
             if casename not in single_data:
+                log(f"项目 {casename} 仅存在于多线程数据中，直接添加")
                 single_data[casename] = case_info
             else:
                 # 合并 daily_metrics
@@ -578,12 +588,27 @@ def get_combined_data(
                         for rule, rule_data in metrics.items():
                             if rule not in single_data[casename]['daily_metrics'][date]:
                                 single_data[casename]['daily_metrics'][date][rule] = rule_data
+                            else:
+                                # 合并同一规则的不同线程数据
+                                existing_thread_data = single_data[casename]['daily_metrics'][date][rule].get('thread_metrics', {})
+                                new_thread_data = rule_data.get('thread_metrics', {})
+                                for thread, perf in new_thread_data.items():
+                                    if thread not in existing_thread_data:
+                                        existing_thread_data[thread] = perf
+                                    else:
+                                        # 如果线程已存在，比较性能数据，保留更高的内存和更长的时间
+                                        existing_perf = existing_thread_data[thread]
+                                        existing_perf['runtime'] = max(existing_perf['runtime'], perf['runtime'])
+                                        existing_perf['memory'] = max(existing_perf['memory'], perf['memory'])
+                                        # existing_perf['cores'] = max(existing_perf.get('cores', 0), perf.get('cores', 0))
+                                single_data[casename]['daily_metrics'][date][rule]['thread_metrics'] = existing_thread_data
                 
                 # 合并 available_dates
                 existing_dates = set(single_data[casename].get('available_dates', []))
                 new_dates = set(case_info.get('available_dates', []))
                 single_data[casename]['available_dates'] = sorted(existing_dates | new_dates)
-        
+        log(type(multi_data))
+        single_data["__multi_processed_logs__"] = multiLogs
         log(f"合并完成: 单线程 {len([k for k in single_data.keys() if k != '__multi_processed_logs__'])} 个项目，"
             f"多线程新增 {len([k for k in multi_data.keys() if k != '__multi_processed_logs__' and k not in single_data])} 个项目")
     
@@ -592,4 +617,41 @@ def get_combined_data(
     else:
         log("未提供 JSON 保存路径，跳过保存合并数据")
 
+    if "dataFiles" in single_data :
+        del single_data["dataFiles"]  # 移除单线程数据文件列表
+    if "__multi_processed_logs__" in single_data:
+        del single_data["__multi_processed_logs__"]  # 移除多线程处理日志列表
+
     return single_data
+
+
+def time_to_seconds(time_str):
+    """将时间字符串转换为秒数"""
+    hours = mins = secs = 0
+    
+    hour_match = re.search(r'(\d+(?:\.\d+)?)\s*hours?', time_str, re.IGNORECASE)
+    if hour_match:
+        hours = float(hour_match.group(1))
+    
+    min_match = re.search(r'(\d+(?:\.\d+)?)\s*mins?', time_str, re.IGNORECASE)
+    if min_match:
+        mins = float(min_match.group(1))
+    
+    sec_match = re.search(r'(\d+(?:\.\d+)?)\s*secs?', time_str, re.IGNORECASE)
+    if sec_match:
+        secs = float(sec_match.group(1))
+    
+    return timedelta(hours=hours, minutes=mins, seconds=secs).total_seconds()
+
+
+
+def get_runtime (content):
+    overall = re.findall(r'(Overall|read_design|check_lint|save_session)\s+\|\s([^|]+)\s\|\s([^|]+)\s\|\s([^|]+)\s\|', content)
+    new = []
+    for command in overall:
+        name = command[0]
+        elapse = time_to_seconds(command[1])
+        cpu = time_to_seconds(command[2])
+        peak = command[3].strip()
+        new = new + [(name, f"{cpu}", f"{elapse}", f"{peak}", "null")]
+    return new
