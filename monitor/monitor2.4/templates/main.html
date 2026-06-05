@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EDA QOR 性能监控</title>
+  <link rel="stylesheet" href="/static/css/base.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">EDA QOR 性能监控</div>
+    <div class="top-actions">
+      <a class="button secondary" href="/config">工具配置</a>
+      <div class="tool-summary" id="tool-summary">
+        已配置工具: <span id="tool-count">0</span>
+        <div class="tool-tooltip" id="tool-tooltip">
+          <div class="tooltip-heading">已配置工具列表</div>
+          <div id="tooltip-list"></div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="page-content">
+    <section class="card-panel">
+      <h2>已配置工具</h2>
+      <div class="tool-grid" id="tool-grid"></div>
+      <div class="empty-state" id="empty-state" hidden>
+        当前还没有配置工具，点击“工具配置”添加新工具。
+      </div>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.2/dist/echarts.min.js"></script>
+  <script src="/static/js/main.js"></script>
+</body>
+</html>

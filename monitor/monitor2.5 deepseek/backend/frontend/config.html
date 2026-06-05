@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>工具配置 - EDA QOR监控系统</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/config.css">
+</head>
+<body>
+    <div class="config-container">
+        <header class="config-header">
+            <button class="btn btn-back" onclick="window.location.href='index.html'">← 返回</button>
+            <h1>工具配置</h1>
+            <button id="addToolBtn" class="btn btn-primary">+ 添加工具</button>
+        </header>
+        
+        <main class="config-content">
+            <div id="toolsList" class="tools-list">
+                <!-- 工具列表将动态生成 -->
+            </div>
+        </main>
+    </div>
+    
+    <!-- 添加/编辑工具的模态框 -->
+    <div id="toolModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">添加工具</h2>
+                <span class="close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="toolForm">
+                    <div class="form-group">
+                        <label>工具名称 *</label>
+                        <input type="text" id="toolName" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>工具描述</label>
+                        <textarea id="toolDescription" rows="3"></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>单线程数据路径</label>
+                        <input type="text" id="singleThreadPath">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>多线程数据路径 (可选)</label>
+                        <input type="text" id="multiThreadPath">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>额外显示 (可选, 可多选)</label>
+                        <div class="checkbox-group" id="extraDisplay">
+                            <label><input type="checkbox" value="cpu"> CPU使用率</label>
+                            <label><input type="checkbox" value="io"> IO等待</label>
+                            <label><input type="checkbox" value="network"> 网络延迟</label>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>单线程数据获取接口函数</label>
+                        <textarea id="singleThreadFunc" rows="5" placeholder="function() { return { ... }; }"></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>多线程数据获取接口函数</label>
+                        <textarea id="multiThreadFunc" rows="5" placeholder="function(threadNum) { return { ... }; }"></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>自定义曲线获取接口函数</label>
+                        <textarea id="customFunc" rows="5" placeholder="function() { return { ... }; }"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn" onclick="closeModal()">取消</button>
+                <button class="btn btn-primary" onclick="saveTool()">保存</button>
+            </div>
+        </div>
+    </div>
+    
+    <script src="js/config.js"></script>
+</body>
+</html>

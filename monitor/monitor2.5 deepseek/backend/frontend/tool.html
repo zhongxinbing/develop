@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>工具页面 - EDA QOR监控系统</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/tool.css">
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+</head>
+<body>
+    <div class="tool-container">
+        <header class="tool-header">
+            <button class="btn btn-back" onclick="window.location.href='index.html'">← 返回</button>
+            <h1 id="toolName"></h1>
+            <div class="tool-info" id="toolDescription"></div>
+        </header>
+        
+        <div class="tool-tabs">
+            <button class="tab-btn active" data-view="single">单线程视图</button>
+            <button class="tab-btn" data-view="multi">多线程视图</button>
+            <button class="tab-btn" data-view="compare">数据对比视图</button>
+        </div>
+        
+        <div class="tool-content">
+            <!-- 单线程视图 -->
+            <div id="singleView" class="view-container active">
+                <div class="view-controls">
+                    <select id="singleCasename" class="control-select">
+                        <option value="">请选择Case</option>
+                    </select>
+                    <select id="singleRule" class="control-select">
+                        <option value="">请选择Rule</option>
+                    </select>
+                    <input type="text" id="singleRuleSearch" placeholder="搜索Rule..." class="control-input">
+                    <button id="singleDateBtn" class="btn btn-secondary">📅 选择日期</button>
+                    <button id="singleLatest50Btn" class="btn btn-secondary">最新50天</button>
+                    <button id="singleAddDataBtn" class="btn btn-success">+ 添加数据</button>
+                </div>
+                
+                <div class="chart-subviews">
+                    <div class="subview">
+                        <div class="subview-header">
+                            <h3>Runtime曲线图</h3>
+                        </div>
+                        <div id="singleRuntimeChart" class="chart-container"></div>
+                        <div id="singleRuntimeStats" class="stats-container"></div>
+                    </div>
+                    
+                    <div class="subview">
+                        <div class="subview-header">
+                            <h3>Memory曲线图</h3>
+                        </div>
+                        <div id="singleMemoryChart" class="chart-container"></div>
+                        <div id="singleMemoryStats" class="stats-container"></div>
+                    </div>
+                </div>
+                
+                <div class="project-overview">
+                    <h4>项目概况</h4>
+                    <div class="overview-stats" id="singleOverview"></div>
+                </div>
+            </div>
+            
+            <!-- 多线程视图 -->
+            <div id="multiView" class="view-container">
+                <div class="view-controls">
+                    <select id="multiCasename" class="control-select">
+                        <option value="">请选择Case</option>
+                    </select>
+                    <select id="multiThreadNum" class="control-select">
+                        <option value="">请选择线程数</option>
+                    </select>
+                    <select id="multiRule" class="control-select">
+                        <option value="">请选择Rule</option>
+                    </select>
+                    <input type="text" id="multiRuleSearch" placeholder="搜索Rule..." class="control-input">
+                    <button id="multiDateBtn" class="btn btn-secondary">📅 选择日期</button>
+                    <button id="multiLatest50Btn" class="btn btn-secondary">最新50天</button>
+                    <button id="multiAddDataBtn" class="btn btn-success">+ 添加数据</button>
+                </div>
+                
+                <div class="chart-subviews">
+                    <div class="subview">
+                        <h3>Runtime曲线图</h3>
+                        <div id="multiRuntimeChart" class="chart-container"></div>
+                        <div id="multiRuntimeStats" class="stats-container"></div>
+                    </div>
+                    
+                    <div class="subview">
+                        <h3>Memory曲线图</h3>
+                        <div id="multiMemoryChart" class="chart-container"></div>
+                        <div id="multiMemoryStats" class="stats-container"></div>
+                    </div>
+                </div>
+                
+                <div class="thread-curves">
+                    <h3>线程曲线图</h3>
+                    <div id="threadCurvesChart" class="chart-container-large"></div>
+                </div>
+                
+                <div class="project-overview">
+                    <h4>项目概况</h4>
+                    <div class="overview-stats" id="multiOverview"></div>
+                </div>
+            </div>
+            
+            <!-- 数据对比视图 -->
+            <div id="compareView" class="view-container">
+                <div class="compare-controls">
+                    <select id="compareCasename" class="control-select">
+                        <option value="">请选择Case</option>
+                    </select>
+                    <select id="compareMode" class="control-select">
+                        <option value="all">对比全部Rule</option>
+                    </select>
+                    <input type="text" id="compareRuleSearch" placeholder="搜索Rule..." class="control-input">
+                    <select id="date1" class="control-select">
+                        <option value="">选择日期1</option>
+                    </select>
+                    <select id="date2" class="control-select">
+                        <option value="">选择日期2</option>
+                    </select>
+                    <select id="errorMode" class="control-select">
+                        <option value="absolute">绝对值</option>
+                        <option value="percentage">百分比</option>
+                    </select>
+                    <select id="compareDimension" class="control-select">
+                        <option value="all">全部</option>
+                        <option value="runtime">Runtime</option>
+                        <option value="memory">Memory</option>
+                    </select>
+                    <input type="number" id="runtimeRange" placeholder="Runtime误差范围" class="control-input">
+                    <input type="number" id="memoryRange" placeholder="Memory误差范围" class="control-input">
+                    <button id="confirmCompare" class="btn btn-primary">确认对比</button>
+                    <button id="exportCompare" class="btn btn-secondary">导出对比结果</button>
+                </div>
+                
+                <div id="compareResults" class="compare-results">
+                    <!-- 对比结果将动态生成 -->
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 日期选择模态框 -->
+    <div id="dateModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>选择日期</h2>
+                <span class="close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <input type="text" id="dateSearch" placeholder="搜索日期..." class="control-input">
+                <button id="selectAllDates" class="btn btn-secondary">全选</button>
+                <div id="datesList" class="dates-list"></div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn" onclick="closeDateModal()">取消</button>
+                <button class="btn btn-primary" onclick="confirmDates()">确认</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 添加数据模态框 -->
+    <div id="addDataModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>添加数据</h2>
+                <span class="close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>数据路径（支持多个路径，每行一个）</label>
+                    <textarea id="dataPaths" rows="5" placeholder="请输入数据路径，每行一个"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn" onclick="closeAddDataModal()">取消</button>
+                <button class="btn btn-primary" onclick="confirmAddData()">确认</button>
+            </div>
+        </div>
+    </div>
+    
+    <script src="js/tool.js"></script>
+    <script src="js/chart.js"></script>
+    <script src="js/compare.js"></script>
+</body>
+</html>

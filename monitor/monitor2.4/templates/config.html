@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>工具配置 - EDA QOR 性能监控</title>
+  <link rel="stylesheet" href="/static/css/base.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">工具配置</div>
+    <div class="top-actions">
+      <a class="button" href="/">返回首页</a>
+    </div>
+  </header>
+
+  <main class="page-content config-page">
+    <section class="card-panel">
+      <div class="section-head">
+        <h2>当前已配置工具</h2>
+        <button class="button primary" id="open-add-tool">添加工具</button>
+      </div>
+      <div id="tool-list"></div>
+      <div class="empty-state" id="config-empty" hidden>
+        当前没有任何工具配置。
+      </div>
+    </section>
+
+    <section class="card-panel" id="add-tool-panel" hidden>
+      <h2>添加新工具</h2>
+      <form id="tool-form" class="form-grid">
+        <label>工具名称<input type="text" name="name" required /></label>
+        <label>工具描述<textarea name="description" rows="3"></textarea></label>
+        <label>单线程数据路径<input type="text" name="single_path" placeholder="例如 /path/to/single.json" /></label>
+        <label>多线程数据路径<input type="text" name="multi_path" placeholder="例如 /path/to/multi.json" /></label>
+        <label>额外显示字段<input type="text" name="extra_fields" placeholder="例如 platform,version" /></label>
+        <label>单线程数据接口函数<input type="text" name="single_data_func" value="load_tool_result_data" /></label>
+        <label>多线程数据接口函数<input type="text" name="multi_data_func" value="load_multi_thread_data" /></label>
+        <label>自定义曲线接口函数<input type="text" name="custom_curve_func" value="load_custom_curve_data" /></label>
+        <div class="form-actions">
+          <button type="submit" class="button primary">保存并前往工具页</button>
+          <button type="button" class="button secondary" id="cancel-add">取消</button>
+        </div>
+      </form>
+    </section>
+  </main>
+
+  <script src="/static/js/config.js"></script>
+</body>
+</html>
