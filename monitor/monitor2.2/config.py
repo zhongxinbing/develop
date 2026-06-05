@@ -1,5 +1,5 @@
 """
-系统配置模块
+系统配置模块 - 支持多视图配置
 """
 from pathlib import Path
 from common import load_json
@@ -18,7 +18,30 @@ CONFIG = {
     'preload_data': True,       # 预加载数据
     'async_loading': True,      # 异步加载
     'batch_size': 500,          # 分批处理大小
-    'request_timeout': 30       # 请求超时时间
+    'request_timeout': 30,      # 请求超时时间
+    'large_data_threshold': 10000  # 大数据阈值
+}
+
+# 视图配置 - 定义侧边栏结构
+VIEW_CONFIG = {
+    'single_thread': {
+        'name': '单线程曲线图',
+        'icon': '📈',
+        'sub_views': ['runtime', 'memory', 'compare', 'custom'],
+        'data_source': 'single_original_path'  # 数据来源配置项
+    },
+    'multi_thread': {
+        'name': '多线程曲线图',
+        'icon': '🔄',
+        'sub_views': ['runtime', 'memory', 'compare', 'custom'],
+        'data_source': 'multi_original_path'
+    },
+    'thread_chart': {
+        'name': '线程曲线图',
+        'icon': '📊',
+        'sub_views': ['runtime', 'memory', 'compare', 'custom'],
+        'data_source': 'multi_original_path'
+    }
 }
 
 # 路径配置

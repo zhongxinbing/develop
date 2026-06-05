@@ -1,0 +1,23 @@
+:root{--bg:#0f172a;--card:#0b1220;--muted:#94a3b8;--accent:#6366f1}
+*{box-sizing:border-box}
+body{margin:0;font-family:Inter,Segoe UI,Arial;background:var(--bg);color:#e6eef8}
+.app{display:flex;height:100vh}
+.sidebar{width:220px;padding:16px;background:linear-gradient(180deg,#071029,#07172b);display:flex;flex-direction:column}
+.brand{margin:0 0 12px 0}
+.nav-btn{display:block;width:100%;padding:8px 10px;margin:6px 0;border:none;background:transparent;color:var(--muted);text-align:left;border-radius:6px;cursor:pointer}
+.nav-btn.active{background:rgba(99,102,241,0.12);color:#fff}
+.main{flex:1;padding:16px;overflow:auto}
+.view{display:none}
+.view.active{display:block}
+.card{background:var(--card);padding:12px;border-radius:8px}
+.controls{display:flex;gap:8px;align-items:center;margin-bottom:12px}
+.chart{height:420px;background:linear-gradient(180deg,#07172b,transparent);border-radius:8px;padding:8px}
+ .subnav{display:flex;gap:8px;margin-bottom:12px}
+ .sub-btn{padding:8px 12px;border:none;border-radius:8px;background:rgba(255,255,255,0.05);color:#e6eef8;cursor:pointer}
+ .sub-btn.active{background:rgba(99,102,241,0.18);color:#fff}
+ .subview{margin-top:16px;padding:12px;border-radius:8px;background:rgba(255,255,255,0.05);color:#cbd5e1}
+ .hidden{display:none}
+select,button{padding:6px 8px;border-radius:6px;border:1px solid rgba(255,255,255,0.04);background:#07112a;color:#e6eef8}
+
+.subpanel-controls{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:12px}
+.subpanel-controls select{min-width:140px}

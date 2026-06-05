@@ -1,29 +1,65 @@
+// file: static/js/tool.js (更新版)
 /**
  * EDA性能监控系统 - 主入口脚本
  * 负责初始化、事件绑定和视图切换
  */
 
-
-// ==================================================
-// 工具函数
-// ==================================================
+// 全局变量
 window.charts = {};
 
+// ==================================================
+// 图表初始化
+// ==================================================
+
+function initCharts() {
+    if (typeof echarts === 'undefined') {
+        console.error('ECharts library not loaded');
+        return;
+    }
+    
+    // 单线程曲线图图表
+    const singleRuntimeDom = document.getElementById('single-chart-runtime');
+    const singleMemoryDom = document.getElementById('single-chart-memory');
+    if (singleRuntimeDom) {
+        if (charts['single-runtime']) charts['single-runtime'].dispose();
+        charts['single-runtime'] = echarts.init(singleRuntimeDom);
+    }
+    if (singleMemoryDom) {
+        if (charts['single-memory']) charts['single-memory'].dispose();
+        charts['single-memory'] = echarts.init(singleMemoryDom);
+    }
+    
+    // 多线程曲线图图表
+    const multiThreadRuntimeDom = document.getElementById('multi-thread-chart-runtime');
+    const multiThreadMemoryDom = document.getElementById('multi-thread-chart-memory');
+    if (multiThreadRuntimeDom) {
+        if (charts['multi-thread-runtime']) charts['multi-thread-runtime'].dispose();
+        charts['multi-thread-runtime'] = echarts.init(multiThreadRuntimeDom);
+    }
+    if (multiThreadMemoryDom) {
+        if (charts['multi-thread-memory']) charts['multi-thread-memory'].dispose();
+        charts['multi-thread-memory'] = echarts.init(multiThreadMemoryDom);
+    }
+    
+    // 线程曲线图图表（原多线程对比）
+    const threadCompareRuntimeDom = document.getElementById('thread-compare-chart-runtime');
+    const threadCompareMemoryDom = document.getElementById('thread-compare-chart-memory');
+    if (threadCompareRuntimeDom) {
+        if (charts['thread-compare-runtime']) charts['thread-compare-runtime'].dispose();
+        charts['thread-compare-runtime'] = echarts.init(threadCompareRuntimeDom);
+    }
+    if (threadCompareMemoryDom) {
+        if (charts['thread-compare-memory']) charts['thread-compare-memory'].dispose();
+        charts['thread-compare-memory'] = echarts.init(threadCompareMemoryDom);
+    }
+}
+
 function resizeAllCharts() {
-    if (window.charts) {
-        Object.values(window.charts).forEach(chart => {
-            if (chart && typeof chart.resize === 'function') {
-                chart.resize();
-            }
-        });
-    }
-    if (window.customCharts) {
-        Object.values(window.customCharts).forEach(chart => {
-            if (chart && typeof chart.resize === 'function') {
-                chart.resize();
-            }
-        });
-    }
+    Object.values(charts).forEach(chart => {
+        if (chart && typeof chart.resize === 'function') {
+            chart.resize();
+        }
+    });
     if (typeof ChartManager !== 'undefined' && ChartManager.resizeAll) {
         ChartManager.resizeAll();
     }
@@ -32,6 +68,10 @@ function resizeAllCharts() {
 window.addEventListener('resize', debounce(() => {
     requestAnimationFrame(resizeAllCharts);
 }, 150));
+
+// ==================================================
+// 工具函数
+// ==================================================
 
 function showLoading(show) {
     const overlay = document.getElementById('loadingOverlay');
@@ -48,7 +88,7 @@ function debounce(func, wait) {
             func(...args);
         };
         clearTimeout(timeout);
-        later();
+        timeout = setTimeout(later, wait);
     };
 }
 
@@ -128,29 +168,51 @@ async function refreshAllData() {
         
         if (result.success) {
             Object.assign(projectsData, result.data);
-            timelineState.mrUpdateDates = buildMrUpdateMap(result.perf);
-            timelineState.cachedToolData = {};
+            const mrUpdateDates = buildMrUpdateMap(result.perf);
+            
+            // 更新各模块的MR更新映射
+            singleThreadState.mrUpdateDates = mrUpdateDates;
+            multiThreadState.mrUpdateDates = mrUpdateDates;
+            threadCompareState.mrUpdateDates = mrUpdateDates;
+            
+            // 清空缓存
+            singleThreadState.cachedToolData = {};
+            multiThreadState.cachedToolData = {};
+            threadCompareState.cachedToolData = {};
             
             // 更新项目选择框
             if (result.project_list?.length) {
-                const caseSelect = document.getElementById('caseSelect');
-                const currentVal = caseSelect?.value;
-                if (caseSelect) {
-                    caseSelect.innerHTML = result.project_list.map(p => `<option value="${p.id}">${p.name}</option>`).join('');
-                    if (result.project_list.some(p => p.id === currentVal)) caseSelect.value = currentVal;
+                const projectListHtml = result.project_list.map(p => `<option value="${p.id}">${p.name}</option>`).join('');
+                
+                // 单线程项目选择
+                const singleCaseSelect = document.getElementById('singleCaseSelect');
+                const singleCurrentVal = singleCaseSelect?.value;
+                if (singleCaseSelect) {
+                    singleCaseSelect.innerHTML = projectListHtml;
+                    if (result.project_list.some(p => p.id === singleCurrentVal)) singleCaseSelect.value = singleCurrentVal;
                 }
                 
-                const multiCaseSelect = document.getElementById('multiCaseSelect');
-                if (multiCaseSelect) {
-                    multiCaseSelect.innerHTML = result.project_list.map(p => `<option value="${p.id}">${p.name}</option>`).join('');
-                    if (result.project_list.some(p => p.id === currentVal)) multiCaseSelect.value = currentVal;
+                // 多线程项目选择
+                const multiThreadCaseSelect = document.getElementById('multiThreadCaseSelect');
+                const multiThreadCurrentVal = multiThreadCaseSelect?.value;
+                if (multiThreadCaseSelect) {
+                    multiThreadCaseSelect.innerHTML = projectListHtml;
+                    if (result.project_list.some(p => p.id === multiThreadCurrentVal)) multiThreadCaseSelect.value = multiThreadCurrentVal;
                 }
                 
+                // 线程曲线图项目选择
+                const threadCompareCaseSelect = document.getElementById('threadCompareCaseSelect');
+                const threadCompareCurrentVal = threadCompareCaseSelect?.value;
+                if (threadCompareCaseSelect) {
+                    threadCompareCaseSelect.innerHTML = projectListHtml;
+                    if (result.project_list.some(p => p.id === threadCompareCurrentVal)) threadCompareCaseSelect.value = threadCompareCurrentVal;
+                }
+                
+                // 对比模块项目选择
                 const compareCaseSelect = document.getElementById('compareCaseSelect');
                 const oldCompareValue = compareCaseSelect?.value;
                 if (compareCaseSelect) {
-                    compareCaseSelect.innerHTML = '<option value="">-- 请选择case --</option>' + 
-                        result.project_list.map(p => `<option value="${p.id}">${p.name}</option>`).join('');
+                    compareCaseSelect.innerHTML = '<option value="">-- 请选择case --</option>' + projectListHtml;
                     if (oldCompareValue && result.project_list.some(p => p.id === oldCompareValue)) {
                         compareCaseSelect.value = oldCompareValue;
                     } else if (result.project_list.length > 0) {
@@ -161,18 +223,38 @@ async function refreshAllData() {
                 }
             }
             
-            // 刷新时序图
-            if (timelineState.currentProjectId && projectsData[timelineState.currentProjectId]) {
-                updateTimelineRuleSelect();
-                updateTimelineProjectStats();
-                updateTimelineDateInfo();
-                refreshTimelineCharts();
-            } else if (result.project_list && result.project_list.length > 0 && !timelineState.currentProjectId) {
-                timelineState.currentProjectId = result.project_list[0].id;
-                updateTimelineRuleSelect();
-                updateTimelineProjectStats();
-                updateTimelineDateInfo();
-                refreshTimelineCharts();
+            // 刷新各模块
+            if (singleThreadState.currentProjectId && projectsData[singleThreadState.currentProjectId]) {
+                updateSingleThreadRuleSelect();
+                updateSingleProjectStats();
+                updateSingleThreadDateInfo();
+                refreshSingleThreadCharts();
+            } else if (result.project_list && result.project_list.length > 0 && !singleThreadState.currentProjectId) {
+                singleThreadState.currentProjectId = result.project_list[0].id;
+                updateSingleThreadRuleSelect();
+                updateSingleProjectStats();
+                updateSingleThreadDateInfo();
+                refreshSingleThreadCharts();
+            }
+            
+            if (multiThreadState.currentProjectId && projectsData[multiThreadState.currentProjectId]) {
+                updateMultiThreadRuleSelect();
+                updateMultiThreadProjectStats();
+                updateMultiThreadDateInfo();
+                refreshMultiThreadCharts();
+            } else if (result.project_list && result.project_list.length > 0 && !multiThreadState.currentProjectId) {
+                multiThreadState.currentProjectId = result.project_list[0].id;
+                updateMultiThreadRuleSelect();
+                updateMultiThreadProjectStats();
+                updateMultiThreadDateInfo();
+                refreshMultiThreadCharts();
+            }
+            
+            if (threadCompareState.currentProjectId && projectsData[threadCompareState.currentProjectId]) {
+                await loadThreadCompareRules(threadCompareState.currentProjectId);
+            } else if (result.project_list && result.project_list.length > 0 && !threadCompareState.currentProjectId) {
+                threadCompareState.currentProjectId = result.project_list[0].id;
+                await loadThreadCompareRules(threadCompareState.currentProjectId);
             }
             
             updateLastUpdateTime();
@@ -203,30 +285,47 @@ async function autoRefreshOnLoad() {
             if (result.success) {
                 Object.keys(projectsData).forEach(key => delete projectsData[key]);
                 Object.assign(projectsData, result.data);
-                timelineState.mrUpdateDates = buildMrUpdateMap(result.perf);
-                timelineState.cachedToolData = {};
+                const mrUpdateDates = buildMrUpdateMap(result.perf);
+                
+                singleThreadState.mrUpdateDates = mrUpdateDates;
+                multiThreadState.mrUpdateDates = mrUpdateDates;
+                threadCompareState.mrUpdateDates = mrUpdateDates;
+                
+                singleThreadState.cachedToolData = {};
+                multiThreadState.cachedToolData = {};
+                threadCompareState.cachedToolData = {};
                 
                 if (result.project_list && result.project_list.length) {
-                    const caseSelect = document.getElementById('caseSelect');
-                    const currentVal = caseSelect?.value;
-                    if (caseSelect) {
-                        caseSelect.innerHTML = result.project_list.map(p => `<option value="${p.id}">${p.name}</option>`).join('');
-                        if (result.project_list.some(p => p.id === currentVal)) caseSelect.value = currentVal;
-                        else if (result.project_list.length > 0 && !caseSelect.value) caseSelect.value = result.project_list[0].id;
+                    const projectListHtml = result.project_list.map(p => `<option value="${p.id}">${p.name}</option>`).join('');
+                    
+                    const singleCaseSelect = document.getElementById('singleCaseSelect');
+                    const singleCurrentVal = singleCaseSelect?.value;
+                    if (singleCaseSelect) {
+                        singleCaseSelect.innerHTML = projectListHtml;
+                        if (result.project_list.some(p => p.id === singleCurrentVal)) singleCaseSelect.value = singleCurrentVal;
+                        else if (result.project_list.length > 0 && !singleCaseSelect.value) singleCaseSelect.value = result.project_list[0].id;
                     }
                     
-                    const multiCaseSelect = document.getElementById('multiCaseSelect');
-                    if (multiCaseSelect) {
-                        multiCaseSelect.innerHTML = result.project_list.map(p => `<option value="${p.id}">${p.name}</option>`).join('');
-                        if (result.project_list.some(p => p.id === currentVal)) multiCaseSelect.value = currentVal;
-                        else if (result.project_list.length > 0 && !multiCaseSelect.value) multiCaseSelect.value = result.project_list[0].id;
+                    const multiThreadCaseSelect = document.getElementById('multiThreadCaseSelect');
+                    const multiThreadCurrentVal = multiThreadCaseSelect?.value;
+                    if (multiThreadCaseSelect) {
+                        multiThreadCaseSelect.innerHTML = projectListHtml;
+                        if (result.project_list.some(p => p.id === multiThreadCurrentVal)) multiThreadCaseSelect.value = multiThreadCurrentVal;
+                        else if (result.project_list.length > 0 && !multiThreadCaseSelect.value) multiThreadCaseSelect.value = result.project_list[0].id;
+                    }
+                    
+                    const threadCompareCaseSelect = document.getElementById('threadCompareCaseSelect');
+                    const threadCompareCurrentVal = threadCompareCaseSelect?.value;
+                    if (threadCompareCaseSelect) {
+                        threadCompareCaseSelect.innerHTML = projectListHtml;
+                        if (result.project_list.some(p => p.id === threadCompareCurrentVal)) threadCompareCaseSelect.value = threadCompareCurrentVal;
+                        else if (result.project_list.length > 0 && !threadCompareCaseSelect.value) threadCompareCaseSelect.value = result.project_list[0].id;
                     }
                     
                     const compareCaseSelect = document.getElementById('compareCaseSelect');
                     const oldCompareValue = compareCaseSelect?.value;
                     if (compareCaseSelect) {
-                        compareCaseSelect.innerHTML = '<option value="">-- 请选择case --</option>' + 
-                            result.project_list.map(p => `<option value="${p.id}">${p.name}</option>`).join('');
+                        compareCaseSelect.innerHTML = '<option value="">-- 请选择case --</option>' + projectListHtml;
                         if (oldCompareValue && result.project_list.some(p => p.id === oldCompareValue)) {
                             compareCaseSelect.value = oldCompareValue;
                         } else if (result.project_list.length > 0) {
@@ -237,17 +336,37 @@ async function autoRefreshOnLoad() {
                     }
                 }
                 
-                if (timelineState.currentProjectId && projectsData[timelineState.currentProjectId]) {
-                    updateTimelineRuleSelect();
-                    updateTimelineProjectStats();
-                    updateTimelineDateInfo();
-                    refreshTimelineCharts();
-                } else if (result.project_list && result.project_list.length > 0 && !timelineState.currentProjectId) {
-                    timelineState.currentProjectId = result.project_list[0].id;
-                    updateTimelineRuleSelect();
-                    updateTimelineProjectStats();
-                    updateTimelineDateInfo();
-                    refreshTimelineCharts();
+                if (singleThreadState.currentProjectId && projectsData[singleThreadState.currentProjectId]) {
+                    updateSingleThreadRuleSelect();
+                    updateSingleProjectStats();
+                    updateSingleThreadDateInfo();
+                    refreshSingleThreadCharts();
+                } else if (result.project_list && result.project_list.length > 0 && !singleThreadState.currentProjectId) {
+                    singleThreadState.currentProjectId = result.project_list[0].id;
+                    updateSingleThreadRuleSelect();
+                    updateSingleProjectStats();
+                    updateSingleThreadDateInfo();
+                    refreshSingleThreadCharts();
+                }
+                
+                if (multiThreadState.currentProjectId && projectsData[multiThreadState.currentProjectId]) {
+                    updateMultiThreadRuleSelect();
+                    updateMultiThreadProjectStats();
+                    updateMultiThreadDateInfo();
+                    refreshMultiThreadCharts();
+                } else if (result.project_list && result.project_list.length > 0 && !multiThreadState.currentProjectId) {
+                    multiThreadState.currentProjectId = result.project_list[0].id;
+                    updateMultiThreadRuleSelect();
+                    updateMultiThreadProjectStats();
+                    updateMultiThreadDateInfo();
+                    refreshMultiThreadCharts();
+                }
+                
+                if (threadCompareState.currentProjectId && projectsData[threadCompareState.currentProjectId]) {
+                    await loadThreadCompareRules(threadCompareState.currentProjectId);
+                } else if (result.project_list && result.project_list.length > 0 && !threadCompareState.currentProjectId) {
+                    threadCompareState.currentProjectId = result.project_list[0].id;
+                    await loadThreadCompareRules(threadCompareState.currentProjectId);
                 }
                 
                 updateLastUpdateTime();
@@ -262,7 +381,11 @@ async function autoRefreshOnLoad() {
         }
     } else {
         console.log('正常页面加载，使用服务端数据');
-        timelineState.mrUpdateDates = buildMrUpdateMap(perf);
+        const mrUpdateDates = buildMrUpdateMap(perf);
+        singleThreadState.mrUpdateDates = mrUpdateDates;
+        multiThreadState.mrUpdateDates = mrUpdateDates;
+        threadCompareState.mrUpdateDates = mrUpdateDates;
+        
         const compareSelect = document.getElementById('compareCaseSelect');
         if (compareSelect && compareSelect.options.length > 0) {
             if (compareSelect.value) await onCompareProjectChange(compareSelect.value);
@@ -277,8 +400,6 @@ async function autoRefreshOnLoad() {
 // 视图切换
 // ==================================================
 
-// 在 tool.js 中替换 switchView 函数
-
 function switchView(viewId) {
     const containers = document.querySelectorAll('.view-container');
     containers.forEach(view => view.classList.remove('active'));
@@ -291,109 +412,83 @@ function switchView(viewId) {
         if (item.dataset.view === viewId) item.classList.add('active');
     });
     
-    // 使用 requestAnimationFrame 确保 DOM 更新完成后再 resize
-    const resizeAllCharts = () => {
-        // 重新调整所有已存在图表的大小
-        if (charts.runtime && !charts.runtime.isDisposed()) charts.runtime.resize();
-        if (charts.memory && !charts.memory.isDisposed()) charts.memory.resize();
-        if (charts.multiRuntime && !charts.multiRuntime.isDisposed()) charts.multiRuntime.resize();
-        if (charts.multiMemory && !charts.multiMemory.isDisposed()) charts.multiMemory.resize();
-        if (customCharts && customCharts.runtime && !customCharts.runtime.isDisposed()) customCharts.runtime.resize();
-        if (customCharts && customCharts.memory && !customCharts.memory.isDisposed()) customCharts.memory.resize();
-        
-        // 使用安全调用方式
-        if (typeof ChartManager !== 'undefined' && ChartManager.resizeAll) {
-            ChartManager.resizeAll();
-        }
-    };
-    
-    // 延迟执行，等待 CSS 过渡/动画完成
+    // 延迟执行，等待 CSS 过渡完成
     setTimeout(() => {
         requestAnimationFrame(resizeAllCharts);
     }, 50);
     
     // 视图切换后的特定逻辑
-    if (viewId === 'multithread') {
+    if (viewId === 'single-thread') {
         setTimeout(() => {
-        // 先确保容器可见并调整尺寸
-        const multiRuntimeContainer = document.getElementById('chart-multi-runtime');
-        const multiMemoryContainer = document.getElementById('chart-multi-memory');
-        
-        if (multiRuntimeContainer && multiRuntimeContainer.offsetWidth > 0) {
-            if (charts.multiRuntime && !charts.multiRuntime.isDisposed()) {
-                charts.multiRuntime.resize();
-            }
-        }
-        if (multiMemoryContainer && multiMemoryContainer.offsetWidth > 0) {
-            if (charts.multiMemory && !charts.multiMemory.isDisposed()) {
-                charts.multiMemory.resize();
-            }
-        }
-        
-        // 重新渲染数据
-        if (multiState.currentData && multiState.currentData.length > 0) {
-            if (Array.isArray(multiState.currentData) && multiState.currentData[0]?.date) {
-                renderMultiThreadComparisonChart();
-            } else {
-                renderMultiThreadChart();
-            }
-        }
-        
-        // 再次确保图表尺寸正确
-        requestAnimationFrame(() => {
-            if (charts.multiRuntime && !charts.multiRuntime.isDisposed()) charts.multiRuntime.resize();
-            if (charts.multiMemory && !charts.multiMemory.isDisposed()) charts.multiMemory.resize();
-        });
-    }, 100);
-    } else if (viewId === 'timeline') {
-        setTimeout(() => { 
-            if (typeof refreshTimelineCharts === 'function' && timelineState.currentRule) {
-                refreshTimelineCharts();
+            if (typeof refreshSingleThreadCharts === 'function' && singleThreadState.currentRule) {
+                refreshSingleThreadCharts();
             }
             requestAnimationFrame(() => {
-                if (charts.runtime && !charts.runtime.isDisposed()) charts.runtime.resize();
-                if (charts.memory && !charts.memory.isDisposed()) charts.memory.resize();
+                if (charts['single-runtime'] && !charts['single-runtime'].isDisposed()) charts['single-runtime'].resize();
+                if (charts['single-memory'] && !charts['single-memory'].isDisposed()) charts['single-memory'].resize();
             });
         }, 100);
+    } else if (viewId === 'multi-thread') {
+        setTimeout(() => {
+            if (typeof refreshMultiThreadCharts === 'function' && multiThreadState.currentRule) {
+                refreshMultiThreadCharts();
+            }
+            requestAnimationFrame(() => {
+                if (charts['multi-thread-runtime'] && !charts['multi-thread-runtime'].isDisposed()) charts['multi-thread-runtime'].resize();
+                if (charts['multi-thread-memory'] && !charts['multi-thread-memory'].isDisposed()) charts['multi-thread-memory'].resize();
+            });
+        }, 100);
+    } else if (viewId === 'thread-compare') {
+        setTimeout(() => {
+            if (threadCompareState.currentData && threadCompareState.currentData.length > 0) {
+                if (Array.isArray(threadCompareState.currentData) && threadCompareState.currentData[0]?.date) {
+                    renderThreadCompareComparisonChart();
+                } else {
+                    renderThreadCompareChart();
+                }
+            }
+            requestAnimationFrame(() => {
+                if (charts['thread-compare-runtime'] && !charts['thread-compare-runtime'].isDisposed()) charts['thread-compare-runtime'].resize();
+                if (charts['thread-compare-memory'] && !charts['thread-compare-memory'].isDisposed()) charts['thread-compare-memory'].resize();
+            });
+        }, 100);
+    } else if (viewId === 'compare') {
+        // 对比视图无需额外处理
     } else if (viewId === 'custom') {
         setTimeout(() => { 
-        // 先确保容器可见并调整尺寸
-        const customRuntimeContainer = document.getElementById('custom-chart-runtime');
-        const customMemoryContainer = document.getElementById('custom-chart-memory');
-        
-        if (customRuntimeContainer && customRuntimeContainer.offsetWidth > 0) {
-            if (customCharts.runtime && !customCharts.runtime.isDisposed()) {
-                customCharts.runtime.resize();
-            }
-        }
-        if (customMemoryContainer && customMemoryContainer.offsetWidth > 0) {
-            if (customCharts.memory && !customCharts.memory.isDisposed()) {
-                customCharts.memory.resize();
-            }
-        }
-        
-        // 重新渲染数据
-        if (typeof refreshCustomCharts === 'function') {
-            if (customState && customState.currentProjectId && customState.currentRule) {
-                refreshCustomCharts();
-            } else if (customState && customState.availableDates && customState.availableDates.length > 0) {
-                // 如果有可用日期但未选择阶段，先更新阶段选择
-                if (typeof updateCustomRuleSelect === 'function') {
-                    updateCustomRuleSelect();
-                }
-                if (customState.selectedDates.length === 0 && customState.availableDates.length > 0) {
-                    customState.selectedDates = customState.availableDates.slice(-51);
-                    if (typeof updateCustomDateInfo === 'function') updateCustomDateInfo();
+            const customRuntimeContainer = document.getElementById('custom-chart-runtime');
+            const customMemoryContainer = document.getElementById('custom-chart-memory');
+            
+            if (customRuntimeContainer && customRuntimeContainer.offsetWidth > 0) {
+                if (customCharts.runtime && !customCharts.runtime.isDisposed()) {
+                    customCharts.runtime.resize();
                 }
             }
-        }
-        
-        // 再次确保图表尺寸正确
-        requestAnimationFrame(() => {
-            if (customCharts && customCharts.runtime && !customCharts.runtime.isDisposed()) customCharts.runtime.resize();
-            if (customCharts && customCharts.memory && !customCharts.memory.isDisposed()) customCharts.memory.resize();
-        });
-    }, 150);
+            if (customMemoryContainer && customMemoryContainer.offsetWidth > 0) {
+                if (customCharts.memory && !customCharts.memory.isDisposed()) {
+                    customCharts.memory.resize();
+                }
+            }
+            
+            if (typeof refreshCustomCharts === 'function') {
+                if (customState && customState.currentProjectId && customState.currentRule) {
+                    refreshCustomCharts();
+                } else if (customState && customState.availableDates && customState.availableDates.length > 0) {
+                    if (typeof updateCustomRuleSelect === 'function') {
+                        updateCustomRuleSelect();
+                    }
+                    if (customState.selectedDates.length === 0 && customState.availableDates.length > 0) {
+                        customState.selectedDates = customState.availableDates.slice(-51);
+                        if (typeof updateCustomDateInfo === 'function') updateCustomDateInfo();
+                    }
+                }
+            }
+            
+            requestAnimationFrame(() => {
+                if (customCharts && customCharts.runtime && !customCharts.runtime.isDisposed()) customCharts.runtime.resize();
+                if (customCharts && customCharts.memory && !customCharts.memory.isDisposed()) customCharts.memory.resize();
+            });
+        }, 150);
     }
 }
 
@@ -463,7 +558,6 @@ window.parseProjectData = function(projectData, projectId) {
             }
         });
         
-        // 设置默认线程（线程0）
         if (ruleInfo.thread_metrics['0']) {
             ruleInfo.runtimes = ruleInfo.thread_metrics['0'].runtimes;
             ruleInfo.memories = ruleInfo.thread_metrics['0'].memories;
@@ -484,42 +578,6 @@ window.parseProjectData = function(projectData, projectId) {
 };
 
 // ==================================================
-// 图表初始化
-// ==================================================
-
-function initCharts() {
-    if (typeof echarts === 'undefined') {
-        console.error('ECharts library not loaded');
-        return;
-    }
-    
-    const runtimeDom = document.getElementById('chart-runtime');
-    const memoryDom = document.getElementById('chart-memory');
-    
-    if (runtimeDom) {
-        if (charts.runtime) charts.runtime.dispose();
-        charts.runtime = echarts.init(runtimeDom);
-    }
-    if (memoryDom) {
-        if (charts.memory) charts.memory.dispose();
-        charts.memory = echarts.init(memoryDom);
-    }
-    
-    // 初始化多线程图表
-    const multiRuntimeDom = document.getElementById('chart-multi-runtime');
-    const multiMemoryDom = document.getElementById('chart-multi-memory');
-    
-    if (multiRuntimeDom) {
-        if (charts.multiRuntime) charts.multiRuntime.dispose();
-        charts.multiRuntime = echarts.init(multiRuntimeDom);
-    }
-    if (multiMemoryDom) {
-        if (charts.multiMemory) charts.multiMemory.dispose();
-        charts.multiMemory = echarts.init(multiMemoryDom);
-    }
-}
-
-// ==================================================
 // 事件绑定
 // ==================================================
 
@@ -538,16 +596,11 @@ function bindEvents() {
     const refreshBtn = document.getElementById('refreshDataBtn');
     if (refreshBtn) refreshBtn.addEventListener('click', refreshAllData);
     
-    // 时序图事件
-    bindTimelineEvents();
-    
-    // 多线程事件
-    bindMultiThreadEvents();
-    
-    // 对比事件
+    // 各模块事件绑定
+    bindSingleThreadEvents();
+    bindMultiThreadChartEvents();
+    bindThreadCompareEvents();
     bindCompareEvents();
-    
-    // 自定义图表事件
     bindCustomChartEvents();
 }
 
@@ -566,23 +619,31 @@ async function init() {
 
     await autoRefreshOnLoad();
     
-    // 初始化时序图
-    const caseSelect = document.getElementById('caseSelect');
-    if (caseSelect && caseSelect.options.length > 0) {
-        timelineState.currentProjectId = caseSelect.value;
-        updateTimelineRuleSelect();
-        updateTimelineProjectStats();
-        updateTimelineDateInfo();
-        updateTimelineChartTypeButtons();
+    // 初始化单线程曲线图
+    const singleCaseSelect = document.getElementById('singleCaseSelect');
+    if (singleCaseSelect && singleCaseSelect.options.length > 0) {
+        singleThreadState.currentProjectId = singleCaseSelect.value;
+        updateSingleThreadRuleSelect();
+        updateSingleProjectStats();
+        updateSingleThreadDateInfo();
+        updateSingleChartTypeButtons();
     }
-    if (timelineState.currentProjectId && timelineState.currentRule) {
-        updateTimelineThreadInfo();
+    
+    // 初始化多线程曲线图
+    const multiThreadCaseSelect = document.getElementById('multiThreadCaseSelect');
+    if (multiThreadCaseSelect && multiThreadCaseSelect.options.length > 0) {
+        multiThreadState.currentProjectId = multiThreadCaseSelect.value;
+        updateMultiThreadRuleSelect();
+        updateMultiThreadProjectStats();
+        updateMultiThreadDateInfo();
+        updateMultiThreadChartTypeButtons();
     }
-    // 初始化多线程
-    const multiCaseSelect = document.getElementById('multiCaseSelect');
-    if (multiCaseSelect && multiCaseSelect.options.length > 0) {
-        multiState.currentProjectId = multiCaseSelect.value;
-        await loadMultiRules(multiState.currentProjectId);
+    
+    // 初始化线程曲线图
+    const threadCompareCaseSelect = document.getElementById('threadCompareCaseSelect');
+    if (threadCompareCaseSelect && threadCompareCaseSelect.options.length > 0) {
+        threadCompareState.currentProjectId = threadCompareCaseSelect.value;
+        await loadThreadCompareRules(threadCompareState.currentProjectId);
     }
     
     // 初始化对比模块
@@ -608,7 +669,7 @@ async function init() {
     if (customSelectRecent) customSelectRecent.disabled = true;
     
     // 设置默认视图
-    if (initialMode === 'multi') switchView('multithread');
+    if (initialMode === 'multi') switchView('thread-compare');
     else if (initialMode === 'compare') switchView('compare');
     else if (initialMode === 'custom') switchView('custom');
     
@@ -624,7 +685,8 @@ async function init() {
     }, 30000);
     
     updateLastUpdateTime();
-    updateMultiChartTypeButtons();
+    updateMultiThreadChartTypeButtons();
+    updateThreadCompareChartTypeButtons();
 }
 
 // 启动

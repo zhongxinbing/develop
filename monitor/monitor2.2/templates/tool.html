@@ -1,3 +1,4 @@
+<!-- file: templates/tool.html -->
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
@@ -20,16 +21,20 @@
             </div>
             
             <nav class="nav-menu">
-                <div class="nav-item active" data-view="timeline">
+                <div class="nav-item active" data-view="single-thread">
                     <span class="nav-icon">📈</span>
-                    <span class="nav-label">时序曲线图</span>
+                    <span class="nav-label">单线程曲线图</span>
                 </div>
-                <div class="nav-item" data-view="multithread">
+                <div class="nav-item" data-view="multi-thread">
                     <span class="nav-icon">🔄</span>
-                    <span class="nav-label">多线程对比</span>
+                    <span class="nav-label">多线程曲线图</span>
+                </div>
+                <div class="nav-item" data-view="thread-compare">
+                    <span class="nav-icon">📊</span>
+                    <span class="nav-label">线程曲线图</span>
                 </div>
                 <div class="nav-item" data-view="compare">
-                    <span class="nav-icon">📊</span>
+                    <span class="nav-icon">⚖️</span>
                     <span class="nav-label">数据对比</span>
                 </div>
                 <div class="nav-item" data-view="custom">
@@ -51,17 +56,16 @@
 
         <!-- 主内容区域 -->
         <main class="main-content">
-            <!-- ========== 时序曲线图视图 ========== -->
-            <div id="timelineView" class="view-container active">
-                <!-- 控制栏 - Flexbox 布局 -->
+            <!-- ========== 单线程曲线图视图 ========== -->
+            <div id="singleThreadView" class="view-container active">
                 <div class="card">
                     <div class="card-header">
-                        <div class="card-title">🎛️ 数据筛选</div>
+                        <div class="card-title">🎛️ 数据筛选 - 单线程数据</div>
                     </div>
                     <div class="control-bar">
                         <div class="control-group">
                             <label class="control-label">📁 选择项目</label>
-                            <select id="caseSelect">
+                            <select id="singleCaseSelect">
                                 {% for project in project_list %}
                                 <option value="{{ project.id }}">{{ project.name }}</option>
                                 {% endfor %}
@@ -69,18 +73,22 @@
                         </div>
                         <div class="control-group">
                             <label class="control-label">📋 选择阶段</label>
-                            <select id="ruleSelect"></select>
+                            <select id="singleRuleSelect"></select>
                         </div>
                         <div class="control-group">
                             <label class="control-label">🔍 搜索阶段</label>
-                            <input type="text" id="ruleSearch" placeholder="输入阶段名称..." class="search-input">
+                            <input type="text" id="singleRuleSearch" placeholder="输入阶段名称..." class="search-input">
                         </div>
                         <div class="control-group">
                             <label class="control-label">📅 日期范围</label>
                             <div class="btn-group">
-                                <button class="btn btn-secondary" id="openDatePickerBtn">📅 选择日期</button>
-                                <button class="btn btn-secondary" id="selectRecentBtn">📆 最近50天</button>
+                                <button class="btn btn-secondary" id="singleOpenDatePickerBtn">📅 选择日期</button>
+                                <button class="btn btn-secondary" id="singleSelectRecentBtn">📆 最近50天</button>
                             </div>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label">🧵 线程选择</label>
+                            <div class="thread-selector-btn" id="singleOpenThreadSelectorBtn" style="display: none;">🎯 选择线程</div>
                         </div>
                     </div>
                 </div>
@@ -88,26 +96,26 @@
                 <!-- 图表区域 -->
                 <div class="card">
                     <div class="chart-type-buttons">
-                        <button class="btn btn-primary chart-type-btn" id="timelineChartRuntimeBtn">⏱️ Runtime</button>
-                        <button class="btn btn-secondary chart-type-btn" id="timelineChartMemoryBtn">💾 Memory</button>
+                        <button class="btn btn-primary chart-type-btn" id="singleChartRuntimeBtn">⏱️ Runtime</button>
+                        <button class="btn btn-secondary chart-type-btn" id="singleChartMemoryBtn">💾 Memory</button>
                     </div>
                     <div class="card-header">
-                        <div class="card-title" id="timelineChartCardTitle">⏱️ Runtime 性能曲线</div>
+                        <div class="card-title" id="singleChartCardTitle">⏱️ Runtime 性能曲线 - 单线程数据</div>
                     </div>
-                    <div id="chart-runtime" class="chart-container"></div>
-                    <div id="chart-memory" class="chart-container hidden"></div>
+                    <div id="single-chart-runtime" class="chart-container"></div>
+                    <div id="single-chart-memory" class="chart-container hidden"></div>
                 </div>
 
                 <!-- 统计卡片 - Grid 布局 -->
                 <div class="card">
                     <div class="card-header">
-                        <div class="card-title">📊 性能统计 - <span id="currentRuleName">未选择</span></div>
+                        <div class="card-title">📊 性能统计 - <span id="singleCurrentRuleName">未选择</span></div>
                         <div class="info-text">
-                            <span>📅 日期范围: <span id="dateRange">-</span></span>
-                            <span style="margin-left: 1rem;">📊 数据点数: <span id="dataPoints">0</span></span>
+                            <span>📅 日期范围: <span id="singleDateRange">-</span></span>
+                            <span style="margin-left: 1rem;">📊 数据点数: <span id="singleDataPoints">0</span></span>
                         </div>
                     </div>
-                    <div class="stats-grid" id="stats-main"></div>
+                    <div class="stats-grid" id="singleStatsMain"></div>
                 </div>
 
                 <!-- 项目统计 -->
@@ -115,20 +123,20 @@
                     <div class="card-header">
                         <div class="card-title">📈 项目概况</div>
                     </div>
-                    <div class="stats-grid" id="projectStats"></div>
+                    <div class="stats-grid" id="singleProjectStats"></div>
                 </div>
             </div>
 
-            <!-- ========== 多线程对比视图 ========== -->
-            <div id="multithreadView" class="view-container">
+            <!-- ========== 多线程曲线图视图 ========== -->
+            <div id="multiThreadView" class="view-container">
                 <div class="card">
                     <div class="card-header">
-                        <div class="card-title">🎛️ 数据筛选</div>
+                        <div class="card-title">🎛️ 数据筛选 - 多线程数据</div>
                     </div>
                     <div class="control-bar">
                         <div class="control-group">
                             <label class="control-label">📁 选择项目</label>
-                            <select id="multiCaseSelect">
+                            <select id="multiThreadCaseSelect">
                                 {% for project in project_list %}
                                 <option value="{{ project.id }}">{{ project.name }}</option>
                                 {% endfor %}
@@ -136,22 +144,93 @@
                         </div>
                         <div class="control-group">
                             <label class="control-label">📋 选择阶段</label>
-                            <select id="multiRuleSelect"></select>
+                            <select id="multiThreadRuleSelect"></select>
                         </div>
                         <div class="control-group">
                             <label class="control-label">🔍 搜索阶段</label>
-                            <input type="text" id="multiRuleSearch" placeholder="输入阶段名称..." class="search-input">
+                            <input type="text" id="multiThreadRuleSearch" placeholder="输入阶段名称..." class="search-input">
                         </div>
                         <div class="control-group">
-                            <label class="control-label">📅 选择日期</label>
+                            <label class="control-label">📅 日期范围</label>
                             <div class="btn-group">
-                                <button class="btn btn-secondary" id="multiOpenDatePickerBtn">📅 选择日期</button>
-                                <button class="btn btn-secondary" id="multiSelectRecentBtn">📆 最新</button>
+                                <button class="btn btn-secondary" id="multiThreadOpenDatePickerBtn">📅 选择日期</button>
+                                <button class="btn btn-secondary" id="multiThreadSelectRecentBtn">📆 最近50天</button>
                             </div>
                         </div>
                         <div class="control-group">
                             <label class="control-label">🧵 线程选择</label>
-                            <div class="thread-selector-btn" id="openThreadSelectorBtn">🎯 选择线程</div>
+                            <div class="thread-selector-btn" id="multiThreadOpenThreadSelectorBtn">🎯 选择线程</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 图表区域 -->
+                <div class="card">
+                    <div class="chart-type-buttons">
+                        <button class="btn btn-primary chart-type-btn" id="multiThreadChartRuntimeBtn">⏱️ Runtime</button>
+                        <button class="btn btn-secondary chart-type-btn" id="multiThreadChartMemoryBtn">💾 Memory</button>
+                    </div>
+                    <div class="card-header">
+                        <div class="card-title" id="multiThreadChartCardTitle">⏱️ Runtime 性能曲线 - 多线程数据</div>
+                    </div>
+                    <div id="multi-thread-chart-runtime" class="chart-container"></div>
+                    <div id="multi-thread-chart-memory" class="chart-container hidden"></div>
+                </div>
+
+                <!-- 统计卡片 -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">📊 性能统计 - <span id="multiThreadCurrentRuleName">未选择</span></div>
+                        <div class="info-text">
+                            <span>📅 日期范围: <span id="multiThreadDateRange">-</span></span>
+                            <span style="margin-left: 1rem;">📊 数据点数: <span id="multiThreadDataPoints">0</span></span>
+                        </div>
+                    </div>
+                    <div class="stats-grid" id="multiThreadStatsMain"></div>
+                </div>
+
+                <!-- 项目统计 -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">📈 项目概况</div>
+                    </div>
+                    <div class="stats-grid" id="multiThreadProjectStats"></div>
+                </div>
+            </div>
+
+            <!-- ========== 线程曲线图视图（原多线程对比） ========== -->
+            <div id="threadCompareView" class="view-container">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">🎛️ 数据筛选</div>
+                    </div>
+                    <div class="control-bar">
+                        <div class="control-group">
+                            <label class="control-label">📁 选择项目</label>
+                            <select id="threadCompareCaseSelect">
+                                {% for project in project_list %}
+                                <option value="{{ project.id }}">{{ project.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label">📋 选择阶段</label>
+                            <select id="threadCompareRuleSelect"></select>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label">🔍 搜索阶段</label>
+                            <input type="text" id="threadCompareRuleSearch" placeholder="输入阶段名称..." class="search-input">
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label">📅 选择日期</label>
+                            <div class="btn-group">
+                                <button class="btn btn-secondary" id="threadCompareOpenDatePickerBtn">📅 选择日期</button>
+                                <button class="btn btn-secondary" id="threadCompareSelectRecentBtn">📆 最新</button>
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label">🧵 线程选择</label>
+                            <div class="thread-selector-btn" id="threadCompareOpenThreadSelectorBtn">🎯 选择线程</div>
                         </div>
                     </div>
                 </div>
@@ -159,24 +238,24 @@
                 <!-- 图表区域 -->
                 <div class="multi-chart-card">
                     <div class="chart-type-buttons">
-                        <button class="btn btn-primary chart-type-btn" id="multiChartRuntimeBtn">⏱️ Runtime</button>
-                        <button class="btn btn-secondary chart-type-btn" id="multiChartMemoryBtn">💾 Memory</button>
+                        <button class="btn btn-primary chart-type-btn" id="threadCompareChartRuntimeBtn">⏱️ Runtime</button>
+                        <button class="btn btn-secondary chart-type-btn" id="threadCompareChartMemoryBtn">💾 Memory</button>
                     </div>
                     <div class="card-header">
-                        <div class="card-title" id="multiChartCardTitle">⏱️ Runtime 性能曲线</div>
+                        <div class="card-title" id="threadCompareChartCardTitle">⏱️ Runtime 性能曲线</div>
                     </div>
-                    <div id="chart-multi-runtime" class="chart-container"></div>
-                    <div id="chart-multi-memory" class="chart-container hidden"></div>
+                    <div id="thread-compare-chart-runtime" class="chart-container"></div>
+                    <div id="thread-compare-chart-memory" class="chart-container hidden"></div>
                 </div>
 
                 <!-- 统计卡片 -->
                 <div class="card">
                     <div class="card-header">
-                        <div class="card-title">📊 性能统计 - <span id="multiCurrentRuleName">未选择</span></div>
-                        <div>📅 当前日期: <span id="multiCurrentDate">-</span></div>
+                        <div class="card-title">📊 性能统计 - <span id="threadCompareCurrentRuleName">未选择</span></div>
+                        <div>📅 当前日期: <span id="threadCompareCurrentDate">-</span></div>
                     </div>
-                    <div class="stats-grid" id="multiStats"></div>
-                    <div class="stats-grid" id="multiStatsDetail" style="margin-top: 0.5rem;"></div>
+                    <div class="stats-grid" id="threadCompareStats"></div>
+                    <div class="stats-grid" id="threadCompareStatsDetail" style="margin-top: 0.5rem;"></div>
                 </div>
             </div>
 
@@ -276,7 +355,7 @@
                             <table class="result-table">
                                 <thead id="compareTableHeader"></thead>
                                 <tbody id="compareTableBody"></tbody>
-                            </table>
+                            <table>
                         </div>
                     </div>
                 </div>
@@ -381,80 +460,59 @@
 
     <!-- ========== 模态框 ========== -->
     
-    <!-- 日期选择模态框 -->
-    <div id="datePickerModal" class="modal hidden">
+    <!-- 单线程日期选择模态框 -->
+    <div id="singleDatePickerModal" class="modal hidden">
         <div class="modal-content">
             <h3 style="margin-bottom: 1rem;">📅 选择日期范围</h3>
             <div class="filter-bar">
-                <input type="text" id="dateFilterInput" placeholder="筛选日期...">
-                <button class="btn btn-secondary" id="selectAllDatesBtn" style="padding: 0.4rem 0.8rem;">☑️ 全选</button>
-                <button class="btn btn-secondary" id="deselectAllDatesBtn" style="padding: 0.4rem 0.8rem;">⬜ 全不选</button>
-                <button class="btn btn-secondary" id="inverseDatesBtn" style="padding: 0.4rem 0.8rem;">🔄 反选</button>
+                <input type="text" id="singleDateFilterInput" placeholder="筛选日期...">
+                <button class="btn btn-secondary" id="singleSelectAllDatesBtn" style="padding: 0.4rem 0.8rem;">☑️ 全选</button>
+                <button class="btn btn-secondary" id="singleDeselectAllDatesBtn" style="padding: 0.4rem 0.8rem;">⬜ 全不选</button>
+                <button class="btn btn-secondary" id="singleInverseDatesBtn" style="padding: 0.4rem 0.8rem;">🔄 反选</button>
             </div>
-            <div id="dateOptionsContainer" class="date-options"></div>
+            <div id="singleDateOptionsContainer" class="date-options"></div>
             <div class="btn-group" style="margin-top: 1rem; justify-content: flex-end;">
-                <button class="btn btn-secondary" id="closeDateModalBtn">取消</button>
-                <button class="btn btn-primary" id="confirmDateBtn">确认</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- 添加Case模态框 -->
-    <div id="addCaseModal" class="modal hidden">
-        <div class="modal-content" style="max-width: 700px;">
-            <div class="modal-header">
-                <h3>📁 添加Case路径</h3>
-                <button class="btn btn-secondary close-modal-btn" style="padding: 0.25rem 0.5rem;">✕</button>
-            </div>
-            
-            <div style="margin-bottom: 1rem;">
-                <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
-                    <input type="text" id="newCasePathInput" class="form-input" placeholder="输入Case路径..." style="flex: 2; min-width: 200px;">
-                    <button class="btn btn-primary" id="addCaseConfigBtn" style="flex-shrink: 0;">➕ 添加路径</button>
-                </div>
-                <div class="config-hint" style="margin-top: 0.5rem;">
-                    💡 支持JSON文件路径或目录路径，例如：./data/elint.json
-                </div>
-            </div>
-            
-            <div style="margin-bottom: 1rem;">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
-                    <span style="font-weight: 600;">📋 Case列表</span>
-                    <span style="font-size: 0.7rem; color: var(--text-muted);">共 <span id="caseCount">0</span> 个Case</span>
-                </div>
-                <div id="caseConfigContainer" class="case-config-list" style="max-height: 300px; overflow-y: auto;">
-                    <!-- Case配置列表会动态渲染 -->
-                    <div style="text-align: center; padding: 2rem; color: var(--text-muted);">
-                        <div>📁 暂无Case配置</div>
-                        <div style="font-size: 0.8rem; margin-top: 0.5rem;">点击上方按钮添加Case路径</div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="btn-group" style="margin-top: 1rem; justify-content: flex-end; gap: 0.75rem;">
-                <button class="btn btn-secondary close-modal-btn">取消</button>
-                <button class="btn btn-primary" id="confirmLoadCaseBtn">✅ 确认加载</button>
+                <button class="btn btn-secondary" id="singleCloseDateModalBtn">取消</button>
+                <button class="btn btn-primary" id="singleConfirmDateBtn">确认</button>
             </div>
         </div>
     </div>
 
     <!-- 多线程日期选择模态框 -->
-    <div id="multiDatePickerModal" class="modal hidden">
+    <div id="multiThreadDatePickerModal" class="modal hidden">
+        <div class="modal-content">
+            <h3 style="margin-bottom: 1rem;">📅 选择日期范围</h3>
+            <div class="filter-bar">
+                <input type="text" id="multiThreadDateFilterInput" placeholder="筛选日期...">
+                <button class="btn btn-secondary" id="multiThreadSelectAllDatesBtn" style="padding: 0.4rem 0.8rem;">☑️ 全选</button>
+                <button class="btn btn-secondary" id="multiThreadDeselectAllDatesBtn" style="padding: 0.4rem 0.8rem;">⬜ 全不选</button>
+                <button class="btn btn-secondary" id="multiThreadInverseDatesBtn" style="padding: 0.4rem 0.8rem;">🔄 反选</button>
+            </div>
+            <div id="multiThreadDateOptionsContainer" class="date-options"></div>
+            <div class="btn-group" style="margin-top: 1rem; justify-content: flex-end;">
+                <button class="btn btn-secondary" id="multiThreadCloseDateModalBtn">取消</button>
+                <button class="btn btn-primary" id="multiThreadConfirmDateBtn">确认</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 线程曲线图日期选择模态框（原多线程对比） -->
+    <div id="threadCompareDatePickerModal" class="modal hidden">
         <div class="modal-content">
             <h3 style="margin-bottom: 1rem;">📅 选择日期</h3>
             <div class="filter-bar">
-                <input type="text" id="multiDateFilterInput" placeholder="筛选日期...">
+                <input type="text" id="threadCompareDateFilterInput" placeholder="筛选日期...">
                 <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
-                    <input type="radio" name="multiSelectMode" value="single" checked> 单选
+                    <input type="radio" name="threadCompareSelectMode" value="single" checked> 单选
                 </label>
                 <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
-                    <input type="radio" name="multiSelectMode" value="all"> 全选
+                    <input type="radio" name="threadCompareSelectMode" value="all"> 全选
                 </label>
             </div>
-            <div id="multiDateOptionsContainer" class="date-options"></div>
+            <div id="threadCompareDateOptionsContainer" class="date-options"></div>
             <div class="btn-group" style="margin-top: 1rem; justify-content: flex-end;">
-                <button class="btn btn-secondary" id="multiCloseDateModalBtn">取消</button>
-                <button class="btn btn-primary" id="multiConfirmDateBtn">确认</button>
+                <button class="btn btn-secondary" id="threadCompareCloseDateModalBtn">取消</button>
+                <button class="btn btn-primary" id="threadCompareConfirmDateBtn">确认</button>
             </div>
         </div>
     </div>
@@ -477,24 +535,62 @@
         </div>
     </div>
     
-    <!-- 线程选择模态框 -->
-    <div id="threadSelectorModal" class="modal hidden">
+    <!-- 单线程线程选择模态框 -->
+    <div id="singleThreadSelectorModal" class="modal hidden">
         <div class="modal-content">
             <h3 style="margin-bottom: 1rem;">🧵 选择线程</h3>
             <div class="filter-bar" style="margin-bottom: 0.75rem;">
-                <input type="text" id="threadFilterInput" placeholder="筛选线程..." style="flex: 1;">
+                <input type="text" id="singleThreadFilterInput" placeholder="筛选线程..." style="flex: 1;">
                 <div class="btn-group" style="flex-shrink: 0;">
-                    <button class="btn btn-secondary" id="selectAllThreadsBtn" style="padding: 0.4rem 0.8rem;">☑️ 全选</button>
-                    <button class="btn btn-secondary" id="deselectAllThreadsBtn" style="padding: 0.4rem 0.8rem;">⬜ 全不选</button>
-                    <button class="btn btn-secondary" id="inverseThreadsBtn" style="padding: 0.4rem 0.8rem;">🔄 反选</button>
+                    <button class="btn btn-secondary" id="singleSelectAllThreadsBtn" style="padding: 0.4rem 0.8rem;">☑️ 全选</button>
+                    <button class="btn btn-secondary" id="singleDeselectAllThreadsBtn" style="padding: 0.4rem 0.8rem;">⬜ 全不选</button>
+                    <button class="btn btn-secondary" id="singleInverseThreadsBtn" style="padding: 0.4rem 0.8rem;">🔄 反选</button>
                 </div>
             </div>
-            <div id="threadSelectorModalContent" class="thread-options">
-                <!-- 线程选项会动态渲染 -->
-            </div>
+            <div id="singleThreadSelectorModalContent" class="thread-options"></div>
             <div class="btn-group" style="margin-top: 1rem; justify-content: flex-end; gap: 0.75rem;">
-                <button class="btn btn-secondary" id="closeThreadModalBtn">取消</button>
-                <button class="btn btn-primary" id="confirmThreadModalBtn">确认</button>
+                <button class="btn btn-secondary" id="singleCloseThreadModalBtn">取消</button>
+                <button class="btn btn-primary" id="singleConfirmThreadModalBtn">确认</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 多线程线程选择模态框 -->
+    <div id="multiThreadSelectorModal" class="modal hidden">
+        <div class="modal-content">
+            <h3 style="margin-bottom: 1rem;">🧵 选择线程</h3>
+            <div class="filter-bar" style="margin-bottom: 0.75rem;">
+                <input type="text" id="multiThreadFilterInput" placeholder="筛选线程..." style="flex: 1;">
+                <div class="btn-group" style="flex-shrink: 0;">
+                    <button class="btn btn-secondary" id="multiThreadSelectAllThreadsBtn" style="padding: 0.4rem 0.8rem;">☑️ 全选</button>
+                    <button class="btn btn-secondary" id="multiThreadDeselectAllThreadsBtn" style="padding: 0.4rem 0.8rem;">⬜ 全不选</button>
+                    <button class="btn btn-secondary" id="multiThreadInverseThreadsBtn" style="padding: 0.4rem 0.8rem;">🔄 反选</button>
+                </div>
+            </div>
+            <div id="multiThreadSelectorModalContent" class="thread-options"></div>
+            <div class="btn-group" style="margin-top: 1rem; justify-content: flex-end; gap: 0.75rem;">
+                <button class="btn btn-secondary" id="multiThreadCloseThreadModalBtn">取消</button>
+                <button class="btn btn-primary" id="multiThreadConfirmThreadModalBtn">确认</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 线程曲线图线程选择模态框（原多线程对比） -->
+    <div id="threadCompareSelectorModal" class="modal hidden">
+        <div class="modal-content">
+            <h3 style="margin-bottom: 1rem;">🧵 选择线程</h3>
+            <div class="filter-bar" style="margin-bottom: 0.75rem;">
+                <input type="text" id="threadCompareFilterInput" placeholder="筛选线程..." style="flex: 1;">
+                <div class="btn-group" style="flex-shrink: 0;">
+                    <button class="btn btn-secondary" id="threadCompareSelectAllThreadsBtn" style="padding: 0.4rem 0.8rem;">☑️ 全选</button>
+                    <button class="btn btn-secondary" id="threadCompareDeselectAllThreadsBtn" style="padding: 0.4rem 0.8rem;">⬜ 全不选</button>
+                    <button class="btn btn-secondary" id="threadCompareInverseThreadsBtn" style="padding: 0.4rem 0.8rem;">🔄 反选</button>
+                </div>
+            </div>
+            <div id="threadCompareSelectorModalContent" class="thread-options"></div>
+            <div class="btn-group" style="margin-top: 1rem; justify-content: flex-end; gap: 0.75rem;">
+                <button class="btn btn-secondary" id="threadCompareCloseThreadModalBtn">取消</button>
+                <button class="btn btn-primary" id="threadCompareConfirmThreadModalBtn">确认</button>
             </div>
         </div>
     </div>
@@ -511,9 +607,7 @@
                     <button class="btn btn-secondary" id="customInverseThreadsBtn" style="padding: 0.4rem 0.8rem;">🔄 反选</button>
                 </div>
             </div>
-            <div id="customThreadSelectorModalContent" class="thread-options">
-                <!-- 线程选项会动态渲染 -->
-            </div>
+            <div id="customThreadSelectorModalContent" class="thread-options"></div>
             <div class="btn-group" style="margin-top: 1rem; justify-content: flex-end; gap: 0.75rem;">
                 <button class="btn btn-secondary" id="customCloseThreadModalBtn">取消</button>
                 <button class="btn btn-primary" id="customConfirmThreadModalBtn">确认</button>
@@ -542,8 +636,9 @@
     
     <script src="{{ url_for('static', filename='js/utils.js') }}"></script>
     <script src="{{ url_for('static', filename='js/chart-utils.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/timeline.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/multi-thread.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/single-thread.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/multi-thread-chart.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/thread-compare.js') }}"></script>
     <script src="{{ url_for('static', filename='js/compare.js') }}"></script>
     <script src="{{ url_for('static', filename='js/custom-chart.js') }}"></script>
     <script src="{{ url_for('static', filename='js/tool.js') }}"></script>
