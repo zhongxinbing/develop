@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>经典响应式布局示例</title>
+    <style>
+        /* 基础重置 与 CSS 变量 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: #f3f4f6;
+            color: #1f2937;
+            line-height: 1.5;
+            padding: 1rem; /* 全局留白 */
+        }
+
+        /* 布局容器：最大宽度居中，视觉聚焦 */
+        .layout {
+            max-width: 1280px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 1.5rem;
+            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05);
+            overflow: hidden;
+        }
+
+        /* --- 页眉区域 --- */
+        .header {
+            background: linear-gradient(135deg, #1e3a8a, #3b82f6);
+            color: white;
+            padding: 2rem 2rem;
+            text-align: center;
+        }
+        .header h1 {
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+        }
+        .header p {
+            opacity: 0.9;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        /* --- 导航栏 (flex 水平分布) --- */
+        .navbar {
+            background: #111827;
+            padding: 0.75rem 2rem;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+        }
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+            list-style: none;
+        }
+        .nav-links a {
+            color: #e5e7eb;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+        .nav-links a:hover {
+            color: #60a5fa;
+        }
+        .user-badge {
+            background: #374151;
+            padding: 0.25rem 0.8rem;
+            border-radius: 999px;
+            font-size: 0.85rem;
+            color: #f9fafb;
+        }
+
+        /* --- 主体区域：经典的侧边栏+主内容 (flex 响应式) --- */
+        .main-grid {
+            display: flex;
+            flex-wrap: wrap;  /* 小屏自动换行 */
+        }
+
+        /* 侧边栏: 窄屏占满，宽屏占 1/4 左右 */
+        .sidebar {
+            flex: 1;          /* 弹性成长 */
+            min-width: 220px;
+            background: #f9fafb;
+            padding: 2rem 1.5rem;
+            border-right: 1px solid #e5e7eb;
+        }
+        .sidebar-section {
+            margin-bottom: 2rem;
+        }
+        .sidebar-section h3 {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            padding-left: 0.5rem;
+            border-left: 4px solid #3b82f6;
+        }
+        .sidebar-menu {
+            list-style: none;
+        }
+        .sidebar-menu li {
+            margin-bottom: 0.75rem;
+        }
+        .sidebar-menu a {
+            text-decoration: none;
+            color: #4b5563;
+            display: block;
+            padding: 0.4rem 0.5rem;
+            border-radius: 0.5rem;
+            transition: all 0.2s;
+        }
+        .sidebar-menu a:hover {
+            background: #e5e7eb;
+            color: #111827;
+        }
+
+        /* 主内容区: 占据剩余空间 */
+        .content {
+            flex: 3;            /* 占据更大的弹性比例 */
+            min-width: 260px;
+            padding: 2rem 2rem;
+            background: white;
+        }
+        .card {
+            background: #ffffff;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            border: 1px solid #f0f2f5;
+        }
+        .card h2 {
+            font-size: 1.5rem;
+            margin-bottom: 0.75rem;
+        }
+        .placeholder-img {
+            background: #eef2ff;
+            height: 180px;
+            border-radius: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #3b82f6;
+            font-weight: 500;
+            margin: 1rem 0;
+        }
+
+        /* --- 页脚区域 --- */
+        .footer {
+            background: #f1f5f9;
+            text-align: center;
+            padding: 1.5rem;
+            border-top: 1px solid #e2e8f0;
+            color: #475569;
+            font-size: 0.9rem;
+        }
+
+        /* 响应式微调：当宽度小于 768px，侧边栏去掉右边框，增加上边距等 */
+        @media (max-width: 768px) {
+            body {
+                padding: 0.5rem;
+            }
+            .sidebar {
+                border-right: none;
+                border-bottom: 1px solid #e5e7eb;
+            }
+            .navbar {
+                flex-direction: column;
+                text-align: center;
+            }
+            .nav-links {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="layout">
+    <!-- 头部区域 -->
+    <header class="header">
+        <h1>✨ 布局设计工坊</h1>
+        <p>灵活 · 语义 · 响应式 —— 从经典布局开始</p>
+    </header>
+
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <ul class="nav-links">
+            <li><a href="#">首页</a></li>
+            <li><a href="#">产品</a></li>
+            <li><a href="#">解决方案</a></li>
+            <li><a href="#">文档</a></li>
+            <li><a href="#">关于</a></li>
+        </ul>
+        <div class="user-badge">👤 访客模式</div>
+    </nav>
+
+    <!-- 主体：侧边栏 + 主要内容 -->
+    <div class="main-grid">
+        <!-- 侧边栏区域 -->
+        <aside class="sidebar">
+            <div class="sidebar-section">
+                <h3>📁 导航菜单</h3>
+                <ul class="sidebar-menu">
+                    <li><a href="#">🏠 仪表盘</a></li>
+                    <li><a href="#">📊 数据统计</a></li>
+                    <li><a href="#">⚙️ 设置中心</a></li>
+                    <li><a href="#">💬 消息通知</a></li>
+                </ul>
+            </div>
+            <div class="sidebar-section">
+                <h3>📌 热门标签</h3>
+                <ul class="sidebar-menu">
+                    <li><a href="#"># Flexbox 布局</a></li>
+                    <li><a href="#"># CSS Grid</a></li>
+                    <li><a href="#"># 响应式设计</a></li>
+                    <li><a href="#"># 语义化HTML</a></li>
+                </ul>
+            </div>
+        </aside>
+
+        <!-- 主内容区域 -->
+        <main class="content">
+            <div class="card">
+                <h2>📐 理解弹性盒子 (Flexbox)</h2>
+                <p>Flexbox 是一维布局模型，非常适合导航栏、侧边栏+内容区这类组件。只需在父容器设置 <code>display: flex</code>，子项就可以灵活排列、换行。</p>
+                <div class="placeholder-img">📌 内容占位区 | 展示设计思路</div>
+                <p>配合 <code>flex-wrap</code> 和 <code>media queries</code>，布局在不同屏幕下自动适配，移动端切换为垂直排列，桌面端恢复双栏。</p>
+            </div>
+            <div class="card">
+                <h2>📌 CSS Grid 进阶选择</h2>
+                <p>Grid 更适合二维复杂布局（如作品集、卡片墙）。但经典的上-下+双栏结构，Flexbox 已经足够优雅。根据项目复杂度选择合适工具。</p>
+                <p style="margin-top: 0.8rem;">✅ 设计小贴士：始终为容器设置 <code>max-width</code> 和 <code>margin: 0 auto</code> 保证大屏幕居中，避免内容过度拉伸。</p>
+            </div>
+        </main>
+    </div>
+
+    <!-- 页脚区域 -->
+    <footer class="footer">
+        <p>© 2025 布局设计示例 | 采用语义化标签 + Flexbox + 移动优先响应式</p>
+    </footer>
+</div>
+</body>
+</html>
