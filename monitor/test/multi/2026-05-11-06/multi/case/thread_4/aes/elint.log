@@ -1,0 +1,8 @@
+ E0001 done: CpuTime(11s); RealTime(10s); PeakMem(30M); IncMem(2M)
+ E0002 done: CpuTime(10.1s); RealTime(4s); PeakMem(500M); IncMem(0M)
+ E0003 done: CpuTime(20.1s); RealTime(50s); PeakMem(602M); IncMem(1M)
+ E0004 done: CpuTime(30.1s); RealTime(62s); PeakMem(50M); IncMem(3M)
+ check_lint done: CpuTime(1000.1s); RealTime(20s); PeakMem(10M); IncMem(7M)
+ Overall done: CpuTime(10.1s); RealTime(10s); PeakMem(111M); IncMem(6M)
+ read_design done: CpuTime(95374.1s); RealTime(100s); PeakMem(15M); IncMem(156M)
+Current Threads : 4

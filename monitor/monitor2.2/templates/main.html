@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>EDA性能监控系统 - 工具选择</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+</head>
+<body>
+    <div class="container">
+        <!-- 头部区域 -->
+        <div class="hero">
+            <h1>⚡ EDA 性能监控系统</h1>
+            <p class="subtitle">实时监控 EDA 流程性能数据，支持多项目、多阶段、多线程对比分析</p>
+        </div>
+
+        <!-- 顶部工具栏 -->
+        <div style="display: flex; justify-content: flex-end; margin-bottom: 1.5rem;">
+            <button onclick="window.location.href='/tools_config'" class="mode-btn" style="background: rgba(99, 102, 241, 0.15); border: 1px solid var(--primary); padding: 0.5rem 1rem; border-radius: var(--radius-md); cursor: pointer; color: var(--primary-light);">
+                ⚙️ 工具配置管理
+            </button>
+        </div>
+
+        <!-- 统计卡片行 - Flexbox 布局 -->
+        <div class="stats-row">
+            <div class="stat-card">
+                <div class="stat-number" id="toolCount">0</div>
+                <div class="stat-label">可用工具</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="modeCount">0</div>
+                <div class="stat-label">监控模式</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">实时</div>
+                <div class="stat-label">数据更新</div>
+            </div>
+        </div>
+
+        <!-- 工具卡片网格 - CSS Grid 布局 -->
+        <div class="tools-grid" id="toolsGrid"></div>
+
+        <!-- 底部信息 -->
+        <div class="footer-info">
+            <span>📊 数据实时同步 | 🔄 自动检测更新 | 📈 支持多维度对比</span>
+        </div>
+    </div>
+
+    <!-- 加载遮罩 -->
+    <div id="loadingOverlay" class="loading-overlay" style="display: none;">
+        <div class="spinner"></div>
+    </div>
+
+    <script>
+        const toolsConfig = {{ tools | tojson }};
+    </script>
+    <script src="{{ url_for('static', filename='js/utils.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

@@ -1,0 +1,36 @@
+﻿性能对比报告
+生成时间,2026-05-25 17:11:29
+项目,openc910-main
+对比模式,所有阶段
+对比维度,both
+对比日期,20260507 vs 20260508
+
+=== 汇总统计 ===
+指标,数值
+总阶段数,3
+有效数据阶段数,3
+无数据阶段数,0
+
+=== Runtime 统计 ===
+Runtime增加阶段数,0
+Runtime减少阶段数,1
+Runtime平均变化率(%),90.36
+Runtime最大增加阶段,
+Runtime最大增加率(%),0
+Runtime最大减少阶段,Analysis
+Runtime最大减少率(%),-100
+
+=== Memory 统计 ===
+Memory增加阶段数,1
+Memory减少阶段数,2
+Memory平均变化率(%),86.24
+Memory最大增加阶段,DoUniquify
+Memory最大增加率(%),141.5916627190905
+Memory最大减少阶段,Analysis
+Memory最大减少率(%),-63.898916967509024
+
+=== 各阶段详细对比 ===
+阶段名称,是否有数据,Runtime(基准),Runtime(对比),Runtime差值,Runtime变化率(%),Runtime状态,Memory(基准),Memory(对比),Memory差值,Memory变化率(%),Memory状态
+Analysis,是,1.66,0,-1.66,-100,unchanged,2.77,1,-1.77,-63.9,decrease
+DoUniquify,是,30,3,-27,-90,decrease,21.11,51,29.89,141.59,increase
+Elaborate,是,10.57,2,-8.57,-81.08,unchanged,10.69,5,-5.69,-53.23,decrease

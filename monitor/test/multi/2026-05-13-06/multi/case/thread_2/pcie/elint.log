@@ -5,5 +5,4 @@
  check_lint done: CpuTime(200.1s); RealTime(200s); PeakMem(110M); IncMem(14M)
  Overall done: CpuTime(60.1s); RealTime(100s); PeakMem(101M); IncMem(15M)
  read_design done: CpuTime(206.1s); RealTime(400s); PeakMem(1000M); IncMem(16M)
-
 Current Threads : 2
