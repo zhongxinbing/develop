@@ -1,0 +1,54 @@
+<!-- frontend/index.html - 正确的脚本加载顺序 -->
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>EDA QOR 性能监控平台</title>
+    
+    <!-- 字体和样式 -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- ECharts -->
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
+    
+    <!-- CSS样式 -->
+    <link rel="stylesheet" href="css/variables.css">
+    <link rel="stylesheet" href="css/common.css">
+    <link rel="stylesheet" href="css/home.css">
+    <link rel="stylesheet" href="css/config.css">
+    <link rel="stylesheet" href="css/tool.css">
+</head>
+<body>
+    <div id="app">
+        <div id="router-view"></div>
+    </div>
+    
+    <!-- ========== JS加载顺序（重要！按顺序加载） ========== -->
+    
+    <!-- 第1层：基础工具函数（无依赖） -->
+    <script src="js/utils.js"></script>
+    
+    <!-- 第2层：API和状态管理（依赖utils） -->
+    <script src="js/api.js"></script>
+    <script src="js/store.js"></script>
+    
+    <!-- 第3层：图表组件（依赖echarts，echarts已在head中加载） -->
+    <script src="js/chart-runtime.js"></script>
+    <script src="js/chart-memory.js"></script>
+    <script src="js/chart-compare.js"></script>
+    
+    <!-- 第4层：页面组件（依赖API、Store、图表组件） -->
+    <script src="js/home.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/tool.js"></script>
+    
+    <!-- 第5层：路由（依赖所有页面组件） -->
+    <script src="js/router.js"></script>
+    
+    <!-- 第6层：应用入口（依赖router） -->
+    <script src="js/app.js"></script>
+</body>
+</html>

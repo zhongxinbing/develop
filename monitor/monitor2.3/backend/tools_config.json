@@ -1,0 +1,12 @@
+{
+  "tools": {
+    "elint": {
+      "tool_name": "elint",
+      "tool_description": "111",
+      "single_thread_path": "/home/xbzhong/develop/monitor/test/signal",
+      "multi_thread_path": "/home/xbzhong/develop/monitor/test/multi",
+      "single_thread_interface": "load_single_thread_data",
+      "multi_thread_interface": "load_multi_thread_data"
+    }
+  }
+}

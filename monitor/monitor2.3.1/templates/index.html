@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>EDA QOR 性能监控平台</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="app-container">
+        <!-- 顶部导航栏 -->
+        <header class="header">
+            <div class="logo-area">
+                <div class="logo-icon">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <div class="logo-text">
+                    <h1>EDA QOR</h1>
+                    <span>性能监控平台</span>
+                </div>
+            </div>
+            <div class="header-actions">
+                <div class="user-info" id="userInfo">
+                    <i class="fas fa-user-circle"></i>
+                    <span>用户</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- 主内容区 -->
+        <main class="main-content">
+            <!-- 工具统计卡片 -->
+            <div class="stats-card" id="statsCard">
+                <div class="stats-number" id="toolCount">0</div>
+                <div class="stats-label">已配置工具</div>
+                <div class="stats-tooltip" id="toolTooltip">
+                    <div class="tooltip-header">
+                        <i class="fas fa-tools"></i>
+                        <span>工具列表</span>
+                    </div>
+                    <div class="tooltip-list" id="tooltipList"></div>
+                </div>
+            </div>
+
+            <!-- 工具卡片网格 -->
+            <div class="tools-grid" id="toolsGrid">
+                <!-- 空状态 -->
+                <div class="empty-state" id="emptyState" style="display: none;">
+                    <div class="empty-icon">
+                        <i class="fas fa-cube"></i>
+                    </div>
+                    <h3>暂无配置工具</h3>
+                    <p>点击右下角 + 按钮开始配置您的第一个工具</p>
+                </div>
+            </div>
+        </main>
+
+        <!-- 配置入口按钮 -->
+        <button class="fab-btn" id="configBtn" title="配置工具">
+            <i class="fas fa-plus"></i>
+        </button>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

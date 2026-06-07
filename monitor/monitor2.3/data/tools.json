@@ -1,0 +1,14 @@
+{
+  "5a2ae418": {
+    "name": "elint",
+    "description": "静态检查",
+    "single_thread_path": "/home/xbzhong/develop/monitor/test/signal",
+    "multi_thread_path": "/home/xbzhong/develop/monitor/test/multi",
+    "extra_display": [],
+    "single_thread_func": "get_elint_data",
+    "multi_thread_func": "get_multi_data",
+    "custom_curve_func": "get_custom_data",
+    "created_at": "2026-06-05T22:13:22.549003",
+    "updated_at": "2026-06-05T22:13:22.549013"
+  }
+}
