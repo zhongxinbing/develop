@@ -71,13 +71,8 @@ def gen_dict_data(caseData, data, thread):
         peakmem = float(item[2])
         incMem = float(item[3])
         rule_data[rulename] = {
-            "thread_metrics": {
-                thread: {
-                    "runtime": cputime,
-                    "memory": peakmem,
-                    # "cores": thread
-                }
-            }
+            "runtime": cputime,
+            "memory": peakmem
         }
     
     return rule_data
