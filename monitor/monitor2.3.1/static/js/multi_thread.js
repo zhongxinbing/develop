@@ -10,11 +10,11 @@ class MultiThreadManager {
         this.selectedDates = [];
         this.selectedThreads = [2, 4];
         this.availableThreads = [];
-        this.allDates = [];
-        this.allRules = [];
+        this.multiThreadAllDates = [];
+        this.multiThreadAllRules = [];
         this.rawData = {};
         this.userAddedData = {};
-        this.allData = {};
+        this.multiThreadAllData = {};
         
         // DOM 元素
         this.casenameSelect = document.getElementById('casenameSelect');
@@ -33,12 +33,12 @@ class MultiThreadManager {
     async refreshWithData(rawData, userAddedData) {
         this.rawData = rawData || {};
         this.userAddedData = userAddedData || {};
-        this.allData = { ...this.rawData, ...this.userAddedData };
+        this.multiThreadAllData = { ...this.rawData, ...this.userAddedData };
         this.selectedRules = ['Overall'];
         
         this.updateCasenameSelect();
         await this.updateRulesAndDates();
-        this.selectedDates = this.allDates.slice(-50);
+        this.selectedDates = this.multiThreadAllDates.slice(-50);
         await this.renderChart();
         this.updateOverview();
     }
@@ -85,9 +85,9 @@ class MultiThreadManager {
         
         this.rawData = cleanRawData;
         this.userAddedData = userAddedData || {};
-        this.allData = { ...this.rawData, ...this.userAddedData };
+        this.multiThreadAllData = { ...this.rawData, ...this.userAddedData };
         
-        console.log('MultiThreadManager 处理后数据 keys:', Object.keys(this.allData));
+        console.log('MultiThreadManager 处理后数据 keys:', Object.keys(this.multiThreadAllData));
         
         this.updateCasenameSelect();
         await this.updateRulesAndDates();
@@ -96,13 +96,13 @@ class MultiThreadManager {
         this.initDatePickerModal();
         this.initAddDataModal();
         
-        if (this.allDates.length > 0) {
+        if (this.multiThreadAllDates.length > 0) {
             this.selectLatest50Days();
         }
         
         console.log('MultiThreadManager.init 完成', { 
-            allDates: this.allDates.length, 
-            allRules: this.allRules.length,
+            multiThreadAllDates: this.multiThreadAllDates.length, 
+            multiThreadAllRules: this.multiThreadAllRules.length,
             availableThreads: this.availableThreads 
         });
     }
@@ -112,8 +112,8 @@ class MultiThreadManager {
      */
     updateCasenameSelect() {
         // 只显示有多线程数据的项目
-        const casenames = Object.keys(this.allData).filter(name => {
-            const data = this.allData[name];
+        const casenames = Object.keys(this.multiThreadAllData).filter(name => {
+            const data = this.multiThreadAllData[name];
             if (!data || typeof data !== 'object' || !data.daily_metrics) return false;
             
             // 检查是否包含 thread_metrics
@@ -149,12 +149,12 @@ class MultiThreadManager {
      * 更新Rules和Dates
      */
     async updateRulesAndDates() {
-        if (!this.selectedCasename || !this.allData[this.selectedCasename]) {
+        if (!this.selectedCasename || !this.multiThreadAllData[this.selectedCasename]) {
             console.log('updateRulesAndDates: 无有效的 casename', this.selectedCasename);
             return;
         }
         
-        const caseData = this.allData[this.selectedCasename];
+        const caseData = this.multiThreadAllData[this.selectedCasename];
         const dailyMetrics = caseData.daily_metrics || {};
         
         console.log('updateRulesAndDates - dailyMetrics keys:', Object.keys(dailyMetrics));
@@ -181,13 +181,13 @@ class MultiThreadManager {
             });
         });
         
-        this.allRules = Array.from(rulesSet).sort();
-        this.allDates = Array.from(datesSet).sort();
+        this.multiThreadAllRules = Array.from(rulesSet).sort();
+        this.multiThreadAllDates = Array.from(datesSet).sort();
         this.availableThreads = Array.from(threadsSet).sort((a, b) => a - b);
         
         // 确保 Overall 在第一位
-        if (this.allRules.includes('Overall')) {
-            this.allRules = ['Overall', ...this.allRules.filter(r => r !== 'Overall')];
+        if (this.multiThreadAllRules.includes('Overall')) {
+            this.multiThreadAllRules = ['Overall', ...this.multiThreadAllRules.filter(r => r !== 'Overall')];
         }
         
         // 如果没有可用线程，使用默认值
@@ -199,8 +199,8 @@ class MultiThreadManager {
         this.selectedThreads = [...this.availableThreads].slice(0, 5);
         
         console.log('updateRulesAndDates 完成', { 
-            allRules: this.allRules.length, 
-            allDates: this.allDates.length,
+            multiThreadAllRules: this.multiThreadAllRules.length, 
+            multiThreadAllDates: this.multiThreadAllDates.length,
             availableThreads: this.availableThreads,
             selectedThreads: this.selectedThreads
         });
@@ -217,8 +217,8 @@ class MultiThreadManager {
     updateRuleSelect() {
         const searchTerm = this.ruleSearch ? this.ruleSearch.value.toLowerCase() : '';
         const filteredRules = searchTerm 
-            ? this.allRules.filter(rule => rule.toLowerCase().includes(searchTerm))
-            : this.allRules;
+            ? this.multiThreadAllRules.filter(rule => rule.toLowerCase().includes(searchTerm))
+            : this.multiThreadAllRules;
         
         const options = filteredRules.map(rule => 
             `<option value="${this.escapeHtml(rule)}" ${this.selectedRules.includes(rule) ? 'selected' : ''}>
@@ -240,15 +240,15 @@ class MultiThreadManager {
         const date1Select = document.getElementById('date1Select');
         const date2Select = document.getElementById('date2Select');
         
-        const options = this.allDates.map(date => 
+        const options = this.multiThreadAllDates.map(date => 
             `<option value="${date}">${this.formatDate(date)}</option>`
         ).join('');
         
         if (date1Select) date1Select.innerHTML = options;
         if (date2Select) {
             date2Select.innerHTML = options;
-            if (this.allDates.length > 1) {
-                date2Select.value = this.allDates[this.allDates.length - 1];
+            if (this.multiThreadAllDates.length > 1) {
+                date2Select.value = this.multiThreadAllDates[this.multiThreadAllDates.length - 1];
             }
         }
     }
@@ -257,9 +257,9 @@ class MultiThreadManager {
      * 更新项目概况
      */
     updateOverview() {
-        const totalCases = Object.keys(this.allData).length;
-        const totalRules = this.allRules.length;
-        const totalDays = this.allDates.length;
+        const totalCases = Object.keys(this.multiThreadAllData).length;
+        const totalRules = this.multiThreadAllRules.length;
+        const totalDays = this.multiThreadAllDates.length;
         
         const totalCasesEl = document.getElementById('totalCases');
         const totalRulesEl = document.getElementById('totalRules');
@@ -384,7 +384,7 @@ class MultiThreadManager {
      * 选择最近50天
      */
     selectLatest50Days() {
-        this.selectedDates = this.allDates.slice(-50);
+        this.selectedDates = this.multiThreadAllDates.slice(-50);
         console.log('selectLatest50Days - selectedDates:', this.selectedDates.length);
         this.updateDatePickerModal();
         this.renderChart();
@@ -406,7 +406,7 @@ class MultiThreadManager {
         
         if (this.selectedDates.length === 0) {
             console.log('renderChart: 无 selectedDates，使用最近50天');
-            this.selectedDates = this.allDates.slice(-50);
+            this.selectedDates = this.multiThreadAllDates.slice(-50);
         }
         
         if (this.selectedThreads.length === 0 && this.availableThreads.length > 0) {
@@ -443,7 +443,7 @@ class MultiThreadManager {
         
         try {
             const requestData = {
-                raw_data: this.allData,
+                raw_data: this.multiThreadAllData,
                 casename: this.selectedCasename,
                 rules: this.selectedRules,
                 dates: this.selectedDates,
@@ -687,9 +687,9 @@ class MultiThreadManager {
      */
     async refresh() {
         this.userAddedData = {};
-        this.allData = { ...this.rawData };
+        this.multiThreadAllData = { ...this.rawData };
         this.selectedRules = ['Overall'];
-        this.selectedDates = this.allDates.slice(-50);
+        this.selectedDates = this.multiThreadAllDates.slice(-50);
         this.updateCasenameSelect();
         await this.updateRulesAndDates();
         await this.renderChart();
@@ -706,7 +706,7 @@ class MultiThreadManager {
                 console.log('Casename changed to:', this.selectedCasename);
                 await this.updateRulesAndDates();
                 this.selectedRules = ['Overall'];
-                this.selectedDates = this.allDates.slice(-50);
+                this.selectedDates = this.multiThreadAllDates.slice(-50);
                 await this.renderChart();
                 this.updateOverview();
             });
@@ -800,7 +800,7 @@ class MultiThreadManager {
         const dateList = document.getElementById('dateList');
         if (!dateList) return;
         
-        dateList.innerHTML = this.allDates.map(date => `
+        dateList.innerHTML = this.multiThreadAllDates.map(date => `
             <div class="date-item">
                 <input type="checkbox" class="date-checkbox" value="${date}" 
                     ${this.selectedDates.includes(date) ? 'checked' : ''}>
@@ -810,7 +810,7 @@ class MultiThreadManager {
         
         const selectAll = document.getElementById('selectAllDates');
         if (selectAll) {
-            selectAll.checked = this.selectedDates.length === this.allDates.length && this.allDates.length > 0;
+            selectAll.checked = this.selectedDates.length === this.multiThreadAllDates.length && this.multiThreadAllDates.length > 0;
         }
     }
     
@@ -870,7 +870,7 @@ class MultiThreadManager {
             if (response.data.success) {
                 const newData = response.data.data || {};
                 this.userAddedData = { ...this.userAddedData, ...newData };
-                this.allData = { ...this.rawData, ...this.userAddedData };
+                this.multiThreadAllData = { ...this.rawData, ...this.userAddedData };
                 this.updateCasenameSelect();
                 await this.updateRulesAndDates();
                 await this.renderChart();

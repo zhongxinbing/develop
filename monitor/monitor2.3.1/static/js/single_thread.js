@@ -8,11 +8,11 @@ class SingleThreadManager {
         this.selectedCasename = '';
         this.selectedRules = ['Overall'];
         this.selectedDates = [];
-        this.allDates = [];
-        this.allRules = [];
+        this.signalThreadAllDates = [];
+        this.signalThreadAllRules = [];
         this.rawData = {};
         this.userAddedData = {};
-        this.multiThreadAllData = {};
+        this.signalThreadAllData = {};
         
         // DOM 元素
         this.casenameSelect = document.getElementById('casenameSelect');
@@ -61,16 +61,16 @@ class SingleThreadManager {
         
         this.rawData = cleanRawData;
         this.userAddedData = userAddedData || {};
-        this.multiThreadAllData = { ...this.rawData, ...this.userAddedData };
+        this.signalThreadAllData = { ...this.rawData, ...this.userAddedData };
         
-        console.log('SingleThreadManager 处理后数据 keys:', Object.keys(this.multiThreadAllData));
+        console.log('SingleThreadManager 处理后数据 keys:', Object.keys(this.signalThreadAllData));
         
         // 如果有数据，打印第一个项目的结构用于调试
-        if (Object.keys(this.multiThreadAllData).length > 0) {
-            const firstKey = Object.keys(this.multiThreadAllData)[0];
+        if (Object.keys(this.signalThreadAllData).length > 0) {
+            const firstKey = Object.keys(this.signalThreadAllData)[0];
             console.log(`SingleThread 项目示例 (${firstKey}):`, {
-                hasDailyMetrics: !!this.multiThreadAllData[firstKey]?.daily_metrics,
-                datesCount: Object.keys(this.multiThreadAllData[firstKey]?.daily_metrics || {}).length
+                hasDailyMetrics: !!this.signalThreadAllData[firstKey]?.daily_metrics,
+                datesCount: Object.keys(this.signalThreadAllData[firstKey]?.daily_metrics || {}).length
             });
         }
         
@@ -80,13 +80,13 @@ class SingleThreadManager {
         this.initDatePickerModal();
         this.initAddDataModal();
         
-        if (this.allDates.length > 0) {
+        if (this.signalThreadAllDates.length > 0) {
             this.selectLatest50Days();
         }
         
         console.log('SingleThreadManager.init 完成', { 
-            allDates: this.allDates.length, 
-            allRules: this.allRules.length 
+            signalThreadAllDates: this.signalThreadAllDates.length, 
+            signalThreadAllRules: this.signalThreadAllRules.length 
         });
     }
 
@@ -95,8 +95,8 @@ class SingleThreadManager {
      */
     updateCasenameSelect() {
         // 只显示有 daily_metrics 的项目
-        const casenames = Object.keys(this.multiThreadAllData).filter(name => {
-            const data = this.multiThreadAllData[name];
+        const casenames = Object.keys(this.signalThreadAllData).filter(name => {
+            const data = this.signalThreadAllData[name];
             return data && typeof data === 'object' && data.daily_metrics;
         });
         
@@ -120,12 +120,12 @@ class SingleThreadManager {
      * 更新Rules和Dates
      */
     async updateRulesAndDates() {
-        if (!this.selectedCasename || !this.multiThreadAllData[this.selectedCasename]) {
+        if (!this.selectedCasename || !this.signalThreadAllData[this.selectedCasename]) {
             console.log('updateRulesAndDates: 无有效的 casename', this.selectedCasename);
             return;
         }
         
-        const caseData = this.multiThreadAllData[this.selectedCasename];
+        const caseData = this.signalThreadAllData[this.selectedCasename];
         const dailyMetrics = caseData.daily_metrics || {};
         
         console.log('updateRulesAndDates - dailyMetrics keys:', Object.keys(dailyMetrics));
@@ -143,16 +143,16 @@ class SingleThreadManager {
             }
         });
         
-        this.allRules = Array.from(rulesSet).sort();
-        this.allDates = Array.from(datesSet).sort();
-        
-        if (this.allRules.includes('Overall')) {
-            this.allRules = ['Overall', ...this.allRules.filter(r => r !== 'Overall')];
+        this.signalThreadAllRules = Array.from(rulesSet).sort();
+        this.signalThreadAllDates = Array.from(datesSet).sort();
+        console.warn("单线程的日期:", this.signalThreadAllDates)
+        if (this.signalThreadAllRules.includes('Overall')) {
+            this.signalThreadAllRules = ['Overall', ...this.signalThreadAllRules.filter(r => r !== 'Overall')];
         }
         
         console.log('updateRulesAndDates 完成', { 
-            allRules: this.allRules.length, 
-            allDates: this.allDates.length 
+            signalThreadAllRules: this.signalThreadAllRules.length, 
+            signalThreadAllDates: this.signalThreadAllDates.length 
         });
         
         this.updateRuleSelect();
@@ -165,8 +165,8 @@ class SingleThreadManager {
     updateRuleSelect() {
         const searchTerm = this.ruleSearch ? this.ruleSearch.value.toLowerCase() : '';
         const filteredRules = searchTerm 
-            ? this.allRules.filter(rule => rule.toLowerCase().includes(searchTerm))
-            : this.allRules;
+            ? this.signalThreadAllRules.filter(rule => rule.toLowerCase().includes(searchTerm))
+            : this.signalThreadAllRules;
         
         const options = filteredRules.map(rule => 
             `<option value="${this.escapeHtml(rule)}" ${this.selectedRules.includes(rule) ? 'selected' : ''}>
@@ -188,12 +188,12 @@ class SingleThreadManager {
     async refreshWithData(rawData, userAddedData) {
         this.rawData = rawData || {};
         this.userAddedData = userAddedData || {};
-        this.multiThreadAllData = { ...this.rawData, ...this.userAddedData };
+        this.signalThreadAllData = { ...this.rawData, ...this.userAddedData };
         this.selectedRules = ['Overall'];
         
         this.updateCasenameSelect();
         await this.updateRulesAndDates();
-        this.selectedDates = this.allDates.slice(-50);
+        this.selectedDates = this.signalThreadAllDates.slice(-50);
         await this.renderChart();
         this.updateOverview();
     }
@@ -206,15 +206,15 @@ class SingleThreadManager {
         const date1Select = document.getElementById('date1Select');
         const date2Select = document.getElementById('date2Select');
         
-        const options = this.allDates.map(date => 
+        const options = this.signalThreadAllDates.map(date => 
             `<option value="${date}">${this.formatDate(date)}</option>`
         ).join('');
         
         if (date1Select) date1Select.innerHTML = options;
         if (date2Select) {
             date2Select.innerHTML = options;
-            if (this.allDates.length > 1) {
-                date2Select.value = this.allDates[this.allDates.length - 1];
+            if (this.signalThreadAllDates.length > 1) {
+                date2Select.value = this.signalThreadAllDates[this.signalThreadAllDates.length - 1];
             }
         }
     }
@@ -223,7 +223,7 @@ class SingleThreadManager {
      * 选择最近50天
      */
     selectLatest50Days() {
-        this.selectedDates = this.allDates.slice(-50);
+        this.selectedDates = this.signalThreadAllDates.slice(-50);
         console.log('selectLatest50Days - selectedDates:', this.selectedDates.length);
         this.updateDatePickerModal();
         this.renderChart();
@@ -245,7 +245,7 @@ class SingleThreadManager {
         
         if (this.selectedDates.length === 0) {
             console.log('renderChart: 无 selectedDates，使用最近50天');
-            this.selectedDates = this.allDates.slice(-50);
+            this.selectedDates = this.signalThreadAllDates.slice(-50);
         }
         
         console.log('renderChart 参数:', {
@@ -277,7 +277,7 @@ class SingleThreadManager {
         
         try {
             const requestData = {
-                raw_data: this.multiThreadAllData,
+                raw_data: this.signalThreadAllData,
                 casename: this.selectedCasename,
                 rules: this.selectedRules,
                 dates: this.selectedDates,
@@ -513,9 +513,9 @@ class SingleThreadManager {
      */
     async refresh() {
         this.userAddedData = {};
-        this.multiThreadAllData = { ...this.rawData };
+        this.signalThreadAllData = { ...this.rawData };
         this.selectedRules = ['Overall'];
-        this.selectedDates = this.allDates.slice(-50);
+        this.selectedDates = this.signalThreadAllDates.slice(-50);
         this.updateCasenameSelect();
         await this.updateRulesAndDates();
         await this.renderChart();
@@ -531,7 +531,7 @@ class SingleThreadManager {
                 console.log('Casename changed to:', this.selectedCasename);
                 await this.updateRulesAndDates();
                 this.selectedRules = ['Overall'];
-                this.selectedDates = this.allDates.slice(-50);
+                this.selectedDates = this.signalThreadAllDates.slice(-50);
                 await this.renderChart();
                 this.updateOverview();
             });
@@ -562,9 +562,9 @@ class SingleThreadManager {
      * 更新项目概况
      */
     updateOverview() {
-        const totalCases = Object.keys(this.multiThreadAllData).length;
-        const totalRules = this.allRules.length;
-        const totalDays = this.allDates.length;
+        const totalCases = Object.keys(this.signalThreadAllData).length;
+        const totalRules = this.signalThreadAllRules.length;
+        const totalDays = this.signalThreadAllDates.length;
         
         const totalCasesEl = document.getElementById('totalCases');
         const totalRulesEl = document.getElementById('totalRules');
@@ -642,7 +642,7 @@ class SingleThreadManager {
         const dateList = document.getElementById('dateList');
         if (!dateList) return;
         
-        dateList.innerHTML = this.allDates.map(date => `
+        dateList.innerHTML = this.signalThreadAllDates.map(date => `
             <div class="date-item">
                 <input type="checkbox" class="date-checkbox" value="${date}" 
                     ${this.selectedDates.includes(date) ? 'checked' : ''}>
@@ -652,7 +652,7 @@ class SingleThreadManager {
         
         const selectAll = document.getElementById('selectAllDates');
         if (selectAll) {
-            selectAll.checked = this.selectedDates.length === this.allDates.length && this.allDates.length > 0;
+            selectAll.checked = this.selectedDates.length === this.signalThreadAllDates.length && this.signalThreadAllDates.length > 0;
         }
     }
     
@@ -712,7 +712,7 @@ class SingleThreadManager {
             if (response.data.success) {
                 const newData = response.data.data || {};
                 this.userAddedData = { ...this.userAddedData, ...newData };
-                this.multiThreadAllData = { ...this.rawData, ...this.userAddedData };
+                this.signalThreadAllData = { ...this.rawData, ...this.userAddedData };
                 this.updateCasenameSelect();
                 await this.updateRulesAndDates();
                 await this.renderChart();
