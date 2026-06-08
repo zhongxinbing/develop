@@ -1,20 +1,19 @@
 {
-  "tools": {},
   "users": {
-    "de1b19d5-79ec-4407-bd40-3dd5a27dca1a": {
+    "0b44d2cb-fa68-49d3-8697-64cc1a8b7b47": {
       "tools": {
         "elint": {
           "tool_name": "elint",
-          "description": "111",
-          "single_thread_path": "/home/xbzhong/develop/monitor/test/signal",
+          "description": "静态工具",
+          "single_thread_path": "C:\\Users\\xbzhong\\Desktop\\lint\\script\\monitor\\develop\\monitor\\test\\signal",
           "single_thread_func": "get_elint_data",
-          "multi_thread_path": "/home/xbzhong/develop/monitor/test/multi",
+          "multi_thread_path": "C:\\Users\\xbzhong\\Desktop\\lint\\script\\monitor\\develop\\monitor\\test\\multi",
           "multi_thread_func": "get_multi_data",
           "extra_display_path": "",
           "extra_display_func": "",
           "custom_curve_func": "",
-          "created_at": "2026-06-07T19:24:26.237124",
-          "updated_at": "2026-06-07T21:44:26.026135"
+          "created_at": "2026-06-08T12:57:25.969281",
+          "updated_at": "2026-06-08T12:57:25.969288"
         }
       }
     }

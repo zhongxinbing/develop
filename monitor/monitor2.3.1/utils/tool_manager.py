@@ -6,7 +6,7 @@ from pathlib import Path
 from typing import Dict, Optional
 from threading import Lock
 
-from config import CONFIG_FILE, TOOL_DATA_DIR, DEFAULT_CONFIG
+from config import CONFIG_FILE, DATA_DIR, DEFAULT_CONFIG
 
 
 class ToolManager:
@@ -19,6 +19,11 @@ class ToolManager:
     DATA_TYPE_SINGLE = 'single'   # 单线程数据
     DATA_TYPE_MULTI = 'multi'     # 多线程数据
     DATA_TYPE_EXTRA = 'extra'     # 用户添加数据
+    
+    # 数据文件命名常量
+    SINGLE_FILE_SUFFIX = '_signal.json'   # 单线程数据文件后缀
+    MULTI_FILE_SUFFIX = '_multi.json'     # 多线程数据文件后缀
+    EXTRA_FILE_SUFFIX = '_extra.json'     # 用户添加数据文件后缀
     
     def __new__(cls):
         if cls._instance is None:
@@ -47,20 +52,59 @@ class ToolManager:
         with open(CONFIG_FILE, 'w', encoding='utf-8') as f:
             json.dump(self._config, f, ensure_ascii=False, indent=2)
     
-    def _get_tool_data_path(self, user_id: str, tool_id: str, data_type: str) -> Path:
+    def _get_tool_data_path(self, tool_name: str, data_type: str) -> Path:
         """
-        获取工具数据文件路径（分层存储）
+        获取工具数据文件路径（统一存放在 data/tool_name/ 目录下）
+        
+        参数:
+            tool_name: 工具名称
+            data_type: 数据类型 ('single', 'multi', 'extra')
+        
+        返回:
+            Path: 数据文件路径
+            - 单线程: data/tool_name/tool_name_signal.json
+            - 多线程: data/tool_name/tool_name_multi.json
+            - 用户添加: data/tool_name/tool_name_extra.json
+        """
+        # 工具专属目录: data/{tool_name}/
+        tool_dir = DATA_DIR / tool_name
+        tool_dir.mkdir(parents=True, exist_ok=True)
+        
+        # 根据数据类型返回对应的文件路径
+        if data_type == self.DATA_TYPE_SINGLE:
+            file_name = f"{tool_name}{self.SINGLE_FILE_SUFFIX}"
+        elif data_type == self.DATA_TYPE_MULTI:
+            file_name = f"{tool_name}{self.MULTI_FILE_SUFFIX}"
+        else:  # extra
+            file_name = f"{tool_name}{self.EXTRA_FILE_SUFFIX}"
+        
+        return tool_dir / file_name
+    
+    def _get_user_data_path(self, user_id: str, tool_name: str, data_type: str) -> Path:
+        """
+        获取用户隔离的数据文件路径（保留用户隔离功能）
         
         参数:
             user_id: 用户ID
-            tool_id: 工具ID
-            data_type: 数据类型 ('single', 'multi', 'extra')
+            tool_name: 工具名称
+            data_type: 数据类型
+        
+        返回:
+            Path: 用户隔离的数据文件路径: data/tool_name/{user_id}/tool_name_{data_type}.json
         """
-        user_dir = TOOL_DATA_DIR / user_id
+        # 工具专属目录下的用户子目录: data/{tool_name}/{user_id}/
+        user_dir = DATA_DIR / tool_name / user_id
         user_dir.mkdir(parents=True, exist_ok=True)
         
-        # 按数据类型分别存储
-        return user_dir / f"{tool_id}_{data_type}.json"
+        # 根据数据类型返回对应的文件路径
+        if data_type == self.DATA_TYPE_SINGLE:
+            file_name = f"{tool_name}_single.json"
+        elif data_type == self.DATA_TYPE_MULTI:
+            file_name = f"{tool_name}_multi.json"
+        else:  # extra
+            file_name = f"{tool_name}_extra.json"
+        
+        return user_dir / file_name
     
     # ==================== 工具配置管理 ====================
     
@@ -116,14 +160,39 @@ class ToolManager:
         if tool_id not in tools:
             return False
         
+        tool_config = tools[tool_id]
+        tool_name = tool_config.get('tool_name', tool_id)
+        
         del tools[tool_id]
         self._save_config()
         
-        # 删除所有相关数据文件
+        # 删除所有相关数据文件（包括用户隔离的文件）
+        # 1. 删除工具公共数据文件
         for data_type in [self.DATA_TYPE_SINGLE, self.DATA_TYPE_MULTI, self.DATA_TYPE_EXTRA]:
-            data_path = self._get_tool_data_path(user_id, tool_id, data_type)
+            data_path = self._get_tool_data_path(tool_name, data_type)
             if data_path.exists():
                 data_path.unlink()
+        
+        # 2. 删除用户隔离的数据文件
+        user_data_path = self._get_user_data_path(user_id, tool_name, self.DATA_TYPE_SINGLE)
+        if user_data_path.exists():
+            user_data_path.unlink()
+        user_data_path = self._get_user_data_path(user_id, tool_name, self.DATA_TYPE_MULTI)
+        if user_data_path.exists():
+            user_data_path.unlink()
+        user_data_path = self._get_user_data_path(user_id, tool_name, self.DATA_TYPE_EXTRA)
+        if user_data_path.exists():
+            user_data_path.unlink()
+        
+        # 3. 如果用户目录为空，删除用户目录
+        user_dir = DATA_DIR / tool_name / user_id
+        if user_dir.exists() and not any(user_dir.iterdir()):
+            user_dir.rmdir()
+        
+        # 4. 如果工具目录为空，删除工具目录
+        tool_dir = DATA_DIR / tool_name
+        if tool_dir.exists() and not any(tool_dir.iterdir()):
+            tool_dir.rmdir()
         
         # 清除缓存
         if user_id in self._cache:
@@ -137,32 +206,16 @@ class ToolManager:
     # ==================== 分层数据存储 ====================
     
     def save_single_thread_data(self, user_id: str, tool_id: str, data: Dict):
-        """保存单线程数据"""
-        self._save_data(user_id, tool_id, self.DATA_TYPE_SINGLE, data)
-    
-    def load_single_thread_data(self, user_id: str, tool_id: str) -> Optional[Dict]:
-        """加载单线程数据"""
-        return self._load_data(user_id, tool_id, self.DATA_TYPE_SINGLE)
-    
-    def save_multi_thread_data(self, user_id: str, tool_id: str, data: Dict):
-        """保存多线程数据"""
-        self._save_data(user_id, tool_id, self.DATA_TYPE_MULTI, data)
-    
-    def load_multi_thread_data(self, user_id: str, tool_id: str) -> Optional[Dict]:
-        """加载多线程数据"""
-        return self._load_data(user_id, tool_id, self.DATA_TYPE_MULTI)
-    
-    def save_extra_data(self, user_id: str, tool_id: str, data: Dict):
-        """保存用户添加的数据"""
-        self._save_data(user_id, tool_id, self.DATA_TYPE_EXTRA, data)
-    
-    def load_extra_data(self, user_id: str, tool_id: str) -> Optional[Dict]:
-        """加载用户添加的数据"""
-        return self._load_data(user_id, tool_id, self.DATA_TYPE_EXTRA)
-    
-    def _save_data(self, user_id: str, tool_id: str, data_type: str, data: Dict):
-        """内部保存数据方法"""
-        data_path = self._get_tool_data_path(user_id, tool_id, data_type)
+        """保存单线程数据（使用用户隔离存储）"""
+        # 获取工具配置以获取工具名称
+        tool_config = self.get_tool(user_id, tool_id)
+        if not tool_config:
+            return
+        
+        tool_name = tool_config.get('tool_name', tool_id)
+        
+        # 保存到用户隔离的目录
+        data_path = self._get_user_data_path(user_id, tool_name, self.DATA_TYPE_SINGLE)
         
         # 确保目录存在
         data_path.parent.mkdir(parents=True, exist_ok=True)
@@ -170,37 +223,224 @@ class ToolManager:
         with open(data_path, 'w', encoding='utf-8') as f:
             json.dump(data, f, ensure_ascii=False, indent=2)
         
+        # 同时保存到公共目录（作为缓存/备份）
+        common_path = self._get_tool_data_path(tool_name, self.DATA_TYPE_SINGLE)
+        with open(common_path, 'w', encoding='utf-8') as f:
+            json.dump(data, f, ensure_ascii=False, indent=2)
+        
         # 更新缓存
         if user_id not in self._cache:
             self._cache[user_id] = {}
         if tool_id not in self._cache[user_id]:
             self._cache[user_id][tool_id] = {}
-        self._cache[user_id][tool_id][data_type] = data
+        self._cache[user_id][tool_id][self.DATA_TYPE_SINGLE] = data
     
-    def _load_data(self, user_id: str, tool_id: str, data_type: str) -> Optional[Dict]:
-        """内部加载数据方法"""
+    def load_single_thread_data(self, user_id: str, tool_id: str) -> Optional[Dict]:
+        """加载单线程数据（优先从用户隔离目录加载）"""
+        # 获取工具配置以获取工具名称
+        tool_config = self.get_tool(user_id, tool_id)
+        if not tool_config:
+            return None
+        
+        tool_name = tool_config.get('tool_name', tool_id)
+        
         # 检查缓存
         if user_id in self._cache:
             if tool_id in self._cache[user_id]:
-                if data_type in self._cache[user_id][tool_id]:
-                    return self._cache[user_id][tool_id][data_type]
+                if self.DATA_TYPE_SINGLE in self._cache[user_id][tool_id]:
+                    return self._cache[user_id][tool_id][self.DATA_TYPE_SINGLE]
         
-        # 从文件加载
-        data_path = self._get_tool_data_path(user_id, tool_id, data_type)
-        if data_path.exists():
-            with open(data_path, 'r', encoding='utf-8') as f:
+        # 优先从用户隔离目录加载
+        user_data_path = self._get_user_data_path(user_id, tool_name, self.DATA_TYPE_SINGLE)
+        if user_data_path.exists():
+            with open(user_data_path, 'r', encoding='utf-8') as f:
                 data = json.load(f)
+            
+            # 清理数据中的类型问题
+            data = self._clean_data_types(data)
             
             # 更新缓存
             if user_id not in self._cache:
                 self._cache[user_id] = {}
             if tool_id not in self._cache[user_id]:
                 self._cache[user_id][tool_id] = {}
-            self._cache[user_id][tool_id][data_type] = data
+            self._cache[user_id][tool_id][self.DATA_TYPE_SINGLE] = data
+            return data
+        
+        # 回退到公共目录
+        common_path = self._get_tool_data_path(tool_name, self.DATA_TYPE_SINGLE)
+        if common_path.exists():
+            with open(common_path, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+            
+            data = self._clean_data_types(data)
+            
+            if user_id not in self._cache:
+                self._cache[user_id] = {}
+            if tool_id not in self._cache[user_id]:
+                self._cache[user_id][tool_id] = {}
+            self._cache[user_id][tool_id][self.DATA_TYPE_SINGLE] = data
             return data
         
         return None
     
+    def save_multi_thread_data(self, user_id: str, tool_id: str, data: Dict):
+        """保存多线程数据（使用用户隔离存储）"""
+        tool_config = self.get_tool(user_id, tool_id)
+        if not tool_config:
+            return
+        
+        tool_name = tool_config.get('tool_name', tool_id)
+        
+        data_path = self._get_user_data_path(user_id, tool_name, self.DATA_TYPE_MULTI)
+        data_path.parent.mkdir(parents=True, exist_ok=True)
+        
+        with open(data_path, 'w', encoding='utf-8') as f:
+            json.dump(data, f, ensure_ascii=False, indent=2)
+        
+        # 同时保存到公共目录
+        common_path = self._get_tool_data_path(tool_name, self.DATA_TYPE_MULTI)
+        with open(common_path, 'w', encoding='utf-8') as f:
+            json.dump(data, f, ensure_ascii=False, indent=2)
+        
+        if user_id not in self._cache:
+            self._cache[user_id] = {}
+        if tool_id not in self._cache[user_id]:
+            self._cache[user_id][tool_id] = {}
+        self._cache[user_id][tool_id][self.DATA_TYPE_MULTI] = data
+    
+    def load_multi_thread_data(self, user_id: str, tool_id: str) -> Optional[Dict]:
+        """加载多线程数据（优先从用户隔离目录加载）"""
+        tool_config = self.get_tool(user_id, tool_id)
+        if not tool_config:
+            return None
+        
+        tool_name = tool_config.get('tool_name', tool_id)
+        
+        if user_id in self._cache:
+            if tool_id in self._cache[user_id]:
+                if self.DATA_TYPE_MULTI in self._cache[user_id][tool_id]:
+                    return self._cache[user_id][tool_id][self.DATA_TYPE_MULTI]
+        
+        # 优先从用户隔离目录加载
+        user_data_path = self._get_user_data_path(user_id, tool_name, self.DATA_TYPE_MULTI)
+        if user_data_path.exists():
+            with open(user_data_path, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+            
+            data = self._clean_data_types(data)
+            
+            if user_id not in self._cache:
+                self._cache[user_id] = {}
+            if tool_id not in self._cache[user_id]:
+                self._cache[user_id][tool_id] = {}
+            self._cache[user_id][tool_id][self.DATA_TYPE_MULTI] = data
+            return data
+        
+        # 回退到公共目录
+        common_path = self._get_tool_data_path(tool_name, self.DATA_TYPE_MULTI)
+        if common_path.exists():
+            with open(common_path, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+            
+            data = self._clean_data_types(data)
+            
+            if user_id not in self._cache:
+                self._cache[user_id] = {}
+            if tool_id not in self._cache[user_id]:
+                self._cache[user_id][tool_id] = {}
+            self._cache[user_id][tool_id][self.DATA_TYPE_MULTI] = data
+            return data
+        
+        return None
+    
+    def save_extra_data(self, user_id: str, tool_id: str, data: Dict):
+        """保存用户添加的数据（使用用户隔离存储）"""
+        tool_config = self.get_tool(user_id, tool_id)
+        if not tool_config:
+            return
+        
+        tool_name = tool_config.get('tool_name', tool_id)
+        
+        data_path = self._get_user_data_path(user_id, tool_name, self.DATA_TYPE_EXTRA)
+        data_path.parent.mkdir(parents=True, exist_ok=True)
+        
+        with open(data_path, 'w', encoding='utf-8') as f:
+            json.dump(data, f, ensure_ascii=False, indent=2)
+        
+        # 同时保存到公共目录
+        common_path = self._get_tool_data_path(tool_name, self.DATA_TYPE_EXTRA)
+        with open(common_path, 'w', encoding='utf-8') as f:
+            json.dump(data, f, ensure_ascii=False, indent=2)
+        
+        if user_id not in self._cache:
+            self._cache[user_id] = {}
+        if tool_id not in self._cache[user_id]:
+            self._cache[user_id][tool_id] = {}
+        self._cache[user_id][tool_id][self.DATA_TYPE_EXTRA] = data
+    
+    def load_extra_data(self, user_id: str, tool_id: str) -> Optional[Dict]:
+        """加载用户添加的数据（优先从用户隔离目录加载）"""
+        tool_config = self.get_tool(user_id, tool_id)
+        if not tool_config:
+            return None
+        
+        tool_name = tool_config.get('tool_name', tool_id)
+        
+        if user_id in self._cache:
+            if tool_id in self._cache[user_id]:
+                if self.DATA_TYPE_EXTRA in self._cache[user_id][tool_id]:
+                    return self._cache[user_id][tool_id][self.DATA_TYPE_EXTRA]
+        
+        # 优先从用户隔离目录加载
+        user_data_path = self._get_user_data_path(user_id, tool_name, self.DATA_TYPE_EXTRA)
+        if user_data_path.exists():
+            with open(user_data_path, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+            
+            data = self._clean_data_types(data)
+            
+            if user_id not in self._cache:
+                self._cache[user_id] = {}
+            if tool_id not in self._cache[user_id]:
+                self._cache[user_id][tool_id] = {}
+            self._cache[user_id][tool_id][self.DATA_TYPE_EXTRA] = data
+            return data
+        
+        # 回退到公共目录
+        common_path = self._get_tool_data_path(tool_name, self.DATA_TYPE_EXTRA)
+        if common_path.exists():
+            with open(common_path, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+            
+            data = self._clean_data_types(data)
+            
+            if user_id not in self._cache:
+                self._cache[user_id] = {}
+            if tool_id not in self._cache[user_id]:
+                self._cache[user_id][tool_id] = {}
+            self._cache[user_id][tool_id][self.DATA_TYPE_EXTRA] = data
+            return data
+        
+        return None
+    
+    def _clean_data_types(self, data):
+        """清理数据类型，确保所有数值都是数字"""
+        if isinstance(data, dict):
+            cleaned = {}
+            for k, v in data.items():
+                if k in ['thread_metrics']:
+                    cleaned[str(k)] = self._clean_data_types(v)
+                else:
+                    cleaned[k] = self._clean_data_types(v)
+            return cleaned
+        elif isinstance(data, list):
+            return [self._clean_data_types(item) for item in data]
+        elif isinstance(data, (int, float)):
+            return float(data)
+        else:
+            return data
+
     def get_all_tool_data(self, user_id: str, tool_id: str) -> Dict:
         """获取工具的所有数据（合并单线程、多线程、用户数据）"""
         result = {}
@@ -209,6 +449,9 @@ class ToolManager:
         single_data = self.load_single_thread_data(user_id, tool_id)
         if single_data:
             for casename, case_data in single_data.items():
+                # 跳过内部字段
+                if casename in ['dataFiles', '__multi_processed_logs__']:
+                    continue
                 if casename not in result:
                     result[casename] = case_data
         
@@ -216,6 +459,8 @@ class ToolManager:
         multi_data = self.load_multi_thread_data(user_id, tool_id)
         if multi_data:
             for casename, case_data in multi_data.items():
+                if casename in ['dataFiles', '__multi_processed_logs__']:
+                    continue
                 if casename not in result:
                     result[casename] = case_data
                 else:

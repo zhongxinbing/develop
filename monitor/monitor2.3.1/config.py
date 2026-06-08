@@ -7,7 +7,7 @@ from pathlib import Path
 # 基础目录
 BASE_DIR = Path(__file__).resolve().parent
 DATA_DIR = BASE_DIR / 'data'
-TOOL_DATA_DIR = DATA_DIR / 'tool_data'
+TOOL_DATA_DIR = DATA_DIR / 'tool_data'  # 保留用于兼容
 CONFIG_FILE = DATA_DIR / 'tools.json'
 
 # 创建必要的目录

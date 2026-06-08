@@ -1408,6 +1408,10 @@ body {
     }
 }
 
+/* ============================================
+   多线程选择器样式
+============================================ */
+
 /* 多选下拉框样式 */
 .multi-select {
     position: relative;
@@ -1423,6 +1427,12 @@ body {
     border: 1px solid var(--border-default);
     border-radius: var(--radius-sm);
     cursor: pointer;
+    font-size: 13px;
+    color: var(--text-primary);
+}
+
+.multi-select-trigger:hover {
+    border-color: var(--primary);
 }
 
 .multi-select-dropdown {
@@ -1436,6 +1446,50 @@ body {
     z-index: 100;
     max-height: 300px;
     overflow-y: auto;
+    margin-top: 4px;
+}
+
+.multi-select-search {
+    padding: 8px;
+    border-bottom: 1px solid var(--border-subtle);
+}
+
+.multi-select-search input {
+    width: 100%;
+    padding: 6px 8px;
+    background: var(--bg-base);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-sm);
+    color: var(--text-primary);
+    font-size: 12px;
+}
+
+.multi-select-search input:focus {
+    outline: none;
+    border-color: var(--primary);
+}
+
+.multi-select-actions {
+    display: flex;
+    gap: 8px;
+    padding: 8px;
+    border-bottom: 1px solid var(--border-subtle);
+}
+
+.multi-select-actions button {
+    background: transparent;
+    border: 1px solid var(--border-default);
+    padding: 4px 12px;
+    border-radius: var(--radius-sm);
+    color: var(--text-secondary);
+    font-size: 12px;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.multi-select-actions button:hover {
+    border-color: var(--primary);
+    color: var(--primary);
 }
 
 .multi-select-options {
@@ -1449,15 +1503,60 @@ body {
     gap: 8px;
     padding: 8px 12px;
     cursor: pointer;
+    transition: background var(--transition-fast);
 }
 
 .multi-select-option:hover {
     background: rgba(255, 255, 255, 0.05);
 }
 
-.multi-select-actions {
-    display: flex;
-    gap: 8px;
-    padding: 8px;
-    border-bottom: 1px solid var(--border-default);
+.multi-select-option input {
+    cursor: pointer;
+}
+
+.multi-select-option span {
+    font-size: 13px;
+    color: var(--text-secondary);
+}
+
+/* 线程选择器容器 */
+#threadSelectorContainer {
+    margin-bottom: var(--spacing-4);
+    padding-bottom: var(--spacing-2);
+    border-bottom: 1px solid var(--border-subtle);
+}
+
+/* 线程曲线图样式 */
+.thread-chart-container {
+    height: 70vh;
+    min-height: 400px;
+}
+
+/* 图例滚动条样式优化 */
+.legend-scroll {
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+/* 图例项悬停效果 */
+.legend-item:hover {
+    cursor: pointer;
+    opacity: 0.8;
+}
+
+/* 图表头部 */
+.chart-header {
+    margin-bottom: 12px;
+    padding: 0 8px;
+}
+
+.chart-legend-tip {
+    background: rgba(0, 229, 255, 0.1);
+    padding: 4px 8px;
+    border-radius: 12px;
+}
+
+.chart-legend-tip i {
+    margin-right: 4px;
+    color: #00E5FF;
 }

@@ -138,20 +138,28 @@ def api_load_tool_data(tool_id):
     
     # 获取单线程数据
     if tool_config.get('single_thread_path') and tool_config.get('single_thread_func'):
-        single_data = data_manager.get_single_thread_data(tool_config)
+        single_data = data_manager.get_single_thread_data(user_id, tool_config)
         if single_data:
             # 保存单线程数据到独立文件
             tool_manager.save_single_thread_data(user_id, tool_id, single_data)
+            # 移除内部字段
+            if 'dataFiles' in single_data:
+                del single_data['dataFiles']
+            if '__multi_processed_logs__' in single_data:
+                del single_data['__multi_processed_logs__']
             result_data.update(single_data)
     
     # 获取多线程数据
     if tool_config.get('multi_thread_path') and tool_config.get('multi_thread_func'):
-        multi_data = data_manager.get_multi_thread_data(tool_config)
+        multi_data = data_manager.get_multi_thread_data(user_id, tool_config)
         if multi_data:
             # 保存多线程数据到独立文件
             tool_manager.save_multi_thread_data(user_id, tool_id, multi_data)
             # 合并数据
             for casename, case_data in multi_data.items():
+                # 跳过内部字段
+                if casename in ['dataFiles', '__multi_processed_logs__']:
+                    continue
                 if casename not in result_data:
                     result_data[casename] = case_data
                 else:
@@ -162,7 +170,7 @@ def api_load_tool_data(tool_id):
                             for rule, rule_data in metrics.items():
                                 result_data[casename]['daily_metrics'][date][rule] = rule_data
     
-    return jsonify({'success': True, 'data': result_data})
+    return jsonify({'success': True, 'data': json.dumps(result_data)})
 
 
 @app.route('/api/tools/<tool_id>/refresh', methods=['POST'])
@@ -196,8 +204,9 @@ def api_get_extra_data(tool_id):
         
         func_path = tool_config.get('extra_display_func')
         if func_path:
-            result = data_manager.get_custom_curve_data(tool_config, path)
-            extra_data.update(result)
+            result = data_manager.get_custom_curve_data(user_id, tool_config, path)
+            if result:
+                extra_data.update(result)
         else:
             try:
                 path_obj = Path(path)
@@ -232,7 +241,7 @@ def api_get_extra_data(tool_id):
 
 @app.route('/api/chart/data', methods=['POST'])
 def api_get_chart_data():
-    """获取图表数据"""
+    """获取图表数据（支持Runtime和Memory）"""
     data = request.json
     
     raw_data = data.get('raw_data', {})
@@ -240,15 +249,25 @@ def api_get_chart_data():
     rules = data.get('rules', [])
     dates = data.get('dates', [])
     mode = data.get('mode', 'single')
+    chart_type = data.get('chart_type', 'runtime')
+    selected_threads = data.get('selected_threads', [0])
     
-    chart_data = data_parser.parse_for_chart(raw_data, casename, rules, dates, mode)
+    # 根据图表类型调用不同的解析方法
+    if chart_type == 'memory':
+        chart_data = data_parser.parse_for_memory_chart(
+            raw_data, casename, rules, dates, mode, selected_threads
+        )
+    else:
+        chart_data = data_parser.parse_for_chart(
+            raw_data, casename, rules, dates, mode, selected_threads
+        )
     
     return jsonify({'success': True, 'data': chart_data})
 
 
 @app.route('/api/thread/chart/data', methods=['POST'])
 def api_get_thread_chart_data():
-    """获取线程曲线图数据"""
+    """获取线程曲线图数据（X轴为线程数）"""
     data = request.json
     
     raw_data = data.get('raw_data', {})
@@ -259,6 +278,19 @@ def api_get_thread_chart_data():
     chart_data = data_parser.parse_for_thread_chart(raw_data, casename, rule, date)
     
     return jsonify({'success': True, 'data': chart_data})
+
+
+@app.route('/api/threads/options', methods=['POST'])
+def api_get_thread_options():
+    """获取可用的线程数选项"""
+    data = request.json
+    raw_data = data.get('raw_data', {})
+    casename = data.get('casename', '')
+    rule = data.get('rule', None)
+    
+    options = data_parser.get_thread_options(raw_data, casename, rule)
+    
+    return jsonify({'success': True, 'data': options})
 
 
 @app.route('/api/comparison', methods=['POST'])
@@ -297,31 +329,6 @@ def api_get_overview():
     
     return jsonify({'success': True, 'data': overview})
 
-@app.route('/api/chart/threads', methods=['POST'])
-def api_get_thread_options():
-    """获取可用的线程数选项"""
-    data = request.json
-    raw_data = data.get('raw_data', {})
-    casename = data.get('casename', '')
-    rule = data.get('rule', '')
-    
-    case_data = raw_data.get(casename, {})
-    daily_metrics = case_data.get('daily_metrics', {})
-    
-    threads_set = set()
-    for date, metrics in daily_metrics.items():
-        rule_metrics = metrics.get(rule, {})
-        if 'thread_metrics' in rule_metrics:
-            for thread_key in rule_metrics['thread_metrics'].keys():
-                threads_set.add(int(thread_key))
-    
-    return jsonify({
-        'success': True,
-        'data': {
-            'threads': sorted(threads_set),
-            'default_threads': [0] if 0 in threads_set else (list(threads_set)[:1] if threads_set else [])
-        }
-    })
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)

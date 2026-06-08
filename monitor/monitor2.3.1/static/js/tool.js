@@ -1,7 +1,10 @@
 /**
  * 工具页面逻辑
  * 负责数据加载、图表渲染、筛选过滤、数据对比等功能
+ * 支持单线程和多线程模式分离
  */
+
+
 
 // API 基础路径
 const API_BASE = '/api';
@@ -18,6 +21,10 @@ let allData = {};
 // 当前模式
 let currentMode = 'single';      // 'single', 'multi', 'thread'
 let currentChartType = 'runtime'; // 'runtime', 'memory', 'comparison'
+
+// 多线程选择
+let selectedThreads = [0];
+let availableThreads = [0, 2, 4, 6, 8, 16, 32, 64, 128];
 
 // 筛选状态
 let selectedCasename = '';
@@ -49,20 +56,18 @@ const datePickerBtn = document.getElementById('datePickerBtn');
 const latest50Btn = document.getElementById('latest50Btn');
 const addDataBtn = document.getElementById('addDataBtn');
 
-// 对比相关 DOM
-const compCasenameSelect = document.getElementById('compCasenameSelect');
-const compareModeSelect = document.getElementById('compareModeSelect');
-const compRuleSearch = document.getElementById('compRuleSearch');
-const date1Select = document.getElementById('date1Select');
-const date2Select = document.getElementById('date2Select');
-const confirmCompareBtn = document.getElementById('confirmCompareBtn');
-const exportCompareBtn = document.getElementById('exportCompareBtn');
-const comparisonResults = document.getElementById('comparisonResults');
-const comparisonSearch = document.getElementById('comparisonSearch');
-
-// 统计标签
-const totalLabel = document.getElementById('totalLabel');
-const avgLabel = document.getElementById('avgLabel');
+// 线程颜色映射
+const THREAD_COLORS = {
+    0: '#00E5FF',
+    2: '#A855F7',
+    4: '#10B981',
+    6: '#F59E0B',
+    8: '#EF4444',
+    16: '#8B5CF6',
+    32: '#EC4899',
+    64: '#14B8A6',
+    128: '#F97316'
+};
 
 /**
  * 初始化页面
@@ -73,13 +78,11 @@ async function init() {
     initEventListeners();
     initDatePickerModal();
     initAddDataModal();
+    initThreadSelector();
 
     window.addEventListener('resize', () => {
         if (mainChart) {
             mainChart.resize();
-        }
-        if (threadChart) {
-            threadChart.resize();
         }
     });
 }
@@ -131,6 +134,11 @@ async function loadData() {
             // 默认选择最近50天
             selectLatest50Days();
             
+            // 加载线程选项
+            if (currentMode === 'multi') {
+                await loadAvailableThreads();
+            }
+            
             // 渲染图表
             await renderChart();
         }
@@ -168,6 +176,11 @@ async function refreshData() {
             }
             
             selectLatest50Days();
+            
+            if (currentMode === 'multi') {
+                await loadAvailableThreads();
+            }
+            
             await renderChart();
             showSuccess('数据刷新成功');
         }
@@ -176,6 +189,151 @@ async function refreshData() {
         showError('刷新数据失败');
     } finally {
         showLoading(false);
+    }
+}
+
+/**
+ * 初始化线程选择器
+ */
+function initThreadSelector() {
+    const container = document.getElementById('threadSelectorContainer');
+    if (!container) return;
+    
+    // 监听线程搜索
+    const searchInput = document.getElementById('threadSearchInput');
+    if (searchInput) {
+        searchInput.addEventListener('input', (e) => {
+            filterThreadOptions(e.target.value);
+        });
+    }
+}
+
+/**
+ * 过滤线程选项
+ */
+function filterThreadOptions(searchTerm) {
+    const options = document.querySelectorAll('.multi-select-option');
+    const term = searchTerm.toLowerCase();
+    
+    options.forEach(option => {
+        const text = option.querySelector('span')?.textContent.toLowerCase() || '';
+        if (term === '' || text.includes(term)) {
+            option.style.display = '';
+        } else {
+            option.style.display = 'none';
+        }
+    });
+}
+
+/**
+ * 加载可用的线程数
+ */
+async function loadAvailableThreads() {
+    if (!selectedCasename || currentMode !== 'multi') return;
+    
+    try {
+        const response = await axios.post(`${API_BASE}/threads/options`, {
+            raw_data: allData,
+            casename: selectedCasename,
+            rule: selectedRules[0]
+        });
+        
+        if (response.data.success && response.data.data.threads.length > 0) {
+            availableThreads = response.data.data.threads;
+            selectedThreads = response.data.data.default_threads;
+        }
+        
+        renderThreadOptions();
+        updateSelectedThreadsDisplay();
+    } catch (error) {
+        console.error('加载线程选项失败:', error);
+        renderThreadOptions();
+    }
+}
+
+/**
+ * 渲染线程选项
+ */
+function renderThreadOptions() {
+    const container = document.getElementById('threadOptions');
+    if (!container) return;
+    
+    // 使用预设的线程选项（0, 2, 4, 6, 8, 16, 32, 64, 128）
+    const defaultThreadsList = [0, 2, 4, 6, 8, 16, 32, 64, 128];
+    const threadsToShow = availableThreads.length > 0 ? availableThreads : defaultThreadsList;
+    
+    container.innerHTML = threadsToShow.map(thread => `
+        <label class="multi-select-option">
+            <input type="checkbox" value="${thread}" 
+                ${selectedThreads.includes(thread) ? 'checked' : ''}
+                onchange="toggleThreadSelection(${thread}, this.checked)">
+            <span>${thread} 线程</span>
+        </label>
+    `).join('');
+}
+
+/**
+ * 切换线程选择
+ */
+function toggleThreadSelection(thread, isSelected) {
+    if (isSelected) {
+        if (!selectedThreads.includes(thread)) {
+            selectedThreads.push(thread);
+        }
+    } else {
+        selectedThreads = selectedThreads.filter(t => t !== thread);
+    }
+    selectedThreads.sort((a, b) => a - b);
+    updateSelectedThreadsDisplay();
+    
+    // 重新渲染图表
+    renderChart();
+}
+
+/**
+ * 更新线程显示
+ */
+function updateSelectedThreadsDisplay() {
+    const display = document.getElementById('selectedThreadsDisplay');
+    if (display) {
+        if (selectedThreads.length === 0) {
+            display.textContent = '未选择';
+        } else if (selectedThreads.length <= 3) {
+            display.textContent = selectedThreads.map(t => `${t}线程`).join(', ');
+        } else {
+            display.textContent = `${selectedThreads.length}个线程`;
+        }
+    }
+}
+
+/**
+ * 全选所有线程
+ */
+function selectAllThreads() {
+    const defaultThreadsList = [0, 2, 4, 6, 8, 16, 32, 64, 128];
+    selectedThreads = [...defaultThreadsList];
+    renderThreadOptions();
+    updateSelectedThreadsDisplay();
+    renderChart();
+}
+
+/**
+ * 清空所有线程
+ */
+function clearAllThreads() {
+    selectedThreads = [];
+    renderThreadOptions();
+    updateSelectedThreadsDisplay();
+    renderChart();
+}
+
+/**
+ * 切换线程下拉框
+ */
+function toggleThreadDropdown() {
+    const dropdown = document.getElementById('threadDropdown');
+    if (dropdown) {
+        dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
     }
 }
 
@@ -282,21 +440,15 @@ function selectLatest50Days() {
 /**
  * 渲染图表
  */
+// 渲染图表函数 - 多线程模式不传递 selected_threads
 async function renderChart() {
     if (currentChartType === 'comparison') {
         return;
     }
     
     if (!selectedCasename || selectedRules.length === 0 || selectedDates.length === 0) {
-        console.log('缺少必要参数:', { selectedCasename, selectedRules, selectedDates });
-        // 如果没有选择规则，尝试选择默认规则
         if (selectedRules.length === 0 && allRules.length > 0) {
             selectedRules = ['Overall'];
-            if (ruleSelect) {
-                Array.from(ruleSelect.options).forEach(opt => {
-                    if (opt.value === 'Overall') opt.selected = true;
-                });
-            }
         }
         if (selectedDates.length === 0 && allDates.length > 0) {
             selectedDates = allDates.slice(-50);
@@ -306,16 +458,13 @@ async function renderChart() {
             if (casenameSelect) casenameSelect.value = selectedCasename;
         }
         
-        // 再次检查
         if (selectedRules.length === 0 || selectedDates.length === 0 || !selectedCasename) {
-            console.error('仍然缺少必要参数');
             return;
         }
     }
     
     // 显示加载状态
-    const chartContainer = document.getElementById('mainChart');
-    if (chartContainer && mainChart) {
+    if (mainChart) {
         mainChart.showLoading({
             text: '加载中...',
             color: '#00E5FF',
@@ -330,45 +479,26 @@ async function renderChart() {
             casename: selectedCasename,
             rules: selectedRules,
             dates: selectedDates,
-            mode: currentMode
+            mode: currentMode,
+            chart_type: currentChartType
+            // 不再传递 selected_threads，让后端自动选择最小线程
         };
-        
-        console.log('[DEBUG] Request data:', requestData);
         
         const response = await axios.post(`${API_BASE}/chart/data`, requestData);
         
         if (response.data.success) {
             const chartData = response.data.data;
-            console.log('[DEBUG] Chart data received:', chartData);
             
-            if (!chartData.crash_dates) {
-                chartData.crash_dates = [];
-            }
-            
-            // 隐藏 loading
             if (mainChart) {
                 mainChart.hideLoading();
             }
             
-            // 使用 setTimeout 确保 DOM 已更新
-            setTimeout(() => {
-                drawChart(chartData);
-            }, 50);
-            
+            drawChart(chartData);
             updateStatistics(chartData);
         } else {
             console.error('获取图表数据失败:', response.data.error);
             if (mainChart) {
                 mainChart.hideLoading();
-                mainChart.setOption({
-                    title: {
-                        show: true,
-                        text: '数据加载失败: ' + (response.data.error || '未知错误'),
-                        left: 'center',
-                        top: 'center',
-                        textStyle: { color: '#EF4444', fontSize: 14 }
-                    }
-                });
             }
             showError('获取图表数据失败: ' + (response.data.error || '未知错误'));
         }
@@ -376,215 +506,145 @@ async function renderChart() {
         console.error('获取图表数据失败:', error);
         if (mainChart) {
             mainChart.hideLoading();
-            mainChart.setOption({
-                title: {
-                    show: true,
-                    text: '网络错误，请刷新重试',
-                    left: 'center',
-                    top: 'center',
-                    textStyle: { color: '#EF4444', fontSize: 14 }
-                }
-            });
         }
-        showError('获取图表数据失败: ' + (error.message || '网络错误'));
-    } finally {
-        // 确保隐藏 loading
-        if (mainChart) {
-            setTimeout(() => {
-                try {
-                    mainChart.hideLoading();
-                } catch(e) {}
-            }, 100);
-        }
+        showError('获取图表数据失败');
     }
 }
 
 /**
  * 绘制图表
  */
-/**
- * 绘制图表
- */
 function drawChart(chartData) {
-    console.log('[DEBUG] drawChart called with:', chartData);
-    
     const container = document.getElementById('mainChart');
-    if (!container) {
-        console.error('[ERROR] mainChart container not found');
-        return;
-    }
+    if (!container) return;
     
-    // 确保容器可见且有尺寸
-    const rect = container.getBoundingClientRect();
-    console.log('[DEBUG] container size:', rect.width, 'x', rect.height);
-    
-    // 如果容器尺寸为0，延迟重试
-    if (rect.width === 0 || rect.height === 0) {
-        console.warn('[WARN] Container has zero size, retrying...');
-        setTimeout(() => drawChart(chartData), 100);
-        return;
-    }
-    
-    // 检查数据
-    if (!chartData || !chartData.dates || chartData.dates.length === 0) {
-        console.error('[ERROR] No dates data');
-        showError('没有日期数据');
-        return;
-    }
-    
-    if (!chartData.rules || Object.keys(chartData.rules).length === 0) {
-        console.error('[ERROR] No rules data');
-        showError('没有规则数据');
-        return;
-    }
-    
-    // 销毁旧实例
     if (mainChart) {
         mainChart.dispose();
-        mainChart = null;
     }
     
-    // 创建新实例
     mainChart = echarts.init(container);
     
-    const { dates, rules, crash_dates } = chartData;
+    const { dates, rules, crash_dates, all_threads } = chartData;
     const isRuntime = currentChartType === 'runtime';
     const yAxisName = isRuntime ? 'Runtime (s)' : 'Memory (MB)';
     const xAxisName = currentMode === 'thread' ? '线程数' : '日期';
     
-    // 转换 crash_dates 为 Set
+    // 构建系列
+    const series = [];
     const crashDatesSet = new Set(crash_dates || []);
     
-    // 构建 series
-    const series = [];
-    
-    // 确保 selectedRules 存在
-    const rulesToShow = selectedRules.length > 0 ? selectedRules : Object.keys(rules);
-    
-    for (const rule of rulesToShow) {
-        const ruleData = rules[rule];
-        if (!ruleData) {
-            console.warn(`[WARN] Rule "${rule}" not found in chartData.rules`);
-            continue;
-        }
-        
-        // 确保 values 是数组
+    // 按线程分组显示图例，方便用户识别
+    for (const [seriesName, ruleData] of Object.entries(rules)) {
         const values = ruleData.values || [];
-        console.log(`[DEBUG] Rule ${rule} values:`, values);
+        const thread = ruleData.thread || 0;
+        const color = ruleData.color || THREAD_COLORS[thread] || '#A855F7';
+        const ruleName = ruleData.rule_name || seriesName;
         
-        // 构建系列数据 - 关键修复：直接传递数值数组
-        const seriesData = [];
+        const seriesPoints = [];
         for (let i = 0; i < dates.length; i++) {
             const date = dates[i];
-            const value = (i < values.length) ? values[i] : null;
+            const value = i < values.length ? values[i] : null;
             const isCrash = crashDatesSet.has(date);
             
-            seriesData.push({
+            seriesPoints.push({
                 value: value,
                 date: date,
-                rule: rule,
-                isCrash: isCrash,
-                isUserAdded: date && date.includes('_user')
+                seriesName: seriesName,
+                isCrash: isCrash
             });
         }
         
-        // 过滤掉全部为 null 的系列
-        const hasValidData = seriesData.some(item => item.value !== null && item.value !== undefined);
-        if (!hasValidData) {
-            console.warn(`[WARN] Rule "${rule}" has no valid data, skipping`);
-            continue;
-        }
-        
-        // 提取纯数值数组用于 ECharts
-        const numericValues = seriesData.map(item => item.value);
+        // 构建tooltip格式化函数
+        const formatter = function(params) {
+            const dataPoint = seriesPoints[params.dataIndex];
+            if (!dataPoint) return '';
+            
+            let html = `<div style="font-weight:600;margin-bottom:8px;">${formatDate(dataPoint.date)}</div>`;
+            html += `<div style="display:flex;justify-content:space-between;gap:16px;">
+                <span style="color:${params.color}">●</span>
+                <span>${escapeHtml(seriesName)}:</span>
+                <span style="font-family:monospace;font-weight:600;">${dataPoint.value !== null ? dataPoint.value.toFixed(2) : 'N/A'}</span>
+            </div>`;
+            
+            if (dataPoint.isCrash) {
+                html += `<div style="color:#EF4444;font-size:11px;margin-top:4px;">⚠️ Crash - 缺少 Overall 数据</div>`;
+            }
+            
+            if (dataPoint.date && dataPoint.date.includes('_user')) {
+                html += `<div style="color:#10B981;font-size:11px;margin-top:4px;">📎 用户添加</div>`;
+            }
+            
+            return html;
+        };
         
         series.push({
-            name: rule,
+            name: seriesName,
             type: 'line',
-            data: numericValues,  // 关键修复：直接传递数值数组
+            data: values,
             smooth: false,
             symbol: 'circle',
             symbolSize: 6,
-            connectNulls: false,  // 不连接空值
+            connectNulls: false,
             lineStyle: {
                 width: 2,
-                color: rule === 'Overall' ? '#00E5FF' : '#A855F7'
+                color: color
             },
             itemStyle: {
                 color: function(params) {
-                    const dataPoint = seriesData[params.dataIndex];
+                    const dataPoint = seriesPoints[params.dataIndex];
                     if (dataPoint && dataPoint.isCrash) return '#EF4444';
-                    if (dataPoint && dataPoint.isUserAdded) return '#10B981';
-                    return rule === 'Overall' ? '#00E5FF' : '#A855F7';
+                    return color;
                 },
                 borderColor: '#0F172A',
                 borderWidth: 1
             },
-            // 自定义 tooltip
             tooltip: {
-                formatter: function(params) {
-                    const dataPoint = seriesData[params.dataIndex];
-                    if (!dataPoint) return '';
-                    
-                    const date = dataPoint.date;
-                    const value = dataPoint.value;
-                    const isCrash = dataPoint.isCrash;
-                    const isUserAdded = dataPoint.isUserAdded;
-                    
-                    let html = `<div style="font-weight:600;margin-bottom:8px;">${formatDate(date)}</div>`;
-                    html += `<div style="display:flex;justify-content:space-between;gap:16px;">
-                        <span style="color:${params.color}">●</span>
-                        <span>${escapeHtml(rule)}:</span>
-                        <span style="font-family:monospace;font-weight:600;">${value !== null ? value.toFixed(2) : 'N/A'}</span>
-                    </div>`;
-                    
-                    if (isCrash) {
-                        html += `<div style="color:#EF4444;font-size:11px;margin-top:4px;">⚠️ Crash - 缺少 Overall 数据</div>`;
-                    }
-                    if (isUserAdded) {
-                        html += `<div style="color:#10B981;font-size:11px;margin-top:4px;">📎 用户添加</div>`;
-                    }
-                    
-                    return html;
-                }
+                formatter: formatter
             }
         });
-    }
-    
-    console.log('[DEBUG] Final series count:', series.length);
-    console.log('[DEBUG] Dates:', dates);
-    console.log('[DEBUG] Series data sample:', series[0]?.data);
-    
-    if (series.length === 0) {
-        console.error('[ERROR] No valid series to display');
-        // 显示提示信息
-        mainChart.setOption({
-            title: {
-                show: true,
-                text: '暂无数据',
-                left: 'center',
-                top: 'center',
-                textStyle: { color: '#94A3B8', fontSize: 14 }
-            }
-        });
-        return;
     }
     
     // 格式化日期显示
     const formattedDates = dates.map(d => formatDate(d));
     
+    // 构建图例数据（按线程分组显示，更清晰）
+    const legendData = series.map(s => s.name);
+    
+    // 如果是多线程模式且有all_threads，可以按线程分组排序图例
+    if (currentMode === 'multi' && all_threads && all_threads.length > 0) {
+        // 按线程数排序图例
+        legendData.sort((a, b) => {
+            const threadA = parseInt(a.match(/\((\d+)线程/)?.[1] || '0');
+            const threadB = parseInt(b.match(/\((\d+)线程/)?.[1] || '0');
+            return threadA - threadB;
+        });
+    }
+    
     const option = {
         backgroundColor: 'transparent',
+        tooltip: { trigger: 'axis' },
+        legend: {
+            data: legendData,
+            textStyle: { color: '#F1F5F9' },
+            type: 'scroll',
+            right: 10,
+            top: 0,
+            pageIconColor: '#00E5FF',
+            pageTextStyle: { color: '#F1F5F9' },
+            // 添加图例选择提示
+            tooltip: {
+                show: true,
+                formatter: function(params) {
+                    return `点击可显示/隐藏 ${params.name}`;
+                }
+            }
+        },
         grid: {
             left: '3%',
-            right: '5%',
-            top: '10%',
+            right: '8%',
+            top: '18%',
             bottom: '8%',
             containLabel: true
-        },
-        tooltip: {
-            trigger: 'axis',
-            axisPointer: { type: 'shadow' }
         },
         xAxis: {
             type: 'category',
@@ -603,24 +663,11 @@ function drawChart(chartData) {
         yAxis: {
             type: 'value',
             name: yAxisName,
-            nameTextStyle: {
-                color: '#94A3B8'
-            },
-            axisLabel: {
-                color: '#94A3B8'
-            },
+            nameTextStyle: { color: '#94A3B8' },
+            axisLabel: { color: '#94A3B8' },
             splitLine: {
                 lineStyle: { color: '#1E293B' }
             }
-        },
-        legend: {
-            data: series.map(s => s.name),
-            textStyle: { color: '#F1F5F9' },
-            pageIconColor: '#00E5FF',
-            pageTextStyle: { color: '#F1F5F9' },
-            type: 'scroll',
-            right: 10,
-            top: 0
         },
         toolbox: {
             feature: {
@@ -634,71 +681,60 @@ function drawChart(chartData) {
         series: series
     };
     
-    console.log('[DEBUG] Setting chart option...');
     mainChart.setOption(option, true);
     
-    // 添加窗口 resize 监听
-    const resizeHandler = function() {
-        if (mainChart && !mainChart.isDisposed()) {
-            mainChart.resize();
-        }
-    };
-    window.removeEventListener('resize', resizeHandler);
-    window.addEventListener('resize', resizeHandler);
-    
-    console.log('[DEBUG] Chart rendered successfully');
+    // 默认只显示最小线程数的折线，其他线程的折线隐藏
+    // 用户可以通过图例点击来显示其他线程的折线
+    if (currentMode === 'multi' && all_threads && all_threads.length > 1) {
+        const minThread = Math.min(...all_threads);
+        // 需要隐藏的系列：不是最小线程的折线
+        const seriesToHide = legendData.filter(name => {
+            const threadMatch = name.match(/\((\d+)线程/);
+            if (threadMatch) {
+                const thread = parseInt(threadMatch[1]);
+                return thread !== minThread;
+            }
+            return false;
+        });
+        
+        // 延迟执行，确保图表已经渲染
+        setTimeout(() => {
+            if (mainChart) {
+                mainChart.dispatchAction({
+                    type: 'legendToggleSelect',
+                    name: seriesToHide
+                });
+            }
+        }, 100);
+    }
 }
+
 /**
  * 更新统计信息
  */
 function updateStatistics(chartData) {
-    const { dates, rules, overall_data } = chartData;
+    const { dates, overall_data } = chartData;
     const isRuntime = currentChartType === 'runtime';
     
     if (!overall_data || !overall_data.values) {
-        console.log('没有 overall_data 数据');
         return;
     }
     
     const values = overall_data.values.filter(v => v !== null && v !== undefined);
-    if (values.length === 0) {
-        console.log('没有有效的数值');
-        return;
-    }
+    if (values.length === 0) return;
     
     const total = values.reduce((a, b) => a + b, 0);
     const avg = total / values.length;
     const max = Math.max(...values);
     const min = Math.min(...values);
     
-    // 找出最大/最小值对应的规则
-    let maxRule = '';
-    let minRule = '';
-    
-    if (rules) {
-        for (const rule of selectedRules) {
-            const ruleData = rules[rule];
-            if (!ruleData || !ruleData.values) continue;
-            
-            for (let i = 0; i < ruleData.values.length; i++) {
-                const val = ruleData.values[i];
-                if (val !== null && val !== undefined) {
-                    if (val === max && maxRule === '') {
-                        maxRule = rule;
-                    }
-                    if (val === min && minRule === '') {
-                        minRule = rule;
-                    }
-                }
-            }
-        }
-    }
-    
     const dateRangeEl = document.getElementById('dateRange');
     const totalValueEl = document.getElementById('totalValue');
     const avgValueEl = document.getElementById('avgValue');
     const maxValueEl = document.getElementById('maxValue');
     const minValueEl = document.getElementById('minValue');
+    const totalLabel = document.getElementById('totalLabel');
+    const avgLabel = document.getElementById('avgLabel');
     
     if (dateRangeEl) {
         dateRangeEl.textContent = dates.length > 0 ? `${formatDate(dates[0])} ~ ${formatDate(dates[dates.length-1])}` : '-';
@@ -710,12 +746,6 @@ function updateStatistics(chartData) {
     
     if (totalLabel) totalLabel.textContent = isRuntime ? 'Total Runtime' : 'Total Memory';
     if (avgLabel) avgLabel.textContent = isRuntime ? 'Average Runtime' : 'Average Memory';
-    
-    // 更新 tooltip
-    const maxTooltipContent = document.getElementById('maxTooltipContent');
-    const minTooltipContent = document.getElementById('minTooltipContent');
-    if (maxTooltipContent) maxTooltipContent.textContent = maxRule ? `最大: ${maxRule}` : '';
-    if (minTooltipContent) minTooltipContent.textContent = minRule ? `最小: ${minRule}` : '';
 }
 
 /**
@@ -809,9 +839,6 @@ function renderComparisonResults(result) {
             <div class="comparison-stat-card">
                 <h4>Runtime 增加 Rule</h4>
                 <div class="comparison-stat-value">${stats.runtime_increased.length}</div>
-                <div class="tooltip-content" style="position:absolute;background:#1E293B;padding:8px;border-radius:8px;max-width:200px;">
-                    ${stats.runtime_increased.slice(0,10).map(item => `<div>${item[0]}: +${item[1].toFixed(2)}s</div>`).join('')}
-                </div>
             </div>
             <div class="comparison-stat-card">
                 <h4>Runtime 减少 Rule</h4>
@@ -930,7 +957,6 @@ async function addUserData(paths) {
             userAddedData = { ...userAddedData, ...newData };
             allData = { ...rawData, ...userAddedData };
             
-            // 刷新界面
             updateCasenameSelect();
             updateOverview();
             await updateRulesAndDates();
@@ -956,7 +982,6 @@ function initDatePickerModal() {
     const confirmBtn = document.getElementById('confirmDateBtn');
     const selectAllCheckbox = document.getElementById('selectAllDates');
     const dateSearch = document.getElementById('dateSearch');
-    const dateList = document.getElementById('dateList');
     
     if (!openBtn) return;
     
@@ -974,14 +999,12 @@ function initDatePickerModal() {
     if (closeBtn) closeBtn.addEventListener('click', closeModal);
     if (cancelBtn) cancelBtn.addEventListener('click', closeModal);
     if (confirmBtn) confirmBtn.addEventListener('click', () => {
-        // 获取选中的日期
         const checkboxes = document.querySelectorAll('.date-checkbox:checked');
         selectedDates = Array.from(checkboxes).map(cb => cb.value);
         closeModal();
         renderChart();
     });
     
-    // 全选功能
     if (selectAllCheckbox) {
         selectAllCheckbox.addEventListener('change', (e) => {
             const checkboxes = document.querySelectorAll('.date-checkbox');
@@ -989,7 +1012,6 @@ function initDatePickerModal() {
         });
     }
     
-    // 搜索过滤
     if (dateSearch) {
         dateSearch.addEventListener('input', (e) => {
             const searchTerm = e.target.value.toLowerCase();
@@ -1021,7 +1043,6 @@ function updateDatePickerModal() {
         </div>
     `).join('');
     
-    // 更新全选状态
     const selectAll = document.getElementById('selectAllDates');
     if (selectAll) {
         selectAll.checked = selectedDates.length === allDates.length && allDates.length > 0;
@@ -1088,39 +1109,42 @@ function initEventListeners() {
     refreshBtn.addEventListener('click', refreshData);
     
     // 模式切换
-    // 修改模式切换事件监听
-modeNavItems.forEach(item => {
-    item.addEventListener('click', () => {
-        modeNavItems.forEach(nav => nav.classList.remove('active'));
-        item.classList.add('active');
-        currentMode = item.dataset.mode;
-        
-        // 隐藏所有侧边栏内容
-        document.querySelectorAll('.sidebar-content').forEach(content => {
-            content.style.display = 'none';
-        });
-        
-        if (currentMode === 'single') {
-            document.getElementById('sidebarPerformance').style.display = 'flex';
-            // 恢复单线程图表
-            if (currentChartType !== 'comparison') {
-                renderChart();
-            }
-        } else if (currentMode === 'multi') {
-            document.getElementById('sidebarPerformance').style.display = 'flex';
-            // 多线程模式
-            if (currentChartType !== 'comparison') {
-                renderChart();
-            }
-        } else if (currentMode === 'thread') {
-            document.getElementById('sidebarThread').style.display = 'flex';
-            // 初始化线程曲线图
-            updateThreadSelects().then(() => {
-                loadThreadChartData();
+    modeNavItems.forEach(item => {
+        item.addEventListener('click', () => {
+            modeNavItems.forEach(nav => nav.classList.remove('active'));
+            item.classList.add('active');
+            currentMode = item.dataset.mode;
+            
+            // 不再显示线程选择器
+            // const threadSelectorContainer = document.getElementById('threadSelectorContainer');
+            // if (threadSelectorContainer) {
+            //     threadSelectorContainer.style.display = 'none';
+            // }
+            
+            // 隐藏所有侧边栏内容
+            document.querySelectorAll('.sidebar-content').forEach(content => {
+                content.style.display = 'none';
             });
-        }
+            
+            if (currentMode === 'single') {
+                document.getElementById('sidebarPerformance').style.display = 'flex';
+                if (currentChartType !== 'comparison') {
+                    renderChart();
+                }
+            } else if (currentMode === 'multi') {
+                document.getElementById('sidebarPerformance').style.display = 'flex';
+                // 多线程模式：直接渲染图表，后端会自动选择最小线程
+                if (currentChartType !== 'comparison') {
+                    renderChart();
+                }
+            } else if (currentMode === 'thread') {
+                document.getElementById('sidebarThread').style.display = 'flex';
+                updateThreadSelects().then(() => {
+                    loadThreadChartData();
+                });
+            }
+        });
     });
-});
     
     // 侧边栏菜单切换
     menuItems.forEach(item => {
@@ -1132,12 +1156,10 @@ modeNavItems.forEach(item => {
             currentChartType = chartType;
             
             if (chartType === 'comparison') {
-                // 显示对比面板
                 if (filtersPanel) filtersPanel.style.display = 'none';
                 if (comparisonPanel) comparisonPanel.style.display = 'block';
                 showComparisonView(false);
             } else {
-                // 显示性能面板
                 if (filtersPanel) filtersPanel.style.display = 'block';
                 if (comparisonPanel) comparisonPanel.style.display = 'none';
                 showComparisonView(false);
@@ -1146,11 +1168,28 @@ modeNavItems.forEach(item => {
         });
     });
     
+    // 线程曲线图菜单切换
+    const threadMenuItems = document.querySelectorAll('[data-thread-chart]');
+    threadMenuItems.forEach(item => {
+        item.addEventListener('click', () => {
+            threadMenuItems.forEach(menu => menu.classList.remove('active'));
+            item.classList.add('active');
+            const chartType = item.dataset.threadChart;
+            currentThreadChartType = chartType;
+            loadThreadChartData();
+        });
+    });
+    
     // Casename 选择
     casenameSelect.addEventListener('change', async (e) => {
         selectedCasename = e.target.value;
         if (compCasenameSelect) compCasenameSelect.value = selectedCasename;
         await updateRulesAndDates();
+        
+        if (currentMode === 'multi') {
+            await loadAvailableThreads();
+        }
+        
         await renderChart();
         await updateOverview();
     });
@@ -1163,7 +1202,12 @@ modeNavItems.forEach(item => {
     // 规则选择
     ruleSelect.addEventListener('change', (e) => {
         selectedRules = Array.from(ruleSelect.selectedOptions).map(opt => opt.value);
-        renderChart();
+        
+        if (currentMode === 'multi') {
+            loadAvailableThreads().then(() => renderChart());
+        } else {
+            renderChart();
+        }
     });
     
     // 最新50天按钮
@@ -1205,6 +1249,278 @@ modeNavItems.forEach(item => {
             );
             renderComparisonResults({ ...comparisonResult, comparisons: filteredComparisons });
         });
+    }
+    
+    // 点击外部关闭线程下拉框
+    document.addEventListener('click', function(e) {
+        const container = document.getElementById('threadMultiSelect');
+        const dropdown = document.getElementById('threadDropdown');
+        if (container && dropdown && !container.contains(e.target)) {
+            dropdown.style.display = 'none';
+        }
+    });
+}
+
+/**
+ * 线程曲线图相关变量
+ */
+let currentThreadChartType = 'runtime';
+let threadChart = null;
+const threadCasenameSelect = document.getElementById('threadCasenameSelect');
+const threadRuleSelect = document.getElementById('threadRuleSelect');
+const threadDateSelect = document.getElementById('threadDateSelect');
+const refreshThreadChartBtn = document.getElementById('refreshThreadChartBtn');
+const compCasenameSelect = document.getElementById('compCasenameSelect');
+const compareModeSelect = document.getElementById('compareModeSelect');
+const compRuleSearch = document.getElementById('compRuleSearch');
+const date1Select = document.getElementById('date1Select');
+const date2Select = document.getElementById('date2Select');
+const confirmCompareBtn = document.getElementById('confirmCompareBtn');
+const exportCompareBtn = document.getElementById('exportCompareBtn');
+const comparisonResults = document.getElementById('comparisonResults');
+const comparisonSearch = document.getElementById('comparisonSearch');
+
+/**
+ * 初始化线程曲线图
+ */
+function initThreadChart() {
+    if (!threadChart) {
+        const container = document.getElementById('mainChart');
+        if (container) {
+            if (threadChart) {
+                threadChart.dispose();
+            }
+            threadChart = echarts.init(container);
+        }
+    }
+}
+
+/**
+ * 加载线程曲线图数据
+ */
+async function loadThreadChartData() {
+    const casename = threadCasenameSelect?.value;
+    const rule = threadRuleSelect?.value;
+    const date = threadDateSelect?.value;
+    
+    if (!casename || !rule || !date) {
+        return;
+    }
+    
+    try {
+        showLoading(true);
+        const response = await axios.post(`${API_BASE}/thread/chart/data`, {
+            raw_data: allData,
+            casename: casename,
+            rule: rule,
+            date: date
+        });
+        
+        if (response.data.success) {
+            const chartData = response.data.data;
+            drawThreadChart(chartData);
+        }
+    } catch (error) {
+        console.error('加载线程曲线图数据失败:', error);
+        showError('加载线程曲线图数据失败');
+    } finally {
+        showLoading(false);
+    }
+}
+
+/**
+ * 绘制线程曲线图
+ */
+function drawThreadChart(chartData) {
+    initThreadChart();
+    
+    setTimeout(() => {
+        if (threadChart) {
+            threadChart.resize();
+        }
+    }, 100);
+
+    const { threads, runtimes, memories } = chartData;
+    const isRuntime = currentThreadChartType === 'runtime';
+    const yAxisName = isRuntime ? 'Runtime (s)' : 'Memory (MB)';
+    const seriesData = isRuntime ? runtimes : memories;
+    
+    const option = {
+        backgroundColor: 'transparent',
+        title: {
+            text: isRuntime ? '线程数 vs Runtime' : '线程数 vs Memory',
+            textStyle: { color: '#F1F5F9' },
+            left: 'center'
+        },
+        tooltip: {
+            trigger: 'axis',
+            axisPointer: { type: 'shadow' },
+            formatter: (params) => {
+                if (!params || params.length === 0) return '';
+                const data = params[0];
+                const threadCount = data.axisValue;
+                const value = data.value;
+                return `<div style="font-weight:600">线程数: ${threadCount}</div>
+                        <div>${isRuntime ? 'Runtime' : 'Memory'}: ${value?.toFixed(2) || 'N/A'}</div>`;
+            }
+        },
+        grid: {
+            left: '3%',
+            right: '5%',
+            top: '15%',
+            bottom: '8%',
+            containLabel: true
+        },
+        xAxis: {
+            type: 'category',
+            name: '线程数',
+            data: threads,
+            axisLabel: {
+                fontSize: 12,
+                color: '#94A3B8'
+            },
+            axisLine: {
+                lineStyle: { color: '#334155' }
+            }
+        },
+        yAxis: {
+            type: 'value',
+            name: yAxisName,
+            nameTextStyle: { color: '#94A3B8' },
+            axisLabel: { color: '#94A3B8' },
+            splitLine: {
+                lineStyle: { color: '#1E293B' }
+            }
+        },
+        series: [{
+            name: isRuntime ? 'Runtime' : 'Memory',
+            type: 'line',
+            data: seriesData,
+            smooth: false,
+            symbol: 'circle',
+            symbolSize: 8,
+            lineStyle: {
+                width: 3,
+                color: '#00E5FF'
+            },
+            itemStyle: {
+                color: '#00E5FF',
+                borderColor: '#0F172A',
+                borderWidth: 2
+            },
+            areaStyle: {
+                opacity: 0.1,
+                color: '#00E5FF'
+            }
+        }],
+        toolbox: {
+            feature: {
+                saveAsImage: { title: '保存图片' }
+            },
+            iconStyle: { borderColor: '#94A3B8' }
+        }
+    };
+    
+    threadChart.setOption(option, true);
+}
+
+/**
+ * 更新线程曲线图的选项
+ */
+async function updateThreadSelects() {
+    const casenames = Object.keys(allData);
+    
+    if (threadCasenameSelect) {
+        const options = casenames.map(name => 
+            `<option value="${escapeHtml(name)}">${escapeHtml(name)}</option>`
+        ).join('');
+        threadCasenameSelect.innerHTML = options;
+        
+        if (casenames.length > 0 && !threadCasenameSelect.value) {
+            threadCasenameSelect.value = casenames[0];
+        }
+    }
+    
+    if (threadCasenameSelect) {
+        threadCasenameSelect.addEventListener('change', () => {
+            updateThreadRules();
+            updateThreadDates();
+        });
+    }
+    
+    if (refreshThreadChartBtn) {
+        refreshThreadChartBtn.addEventListener('click', loadThreadChartData);
+    }
+    
+    await updateThreadRules();
+    await updateThreadDates();
+}
+
+/**
+ * 更新线程曲线图的规则列表
+ */
+async function updateThreadRules() {
+    const casename = threadCasenameSelect?.value;
+    if (!casename || !allData[casename]) return;
+    
+    const caseData = allData[casename];
+    const dailyMetrics = caseData.daily_metrics || {};
+    
+    const rulesSet = new Set();
+    Object.keys(dailyMetrics).forEach(date => {
+        const metrics = dailyMetrics[date];
+        Object.keys(metrics).forEach(rule => {
+            rulesSet.add(rule);
+        });
+    });
+    
+    let allThreadRules = Array.from(rulesSet).sort();
+    if (allThreadRules.includes('Overall')) {
+        allThreadRules = ['Overall', ...allThreadRules.filter(r => r !== 'Overall')];
+    }
+    
+    const threadRuleSearch = document.getElementById('threadRuleSearch');
+    const searchTerm = threadRuleSearch ? threadRuleSearch.value.toLowerCase() : '';
+    const filteredRules = searchTerm 
+        ? allThreadRules.filter(rule => rule.toLowerCase().includes(searchTerm))
+        : allThreadRules;
+    
+    const options = filteredRules.map(rule => 
+        `<option value="${escapeHtml(rule)}">${escapeHtml(rule)}</option>`
+    ).join('');
+    
+    if (threadRuleSelect) {
+        threadRuleSelect.innerHTML = options;
+        if (options && !threadRuleSelect.value) {
+            threadRuleSelect.value = allThreadRules[0] || '';
+        }
+    }
+    
+    if (threadRuleSearch) {
+        threadRuleSearch.addEventListener('input', () => updateThreadRules());
+    }
+}
+
+/**
+ * 更新线程曲线图的日期列表
+ */
+async function updateThreadDates() {
+    const casename = threadCasenameSelect?.value;
+    if (!casename || !allData[casename]) return;
+    
+    const caseData = allData[casename];
+    const dailyMetrics = caseData.daily_metrics || {};
+    const dates = Object.keys(dailyMetrics).sort();
+    
+    const options = dates.map(date => 
+        `<option value="${date}">${formatDate(date)}</option>`
+    ).join('');
+    
+    if (threadDateSelect) {
+        threadDateSelect.innerHTML = options;
+        if (dates.length > 0 && !threadDateSelect.value) {
+            threadDateSelect.value = dates[dates.length - 1];
+        }
     }
 }
 
@@ -1286,496 +1602,5 @@ function escapeHtml(text) {
     return div.innerHTML;
 }
 
-/**
- * 线程曲线图相关变量
- */
-let currentThreadChartType = 'runtime';  // 'runtime', 'memory'
-let threadChart = null;
-
-/**
- * 初始化线程曲线图
- */
-function initThreadChart() {
-    if (!threadChart) {
-        const container = document.getElementById('mainChart');
-        if (container) {
-            threadChart = echarts.init(container);
-        }
-    }
-}
-
-/**
- * 加载线程曲线图数据
- */
-async function loadThreadChartData() {
-    const casename = document.getElementById('threadCasenameSelect')?.value;
-    const ruleSelect = document.getElementById('threadRuleSelect');
-    const rule = ruleSelect?.value;
-    const date = document.getElementById('threadDateSelect')?.value;
-    
-    if (!casename || !rule || !date) {
-        return;
-    }
-    
-    try {
-        showLoading(true);
-        const response = await axios.post(`${API_BASE}/thread/chart/data`, {
-            raw_data: allData,
-            casename: casename,
-            rule: rule,
-            date: date
-        });
-        
-        if (response.data.success) {
-            const chartData = response.data.data;
-            drawThreadChart(chartData);
-        }
-    } catch (error) {
-        console.error('加载线程曲线图数据失败:', error);
-        showError('加载线程曲线图数据失败');
-    } finally {
-        showLoading(false);
-    }
-}
-
-/**
- * 绘制线程曲线图
- */
-function drawThreadChart(chartData) {
-    initThreadChart();
-    
-    setTimeout(() => {
-        if (threadChart) {
-            threadChart.resize();
-        }
-    }, 100);
-
-    const { threads, runtimes, memories } = chartData;
-    const isRuntime = currentThreadChartType === 'runtime';
-    const yAxisName = isRuntime ? 'Runtime (s)' : 'Memory (MB)';
-    
-    const seriesData = isRuntime ? runtimes : memories;
-    
-    const option = {
-        backgroundColor: 'transparent',
-        title: {
-            text: isRuntime ? '线程数 vs Runtime' : '线程数 vs Memory',
-            textStyle: { color: '#F1F5F9' },
-            left: 'center'
-        },
-        tooltip: {
-            trigger: 'axis',
-            axisPointer: { type: 'shadow' },
-            formatter: (params) => {
-                if (!params || params.length === 0) return '';
-                const data = params[0];
-                const threadCount = data.axisValue;
-                const value = data.value;
-                return `<div style="font-weight:600">线程数: ${threadCount}</div>
-                        <div>${isRuntime ? 'Runtime' : 'Memory'}: ${value?.toFixed(2) || 'N/A'}</div>`;
-            }
-        },
-        grid: {
-            left: '3%',
-            right: '5%',
-            top: '15%',
-            bottom: '8%',
-            containLabel: true
-        },
-        xAxis: {
-            type: 'category',
-            name: '线程数',
-            data: threads,
-            axisLabel: {
-                fontSize: 12,
-                color: '#94A3B8'
-            },
-            axisLine: {
-                lineStyle: { color: '#334155' }
-            }
-        },
-        yAxis: {
-            type: 'value',
-            name: yAxisName,
-            nameTextStyle: { color: '#94A3B8' },
-            axisLabel: { color: '#94A3B8' },
-            splitLine: {
-                lineStyle: { color: '#1E293B' }
-            }
-        },
-        series: [{
-            name: isRuntime ? 'Runtime' : 'Memory',
-            type: 'line',
-            data: seriesData,
-            smooth: false,
-            symbol: 'circle',
-            symbolSize: 8,
-            lineStyle: {
-                width: 3,
-                color: '#00E5FF'
-            },
-            itemStyle: {
-                color: '#00E5FF',
-                borderColor: '#0F172A',
-                borderWidth: 2
-            },
-            areaStyle: {
-                opacity: 0.1,
-                color: '#00E5FF'
-            }
-        }],
-        toolbox: {
-            feature: {
-                saveAsImage: { title: '保存图片' }
-            },
-            iconStyle: { borderColor: '#94A3B8' }
-        }
-    };
-    
-    threadChart.setOption(option, true);
-    window.addEventListener('resize', () => threadChart && threadChart.resize());
-}
-
-/**
- * 更新线程曲线图的选项（Casename/Rule/Date）
- */
-async function updateThreadSelects() {
-    const casenames = Object.keys(allData);
-    const threadCasenameSelect = document.getElementById('threadCasenameSelect');
-    const threadRuleSelect = document.getElementById('threadRuleSelect');
-    const threadDateSelect = document.getElementById('threadDateSelect');
-    
-    if (threadCasenameSelect) {
-        const options = casenames.map(name => 
-            `<option value="${escapeHtml(name)}">${escapeHtml(name)}</option>`
-        ).join('');
-        threadCasenameSelect.innerHTML = options;
-        
-        if (casenames.length > 0 && !threadCasenameSelect.value) {
-            threadCasenameSelect.value = casenames[0];
-        }
-    }
-    
-    // 监听 Casename 变化
-    if (threadCasenameSelect) {
-        threadCasenameSelect.addEventListener('change', () => {
-            updateThreadRules();
-            updateThreadDates();
-        });
-    }
-    
-    await updateThreadRules();
-    await updateThreadDates();
-}
-
-/**
- * 更新线程曲线图的规则列表
- */
-async function updateThreadRules() {
-    const casename = document.getElementById('threadCasenameSelect')?.value;
-    const threadRuleSelect = document.getElementById('threadRuleSelect');
-    const threadRuleSearch = document.getElementById('threadRuleSearch');
-    
-    if (!casename || !allData[casename]) return;
-    
-    const caseData = allData[casename];
-    const dailyMetrics = caseData.daily_metrics || {};
-    
-    // 收集所有规则
-    const rulesSet = new Set();
-    Object.keys(dailyMetrics).forEach(date => {
-        const metrics = dailyMetrics[date];
-        Object.keys(metrics).forEach(rule => {
-            rulesSet.add(rule);
-        });
-    });
-    
-    let allThreadRules = Array.from(rulesSet).sort();
-    if (allThreadRules.includes('Overall')) {
-        allThreadRules = ['Overall', ...allThreadRules.filter(r => r !== 'Overall')];
-    }
-    
-    // 搜索过滤
-    const searchTerm = threadRuleSearch ? threadRuleSearch.value.toLowerCase() : '';
-    const filteredRules = searchTerm 
-        ? allThreadRules.filter(rule => rule.toLowerCase().includes(searchTerm))
-        : allThreadRules;
-    
-    const options = filteredRules.map(rule => 
-        `<option value="${escapeHtml(rule)}">${escapeHtml(rule)}</option>`
-    ).join('');
-    
-    if (threadRuleSelect) {
-        threadRuleSelect.innerHTML = options;
-        if (options && !threadRuleSelect.value) {
-            threadRuleSelect.value = allThreadRules[0] || '';
-        }
-    }
-    
-    // 搜索事件
-    if (threadRuleSearch) {
-        threadRuleSearch.addEventListener('input', () => updateThreadRules());
-    }
-}
-
-/**
- * 更新线程曲线图的日期列表
- */
-async function updateThreadDates() {
-    const casename = document.getElementById('threadCasenameSelect')?.value;
-    const threadDateSelect = document.getElementById('threadDateSelect');
-    
-    if (!casename || !allData[casename]) return;
-    
-    const caseData = allData[casename];
-    const dailyMetrics = caseData.daily_metrics || {};
-    const dates = Object.keys(dailyMetrics).sort();
-    
-    const options = dates.map(date => 
-        `<option value="${date}">${formatDate(date)}</option>`
-    ).join('');
-    
-    if (threadDateSelect) {
-        threadDateSelect.innerHTML = options;
-        if (dates.length > 0 && !threadDateSelect.value) {
-            threadDateSelect.value = dates[dates.length - 1];
-        }
-    }
-}
-
-/**
- * 切换线程曲线图类型
- */
-function switchThreadChartType(type) {
-    currentThreadChartType = type;
-    
-    // 更新菜单激活状态
-    document.querySelectorAll('[data-thread-chart]').forEach(btn => {
-        if (btn.dataset.threadChart === type) {
-            btn.classList.add('active');
-        } else {
-            btn.classList.remove('active');
-        }
-    });
-    
-    loadThreadChartData();
-}
-
-// 全局状态新增
-let selectedThreads = [0];  // 默认显示0线程
-let availableThreads = [];
-
-// 初始化线程选择器
-function initThreadSelector() {
-    const threadSelectContainer = document.getElementById('threadSelectContainer');
-    if (!threadSelectContainer) return;
-    
-    // 创建多选下拉框
-    threadSelectContainer.innerHTML = `
-        <div class="filter-group">
-            <label><i class="fas fa-diagram-project"></i> 线程数选择</label>
-            <div class="multi-select" id="threadMultiSelect">
-                <div class="multi-select-trigger" onclick="toggleThreadDropdown()">
-                    <span id="selectedThreadsDisplay">0线程</span>
-                    <i class="fas fa-chevron-down"></i>
-                </div>
-                <div class="multi-select-dropdown" id="threadDropdown" style="display: none;">
-                    <div class="multi-select-search">
-                        <input type="text" placeholder="搜索线程数..." id="threadSearchInput">
-                    </div>
-                    <div class="multi-select-actions">
-                        <button class="btn-select-all" onclick="selectAllThreads()">全选</button>
-                        <button class="btn-clear-all" onclick="clearAllThreads()">清空</button>
-                    </div>
-                    <div class="multi-select-options" id="threadOptions"></div>
-                </div>
-            </div>
-        </div>
-    `;
-    
-    loadThreadOptions();
-}
-
-// 加载线程选项
-async function loadThreadOptions() {
-    if (!selectedCasename || selectedRules.length === 0) return;
-    
-    const response = await axios.post(`${API_BASE}/chart/threads`, {
-        raw_data: allData,
-        casename: selectedCasename,
-        rule: selectedRules[0]  // 使用第一个选中的规则获取线程信息
-    });
-    
-    if (response.data.success) {
-        availableThreads = response.data.data.threads;
-        selectedThreads = response.data.data.default_threads;
-        renderThreadOptions();
-        updateSelectedThreadsDisplay();
-    }
-}
-
-// 渲染线程选项
-function renderThreadOptions() {
-    const container = document.getElementById('threadOptions');
-    if (!container) return;
-    
-    container.innerHTML = availableThreads.map(thread => `
-        <label class="multi-select-option">
-            <input type="checkbox" value="${thread}" 
-                ${selectedThreads.includes(thread) ? 'checked' : ''}
-                onchange="toggleThreadSelection(${thread}, this.checked)">
-            <span>${thread} 线程</span>
-        </label>
-    `).join('');
-}
-
-// 切换线程选择
-function toggleThreadSelection(thread, isSelected) {
-    if (isSelected) {
-        if (!selectedThreads.includes(thread)) {
-            selectedThreads.push(thread);
-        }
-    } else {
-        selectedThreads = selectedThreads.filter(t => t !== thread);
-    }
-    selectedThreads.sort((a, b) => a - b);
-    updateSelectedThreadsDisplay();
-    
-    // 重新渲染图表
-    renderChartWithThreads();
-}
-
-// 更新显示
-function updateSelectedThreadsDisplay() {
-    const display = document.getElementById('selectedThreadsDisplay');
-    if (display) {
-        if (selectedThreads.length === 0) {
-            display.textContent = '未选择';
-        } else if (selectedThreads.length <= 3) {
-            display.textContent = selectedThreads.map(t => `${t}线程`).join(', ');
-        } else {
-            display.textContent = `${selectedThreads.length}个线程`;
-        }
-    }
-}
-
-// 全选/清空
-function selectAllThreads() {
-    selectedThreads = [...availableThreads];
-    renderThreadOptions();
-    updateSelectedThreadsDisplay();
-    renderChartWithThreads();
-}
-
-function clearAllThreads() {
-    selectedThreads = [];
-    renderThreadOptions();
-    updateSelectedThreadsDisplay();
-    renderChartWithThreads();
-}
-
-// 带线程参数渲染图表
-async function renderChartWithThreads() {
-    const requestData = {
-        raw_data: allData,
-        casename: selectedCasename,
-        rules: selectedRules,
-        dates: selectedDates,
-        mode: currentMode,
-        selected_threads: selectedThreads  // 传递线程选择
-    };
-    
-    const response = await axios.post(`${API_BASE}/chart/data`, requestData);
-    if (response.data.success) {
-        drawMultiThreadChart(response.data.data);
-    }
-}
-
-// 绘制多线程图表
-function drawMultiThreadChart(chartData) {
-    if (mainChart) {
-        mainChart.dispose();
-    }
-    mainChart = echarts.init(document.getElementById('mainChart'));
-    
-    const { dates, rules, thread_counts } = chartData;
-    const isRuntime = currentChartType === 'runtime';
-    
-    // 为每个规则创建多个系列（每个线程一个）
-    const series = [];
-    
-    for (const rule of selectedRules) {
-        const ruleData = rules[rule];
-        if (!ruleData || !ruleData.thread_series) continue;
-        
-        for (const [threadNum, values] of Object.entries(ruleData.thread_series)) {
-            // 确保values长度与dates一致
-            while (values.length < dates.length) {
-                values.push(null);
-            }
-            
-            series.push({
-                name: `${rule} (${threadNum}线程)`,
-                type: 'line',
-                data: values,
-                smooth: false,
-                symbol: 'circle',
-                symbolSize: 6,
-                lineStyle: {
-                    width: 2,
-                    color: getThreadColor(parseInt(threadNum))
-                }
-            });
-        }
-    }
-    
-    const option = {
-        backgroundColor: 'transparent',
-        tooltip: { trigger: 'axis' },
-        legend: {
-            data: series.map(s => s.name),
-            textStyle: { color: '#F1F5F9' },
-            type: 'scroll',
-            right: 10,
-            top: 0
-        },
-        grid: {
-            left: '3%',
-            right: '5%',
-            top: '15%',
-            bottom: '8%',
-            containLabel: true
-        },
-        xAxis: {
-            type: 'category',
-            name: '日期',
-            data: dates.map(d => formatDate(d)),
-            axisLabel: { rotate: dates.length > 30 ? 45 : 0 }
-        },
-        yAxis: {
-            type: 'value',
-            name: isRuntime ? 'Runtime (s)' : 'Memory (MB)'
-        },
-        series: series
-    };
-    
-    mainChart.setOption(option);
-}
-
-// 线程颜色映射
-function getThreadColor(threadNum) {
-    const colors = {
-        0: '#00E5FF',
-        2: '#A855F7',
-        4: '#10B981',
-        6: '#F59E0B',
-        8: '#EF4444',
-        16: '#8B5CF6',
-        32: '#EC4899',
-        64: '#14B8A6',
-        128: '#F97316'
-    };
-    return colors[threadNum] || '#6B7280';
-}
 // 页面加载完成后初始化
 document.addEventListener('DOMContentLoaded', init);

@@ -125,10 +125,10 @@ def get_elint_performance(original_path, jsonDataFile) -> Tuple[Dict, List[str]]
     caseData = {}
     caseData = get_date_from_txt_signal(dataFiles, caseData)
     caseData["dataFiles"] = sorted(dataFiles)
-    if jsonDataFile:
-        save_json(jsonDataFile, caseData)
-    else:
-        log("未提供 JSON 保存路径，跳过保存 elint 数据")
+    # if jsonDataFile:
+    #     save_json(jsonDataFile, caseData)
+    # else:
+    #     log("未提供 JSON 保存路径，跳过保存 elint 数据")
 
     end = time.time()
     print(f"运行时间: {end - start:.4f} 秒")
@@ -187,7 +187,7 @@ def get_incremental_data(
     
     # 保存更新后的数据
     existing_data["dataFiles"] = merged_files
-    save_json(json_path, existing_data)
+    # save_json(json_path, existing_data)
     
     return existing_data, merged_files
 
@@ -203,6 +203,7 @@ def get_elint_data(jsonDataFile, original_path) -> Dict:
     返回:
         dict: 项目数据
     """
+    print("开始获取工具单线程的数据")
     # 统一转换为 Path 对象
     jsonDataFile = Path(jsonDataFile) if isinstance(jsonDataFile, str) else jsonDataFile
     jsonPath = jsonDataFile.resolve() if jsonDataFile else None
@@ -386,7 +387,8 @@ def get_data_json(rule_data, data, thread):
         if len(item) == 0:
             continue
         rule = item[0]
-        if thread > 0:
+
+        if int(thread) > 0:
             runtime = float(item[2].replace(',', ''))
         else:
             runtime = float(item[1].replace(',', ''))
@@ -487,7 +489,7 @@ def get_perf_data_from_log(caseData, log_path):
     return caseData
 
 
-def get_multi_data(path: str, caseData: Dict = None) -> Tuple[Dict, List[str]]:
+def get_multi_data(jsonDataFile, path) -> Dict:
     """
     获取多线程性能数据
     
@@ -499,8 +501,11 @@ def get_multi_data(path: str, caseData: Dict = None) -> Tuple[Dict, List[str]]:
         Tuple[Dict, List[str]]: (更新后的 caseData, 日志文件列表)
     """
     start = time.time()
-    log(f"开始获取多线程数据，路径: {path}")
-    
+    print(f"开始获取多线程数据，路径: {path}")
+    if Path(jsonDataFile).exists(): 
+        caseData = load_json(jsonDataFile)
+    else:
+        caseData = {}
     if caseData is None:
         caseData = {}
     
@@ -534,7 +539,7 @@ def get_multi_data(path: str, caseData: Dict = None) -> Tuple[Dict, List[str]]:
     end = time.time()
     log(f"多线程数据获取完成，耗时: {end - start:.4f} 秒")
     
-    return caseData, filtered_logs
+    return caseData
 
 
 def get_combined_data(
@@ -601,10 +606,10 @@ def get_combined_data(
         log(f"合并完成: 单线程 {len([k for k in single_data.keys() if k != '__multi_processed_logs__'])} 个项目，"
             f"多线程新增 {len([k for k in multi_data.keys() if k != '__multi_processed_logs__' and k not in single_data])} 个项目")
     
-    if json_path:
-        save_json(json_path, single_data)
-    else:
-        log("未提供 JSON 保存路径，跳过保存合并数据")
+    # if json_path:
+    #     save_json(json_path, single_data)
+    # else:
+    #     log("未提供 JSON 保存路径，跳过保存合并数据")
 
     if "dataFiles" in single_data :
         del single_data["dataFiles"]  # 移除单线程数据文件列表
