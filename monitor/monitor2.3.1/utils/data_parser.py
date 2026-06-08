@@ -608,6 +608,7 @@ class DataParser:
             }
         """
         case_data = raw_data.get(casename, {})
+        print(case_data)
         daily_metrics = case_data.get('daily_metrics', {})
         
         threads_set = set()
@@ -638,36 +639,6 @@ class DataParser:
             'threads': threads,
             'default_threads': default_threads
         }
-    
-    @staticmethod
-    def get_project_overview(raw_data: Dict, casename: str = None) -> Dict:
-        """获取项目概况"""
-
-        if casename and casename in raw_data:
-            case_data = {casename: raw_data[casename]}
-        else:
-            case_data = raw_data
-        
-        total_cases = len(case_data)
-        total_rules = set()
-        total_dates = set()
-
-        for case_name, case_info in case_data.items():
-            if case_name == "__multi_processed_logs__": continue
-            if case_name == "dataFiles": continue
-
-            daily_metrics = case_info.get('daily_metrics', {})
-            total_dates.update(daily_metrics.keys())
-            
-            for date, metrics in daily_metrics.items():
-                total_rules.update(metrics.keys())
-
-        return {
-            'total_cases': total_cases,
-            'total_rules': len(total_rules),
-            'total_dates': len(total_dates)
-        }
-
 
 # 全局实例
 data_parser = DataParser()

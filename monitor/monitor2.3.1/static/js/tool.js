@@ -752,21 +752,29 @@ function updateStatistics(chartData) {
  * 更新项目概况
  */
 async function updateOverview() {
-    try {
-        const response = await axios.post(`${API_BASE}/overview`, {
-            raw_data: allData,
-            casename: selectedCasename
-        });
-        
-        if (response.data.success) {
-            const overview = response.data.data;
-            document.getElementById('totalCases').textContent = overview.total_cases;
-            document.getElementById('totalRules').textContent = overview.total_rules;
-            document.getElementById('totalDays').textContent = overview.total_dates;
-        }
-    } catch (error) {
-        console.error('获取项目概况失败:', error);
+    if (!selectedCasename || !allData[selectedCasename]) {
+        return;
     }
+    
+    const caseData = allData[selectedCasename];
+    const dailyMetrics = caseData.daily_metrics || {};
+    
+    // 总 case 数
+    const totalCases = Object.keys(allData).length;
+    
+    // 总阶段数（规则数）
+    const allRules = new Set();
+    for (const date in dailyMetrics) {
+        Object.keys(dailyMetrics[date]).forEach(rule => allRules.add(rule));
+    }
+    const totalRules = allRules.size;
+    
+    // 总天数
+    const totalDays = Object.keys(dailyMetrics).length;
+    
+    document.getElementById('totalCases').textContent = totalCases;
+    document.getElementById('totalRules').textContent = totalRules;
+    document.getElementById('totalDays').textContent = totalDays;
 }
 
 /**

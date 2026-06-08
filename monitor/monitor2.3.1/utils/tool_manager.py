@@ -478,7 +478,8 @@ class ToolManager:
                 else:
                     for date, metrics in case_data.get('daily_metrics', {}).items():
                         result[casename]['daily_metrics'][date] = metrics
-        
+        print(result)
+        print()
         return result
     
     def clear_cache(self, user_id: str = None, tool_id: str = None, data_type: str = None):

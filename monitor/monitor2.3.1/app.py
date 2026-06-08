@@ -123,7 +123,7 @@ def api_delete_tool(tool_id):
 def api_load_tool_data(tool_id):
     """加载工具数据（使用分层存储）"""
     user_id = get_user_id()
-    
+
     # 检查缓存 - 获取所有类型的数据
     all_data = tool_manager.get_all_tool_data(user_id, tool_id)
     
@@ -315,20 +315,6 @@ def api_get_comparison():
     )
     
     return jsonify({'success': True, 'data': comparison})
-
-
-@app.route('/api/overview', methods=['POST'])
-def api_get_overview():
-    """获取项目概况"""
-    data = request.json
-    
-    raw_data = data.get('raw_data', {})
-    casename = data.get('casename')
-    
-    overview = data_parser.get_project_overview(raw_data, casename)
-    
-    return jsonify({'success': True, 'data': overview})
-
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)

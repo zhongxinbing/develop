@@ -502,12 +502,13 @@ def get_multi_data(jsonDataFile, path) -> Dict:
     """
     start = time.time()
     print(f"开始获取多线程数据，路径: {path}")
-    if Path(jsonDataFile).exists(): 
-        caseData = load_json(jsonDataFile)
-    else:
-        caseData = {}
-    if caseData is None:
-        caseData = {}
+    caseData = {}
+    if jsonDataFile and Path(jsonDataFile).exists(): 
+        try:
+            caseData = load_json(jsonDataFile)
+        except Exception as e:
+            log(f"读取JSON文件失败: {e}")
+            caseData = {}
     
     # 查找所有 elint.log 文件
     logs = find(path, maxdepth=6, name_pattern=r"elint.log", file_type="f")
@@ -540,84 +541,6 @@ def get_multi_data(jsonDataFile, path) -> Dict:
     log(f"多线程数据获取完成，耗时: {end - start:.4f} 秒")
     
     return caseData
-
-
-def get_combined_data(
-    json_path: str, 
-    single_original_path: str, 
-    multi_original_path: str = None
-) -> Dict:
-    """
-    获取合并后的数据（单线程 + 多线程）
-    
-    参数:
-        json_path: JSON数据文件路径
-        single_original_path: 单线程原始数据路径
-        multi_original_path: 多线程原始数据路径（可选）
-    
-    返回:
-        dict: 合并后的项目数据
-    """
-    # 获取单线程数据
-    single_data = get_elint_data(json_path, single_original_path)
-    
-    # 如果有多线程路径，获取多线程数据并合并
-    if multi_original_path and multi_original_path.strip():
-        multi_data, multiLogs = get_multi_data(multi_original_path, single_data.copy())
-        
-        # 合并多线程数据到单线程数据
-        for casename, case_info in multi_data.items():
-            if casename == "__multi_processed_logs__" or casename == "dataFiles":
-                continue
-
-            if casename not in single_data:
-                log(f"项目 {casename} 仅存在于多线程数据中，直接添加")
-                single_data[casename] = case_info
-            else:
-                # 合并 daily_metrics
-                for date, metrics in case_info.get('daily_metrics', {}).items():
-                    if date not in single_data[casename]['daily_metrics']:
-                        single_data[casename]['daily_metrics'][date] = metrics
-                    else:
-                        for rule, rule_data in metrics.items():
-                            if rule not in single_data[casename]['daily_metrics'][date]:
-                                single_data[casename]['daily_metrics'][date][rule] = rule_data
-                            else:
-                                # 合并同一规则的不同线程数据
-                                existing_thread_data = single_data[casename]['daily_metrics'][date][rule].get('thread_metrics', {})
-                                new_thread_data = rule_data.get('thread_metrics', {})
-                                for thread, perf in new_thread_data.items():
-                                    if thread not in existing_thread_data:
-                                        existing_thread_data[thread] = perf
-                                    else:
-                                        # 如果线程已存在，比较性能数据，保留更高的内存和更长的时间
-                                        existing_perf = existing_thread_data[thread]
-                                        existing_perf['runtime'] = max(existing_perf['runtime'], perf['runtime'])
-                                        existing_perf['memory'] = max(existing_perf['memory'], perf['memory'])
-                                        # existing_perf['cores'] = max(existing_perf.get('cores', 0), perf.get('cores', 0))
-                                single_data[casename]['daily_metrics'][date][rule]['thread_metrics'] = existing_thread_data
-                
-                # 合并 available_dates
-                existing_dates = set(single_data[casename].get('available_dates', []))
-                new_dates = set(case_info.get('available_dates', []))
-                single_data[casename]['available_dates'] = sorted(existing_dates | new_dates)
-        log(type(multi_data))
-        single_data["__multi_processed_logs__"] = multiLogs
-        log(f"合并完成: 单线程 {len([k for k in single_data.keys() if k != '__multi_processed_logs__'])} 个项目，"
-            f"多线程新增 {len([k for k in multi_data.keys() if k != '__multi_processed_logs__' and k not in single_data])} 个项目")
-    
-    # if json_path:
-    #     save_json(json_path, single_data)
-    # else:
-    #     log("未提供 JSON 保存路径，跳过保存合并数据")
-
-    if "dataFiles" in single_data :
-        del single_data["dataFiles"]  # 移除单线程数据文件列表
-    if "__multi_processed_logs__" in single_data:
-        del single_data["__multi_processed_logs__"]  # 移除多线程处理日志列表
-
-    return single_data
-
 
 def time_to_seconds(time_str):
     """将时间字符串转换为秒数"""
