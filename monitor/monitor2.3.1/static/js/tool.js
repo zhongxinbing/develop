@@ -67,10 +67,7 @@ async function loadToolConfig() {
 }
 
 /**
- * 加载数据
- */
-/**
- * 加载数据
+ * 加载数据 - 完全分离单线程和多线程数据
  */
 async function loadData() {
     try {
@@ -81,10 +78,10 @@ async function loadData() {
         if (response.data.success) {
             const data = response.data.data || {};
             
-            // 解析数据 - 正确分离单线程、多线程和用户数据
-            let signalData = {};
-            let multiData = {};
-            let extraData = {};
+            // 完全分离三种数据类型
+            let signalData = {};      // 单线程数据
+            let multiData = {};       // 多线程数据
+            let extraData = {};       // 用户添加数据
             
             if (typeof data === 'string') {
                 try {
@@ -93,7 +90,7 @@ async function loadData() {
                     if (parsed.multi) multiData = parsed.multi;
                     if (parsed.extra) extraData = parsed.extra;
                 } catch (e) {
-                    // 兼容旧格式
+                    // 兼容旧格式：假设是单线程数据
                     signalData = data;
                 }
             } else {
@@ -102,37 +99,28 @@ async function loadData() {
                 if (data.extra) extraData = data.extra;
             }
             
-            // 如果单线程数据为空但有信号数据，尝试直接使用
-            if (Object.keys(signalData).length === 0 && Object.keys(multiData).length === 0 && typeof data === 'object') {
-                // 兼容旧格式：直接传入的数据可能是单线程数据
-                if (!data.signal && !data.multi && !data.extra) {
-                    signalData = data;
-                }
-            }
+            // 存储到全局变量，供各模块使用
+            window.signalData = signalData;
+            window.multiData = multiData;
+            window.extraData = extraData;
             
+            console.log('=== 数据加载完成 ===');
             console.log('单线程数据 keys:', Object.keys(signalData));
             console.log('多线程数据 keys:', Object.keys(multiData));
             console.log('用户数据 keys:', Object.keys(extraData));
             
-            // 初始化单线程模块（只传入单线程数据）
+            // 初始化单线程模块（只传入单线程数据 + 用户数据）
             if (window.SingleThreadManager) {
                 singleThreadManager = new window.SingleThreadManager();
                 await singleThreadManager.init(signalData, extraData);
-                if (singleThreadManager.updateOverview) {
-                    singleThreadManager.updateOverview();
-                }
             } else {
                 console.error('SingleThreadManager 未加载');
             }
             
-            // 初始化多线程模块（只传入多线程数据）
-            if (window.MultiThreadManager && Object.keys(multiData).length > 0) {
+            // 初始化多线程模块（只传入多线程数据 + 用户数据）
+            if (window.MultiThreadManager) {
                 multiThreadManager = new window.MultiThreadManager();
                 await multiThreadManager.init(multiData, extraData);
-            } else if (window.MultiThreadManager && Object.keys(multiData).length === 0) {
-                console.log('多线程数据为空，多线程模块将使用空数据');
-                multiThreadManager = new window.MultiThreadManager();
-                await multiThreadManager.init({}, extraData);
             } else {
                 console.error('MultiThreadManager 未加载');
             }
@@ -232,45 +220,38 @@ async function refreshData() {
         if (response.data.success) {
             const data = response.data.data || {};
             
-            // 重新解析数据
-            rawData = {};
+            // 完全分离三种数据类型
+            let signalData = {};
+            let multiData = {};
+            let extraData = {};
+            
             if (typeof data === 'string') {
                 try {
                     const parsed = JSON.parse(data);
-                    if (parsed.signal) rawData = { ...rawData, ...parsed.signal };
-                    if (parsed.multi) rawData = { ...rawData, ...parsed.multi };
+                    if (parsed.signal) signalData = parsed.signal;
+                    if (parsed.multi) multiData = parsed.multi;
+                    if (parsed.extra) extraData = parsed.extra;
                 } catch (e) {
-                    rawData = data;
+                    signalData = data;
                 }
             } else {
-                if (data.signal) rawData = { ...rawData, ...data.signal };
-                if (data.multi) rawData = { ...rawData, ...data.multi };
+                if (data.signal) signalData = data.signal;
+                if (data.multi) multiData = data.multi;
+                if (data.extra) extraData = data.extra;
             }
             
-            // 清空用户数据
-            userAddedData = {};
+            window.signalData = signalData;
+            window.multiData = multiData;
+            window.extraData = extraData;
             
-            // 刷新模块
+            // 刷新单线程模块
             if (singleThreadManager) {
-                singleThreadManager.rawData = rawData;
-                singleThreadManager.userAddedData = {};
-                singleThreadManager.allData = { ...rawData };
-                singleThreadManager.updateCasenameSelect();
-                await singleThreadManager.updateRulesAndDates();
-                singleThreadManager.selectedDates = singleThreadManager.allDates.slice(-50);
-                await singleThreadManager.renderChart();
-                singleThreadManager.updateOverview();
+                await singleThreadManager.refreshWithData(signalData, extraData);
             }
             
+            // 刷新多线程模块
             if (multiThreadManager) {
-                multiThreadManager.rawData = rawData;
-                multiThreadManager.userAddedData = {};
-                multiThreadManager.allData = { ...rawData };
-                multiThreadManager.updateCasenameSelect();
-                await multiThreadManager.updateRulesAndDates();
-                multiThreadManager.selectedDates = multiThreadManager.allDates.slice(-50);
-                await multiThreadManager.renderChart();
-                multiThreadManager.updateOverview();
+                await multiThreadManager.refreshWithData(multiData, extraData);
             }
             
             showSuccess('数据刷新成功');

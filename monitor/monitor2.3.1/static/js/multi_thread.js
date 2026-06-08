@@ -27,18 +27,67 @@ class MultiThreadManager {
         // 绑定方法
         this.renderChart = this.renderChart.bind(this);
     }
-    
+    /**
+     * 使用指定数据刷新
+     */
+    async refreshWithData(rawData, userAddedData) {
+        this.rawData = rawData || {};
+        this.userAddedData = userAddedData || {};
+        this.allData = { ...this.rawData, ...this.userAddedData };
+        this.selectedRules = ['Overall'];
+        
+        this.updateCasenameSelect();
+        await this.updateRulesAndDates();
+        this.selectedDates = this.allDates.slice(-50);
+        await this.renderChart();
+        this.updateOverview();
+    }
     /**
      * 初始化多线程模块
      */
     async init(rawData, userAddedData) {
-        console.log('MultiThreadManager.init 开始', { rawDataKeys: Object.keys(rawData || {}), userAddedDataKeys: Object.keys(userAddedData || {}) });
+        console.log('MultiThreadManager.init 开始');
         
-        this.rawData = rawData || {};
+        // 清理和验证数据格式
+        let cleanRawData = {};
+        
+        if (rawData && typeof rawData === 'object') {
+            for (const [key, value] of Object.entries(rawData)) {
+                // 跳过内部字段
+                if (key === 'dataFiles' || key === '__multi_processed_logs__' || key === 'signal' || key === 'multi') {
+                    continue;
+                }
+                
+                // 验证多线程数据格式：必须有 daily_metrics 且内部有 thread_metrics
+                if (value && typeof value === 'object' && value.daily_metrics) {
+                    // 检查是否包含多线程特征数据
+                    let hasMultiThread = false;
+                    for (const dateMetrics of Object.values(value.daily_metrics)) {
+                        if (dateMetrics && typeof dateMetrics === 'object') {
+                            for (const ruleData of Object.values(dateMetrics)) {
+                                if (ruleData && ruleData.thread_metrics) {
+                                    hasMultiThread = true;
+                                    break;
+                                }
+                            }
+                        }
+                        if (hasMultiThread) break;
+                    }
+                    
+                    if (hasMultiThread) {
+                        cleanRawData[key] = value;
+                    } else {
+                        console.log(`MultiThread: 项目 ${key} 没有多线程数据特征，跳过`);
+                    }
+                }
+            }
+        }
+        
+        this.rawData = cleanRawData;
         this.userAddedData = userAddedData || {};
         this.allData = { ...this.rawData, ...this.userAddedData };
         
-        console.log('MultiThreadManager allData keys:', Object.keys(this.allData));
+        console.log('MultiThreadManager 处理后数据 keys:', Object.keys(this.allData));
         
         this.updateCasenameSelect();
         await this.updateRulesAndDates();
@@ -47,20 +96,40 @@ class MultiThreadManager {
         this.initDatePickerModal();
         this.initAddDataModal();
         
-        // 默认选择最近50天并渲染
         if (this.allDates.length > 0) {
             this.selectLatest50Days();
         }
         
-        console.log('MultiThreadManager.init 完成', { allDates: this.allDates.length, allRules: this.allRules.length, availableThreads: this.availableThreads });
+        console.log('MultiThreadManager.init 完成', { 
+            allDates: this.allDates.length, 
+            allRules: this.allRules.length,
+            availableThreads: this.availableThreads 
+        });
     }
-    
+
     /**
      * 更新Casename选择框
      */
     updateCasenameSelect() {
-        const casenames = Object.keys(this.allData);
-        console.log('MultiThreadManager updateCasenameSelect - casenames:', casenames);
+        // 只显示有多线程数据的项目
+        const casenames = Object.keys(this.allData).filter(name => {
+            const data = this.allData[name];
+            if (!data || typeof data !== 'object' || !data.daily_metrics) return false;
+            
+            // 检查是否包含 thread_metrics
+            for (const dateMetrics of Object.values(data.daily_metrics)) {
+                if (dateMetrics && typeof dateMetrics === 'object') {
+                    for (const ruleData of Object.values(dateMetrics)) {
+                        if (ruleData && ruleData.thread_metrics) {
+                            return true;
+                        }
+                    }
+                }
+            }
+            return false;
+        });
+        
+        console.log('MultiThread updateCasenameSelect - casenames:', casenames);
         
         const options = casenames.map(name => 
             `<option value="${this.escapeHtml(name)}">${this.escapeHtml(name)}</option>`
@@ -71,7 +140,7 @@ class MultiThreadManager {
             if (casenames.length > 0 && !this.selectedCasename) {
                 this.selectedCasename = casenames[0];
                 this.casenameSelect.value = this.selectedCasename;
-                console.log('选中 casename:', this.selectedCasename);
+                console.log('选中多线程 casename:', this.selectedCasename);
             }
         }
     }

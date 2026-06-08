@@ -12,7 +12,7 @@ class SingleThreadManager {
         this.allRules = [];
         this.rawData = {};
         this.userAddedData = {};
-        this.allData = {};
+        this.multiThreadAllData = {};
         
         // DOM 元素
         this.casenameSelect = document.getElementById('casenameSelect');
@@ -30,13 +30,49 @@ class SingleThreadManager {
      * 初始化单线程模块
      */
     async init(rawData, userAddedData) {
-        console.log('SingleThreadManager.init 开始', { rawDataKeys: Object.keys(rawData), userAddedDataKeys: Object.keys(userAddedData) });
+        console.log('SingleThreadManager.init 开始');
         
-        this.rawData = rawData || {};
+        // 清理和验证数据格式
+        let cleanRawData = {};
+        
+        if (rawData && typeof rawData === 'object') {
+            // 遍历所有项目
+            for (const [key, value] of Object.entries(rawData)) {
+                // 跳过内部字段
+                if (key === 'dataFiles' || key === '__multi_processed_logs__' || key === 'signal' || key === 'multi') {
+                    continue;
+                }
+                
+                // 验证数据格式：必须有 daily_metrics
+                if (value && typeof value === 'object') {
+                    if (value.daily_metrics) {
+                        // 标准单线程格式
+                        cleanRawData[key] = value;
+                    } else if (value.casename && value.daily_metrics) {
+                        // 另一种标准格式
+                        cleanRawData[key] = value;
+                    } else {
+                        // 可能是直接包含 daily_metrics 但不标准，尝试修复
+                        console.warn(`SingleThread: 项目 ${key} 格式异常，跳过`, value);
+                    }
+                }
+            }
+        }
+        
+        this.rawData = cleanRawData;
         this.userAddedData = userAddedData || {};
-        this.allData = { ...this.rawData, ...this.userAddedData };
+        this.multiThreadAllData = { ...this.rawData, ...this.userAddedData };
         
-        console.log('SingleThreadManager allData keys:', Object.keys(this.allData));
+        console.log('SingleThreadManager 处理后数据 keys:', Object.keys(this.multiThreadAllData));
+        
+        // 如果有数据，打印第一个项目的结构用于调试
+        if (Object.keys(this.multiThreadAllData).length > 0) {
+            const firstKey = Object.keys(this.multiThreadAllData)[0];
+            console.log(`SingleThread 项目示例 (${firstKey}):`, {
+                hasDailyMetrics: !!this.multiThreadAllData[firstKey]?.daily_metrics,
+                datesCount: Object.keys(this.multiThreadAllData[firstKey]?.daily_metrics || {}).length
+            });
+        }
         
         this.updateCasenameSelect();
         await this.updateRulesAndDates();
@@ -44,19 +80,26 @@ class SingleThreadManager {
         this.initDatePickerModal();
         this.initAddDataModal();
         
-        // 默认选择最近50天并渲染
         if (this.allDates.length > 0) {
             this.selectLatest50Days();
         }
         
-        console.log('SingleThreadManager.init 完成', { allDates: this.allDates.length, allRules: this.allRules.length });
+        console.log('SingleThreadManager.init 完成', { 
+            allDates: this.allDates.length, 
+            allRules: this.allRules.length 
+        });
     }
-    
+
     /**
      * 更新Casename选择框
      */
     updateCasenameSelect() {
-        const casenames = Object.keys(this.allData);
+        // 只显示有 daily_metrics 的项目
+        const casenames = Object.keys(this.multiThreadAllData).filter(name => {
+            const data = this.multiThreadAllData[name];
+            return data && typeof data === 'object' && data.daily_metrics;
+        });
+        
         console.log('updateCasenameSelect - casenames:', casenames);
         
         const options = casenames.map(name => 
@@ -68,21 +111,21 @@ class SingleThreadManager {
             if (casenames.length > 0 && !this.selectedCasename) {
                 this.selectedCasename = casenames[0];
                 this.casenameSelect.value = this.selectedCasename;
-                console.log('选中 casename:', this.selectedCasename);
+                console.log('选中单线程 casename:', this.selectedCasename);
             }
         }
     }
-    
+
     /**
      * 更新Rules和Dates
      */
     async updateRulesAndDates() {
-        if (!this.selectedCasename || !this.allData[this.selectedCasename]) {
+        if (!this.selectedCasename || !this.multiThreadAllData[this.selectedCasename]) {
             console.log('updateRulesAndDates: 无有效的 casename', this.selectedCasename);
             return;
         }
         
-        const caseData = this.allData[this.selectedCasename];
+        const caseData = this.multiThreadAllData[this.selectedCasename];
         const dailyMetrics = caseData.daily_metrics || {};
         
         console.log('updateRulesAndDates - dailyMetrics keys:', Object.keys(dailyMetrics));
@@ -93,20 +136,24 @@ class SingleThreadManager {
         Object.keys(dailyMetrics).forEach(date => {
             datesSet.add(date);
             const metrics = dailyMetrics[date];
-            Object.keys(metrics).forEach(rule => {
-                rulesSet.add(rule);
-            });
+            if (metrics && typeof metrics === 'object') {
+                Object.keys(metrics).forEach(rule => {
+                    rulesSet.add(rule);
+                });
+            }
         });
         
         this.allRules = Array.from(rulesSet).sort();
         this.allDates = Array.from(datesSet).sort();
         
-        // 确保 Overall 在第一位
         if (this.allRules.includes('Overall')) {
             this.allRules = ['Overall', ...this.allRules.filter(r => r !== 'Overall')];
         }
         
-        console.log('updateRulesAndDates 完成', { allRules: this.allRules.length, allDates: this.allDates.length });
+        console.log('updateRulesAndDates 完成', { 
+            allRules: this.allRules.length, 
+            allDates: this.allDates.length 
+        });
         
         this.updateRuleSelect();
         this.updateDateSelects();
@@ -135,6 +182,22 @@ class SingleThreadManager {
         }
     }
     
+    /**
+     * 使用指定数据刷新
+     */
+    async refreshWithData(rawData, userAddedData) {
+        this.rawData = rawData || {};
+        this.userAddedData = userAddedData || {};
+        this.multiThreadAllData = { ...this.rawData, ...this.userAddedData };
+        this.selectedRules = ['Overall'];
+        
+        this.updateCasenameSelect();
+        await this.updateRulesAndDates();
+        this.selectedDates = this.allDates.slice(-50);
+        await this.renderChart();
+        this.updateOverview();
+    }
+
     /**
      * 更新日期选择框
      */
@@ -214,7 +277,7 @@ class SingleThreadManager {
         
         try {
             const requestData = {
-                raw_data: this.allData,
+                raw_data: this.multiThreadAllData,
                 casename: this.selectedCasename,
                 rules: this.selectedRules,
                 dates: this.selectedDates,
@@ -450,7 +513,7 @@ class SingleThreadManager {
      */
     async refresh() {
         this.userAddedData = {};
-        this.allData = { ...this.rawData };
+        this.multiThreadAllData = { ...this.rawData };
         this.selectedRules = ['Overall'];
         this.selectedDates = this.allDates.slice(-50);
         this.updateCasenameSelect();
@@ -499,7 +562,7 @@ class SingleThreadManager {
      * 更新项目概况
      */
     updateOverview() {
-        const totalCases = Object.keys(this.allData).length;
+        const totalCases = Object.keys(this.multiThreadAllData).length;
         const totalRules = this.allRules.length;
         const totalDays = this.allDates.length;
         
@@ -649,7 +712,7 @@ class SingleThreadManager {
             if (response.data.success) {
                 const newData = response.data.data || {};
                 this.userAddedData = { ...this.userAddedData, ...newData };
-                this.allData = { ...this.rawData, ...this.userAddedData };
+                this.multiThreadAllData = { ...this.rawData, ...this.userAddedData };
                 this.updateCasenameSelect();
                 await this.updateRulesAndDates();
                 await this.renderChart();
