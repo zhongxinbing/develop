@@ -116,13 +116,11 @@ async function loadData() {
     try {
         showLoading(true);
         const response = await axios.post(`${API_BASE}/tools/${toolId}/data`);
-        console.log(response)
         if (response.data.success) {
             rawData = response.data.data || {};
+            console.log("从后端来的数据:", rawData)
             // allData = { ...rawData, ...userAddedData };
             allData = normalizeData({ ...rawData, ...userAddedData });
-            console.log("rawData", allData)
-
             updateCasenameSelect();
             updateOverview();
             
@@ -164,8 +162,7 @@ function normalizeData(data) {
         if (casename === 'dataFiles' || casename === '__multi_processed_logs__') {
             continue;
         }
-        console.log("normalizeData", casename)
-        console.log("normalizeData", caseData)
+        
         normalized[casename] = caseData;
         
         // 如果是复合类型，提取实际数据用于显示
@@ -542,7 +539,7 @@ async function renderChart() {
     }
     
     try {
-        console.log("当前数据是:", allData)
+        console.log("当前数据是:", )
         const requestData = {
             raw_data: allData,
             casename: selectedCasename,
