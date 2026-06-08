@@ -73,15 +73,14 @@ async function loadData() {
     try {
         showLoading(true);
         const response = await axios.post(`/api/tools/${toolId}/data`);
-        console.log('API响应:', response.data);
         
         if (response.data.success) {
             const data = response.data.data || {};
             
-            // 完全分离三种数据类型
-            let signalData = {};      // 单线程数据
-            let multiData = {};       // 多线程数据
-            let extraData = {};       // 用户添加数据
+            // 分离数据
+            let signalData = {};
+            let multiData = {};
+            let extraData = {};
             
             if (typeof data === 'string') {
                 try {
@@ -90,7 +89,6 @@ async function loadData() {
                     if (parsed.multi) multiData = parsed.multi;
                     if (parsed.extra) extraData = parsed.extra;
                 } catch (e) {
-                    // 兼容旧格式：假设是单线程数据
                     signalData = data;
                 }
             } else {
@@ -99,30 +97,30 @@ async function loadData() {
                 if (data.extra) extraData = data.extra;
             }
             
-            // 存储到全局变量，供各模块使用
             window.signalData = signalData;
             window.multiData = multiData;
             window.extraData = extraData;
             
-            console.log('=== 数据加载完成 ===');
-            console.log('单线程数据 keys:', Object.keys(signalData));
-            console.log('多线程数据 keys:', Object.keys(multiData));
-            console.log('用户数据 keys:', Object.keys(extraData));
+            // 初始化图表容器
+            const container = document.getElementById('mainChart');
             
-            // 初始化单线程模块（只传入单线程数据 + 用户数据）
+            // 初始化单线程模块
             if (window.SingleThreadManager) {
                 singleThreadManager = new window.SingleThreadManager();
+                // 创建图表实例
+                if (container) {
+                    singleThreadManager.chart = echarts.init(container);
+                }
                 await singleThreadManager.init(signalData, extraData);
-            } else {
-                console.error('SingleThreadManager 未加载');
             }
             
-            // 初始化多线程模块（只传入多线程数据 + 用户数据）
+            // 初始化多线程模块
             if (window.MultiThreadManager) {
                 multiThreadManager = new window.MultiThreadManager();
+                if (container) {
+                    multiThreadManager.chart = echarts.init(container);
+                }
                 await multiThreadManager.init(multiData, extraData);
-            } else {
-                console.error('MultiThreadManager 未加载');
             }
             
             // 默认显示单线程模式
@@ -151,15 +149,23 @@ async function switchToSingleMode() {
         }
     });
     
-    // 显示/隐藏侧边栏
-    if (sidebarPerformance) sidebarPerformance.style.display = 'flex';
-    if (sidebarThread) sidebarThread.style.display = 'none';
+    // 切换侧边栏显示
+    const singleSidebar = document.getElementById('singleSidebar');
+    const multiSidebar = document.getElementById('multiSidebar');
+    const threadSidebar = document.getElementById('threadSidebar');
     
-    // 隐藏线程选择器
-    const threadSelector = document.getElementById('threadSelectorContainer');
-    if (threadSelector) threadSelector.style.display = 'none';
+    if (singleSidebar) singleSidebar.style.display = 'flex';
+    if (multiSidebar) multiSidebar.style.display = 'none';
+    if (threadSidebar) threadSidebar.style.display = 'none';
     
-    // 显示筛选面板
+    // 隐藏线程选择器（多线程专用）
+    const threadSelectorContainer = document.getElementById('multiThreadSelectorContainer');
+    if (threadSelectorContainer) threadSelectorContainer.style.display = 'none';
+    
+    // 显示/隐藏面板
+    const filtersPanel = document.getElementById('singleFiltersPanel');
+    const comparisonPanel = document.getElementById('singleComparisonPanel');
+    
     if (filtersPanel) filtersPanel.style.display = 'block';
     if (comparisonPanel) comparisonPanel.style.display = 'none';
     
@@ -175,6 +181,7 @@ async function switchToSingleMode() {
     }
 }
 
+
 /**
  * 切换到多线程模式
  */
@@ -189,12 +196,22 @@ async function switchToMultiMode() {
         }
     });
     
-    if (sidebarPerformance) sidebarPerformance.style.display = 'flex';
-    if (sidebarThread) sidebarThread.style.display = 'none';
+    // 切换侧边栏显示
+    const singleSidebar = document.getElementById('singleSidebar');
+    const multiSidebar = document.getElementById('multiSidebar');
+    const threadSidebar = document.getElementById('threadSidebar');
     
-    // 显示线程选择器
-    const threadSelector = document.getElementById('threadSelectorContainer');
-    if (threadSelector) threadSelector.style.display = 'block';
+    if (singleSidebar) singleSidebar.style.display = 'none';
+    if (multiSidebar) multiSidebar.style.display = 'flex';
+    if (threadSidebar) threadSidebar.style.display = 'none';
+    
+    // 显示线程选择器（多线程专用）
+    const threadSelectorContainer = document.getElementById('multiThreadSelectorContainer');
+    if (threadSelectorContainer) threadSelectorContainer.style.display = 'block';
+    
+    // 显示/隐藏面板
+    const filtersPanel = document.getElementById('multiFiltersPanel');
+    const comparisonPanel = document.getElementById('multiComparisonPanel');
     
     if (filtersPanel) filtersPanel.style.display = 'block';
     if (comparisonPanel) comparisonPanel.style.display = 'none';
@@ -353,15 +370,16 @@ async function switchToThreadMode() {
         }
     });
     
-    if (sidebarPerformance) sidebarPerformance.style.display = 'none';
-    if (sidebarThread) sidebarThread.style.display = 'flex';
+    // 切换侧边栏显示
+    const singleSidebar = document.getElementById('singleSidebar');
+    const multiSidebar = document.getElementById('multiSidebar');
+    const threadSidebar = document.getElementById('threadSidebar');
     
-    const threadSelector = document.getElementById('threadSelectorContainer');
-    if (threadSelector) threadSelector.style.display = 'none';
+    if (singleSidebar) singleSidebar.style.display = 'none';
+    if (multiSidebar) multiSidebar.style.display = 'none';
+    if (threadSidebar) threadSidebar.style.display = 'flex';
     
-    if (filtersPanel) filtersPanel.style.display = 'block';
-    if (comparisonPanel) comparisonPanel.style.display = 'none';
-    
+    // 隐藏统计和概况
     const statsGrid = document.getElementById('statsGrid');
     const overviewCard = document.querySelector('.overview-card');
     if (statsGrid) statsGrid.style.display = 'none';
