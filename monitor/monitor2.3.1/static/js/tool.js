@@ -158,26 +158,49 @@ async function switchToSingleMode() {
     if (multiSidebar) multiSidebar.style.display = 'none';
     if (threadSidebar) threadSidebar.style.display = 'none';
     
-    // 隐藏线程选择器（多线程专用）
+    // 隐藏线程选择器
     const threadSelectorContainer = document.getElementById('multiThreadSelectorContainer');
     if (threadSelectorContainer) threadSelectorContainer.style.display = 'none';
     
-    // 显示/隐藏面板
+    // 获取当前活动菜单类型
+    const activeMenuItem = document.querySelector('#singleSidebar .menu-item.active');
+    const currentChartType = activeMenuItem ? activeMenuItem.dataset.chart : 'runtime';
+    
+    // 根据当前菜单类型显示/隐藏面板
     const filtersPanel = document.getElementById('singleFiltersPanel');
     const comparisonPanel = document.getElementById('singleComparisonPanel');
     
-    if (filtersPanel) filtersPanel.style.display = 'block';
-    if (comparisonPanel) comparisonPanel.style.display = 'none';
-    
-    // 显示统计和概况
-    const statsGrid = document.getElementById('statsGrid');
-    const overviewCard = document.querySelector('.overview-card');
-    if (statsGrid) statsGrid.style.display = 'grid';
-    if (overviewCard) overviewCard.style.display = 'block';
+    if (currentChartType === 'comparison') {
+        if (filtersPanel) filtersPanel.style.display = 'none';
+        if (comparisonPanel) comparisonPanel.style.display = 'block';
+        
+        const statsGrid = document.getElementById('statsGrid');
+        const overviewCard = document.querySelector('.overview-card');
+        const chartContainer = document.querySelector('.chart-container');
+        if (statsGrid) statsGrid.style.display = 'none';
+        if (overviewCard) overviewCard.style.display = 'none';
+        if (chartContainer) chartContainer.style.display = 'none';
+    } else {
+        if (filtersPanel) filtersPanel.style.display = 'block';
+        if (comparisonPanel) comparisonPanel.style.display = 'none';
+        
+        const statsGrid = document.getElementById('statsGrid');
+        const overviewCard = document.querySelector('.overview-card');
+        const chartContainer = document.querySelector('.chart-container');
+        if (statsGrid) statsGrid.style.display = 'grid';
+        if (overviewCard) overviewCard.style.display = 'block';
+        if (chartContainer) chartContainer.style.display = 'block';
+        
+        // 隐藏对比结果区域
+        const comparisonResults = document.getElementById('comparisonResults');
+        if (comparisonResults) comparisonResults.style.display = 'none';
+    }
     
     // 渲染图表
     if (singleThreadManager) {
-        await singleThreadManager.renderChart();
+        if (currentChartType !== 'comparison') {
+            await singleThreadManager.renderChart();
+        }
     }
 }
 
@@ -196,7 +219,6 @@ async function switchToMultiMode() {
         }
     });
     
-    // 切换侧边栏显示
     const singleSidebar = document.getElementById('singleSidebar');
     const multiSidebar = document.getElementById('multiSidebar');
     const threadSidebar = document.getElementById('threadSidebar');
@@ -205,24 +227,45 @@ async function switchToMultiMode() {
     if (multiSidebar) multiSidebar.style.display = 'flex';
     if (threadSidebar) threadSidebar.style.display = 'none';
     
-    // 显示线程选择器（多线程专用）
     const threadSelectorContainer = document.getElementById('multiThreadSelectorContainer');
     if (threadSelectorContainer) threadSelectorContainer.style.display = 'block';
     
-    // 显示/隐藏面板
+    // 获取当前活动菜单类型
+    const activeMenuItem = document.querySelector('#multiSidebar .menu-item.active');
+    const currentChartType = activeMenuItem ? activeMenuItem.dataset.chart : 'runtime';
+    
     const filtersPanel = document.getElementById('multiFiltersPanel');
     const comparisonPanel = document.getElementById('multiComparisonPanel');
     
-    if (filtersPanel) filtersPanel.style.display = 'block';
-    if (comparisonPanel) comparisonPanel.style.display = 'none';
-    
-    const statsGrid = document.getElementById('statsGrid');
-    const overviewCard = document.querySelector('.overview-card');
-    if (statsGrid) statsGrid.style.display = 'grid';
-    if (overviewCard) overviewCard.style.display = 'block';
+    if (currentChartType === 'comparison') {
+        if (filtersPanel) filtersPanel.style.display = 'none';
+        if (comparisonPanel) comparisonPanel.style.display = 'block';
+        
+        const statsGrid = document.getElementById('statsGrid');
+        const overviewCard = document.querySelector('.overview-card');
+        const chartContainer = document.querySelector('.chart-container');
+        if (statsGrid) statsGrid.style.display = 'none';
+        if (overviewCard) overviewCard.style.display = 'none';
+        if (chartContainer) chartContainer.style.display = 'none';
+    } else {
+        if (filtersPanel) filtersPanel.style.display = 'block';
+        if (comparisonPanel) comparisonPanel.style.display = 'none';
+        
+        const statsGrid = document.getElementById('statsGrid');
+        const overviewCard = document.querySelector('.overview-card');
+        const chartContainer = document.querySelector('.chart-container');
+        if (statsGrid) statsGrid.style.display = 'grid';
+        if (overviewCard) overviewCard.style.display = 'block';
+        if (chartContainer) chartContainer.style.display = 'block';
+        
+        const comparisonResults = document.getElementById('comparisonResults');
+        if (comparisonResults) comparisonResults.style.display = 'none';
+    }
     
     if (multiThreadManager) {
-        await multiThreadManager.renderChart();
+        if (currentChartType !== 'comparison') {
+            await multiThreadManager.renderChart();
+        }
     }
 }
 
@@ -280,11 +323,20 @@ async function refreshData() {
         showLoading(false);
     }
 }
-
+let singleFiltersPanel = null;
+let singleComparisonPanel = null;
+let multiFiltersPanel = null;
+let multiComparisonPanel = null;
 /**
- * 初始化事件监听
+ * 初始化事件监听（修复版）
  */
 function initEventListeners() {
+    // 获取面板元素
+    singleFiltersPanel = document.getElementById('singleFiltersPanel');
+    singleComparisonPanel = document.getElementById('singleComparisonPanel');
+    multiFiltersPanel = document.getElementById('multiFiltersPanel');
+    multiComparisonPanel = document.getElementById('multiComparisonPanel');
+    
     // 返回按钮
     if (backBtn) {
         backBtn.addEventListener('click', () => {
@@ -311,44 +363,98 @@ function initEventListeners() {
         });
     });
     
-    // 侧边栏菜单切换
-    menuItems.forEach(item => {
+    // 单线程侧边栏菜单切换
+    const singleMenuItems = document.querySelectorAll('#singleSidebar .menu-item');
+    singleMenuItems.forEach(item => {
         item.addEventListener('click', () => {
-            menuItems.forEach(menu => menu.classList.remove('active'));
+            // 更新当前模式的活动菜单
+            const singleMenuItemsAll = document.querySelectorAll('#singleSidebar .menu-item');
+            singleMenuItemsAll.forEach(menu => menu.classList.remove('active'));
             item.classList.add('active');
             
             const chartType = item.dataset.chart;
             currentChartType = chartType;
             
             if (chartType === 'comparison') {
-                // 显示对比面板
-                if (filtersPanel) filtersPanel.style.display = 'none';
-                if (comparisonPanel) comparisonPanel.style.display = 'block';
+                // 显示对比面板，隐藏筛选面板
+                if (singleFiltersPanel) singleFiltersPanel.style.display = 'none';
+                if (singleComparisonPanel) singleComparisonPanel.style.display = 'block';
                 
+                // 隐藏统计和图表区域
                 const statsGrid = document.getElementById('statsGrid');
                 const overviewCard = document.querySelector('.overview-card');
+                const chartContainer = document.querySelector('.chart-container');
                 if (statsGrid) statsGrid.style.display = 'none';
                 if (overviewCard) overviewCard.style.display = 'none';
-                
-                const chartContainer = document.querySelector('.chart-container');
                 if (chartContainer) chartContainer.style.display = 'none';
-            } else {
-                // 显示图表
-                if (filtersPanel) filtersPanel.style.display = 'block';
-                if (comparisonPanel) comparisonPanel.style.display = 'none';
                 
+                // 隐藏对比结果区域（如果之前有显示）
+                const comparisonResults = document.getElementById('comparisonResults');
+                if (comparisonResults) comparisonResults.style.display = 'none';
+            } else {
+                // 显示筛选面板，隐藏对比面板
+                if (singleFiltersPanel) singleFiltersPanel.style.display = 'block';
+                if (singleComparisonPanel) singleComparisonPanel.style.display = 'none';
+                
+                // 显示统计和图表区域
                 const statsGrid = document.getElementById('statsGrid');
                 const overviewCard = document.querySelector('.overview-card');
                 const chartContainer = document.querySelector('.chart-container');
-                
                 if (statsGrid) statsGrid.style.display = 'grid';
                 if (overviewCard) overviewCard.style.display = 'block';
                 if (chartContainer) chartContainer.style.display = 'block';
                 
+                // 隐藏对比结果区域
+                const comparisonResults = document.getElementById('comparisonResults');
+                if (comparisonResults) comparisonResults.style.display = 'none';
+                
                 // 重新渲染图表
-                if (currentMode === 'single' && singleThreadManager) {
+                if (singleThreadManager) {
                     singleThreadManager.setChartType(chartType);
-                } else if (currentMode === 'multi' && multiThreadManager) {
+                }
+            }
+        });
+    });
+    
+    // 多线程侧边栏菜单切换
+    const multiMenuItems = document.querySelectorAll('#multiSidebar .menu-item');
+    multiMenuItems.forEach(item => {
+        item.addEventListener('click', () => {
+            const multiMenuItemsAll = document.querySelectorAll('#multiSidebar .menu-item');
+            multiMenuItemsAll.forEach(menu => menu.classList.remove('active'));
+            item.classList.add('active');
+            
+            const chartType = item.dataset.chart;
+            currentChartType = chartType;
+            
+            if (chartType === 'comparison') {
+                if (multiFiltersPanel) multiFiltersPanel.style.display = 'none';
+                if (multiComparisonPanel) multiComparisonPanel.style.display = 'block';
+                
+                const statsGrid = document.getElementById('statsGrid');
+                const overviewCard = document.querySelector('.overview-card');
+                const chartContainer = document.querySelector('.chart-container');
+                if (statsGrid) statsGrid.style.display = 'none';
+                if (overviewCard) overviewCard.style.display = 'none';
+                if (chartContainer) chartContainer.style.display = 'none';
+                
+                const comparisonResults = document.getElementById('comparisonResults');
+                if (comparisonResults) comparisonResults.style.display = 'none';
+            } else {
+                if (multiFiltersPanel) multiFiltersPanel.style.display = 'block';
+                if (multiComparisonPanel) multiComparisonPanel.style.display = 'none';
+                
+                const statsGrid = document.getElementById('statsGrid');
+                const overviewCard = document.querySelector('.overview-card');
+                const chartContainer = document.querySelector('.chart-container');
+                if (statsGrid) statsGrid.style.display = 'grid';
+                if (overviewCard) overviewCard.style.display = 'block';
+                if (chartContainer) chartContainer.style.display = 'block';
+                
+                const comparisonResults = document.getElementById('comparisonResults');
+                if (comparisonResults) comparisonResults.style.display = 'none';
+                
+                if (multiThreadManager) {
                     multiThreadManager.setChartType(chartType);
                 }
             }
