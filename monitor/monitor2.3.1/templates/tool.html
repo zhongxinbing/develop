@@ -70,14 +70,30 @@
 
                         
                         <!-- 线程选择器（仅多线程模式显示） -->
-    <div id="threadSelectorContainer" style="display: none;">
-        <div class="filter-group">
-            <label><i class="fas fa-diagram-project"></i> 线程选择</label>
-            <div class="thread-selector" id="threadSelector">
-                <!-- 动态生成的多选框 -->
+    <!-- 线程选择器（仅多线程模式显示） -->
+<div id="threadSelectorContainer" style="display: none;">
+    <div class="filter-group">
+        <label><i class="fas fa-diagram-project"></i> 线程选择</label>
+        <div class="thread-selector" id="threadSelector">
+            <div class="multi-select" id="threadMultiSelect">
+                <div class="multi-select-trigger" onclick="toggleThreadDropdown()">
+                    <span id="selectedThreadsDisplay">2线程, 4线程</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="multi-select-dropdown" id="threadDropdown" style="display: none;">
+                    <div class="multi-select-search">
+                        <input type="text" id="threadSearchInput" placeholder="搜索线程...">
+                    </div>
+                    <div class="multi-select-actions">
+                        <button onclick="selectAllThreads()">全选</button>
+                        <button onclick="clearAllThreads()">清空</button>
+                    </div>
+                    <div class="multi-select-options" id="threadOptions"></div>
+                </div>
             </div>
         </div>
     </div>
+</div>
 
                         <div class="filter-group">
                             <label><i class="fas fa-folder"></i> Casename</label>
@@ -356,8 +372,40 @@
             </div>
         </div>
     </div>
-
+    <script>
+    // 全局函数供多线程选择器使用
+    function toggleThreadDropdown() {
+        const dropdown = document.getElementById('threadDropdown');
+        if (dropdown) {
+            dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
+        }
+    }
+    
+    function selectAllThreads() {
+        if (window.multiThreadManager) {
+            window.multiThreadManager.selectAllThreads();
+        }
+    }
+    
+    function clearAllThreads() {
+        if (window.multiThreadManager) {
+            window.multiThreadManager.clearAllThreads();
+        }
+    }
+    
+    // 点击外部关闭下拉框
+    document.addEventListener('click', function(e) {
+        const container = document.getElementById('threadMultiSelect');
+        const dropdown = document.getElementById('threadDropdown');
+        if (container && dropdown && !container.contains(e.target)) {
+            dropdown.style.display = 'none';
+        }
+    });
+</script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
+    <script src="{{ url_for('static', filename='js/single_thread.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/multi_thread.js') }}"></script>
     <script src="{{ url_for('static', filename='js/tool.js') }}"></script>
 </body>
 </html>

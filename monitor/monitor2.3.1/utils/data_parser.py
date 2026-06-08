@@ -1,12 +1,14 @@
 """
-数据解析器 - 解析和转换数据格式
-支持单线程和多线程数据分离解析
+数据解析器 - 统一入口，根据模式调用对应的解析器
 """
 from typing import Dict, List, Any, Optional
+from utils.single_thread_parser import SingleThreadParser
+from utils.multi_thread_parser import MultiThreadParser
+from utils.common import log
 
 
 class DataParser:
-    """数据解析器"""
+    """数据解析器 - 统一入口"""
     
     @staticmethod
     def parse_for_chart(
@@ -18,47 +20,23 @@ class DataParser:
         selected_threads: List[int] = None
     ) -> Dict:
         """
-        解析Runtime图表数据
+        解析图表数据（Runtime）
         
         参数:
             raw_data: 原始数据
             casename: 项目名称
             rules: 要显示的规则列表
             dates: 要显示的日期列表
-            mode: 模式 - 'single', 'multi', 'thread'
-            selected_threads: 多线程模式下选择的线程列表（自动选择最小线程）
-        
-        返回:
-            图表数据格式
+            mode: 模式 - 'single' 或 'multi'
+            selected_threads: 多线程模式下选择的线程列表
         """
-        result = {
-            'dates': dates,
-            'rules': {},
-            'crash_dates': [],
-            'overall_data': None,
-            'all_threads': [],
-            'selected_threads': selected_threads or [0]
-        }
-        
-        case_data = raw_data.get(casename, {})
-        daily_metrics = case_data.get('daily_metrics', {})
-        
-        # 检查每个日期是否有Overall数据
-        for date in dates:
-            if date in daily_metrics:
-                overall = daily_metrics[date].get('Overall')
-                if not overall:
-                    result['crash_dates'].append(date)
-            else:
-                result['crash_dates'].append(date)
-        
         if mode == 'single':
-            return DataParser._parse_single_thread_runtime(
-                result, daily_metrics, rules, dates
+            return SingleThreadParser.parse_for_runtime_chart(
+                raw_data, casename, rules, dates
             )
         else:
-            return DataParser._parse_multi_thread_runtime(
-                result, daily_metrics, rules, dates, selected_threads or [0]
+            return MultiThreadParser.parse_for_runtime_chart(
+                raw_data, casename, rules, dates, selected_threads
             )
     
     @staticmethod
@@ -71,301 +49,25 @@ class DataParser:
         selected_threads: List[int] = None
     ) -> Dict:
         """
-        解析Memory图表数据
+        解析图表数据（Memory）
         
         参数:
             raw_data: 原始数据
             casename: 项目名称
             rules: 要显示的规则列表
             dates: 要显示的日期列表
-            mode: 模式 - 'single', 'multi', 'thread'
-            selected_threads: 多线程模式下选择的线程列表（自动选择最小线程）
-        
-        返回:
-            图表数据格式
+            mode: 模式 - 'single' 或 'multi'
+            selected_threads: 多线程模式下选择的线程列表
         """
-        result = {
-            'dates': dates,
-            'rules': {},
-            'crash_dates': [],
-            'overall_data': None,
-            'all_threads': [],
-            'selected_threads': selected_threads or [0]
-        }
-        
-        case_data = raw_data.get(casename, {})
-        daily_metrics = case_data.get('daily_metrics', {})
-        
-        for date in dates:
-            if date in daily_metrics:
-                overall = daily_metrics[date].get('Overall')
-                if not overall:
-                    result['crash_dates'].append(date)
-            else:
-                result['crash_dates'].append(date)
-        
         if mode == 'single':
-            return DataParser._parse_single_thread_memory(
-                result, daily_metrics, rules, dates
+            return SingleThreadParser.parse_for_memory_chart(
+                raw_data, casename, rules, dates
             )
         else:
-            return DataParser._parse_multi_thread_memory(
-                result, daily_metrics, rules, dates, selected_threads or [0]
+            return MultiThreadParser.parse_for_memory_chart(
+                raw_data, casename, rules, dates, selected_threads
             )
     
-    @staticmethod
-    def _parse_single_thread_runtime(
-        result: Dict,
-        daily_metrics: Dict,
-        rules: List[str],
-        dates: List[str]
-    ) -> Dict:
-        """解析单线程Runtime数据"""
-        for rule in rules:
-            values = []
-            for date in dates:
-                if date in daily_metrics:
-                    rule_metrics = daily_metrics[date].get(rule)
-                    if rule_metrics and isinstance(rule_metrics, dict) and 'thread_metrics' not in rule_metrics:
-                        values.append(rule_metrics.get('runtime'))
-                    else:
-                        values.append(None)
-                else:
-                    values.append(None)
-            
-            result['rules'][rule] = {
-                'dates': dates,
-                'values': values,
-                'type': 'line',
-                'name': rule
-            }
-            
-            if rule == 'Overall':
-                result['overall_data'] = result['rules'][rule]
-        
-        return result
-    
-    @staticmethod
-    def _parse_single_thread_memory(
-        result: Dict,
-        daily_metrics: Dict,
-        rules: List[str],
-        dates: List[str]
-    ) -> Dict:
-        """解析单线程Memory数据"""
-        for rule in rules:
-            values = []
-            for date in dates:
-                if date in daily_metrics:
-                    rule_metrics = daily_metrics[date].get(rule)
-                    if rule_metrics and isinstance(rule_metrics, dict) and 'thread_metrics' not in rule_metrics:
-                        values.append(rule_metrics.get('memory'))
-                    else:
-                        values.append(None)
-                else:
-                    values.append(None)
-            
-            result['rules'][rule] = {
-                'dates': dates,
-                'values': values,
-                'type': 'line',
-                'name': rule
-            }
-            
-            if rule == 'Overall':
-                result['overall_data'] = result['rules'][rule]
-        
-        return result
-    
-    @staticmethod
-    def _parse_multi_thread_runtime(
-        result: Dict,
-        daily_metrics: Dict,
-        rules: List[str],
-        dates: List[str],
-        selected_threads: List[int]
-    ) -> Dict:
-        """解析多线程Runtime数据"""
-        # 收集所有可用线程，统一转换为整数
-        all_threads = set()
-        for date in dates:
-            if date in daily_metrics:
-                for rule in rules:
-                    rule_metrics = daily_metrics[date].get(rule, {})
-                    thread_metrics = rule_metrics.get('thread_metrics', {})
-                    for tk in thread_metrics.keys():
-                        try:
-                            # 统一转换为整数
-                            thread_num = int(tk) if str(tk).isdigit() else 0
-                            all_threads.add(thread_num)
-                        except (ValueError, TypeError):
-                            all_threads.add(0)
-        
-        result['all_threads'] = sorted(all_threads)
-        
-        # 线程颜色映射
-        thread_colors = {
-            0: '#00E5FF', 2: '#A855F7', 4: '#10B981',
-            6: '#F59E0B', 8: '#EF4444', 16: '#8B5CF6',
-            32: '#EC4899', 64: '#14B8A6', 128: '#F97316'
-        }
-        
-        available_threads = result['all_threads']
-        
-        if not selected_threads or len(selected_threads) == 0:
-            selected_threads = available_threads if available_threads else [0]
-        
-        result['selected_threads'] = selected_threads
-        
-        for rule in rules:
-            for thread in available_threads:
-                # 确保线程是整数
-                thread_int = int(thread) if not isinstance(thread, int) else thread
-                thread_key = str(thread_int)
-                color = thread_colors.get(thread_int, '#A855F7')
-                
-                if rule == 'Overall':
-                    series_name = f"Overall ({thread_int}线程)"
-                else:
-                    series_name = f"{rule} ({thread_int}线程)"
-                
-                values = []
-                for date in dates:
-                    if date in daily_metrics:
-                        rule_metrics = daily_metrics[date].get(rule, {})
-                        thread_metrics = rule_metrics.get('thread_metrics', {})
-                        
-                        found_val = None
-                        if thread_key in thread_metrics:
-                            found_val = thread_metrics[thread_key].get('runtime')
-                        else:
-                            for tk, tv in thread_metrics.items():
-                                try:
-                                    if int(tk) == thread_int:
-                                        found_val = tv.get('runtime')
-                                        break
-                                except (ValueError, TypeError):
-                                    if tk == thread_key:
-                                        found_val = tv.get('runtime')
-                                        break
-                        
-                        # 确保值是数字或None
-                        if found_val is not None:
-                            try:
-                                found_val = float(found_val)
-                            except (ValueError, TypeError):
-                                found_val = None
-                        values.append(found_val)
-                    else:
-                        values.append(None)
-                
-                result['rules'][series_name] = {
-                    'dates': dates,
-                    'values': values,
-                    'type': 'line',
-                    'name': series_name,
-                    'thread': thread_int,  # 使用整数
-                    'color': color,
-                    'rule_name': rule
-                }
-                
-                if rule == 'Overall' and thread_int == (min(available_threads) if available_threads else 0):
-                    result['overall_data'] = result['rules'][series_name]
-        
-        return result
-    
-    @staticmethod
-    def _parse_multi_thread_memory(
-        result: Dict,
-        daily_metrics: Dict,
-        rules: List[str],
-        dates: List[str],
-        selected_threads: List[int]
-    ) -> Dict:
-        """解析多线程Memory数据"""
-        all_threads = set()
-        for date in dates:
-            if date in daily_metrics:
-                for rule in rules:
-                    rule_metrics = daily_metrics[date].get(rule, {})
-                    thread_metrics = rule_metrics.get('thread_metrics', {})
-                    for tk in thread_metrics.keys():
-                        try:
-                            thread_num = int(tk) if str(tk).isdigit() else 0
-                            all_threads.add(thread_num)
-                        except (ValueError, TypeError):
-                            all_threads.add(0)
-        
-        result['all_threads'] = sorted(all_threads)
-        
-        thread_colors = {
-            0: '#00E5FF', 2: '#A855F7', 4: '#10B981',
-            6: '#F59E0B', 8: '#EF4444', 16: '#8B5CF6',
-            32: '#EC4899', 64: '#14B8A6', 128: '#F97316'
-        }
-        
-        available_threads = result['all_threads']
-        
-        if not selected_threads or len(selected_threads) == 0:
-            selected_threads = available_threads if available_threads else [0]
-        
-        result['selected_threads'] = selected_threads
-        
-        for rule in rules:
-            for thread in available_threads:
-                thread_int = int(thread) if not isinstance(thread, int) else thread
-                thread_key = str(thread_int)
-                color = thread_colors.get(thread_int, '#A855F7')
-                
-                if rule == 'Overall':
-                    series_name = f"Overall ({thread_int}线程)"
-                else:
-                    series_name = f"{rule} ({thread_int}线程)"
-                
-                values = []
-                for date in dates:
-                    if date in daily_metrics:
-                        rule_metrics = daily_metrics[date].get(rule, {})
-                        thread_metrics = rule_metrics.get('thread_metrics', {})
-                        
-                        found_val = None
-                        if thread_key in thread_metrics:
-                            found_val = thread_metrics[thread_key].get('memory')
-                        else:
-                            for tk, tv in thread_metrics.items():
-                                try:
-                                    if int(tk) == thread_int:
-                                        found_val = tv.get('memory')
-                                        break
-                                except (ValueError, TypeError):
-                                    if tk == thread_key:
-                                        found_val = tv.get('memory')
-                                        break
-                        
-                        if found_val is not None:
-                            try:
-                                found_val = float(found_val)
-                            except (ValueError, TypeError):
-                                found_val = None
-                        values.append(found_val)
-                    else:
-                        values.append(None)
-                
-                result['rules'][series_name] = {
-                    'dates': dates,
-                    'values': values,
-                    'type': 'line',
-                    'name': series_name,
-                    'thread': thread_int,
-                    'color': color,
-                    'rule_name': rule
-                }
-                
-                if rule == 'Overall' and thread_int == (min(available_threads) if available_threads else 0):
-                    result['overall_data'] = result['rules'][series_name]
-        
-        return result
-
     @staticmethod
     def parse_for_thread_chart(
         raw_data: Dict,
@@ -375,56 +77,27 @@ class DataParser:
     ) -> Dict:
         """
         解析数据为线程曲线图格式（X轴为线程数）
-        
-        参数:
-            raw_data: 原始数据
-            casename: 项目名称
-            rule: 规则名称
-            date: 日期
-        
-        返回:
-            线程图表数据
         """
-        result = {
-            'threads': [],
-            'runtimes': [],
-            'memories': []
-        }
-        
+        return MultiThreadParser.parse_for_thread_chart(raw_data, casename, rule, date)
+    
+    @staticmethod
+    def get_thread_options(
+        raw_data: Dict,
+        casename: str,
+        rule: str = None
+    ) -> Dict:
+        """
+        获取多线程模式下可用的线程数选项
+        """
         case_data = raw_data.get(casename, {})
         daily_metrics = case_data.get('daily_metrics', {})
-        day_data = daily_metrics.get(date, {})
-        rule_data = day_data.get(rule, {})
-        thread_metrics = rule_data.get('thread_metrics', {})
         
-        # 按线程数排序
-        sorted_threads = []
-        for tk in thread_metrics.keys():
-            try:
-                sorted_threads.append(int(tk))
-            except (ValueError, TypeError):
-                sorted_threads.append(0)
-        sorted_threads = sorted(set(sorted_threads))
+        threads = MultiThreadParser.get_available_threads(daily_metrics, casename)
         
-        for thread_num in sorted_threads:
-            # 查找匹配的线程数据
-            found_metrics = None
-            for tk, metrics in thread_metrics.items():
-                try:
-                    if int(tk) == thread_num:
-                        found_metrics = metrics
-                        break
-                except (ValueError, TypeError):
-                    if tk == str(thread_num):
-                        found_metrics = metrics
-                        break
-            
-            if found_metrics:
-                result['threads'].append(thread_num)
-                result['runtimes'].append(found_metrics.get('runtime', 0))
-                result['memories'].append(found_metrics.get('memory', 0))
-        
-        return result
+        return {
+            'threads': threads,
+            'default_threads': [min(threads)] if threads else [0]
+        }
     
     @staticmethod
     def parse_for_comparison(
@@ -440,10 +113,7 @@ class DataParser:
         error_mode: str = 'absolute'
     ) -> Dict:
         """
-        解析数据用于对比
-        
-        返回:
-            对比结果
+        解析数据用于对比（公共方法，支持单线程和多线程）
         """
         result = {
             'comparisons': [],
@@ -533,22 +203,10 @@ class DataParser:
             
             result['comparisons'].append({
                 'rule': rule,
-                'date1_value': {
-                    'runtime': runtime1,
-                    'memory': memory1
-                },
-                'date2_value': {
-                    'runtime': runtime2,
-                    'memory': memory2
-                },
-                'difference': {
-                    'runtime': runtime_diff,
-                    'memory': memory_diff
-                },
-                'percentage': {
-                    'runtime': runtime_percent,
-                    'memory': memory_percent
-                },
+                'date1_value': {'runtime': runtime1, 'memory': memory1},
+                'date2_value': {'runtime': runtime2, 'memory': memory2},
+                'difference': {'runtime': runtime_diff, 'memory': memory_diff},
+                'percentage': {'runtime': runtime_percent, 'memory': memory_percent},
                 'is_out_of_tolerance': is_out_of_tolerance
             })
         
@@ -579,7 +237,7 @@ class DataParser:
         return result
     
     @staticmethod
-    def _get_avg_thread_value(thread_metrics: Dict, key: str) -> float:
+    def _get_avg_thread_value(thread_metrics: Dict, key: str) -> Optional[float]:
         """获取多线程的平均值"""
         values = []
         for t, metrics in thread_metrics.items():
@@ -590,54 +248,7 @@ class DataParser:
                 except (ValueError, TypeError):
                     pass
         return sum(values) / len(values) if values else None
-    
-    @staticmethod
-    def get_thread_options(
-        raw_data: Dict,
-        casename: str,
-        rule: str = None
-    ) -> Dict:
-        """
-        获取多线程模式下可用的线程数选项
-        
-        返回:
-            {
-                'threads': [0, 2, 4, ...],
-                'default_threads': [0]  # 最小线程
-            }
-        """
-        case_data = raw_data.get(casename, {})
-        print(case_data)
-        daily_metrics = case_data.get('daily_metrics', {})
-        
-        threads_set = set()
-        
-        for date, metrics in daily_metrics.items():
-            if rule:
-                rule_metrics = metrics.get(rule, {})
-                if 'thread_metrics' in rule_metrics:
-                    for tk in rule_metrics['thread_metrics'].keys():
-                        try:
-                            threads_set.add(int(tk))
-                        except (ValueError, TypeError):
-                            threads_set.add(0)
-            else:
-                for rule_name, rule_metrics in metrics.items():
-                    if isinstance(rule_metrics, dict) and 'thread_metrics' in rule_metrics:
-                        for tk in rule_metrics['thread_metrics'].keys():
-                            try:
-                                threads_set.add(int(tk))
-                            except (ValueError, TypeError):
-                                threads_set.add(0)
-        
-        threads = sorted(threads_set)
-        # 默认选择最小线程数
-        default_threads = [min(threads)] if threads else [0]
-        
-        return {
-            'threads': threads,
-            'default_threads': default_threads
-        }
+
 
 # 全局实例
 data_parser = DataParser()
