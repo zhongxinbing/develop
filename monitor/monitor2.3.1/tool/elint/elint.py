@@ -533,6 +533,7 @@ def get_multi_data(jsonDataFile, path) -> Dict:
     for log_path in new_logs:
         log(f"处理多线程日志: {log_path}")
         caseData = get_perf_data_from_log(caseData, log_path)
+        
 
     # 更新已处理日志列表
     caseData[processed_key] = filtered_logs
