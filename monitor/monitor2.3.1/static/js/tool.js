@@ -116,9 +116,13 @@ async function loadData() {
     try {
         showLoading(true);
         const response = await axios.post(`${API_BASE}/tools/${toolId}/data`);
+        console.log(response)
         if (response.data.success) {
             rawData = response.data.data || {};
-            allData = { ...rawData, ...userAddedData };
+            // allData = { ...rawData, ...userAddedData };
+            allData = normalizeData({ ...rawData, ...userAddedData });
+            console.log("rawData", allData)
+
             updateCasenameSelect();
             updateOverview();
             
@@ -149,6 +153,36 @@ async function loadData() {
         showLoading(false);
     }
 }
+
+/**
+ * 规范化数据 - 处理混合类型数据
+ */
+function normalizeData(data) {
+    const normalized = {};
+    for (const [casename, caseData] of Object.entries(data)) {
+        // 跳过内部字段
+        if (casename === 'dataFiles' || casename === '__multi_processed_logs__') {
+            continue;
+        }
+        console.log("normalizeData", casename)
+        console.log("normalizeData", caseData)
+        normalized[casename] = caseData;
+        
+        // 如果是复合类型，提取实际数据用于显示
+        if (caseData._data_type === 'composite') {
+            // 优先使用单线程数据
+            if (caseData._single_data) {
+                normalized[casename] = caseData._single_data;
+                normalized[casename]._original_type = 'composite';
+            } else if (caseData._multi_data) {
+                normalized[casename] = caseData._multi_data;
+                normalized[casename]._original_type = 'composite';
+            }
+        }
+    }
+    return normalized;
+}
+
 
 /**
  * 刷新数据
@@ -199,6 +233,9 @@ function initThreadSelector() {
     const container = document.getElementById('threadSelectorContainer');
     if (!container) return;
     
+    // 初始隐藏，只在多线程模式显示
+    container.style.display = 'none';
+    
     // 监听线程搜索
     const searchInput = document.getElementById('threadSearchInput');
     if (searchInput) {
@@ -232,22 +269,54 @@ async function loadAvailableThreads() {
     if (!selectedCasename || currentMode !== 'multi') return;
     
     try {
-        const response = await axios.post(`${API_BASE}/threads/options`, {
-            raw_data: allData,
-            casename: selectedCasename,
-            rule: selectedRules[0]
-        });
-        
-        if (response.data.success && response.data.data.threads.length > 0) {
-            availableThreads = response.data.data.threads;
-            selectedThreads = response.data.data.default_threads;
+        // 直接从当前选中的 case 数据中提取线程数
+        const caseData = allData[selectedCasename];
+        if (!caseData || !caseData.daily_metrics) {
+            availableThreads = [2, 4];
+            selectedThreads = [2];
+            renderThreadOptions();
+            updateSelectedThreadsDisplay();
+            return;
         }
+        
+        const threadsSet = new Set();
+        const dailyMetrics = caseData.daily_metrics;
+        
+        // 遍历所有日期和规则，收集线程数
+        for (const date in dailyMetrics) {
+            const metrics = dailyMetrics[date];
+            for (const rule in metrics) {
+                const ruleData = metrics[rule];
+                if (ruleData.thread_metrics) {
+                    for (const thread in ruleData.thread_metrics) {
+                        const threadNum = parseInt(thread);
+                        if (!isNaN(threadNum) && threadNum > 0) {
+                            threadsSet.add(threadNum);
+                        }
+                    }
+                }
+            }
+        }
+        
+        let threads = Array.from(threadsSet).sort((a, b) => a - b);
+        
+        if (threads.length === 0) {
+            // 使用默认线程
+            threads = [2, 4];
+        }
+        
+        availableThreads = threads;
+        // 默认选中最小线程
+        selectedThreads = [Math.min(...threads)];
         
         renderThreadOptions();
         updateSelectedThreadsDisplay();
     } catch (error) {
         console.error('加载线程选项失败:', error);
+        availableThreads = [2, 4];
+        selectedThreads = [2];
         renderThreadOptions();
+        updateSelectedThreadsDisplay();
     }
 }
 
@@ -258,12 +327,12 @@ function renderThreadOptions() {
     const container = document.getElementById('threadOptions');
     if (!container) return;
     
-    // 使用预设的线程选项（0, 2, 4, 6, 8, 16, 32, 64, 128）
-    const defaultThreadsList = [0, 2, 4, 6, 8, 16, 32, 64, 128];
-    const threadsToShow = availableThreads.length > 0 ? availableThreads : defaultThreadsList;
+    if (!availableThreads || availableThreads.length === 0) {
+        availableThreads = [2, 4];
+    }
     
-    container.innerHTML = threadsToShow.map(thread => `
-        <label class="multi-select-option">
+    container.innerHTML = availableThreads.map(thread => `
+        <label class="multi-select-option" style="display: flex; align-items: center; gap: 8px; padding: 8px 12px; cursor: pointer;">
             <input type="checkbox" value="${thread}" 
                 ${selectedThreads.includes(thread) ? 'checked' : ''}
                 onchange="toggleThreadSelection(${thread}, this.checked)">
@@ -440,7 +509,6 @@ function selectLatest50Days() {
 /**
  * 渲染图表
  */
-// 渲染图表函数 - 多线程模式不传递 selected_threads
 async function renderChart() {
     if (currentChartType === 'comparison') {
         return;
@@ -474,6 +542,7 @@ async function renderChart() {
     }
     
     try {
+        console.log("当前数据是:", allData)
         const requestData = {
             raw_data: allData,
             casename: selectedCasename,
@@ -481,16 +550,52 @@ async function renderChart() {
             dates: selectedDates,
             mode: currentMode,
             chart_type: currentChartType
-            // 不再传递 selected_threads，让后端自动选择最小线程
         };
         
+        // 多线程模式：传递线程选择
+        if (currentMode === 'multi') {
+            // 如果没有选中的线程，默认使用2和4
+            if (!selectedThreads || selectedThreads.length === 0) {
+                selectedThreads = [2, 4];
+            }
+            requestData.selected_threads = selectedThreads;
+            console.log('多线程请求，线程列表:', selectedThreads);
+        }
+        
+        console.log('发送请求数据:', { 
+            mode: requestData.mode, 
+            casename: requestData.casename,
+            rules_count: requestData.rules.length,
+            dates_count: requestData.dates.length,
+            selected_threads: requestData.selected_threads
+        });
+        
         const response = await axios.post(`${API_BASE}/chart/data`, requestData);
+
+        console.log('收到响应:', response.data);
         
         if (response.data.success) {
-            const chartData = response.data.data;
+            let chartData = response.data.data;
+            
+            if (typeof chartData === 'string') {
+                chartData = JSON.parse(chartData);
+            }
+            
+            console.log('解析后的图表数据:', {
+                dates: chartData.dates?.length,
+                rules_count: Object.keys(chartData.rules || {}).length,
+                rules_keys: Object.keys(chartData.rules || {}),
+                all_threads: chartData.all_threads,
+                selected_threads: chartData.selected_threads
+            });
             
             if (mainChart) {
                 mainChart.hideLoading();
+            }
+            
+            if (Object.keys(chartData.rules || {}).length === 0) {
+                showError('没有可显示的图表数据');
+                return;
             }
             
             drawChart(chartData);
@@ -507,13 +612,11 @@ async function renderChart() {
         if (mainChart) {
             mainChart.hideLoading();
         }
-        showError('获取图表数据失败');
+        showError('获取图表数据失败: ' + (error.response?.data?.error || error.message));
     }
 }
 
-/**
- * 绘制图表
- */
+// 替换 drawChart 函数
 function drawChart(chartData) {
     const container = document.getElementById('mainChart');
     if (!container) return;
@@ -524,7 +627,7 @@ function drawChart(chartData) {
     
     mainChart = echarts.init(container);
     
-    const { dates, rules, crash_dates, all_threads } = chartData;
+    const { dates, rules, crash_dates, all_threads, selected_threads } = chartData;
     const isRuntime = currentChartType === 'runtime';
     const yAxisName = isRuntime ? 'Runtime (s)' : 'Memory (MB)';
     const xAxisName = currentMode === 'thread' ? '线程数' : '日期';
@@ -533,44 +636,34 @@ function drawChart(chartData) {
     const series = [];
     const crashDatesSet = new Set(crash_dates || []);
     
-    // 按线程分组显示图例，方便用户识别
+    // 格式化日期显示
+    const formattedDates = dates.map(d => formatDate(d));
+    
+    // 遍历所有规则
     for (const [seriesName, ruleData] of Object.entries(rules)) {
         const values = ruleData.values || [];
         const thread = ruleData.thread || 0;
         const color = ruleData.color || THREAD_COLORS[thread] || '#A855F7';
-        const ruleName = ruleData.rule_name || seriesName;
-        
-        const seriesPoints = [];
-        for (let i = 0; i < dates.length; i++) {
-            const date = dates[i];
-            const value = i < values.length ? values[i] : null;
-            const isCrash = crashDatesSet.has(date);
-            
-            seriesPoints.push({
-                value: value,
-                date: date,
-                seriesName: seriesName,
-                isCrash: isCrash
-            });
-        }
         
         // 构建tooltip格式化函数
         const formatter = function(params) {
-            const dataPoint = seriesPoints[params.dataIndex];
-            if (!dataPoint) return '';
+            if (!params || params.length === 0) return '';
+            const dataIndex = params[0].dataIndex;
+            const date = dates[dataIndex];
+            const value = values[dataIndex];
             
-            let html = `<div style="font-weight:600;margin-bottom:8px;">${formatDate(dataPoint.date)}</div>`;
+            let html = `<div style="font-weight:600;margin-bottom:8px;">${formatDate(date)}</div>`;
             html += `<div style="display:flex;justify-content:space-between;gap:16px;">
-                <span style="color:${params.color}">●</span>
+                <span style="color:${color}">●</span>
                 <span>${escapeHtml(seriesName)}:</span>
-                <span style="font-family:monospace;font-weight:600;">${dataPoint.value !== null ? dataPoint.value.toFixed(2) : 'N/A'}</span>
+                <span style="font-family:monospace;font-weight:600;">${value !== null && value !== undefined ? value.toFixed(2) : 'N/A'}</span>
             </div>`;
             
-            if (dataPoint.isCrash) {
+            if (crashDatesSet.has(date)) {
                 html += `<div style="color:#EF4444;font-size:11px;margin-top:4px;">⚠️ Crash - 缺少 Overall 数据</div>`;
             }
             
-            if (dataPoint.date && dataPoint.date.includes('_user')) {
+            if (date && date.includes('_user')) {
                 html += `<div style="color:#10B981;font-size:11px;margin-top:4px;">📎 用户添加</div>`;
             }
             
@@ -590,11 +683,7 @@ function drawChart(chartData) {
                 color: color
             },
             itemStyle: {
-                color: function(params) {
-                    const dataPoint = seriesPoints[params.dataIndex];
-                    if (dataPoint && dataPoint.isCrash) return '#EF4444';
-                    return color;
-                },
+                color: color,
                 borderColor: '#0F172A',
                 borderWidth: 1
             },
@@ -604,21 +693,8 @@ function drawChart(chartData) {
         });
     }
     
-    // 格式化日期显示
-    const formattedDates = dates.map(d => formatDate(d));
-    
-    // 构建图例数据（按线程分组显示，更清晰）
+    // 构建图例数据
     const legendData = series.map(s => s.name);
-    
-    // 如果是多线程模式且有all_threads，可以按线程分组排序图例
-    if (currentMode === 'multi' && all_threads && all_threads.length > 0) {
-        // 按线程数排序图例
-        legendData.sort((a, b) => {
-            const threadA = parseInt(a.match(/\((\d+)线程/)?.[1] || '0');
-            const threadB = parseInt(b.match(/\((\d+)线程/)?.[1] || '0');
-            return threadA - threadB;
-        });
-    }
     
     const option = {
         backgroundColor: 'transparent',
@@ -631,13 +707,8 @@ function drawChart(chartData) {
             top: 0,
             pageIconColor: '#00E5FF',
             pageTextStyle: { color: '#F1F5F9' },
-            // 添加图例选择提示
-            tooltip: {
-                show: true,
-                formatter: function(params) {
-                    return `点击可显示/隐藏 ${params.name}`;
-                }
-            }
+            pageIconSize: 12,
+            pageFormatter: '{current}/{total}'
         },
         grid: {
             left: '3%',
@@ -682,31 +753,6 @@ function drawChart(chartData) {
     };
     
     mainChart.setOption(option, true);
-    
-    // 默认只显示最小线程数的折线，其他线程的折线隐藏
-    // 用户可以通过图例点击来显示其他线程的折线
-    if (currentMode === 'multi' && all_threads && all_threads.length > 1) {
-        const minThread = Math.min(...all_threads);
-        // 需要隐藏的系列：不是最小线程的折线
-        const seriesToHide = legendData.filter(name => {
-            const threadMatch = name.match(/\((\d+)线程/);
-            if (threadMatch) {
-                const thread = parseInt(threadMatch[1]);
-                return thread !== minThread;
-            }
-            return false;
-        });
-        
-        // 延迟执行，确保图表已经渲染
-        setTimeout(() => {
-            if (mainChart) {
-                mainChart.dispatchAction({
-                    type: 'legendToggleSelect',
-                    name: seriesToHide
-                });
-            }
-        }, 100);
-    }
 }
 
 /**
@@ -1117,17 +1163,12 @@ function initEventListeners() {
     refreshBtn.addEventListener('click', refreshData);
     
     // 模式切换
+    // 修改模式切换的监听器
     modeNavItems.forEach(item => {
-        item.addEventListener('click', () => {
+        item.addEventListener('click', async () => {
             modeNavItems.forEach(nav => nav.classList.remove('active'));
             item.classList.add('active');
             currentMode = item.dataset.mode;
-            
-            // 不再显示线程选择器
-            // const threadSelectorContainer = document.getElementById('threadSelectorContainer');
-            // if (threadSelectorContainer) {
-            //     threadSelectorContainer.style.display = 'none';
-            // }
             
             // 隐藏所有侧边栏内容
             document.querySelectorAll('.sidebar-content').forEach(content => {
@@ -1136,20 +1177,33 @@ function initEventListeners() {
             
             if (currentMode === 'single') {
                 document.getElementById('sidebarPerformance').style.display = 'flex';
+                const threadSelectorContainer = document.getElementById('threadSelectorContainer');
+                if (threadSelectorContainer) {
+                    threadSelectorContainer.style.display = 'none';
+                }
                 if (currentChartType !== 'comparison') {
-                    renderChart();
+                    await renderChart();
                 }
             } else if (currentMode === 'multi') {
                 document.getElementById('sidebarPerformance').style.display = 'flex';
-                // 多线程模式：直接渲染图表，后端会自动选择最小线程
+                // 显示线程选择器
+                const threadSelectorContainer = document.getElementById('threadSelectorContainer');
+                if (threadSelectorContainer) {
+                    threadSelectorContainer.style.display = 'block';
+                }
+                // 加载线程选项
+                await loadAvailableThreads();
                 if (currentChartType !== 'comparison') {
-                    renderChart();
+                    await renderChart();
                 }
             } else if (currentMode === 'thread') {
                 document.getElementById('sidebarThread').style.display = 'flex';
-                updateThreadSelects().then(() => {
-                    loadThreadChartData();
-                });
+                const threadSelectorContainer = document.getElementById('threadSelectorContainer');
+                if (threadSelectorContainer) {
+                    threadSelectorContainer.style.display = 'none';
+                }
+                await updateThreadSelects();
+                loadThreadChartData();
             }
         });
     });

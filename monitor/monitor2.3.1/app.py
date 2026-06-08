@@ -135,7 +135,6 @@ def api_load_tool_data(tool_id):
         return jsonify({'success': False, 'error': '工具不存在'})
     
     result_data = {}
-    
     # 获取单线程数据
     if tool_config.get('single_thread_path') and tool_config.get('single_thread_func'):
         single_data = data_manager.get_single_thread_data(user_id, tool_config)
@@ -147,7 +146,8 @@ def api_load_tool_data(tool_id):
                 del single_data['dataFiles']
             if '__multi_processed_logs__' in single_data:
                 del single_data['__multi_processed_logs__']
-            result_data.update(single_data)
+            # result_data.update(result_data)
+            result_data['signal'] = single_data
     
     # 获取多线程数据
     if tool_config.get('multi_thread_path') and tool_config.get('multi_thread_func'):
@@ -156,19 +156,12 @@ def api_load_tool_data(tool_id):
             # 保存多线程数据到独立文件
             tool_manager.save_multi_thread_data(user_id, tool_id, multi_data)
             # 合并数据
-            for casename, case_data in multi_data.items():
-                # 跳过内部字段
-                if casename in ['dataFiles', '__multi_processed_logs__']:
-                    continue
-                if casename not in result_data:
-                    result_data[casename] = case_data
-                else:
-                    for date, metrics in case_data.get('daily_metrics', {}).items():
-                        if date not in result_data[casename].get('daily_metrics', {}):
-                            result_data[casename]['daily_metrics'][date] = metrics
-                        else:
-                            for rule, rule_data in metrics.items():
-                                result_data[casename]['daily_metrics'][date][rule] = rule_data
+            # 移除内部字段
+            if 'dataFiles' in multi_data:
+                del multi_data['dataFiles']
+            if '__multi_processed_logs__' in multi_data:
+                del multi_data['__multi_processed_logs__']
+            result_data['multi'] = multi_data
     
     return jsonify({'success': True, 'data': json.dumps(result_data)})
 
@@ -243,7 +236,7 @@ def api_get_extra_data(tool_id):
 def api_get_chart_data():
     """获取图表数据（支持Runtime和Memory）"""
     data = request.json
-    
+
     raw_data = data.get('raw_data', {})
     casename = data.get('casename', '')
     rules = data.get('rules', [])
@@ -269,7 +262,6 @@ def api_get_chart_data():
 def api_get_thread_chart_data():
     """获取线程曲线图数据（X轴为线程数）"""
     data = request.json
-    
     raw_data = data.get('raw_data', {})
     casename = data.get('casename', '')
     rule = data.get('rule', '')

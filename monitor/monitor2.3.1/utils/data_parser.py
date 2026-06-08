@@ -366,7 +366,6 @@ class DataParser:
         
         return result
 
-
     @staticmethod
     def parse_for_thread_chart(
         raw_data: Dict,
