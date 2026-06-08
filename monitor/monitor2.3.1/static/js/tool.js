@@ -81,31 +81,43 @@ async function loadData() {
         if (response.data.success) {
             const data = response.data.data || {};
             
-            // 解析数据
-            rawData = {};
+            // 解析数据 - 正确分离单线程、多线程和用户数据
+            let signalData = {};
+            let multiData = {};
+            let extraData = {};
+            
             if (typeof data === 'string') {
                 try {
                     const parsed = JSON.parse(data);
-                    if (parsed.signal) rawData = { ...rawData, ...parsed.signal };
-                    if (parsed.multi) rawData = { ...rawData, ...parsed.multi };
-                    if (parsed.extra) userAddedData = parsed.extra;
+                    if (parsed.signal) signalData = parsed.signal;
+                    if (parsed.multi) multiData = parsed.multi;
+                    if (parsed.extra) extraData = parsed.extra;
                 } catch (e) {
-                    rawData = data;
+                    // 兼容旧格式
+                    signalData = data;
                 }
             } else {
-                if (data.signal) rawData = { ...rawData, ...data.signal };
-                if (data.multi) rawData = { ...rawData, ...data.multi };
-                if (data.extra) userAddedData = data.extra;
+                if (data.signal) signalData = data.signal;
+                if (data.multi) multiData = data.multi;
+                if (data.extra) extraData = data.extra;
             }
             
-            console.log('原始数据 keys:', Object.keys(rawData));
-            console.log('用户数据 keys:', Object.keys(userAddedData));
+            // 如果单线程数据为空但有信号数据，尝试直接使用
+            if (Object.keys(signalData).length === 0 && Object.keys(multiData).length === 0 && typeof data === 'object') {
+                // 兼容旧格式：直接传入的数据可能是单线程数据
+                if (!data.signal && !data.multi && !data.extra) {
+                    signalData = data;
+                }
+            }
             
-            // 初始化单线程模块
+            console.log('单线程数据 keys:', Object.keys(signalData));
+            console.log('多线程数据 keys:', Object.keys(multiData));
+            console.log('用户数据 keys:', Object.keys(extraData));
+            
+            // 初始化单线程模块（只传入单线程数据）
             if (window.SingleThreadManager) {
                 singleThreadManager = new window.SingleThreadManager();
-                await singleThreadManager.init(rawData, userAddedData);
-                // 确保 updateOverview 被调用
+                await singleThreadManager.init(signalData, extraData);
                 if (singleThreadManager.updateOverview) {
                     singleThreadManager.updateOverview();
                 }
@@ -113,11 +125,14 @@ async function loadData() {
                 console.error('SingleThreadManager 未加载');
             }
             
-            // 初始化多线程模块
-            if (window.MultiThreadManager) {
+            // 初始化多线程模块（只传入多线程数据）
+            if (window.MultiThreadManager && Object.keys(multiData).length > 0) {
                 multiThreadManager = new window.MultiThreadManager();
-                await multiThreadManager.init(rawData, userAddedData);
-                // updateOverview 会在 init 内部调用，无需额外调用
+                await multiThreadManager.init(multiData, extraData);
+            } else if (window.MultiThreadManager && Object.keys(multiData).length === 0) {
+                console.log('多线程数据为空，多线程模块将使用空数据');
+                multiThreadManager = new window.MultiThreadManager();
+                await multiThreadManager.init({}, extraData);
             } else {
                 console.error('MultiThreadManager 未加载');
             }
