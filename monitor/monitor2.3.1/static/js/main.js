@@ -15,7 +15,7 @@ const toolsGrid = document.getElementById('toolsGrid');
 const emptyState = document.getElementById('emptyState');
 const configBtn = document.getElementById('configBtn');
 const statsCard = document.getElementById('statsCard');
-
+emptyState.addEventListener('click', navigateToConfig);
 /**
  * 加载工具列表
  */

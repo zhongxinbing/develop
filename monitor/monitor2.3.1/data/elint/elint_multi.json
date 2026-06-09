@@ -1,0 +1,548 @@
+{
+  "aes": {
+    "casename": "aes",
+    "daily_metrics": {
+      "20260511": {
+        "E0001": {
+          "thread_metrics": {
+            "2": {
+              "runtime": 40.0,
+              "memory": 100.0
+            },
+            "4": {
+              "runtime": 10.0,
+              "memory": 30.0
+            }
+          }
+        },
+        "E0002": {
+          "thread_metrics": {
+            "2": {
+              "runtime": 30.0,
+              "memory": 101.0
+            },
+            "4": {
+              "runtime": 4.0,
+              "memory": 500.0
+            }
+          }
+        },
+        "E0003": {
+          "thread_metrics": {
+            "2": {
+              "runtime": 20.0,
+              "memory": 152.0
+            },
+            "4": {
+              "runtime": 50.0,
+              "memory": 602.0
+            }
+          }
+        },
+        "E0004": {
+          "thread_metrics": {
+            "2": {
+              "runtime": 10.0,
+              "memory": 123.0
+            },
+            "4": {
+              "runtime": 62.0,
+              "memory": 50.0
+            }
+          }
+        },
+        "check_lint": {
+          "thread_metrics": {
+            "2": {
+              "runtime": 962.211,
+              "memory": 40042.465
+            },
+            "4": {
+              "runtime": 20.0,
+              "memory": 10.0
+            }
+          }
+        },
+        "Overall": {
+          "thread_metrics": {
+            "2": {
+              "runtime": 2933.054,
+              "memory": 40472.18
+            },
+            "4": {
+              "runtime": 10.0,
+              "memory": 111.0
+            }
+          }
+        },
+        "read_design": {
+          "thread_metrics": {
+            "2": {
+              "runtime": 157.218,
+              "memory": 20637.375
+            },
+            "4": {
+              "runtime": 100.0,
+              "memory": 15.0
+            }
+          }
+        },
+        "save_session": {
+          "thread_metrics": {
+            "2": {
+              "runtime": 173.812,
+              "memory": 40201.164
+            }
+          }
+        }
+      },
+      "20260513": {
+        "E0001": {
+          "thread_metrics": {
+            "2": {
+              "runtime": 40.0,
+              "memory": 100.0
+            },
+            "4": {
+              "runtime": 10.0,
+              "memory": 30.0
+            }
+          }
+        },
+        "E0002": {
+          "thread_metrics": {
+            "2": {
+              "runtime": 30.0,
+              "memory": 101.0
+            },
+            "4": {
+              "runtime": 4.0,
+              "memory": 500.0
+            }
+          }
+        },
+        "E0003": {
+          "thread_metrics": {
+            "2": {
+              "runtime": 20.0,
+              "memory": 152.0
+            },
+            "4": {
+              "runtime": 50.0,
+              "memory": 602.0
+            }
+          }
+        },
+        "E0004": {
+          "thread_metrics": {
+            "2": {
+              "runtime": 10.0,
+              "memory": 123.0
+            },
+            "4": {
+              "runtime": 62.0,
+              "memory": 50.0
+            }
+          }
+        },
+        "check_lint": {
+          "thread_metrics": {
+            "2": {
+              "runtime": 20.0,
+              "memory": 10.0
+            },
+            "4": {
+              "runtime": 20.0,
+              "memory": 10.0
+            }
+          }
+        },
+        "Overall": {
+          "thread_metrics": {
+            "2": {
+              "runtime": 10.0,
+              "memory": 111.0
+            },
+            "4": {
+              "runtime": 10.0,
+              "memory": 111.0
+            }
+          }
+        },
+        "read_design": {
+          "thread_metrics": {
+            "2": {
+              "runtime": 100.0,
+              "memory": 15.0
+            },
+            "4": {
+              "runtime": 100.0,
+              "memory": 15.0
+            }
+          }
+        }
+      },
+      "20260515": {
+        "E0001": {
+          "thread_metrics": {
+            "2": {
+              "runtime": 40.0,
+              "memory": 100.0
+            },
+            "4": {
+              "runtime": 10.0,
+              "memory": 30.0
+            }
+          }
+        },
+        "E0002": {
+          "thread_metrics": {
+            "2": {
+              "runtime": 30.0,
+              "memory": 101.0
+            },
+            "4": {
+              "runtime": 4.0,
+              "memory": 500.0
+            }
+          }
+        },
+        "E0003": {
+          "thread_metrics": {
+            "2": {
+              "runtime": 20.0,
+              "memory": 152.0
+            },
+            "4": {
+              "runtime": 50.0,
+              "memory": 602.0
+            }
+          }
+        },
+        "E0004": {
+          "thread_metrics": {
+            "2": {
+              "runtime": 10.0,
+              "memory": 123.0
+            },
+            "4": {
+              "runtime": 62.0,
+              "memory": 50.0
+            }
+          }
+        },
+        "check_lint": {
+          "thread_metrics": {
+            "4": {
+              "runtime": 20.0,
+              "memory": 10.0
+            }
+          }
+        },
+        "Overall": {
+          "thread_metrics": {
+            "4": {
+              "runtime": 10.0,
+              "memory": 111.0
+            }
+          }
+        },
+        "read_design": {
+          "thread_metrics": {
+            "4": {
+              "runtime": 100.0,
+              "memory": 15.0
+            }
+          }
+        }
+      }
+    },
+    "available_dates": [
+      "20260511",
+      "20260513",
+      "20260515"
+    ]
+  },
+  "pcie": {
+    "casename": "pcie",
+    "daily_metrics": {
+      "20260511": {
+        "E0001": {
+          "thread_metrics": {
+            "2": {
+              "runtime": 40.0,
+              "memory": 100.0
+            },
+            "4": {
+              "runtime": 40.0,
+              "memory": 100.0
+            }
+          }
+        },
+        "E0002": {
+          "thread_metrics": {
+            "2": {
+              "runtime": 30.0,
+              "memory": 101.0
+            },
+            "4": {
+              "runtime": 30.0,
+              "memory": 101.0
+            }
+          }
+        },
+        "E0003": {
+          "thread_metrics": {
+            "2": {
+              "runtime": 20.0,
+              "memory": 152.0
+            },
+            "4": {
+              "runtime": 20.0,
+              "memory": 152.0
+            }
+          }
+        },
+        "E0004": {
+          "thread_metrics": {
+            "2": {
+              "runtime": 10.0,
+              "memory": 123.0
+            },
+            "4": {
+              "runtime": 10.0,
+              "memory": 123.0
+            }
+          }
+        },
+        "check_lint": {
+          "thread_metrics": {
+            "2": {
+              "runtime": 200.0,
+              "memory": 110.0
+            },
+            "4": {
+              "runtime": 200.0,
+              "memory": 110.0
+            }
+          }
+        },
+        "Overall": {
+          "thread_metrics": {
+            "2": {
+              "runtime": 100.0,
+              "memory": 101.0
+            },
+            "4": {
+              "runtime": 100.0,
+              "memory": 101.0
+            }
+          }
+        },
+        "read_design": {
+          "thread_metrics": {
+            "2": {
+              "runtime": 400.0,
+              "memory": 1000.0
+            },
+            "4": {
+              "runtime": 400.0,
+              "memory": 1000.0
+            }
+          }
+        }
+      },
+      "20260513": {
+        "E0001": {
+          "thread_metrics": {
+            "2": {
+              "runtime": 40.0,
+              "memory": 100.0
+            },
+            "4": {
+              "runtime": 40.0,
+              "memory": 100.0
+            }
+          }
+        },
+        "E0002": {
+          "thread_metrics": {
+            "2": {
+              "runtime": 30.0,
+              "memory": 101.0
+            },
+            "4": {
+              "runtime": 30.0,
+              "memory": 101.0
+            }
+          }
+        },
+        "E0003": {
+          "thread_metrics": {
+            "2": {
+              "runtime": 20.0,
+              "memory": 152.0
+            },
+            "4": {
+              "runtime": 20.0,
+              "memory": 152.0
+            }
+          }
+        },
+        "E0004": {
+          "thread_metrics": {
+            "2": {
+              "runtime": 10.0,
+              "memory": 123.0
+            },
+            "4": {
+              "runtime": 10.0,
+              "memory": 123.0
+            }
+          }
+        },
+        "check_lint": {
+          "thread_metrics": {
+            "2": {
+              "runtime": 200.0,
+              "memory": 110.0
+            },
+            "4": {
+              "runtime": 200.0,
+              "memory": 110.0
+            }
+          }
+        },
+        "Overall": {
+          "thread_metrics": {
+            "2": {
+              "runtime": 100.0,
+              "memory": 101.0
+            },
+            "4": {
+              "runtime": 100.0,
+              "memory": 101.0
+            }
+          }
+        },
+        "read_design": {
+          "thread_metrics": {
+            "2": {
+              "runtime": 400.0,
+              "memory": 1000.0
+            },
+            "4": {
+              "runtime": 400.0,
+              "memory": 1000.0
+            }
+          }
+        }
+      },
+      "20260515": {
+        "E0001": {
+          "thread_metrics": {
+            "2": {
+              "runtime": 40.0,
+              "memory": 100.0
+            },
+            "4": {
+              "runtime": 40.0,
+              "memory": 100.0
+            }
+          }
+        },
+        "E0002": {
+          "thread_metrics": {
+            "2": {
+              "runtime": 30.0,
+              "memory": 101.0
+            },
+            "4": {
+              "runtime": 30.0,
+              "memory": 101.0
+            }
+          }
+        },
+        "E0003": {
+          "thread_metrics": {
+            "2": {
+              "runtime": 20.0,
+              "memory": 152.0
+            },
+            "4": {
+              "runtime": 20.0,
+              "memory": 152.0
+            }
+          }
+        },
+        "E0004": {
+          "thread_metrics": {
+            "2": {
+              "runtime": 10.0,
+              "memory": 123.0
+            },
+            "4": {
+              "runtime": 10.0,
+              "memory": 123.0
+            }
+          }
+        },
+        "check_lint": {
+          "thread_metrics": {
+            "2": {
+              "runtime": 200.0,
+              "memory": 110.0
+            },
+            "4": {
+              "runtime": 200.0,
+              "memory": 110.0
+            }
+          }
+        },
+        "Overall": {
+          "thread_metrics": {
+            "2": {
+              "runtime": 100.0,
+              "memory": 101.0
+            },
+            "4": {
+              "runtime": 100.0,
+              "memory": 101.0
+            }
+          }
+        },
+        "read_design": {
+          "thread_metrics": {
+            "2": {
+              "runtime": 400.0,
+              "memory": 1000.0
+            },
+            "4": {
+              "runtime": 400.0,
+              "memory": 1000.0
+            }
+          }
+        }
+      }
+    },
+    "available_dates": [
+      "20260511",
+      "20260513",
+      "20260515"
+    ]
+  },
+  "__multi_processed_logs__": [
+    "/home/xbzhong/develop/monitor/test/multi/2026-05-11-06/multi/case/thread_2/aes/elint.log",
+    "/home/xbzhong/develop/monitor/test/multi/2026-05-11-06/multi/case/thread_2/pcie/elint.log",
+    "/home/xbzhong/develop/monitor/test/multi/2026-05-11-06/multi/case/thread_4/aes/elint.log",
+    "/home/xbzhong/develop/monitor/test/multi/2026-05-11-06/multi/case/thread_4/pcie/elint.log",
+    "/home/xbzhong/develop/monitor/test/multi/2026-05-13-06/multi/case/thread_2/aes/elint.log",
+    "/home/xbzhong/develop/monitor/test/multi/2026-05-13-06/multi/case/thread_2/pcie/elint.log",
+    "/home/xbzhong/develop/monitor/test/multi/2026-05-13-06/multi/case/thread_4/aes/elint.log",
+    "/home/xbzhong/develop/monitor/test/multi/2026-05-13-06/multi/case/thread_4/pcie/elint.log",
+    "/home/xbzhong/develop/monitor/test/multi/2026-05-15-06/multi/case/thread_2/aes/elint.log",
+    "/home/xbzhong/develop/monitor/test/multi/2026-05-15-06/multi/case/thread_2/pcie/elint.log",
+    "/home/xbzhong/develop/monitor/test/multi/2026-05-15-06/multi/case/thread_4/aes/elint.log",
+    "/home/xbzhong/develop/monitor/test/multi/2026-05-15-06/multi/case/thread_4/pcie/elint.log"
+  ]
+}
