@@ -134,6 +134,36 @@ class SingleThreadManager {
             this.selectedCasename = casenames[0];
             this.casenameSelect.value = this.selectedCasename;
         }
+        
+        // 同步对比面板的 casename 选项
+        this.syncComparisonCasenameSelect();
+    }
+
+    /**
+     * 同步对比面板的 casename 选项
+     */
+    syncComparisonCasenameSelect() {
+        if (!this.compCasenameSelect) return;
+        
+        // 只显示有 daily_metrics 的项目
+        const casenames = Object.keys(this.allData).filter(name => {
+            const data = this.allData[name];
+            return data && typeof data === 'object' && data.daily_metrics;
+        });
+        
+        const currentValue = this.compCasenameSelect.value;
+        const options = casenames.map(name => 
+            `<option value="${this.escapeHtml(name)}">${this.escapeHtml(name)}</option>`
+        ).join('');
+        
+        this.compCasenameSelect.innerHTML = options;
+        
+        // 保持选中的值或设置默认值
+        if (currentValue && casenames.includes(currentValue)) {
+            this.compCasenameSelect.value = currentValue;
+        } else if (casenames.length > 0 && this.selectedCasename) {
+            this.compCasenameSelect.value = this.selectedCasename;
+        }
     }
 
     /**
@@ -532,6 +562,33 @@ class SingleThreadManager {
                     this.selectedCasename = e.target.value;
                     this.updateRulesAndDates();
                 }
+            });
+        }
+        // 对比面板 casename 变化时同步到主面板
+        if (this.compCasenameSelect) {
+            this.compCasenameSelect.addEventListener('change', (e) => {
+                const newCasename = e.target.value;
+                if (this.casenameSelect) {
+                    this.casenameSelect.value = newCasename;
+                    this.selectedCasename = newCasename;
+                    this.updateRulesAndDates();
+                }
+            });
+        }
+        
+        // 主面板 casename 变化时同步到对比面板
+        if (this.casenameSelect) {
+            const originalChangeHandler = this.casenameSelect.onchange;
+            this.casenameSelect.addEventListener('change', async (e) => {
+                this.selectedCasename = e.target.value;
+                if (this.compCasenameSelect) {
+                    this.compCasenameSelect.value = this.selectedCasename;
+                }
+                await this.updateRulesAndDates();
+                this.selectedRules = ['Overall'];
+                this.selectedDates = this.allDates.slice(-50);
+                await this.renderChart();
+                this.updateOverview();
             });
         }
     }

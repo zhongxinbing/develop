@@ -101,7 +101,7 @@ async function loadData() {
             window.multiData = multiData;
             window.extraData = extraData;
             
-            // 初始化图表容器
+            // 获取图表容器
             const container = document.getElementById('mainChart');
             
             // 初始化单线程模块
@@ -112,6 +112,8 @@ async function loadData() {
                     singleThreadManager.chart = echarts.init(container);
                 }
                 await singleThreadManager.init(signalData, extraData);
+                // 强制更新 overview
+                singleThreadManager.updateOverview();
             }
             
             // 初始化多线程模块
@@ -121,10 +123,18 @@ async function loadData() {
                     multiThreadManager.chart = echarts.init(container);
                 }
                 await multiThreadManager.init(multiData, extraData);
+                // 强制更新 overview
+                multiThreadManager.updateOverview();
             }
             
-            // 默认显示单线程模式
-            await switchToSingleMode();
+            // 根据当前模式显示对应的数据
+            if (currentMode === 'single') {
+                await switchToSingleMode();
+            } else if (currentMode === 'multi') {
+                await switchToMultiMode();
+            } else {
+                await switchToSingleMode(); // 默认显示单线程
+            }
         }
     } catch (error) {
         console.error('加载数据失败:', error);
@@ -166,7 +176,6 @@ async function switchToSingleMode() {
     const activeMenuItem = document.querySelector('#singleSidebar .menu-item.active');
     const currentChartType = activeMenuItem ? activeMenuItem.dataset.chart : 'runtime';
     
-    // 根据当前菜单类型显示/隐藏面板
     const filtersPanel = document.getElementById('singleFiltersPanel');
     const comparisonPanel = document.getElementById('singleComparisonPanel');
     
@@ -179,7 +188,10 @@ async function switchToSingleMode() {
         const chartContainer = document.querySelector('.chart-container');
         if (statsGrid) statsGrid.style.display = 'none';
         if (overviewCard) overviewCard.style.display = 'none';
-        if (chartContainer) chartContainer.style.display = 'none';
+        if (chartContainer) chartContainer.style.display = 'block';
+        
+        const comparisonResults = document.getElementById('comparisonResults');
+        if (comparisonResults) comparisonResults.style.display = 'none';
     } else {
         if (filtersPanel) filtersPanel.style.display = 'block';
         if (comparisonPanel) comparisonPanel.style.display = 'none';
@@ -191,16 +203,20 @@ async function switchToSingleMode() {
         if (overviewCard) overviewCard.style.display = 'block';
         if (chartContainer) chartContainer.style.display = 'block';
         
-        // 隐藏对比结果区域
         const comparisonResults = document.getElementById('comparisonResults');
         if (comparisonResults) comparisonResults.style.display = 'none';
     }
     
-    // 渲染图表
-    if (singleThreadManager) {
+    // 确保图表容器正确初始化
+    const container = document.getElementById('mainChart');
+    if (container && singleThreadManager) {
+        if (!singleThreadManager.chart || singleThreadManager.chart.isDisposed()) {
+            singleThreadManager.chart = echarts.init(container);
+        }
         if (currentChartType !== 'comparison') {
             await singleThreadManager.renderChart();
         }
+        singleThreadManager.updateOverview();
     }
 }
 
@@ -211,6 +227,7 @@ async function switchToSingleMode() {
 async function switchToMultiMode() {
     currentMode = 'multi';
     
+    // 更新导航样式
     modeNavItems.forEach(item => {
         if (item.dataset.mode === 'multi') {
             item.classList.add('active');
@@ -219,6 +236,7 @@ async function switchToMultiMode() {
         }
     });
     
+    // 切换侧边栏显示
     const singleSidebar = document.getElementById('singleSidebar');
     const multiSidebar = document.getElementById('multiSidebar');
     const threadSidebar = document.getElementById('threadSidebar');
@@ -227,6 +245,7 @@ async function switchToMultiMode() {
     if (multiSidebar) multiSidebar.style.display = 'flex';
     if (threadSidebar) threadSidebar.style.display = 'none';
     
+    // 显示线程选择器
     const threadSelectorContainer = document.getElementById('multiThreadSelectorContainer');
     if (threadSelectorContainer) threadSelectorContainer.style.display = 'block';
     
@@ -246,7 +265,10 @@ async function switchToMultiMode() {
         const chartContainer = document.querySelector('.chart-container');
         if (statsGrid) statsGrid.style.display = 'none';
         if (overviewCard) overviewCard.style.display = 'none';
-        if (chartContainer) chartContainer.style.display = 'none';
+        if (chartContainer) chartContainer.style.display = 'block';
+        
+        const comparisonResults = document.getElementById('comparisonResults');
+        if (comparisonResults) comparisonResults.style.display = 'none';
     } else {
         if (filtersPanel) filtersPanel.style.display = 'block';
         if (comparisonPanel) comparisonPanel.style.display = 'none';
@@ -262,10 +284,19 @@ async function switchToMultiMode() {
         if (comparisonResults) comparisonResults.style.display = 'none';
     }
     
-    if (multiThreadManager) {
+    // 确保图表容器正确初始化
+    const container = document.getElementById('mainChart');
+    if (container && multiThreadManager) {
+        // 如果图表实例不存在或已被销毁，重新创建
+        if (!multiThreadManager.chart || multiThreadManager.chart.isDisposed()) {
+            multiThreadManager.chart = echarts.init(container);
+        }
+        // 重新渲染图表
         if (currentChartType !== 'comparison') {
             await multiThreadManager.renderChart();
         }
+        // 更新概况统计
+        multiThreadManager.updateOverview();
     }
 }
 
@@ -485,11 +516,19 @@ async function switchToThreadMode() {
     if (multiSidebar) multiSidebar.style.display = 'none';
     if (threadSidebar) threadSidebar.style.display = 'flex';
     
+    // 隐藏线程选择器（线程曲线图有自己的选择器）
+    const threadSelectorContainer = document.getElementById('multiThreadSelectorContainer');
+    if (threadSelectorContainer) threadSelectorContainer.style.display = 'none';
+    
     // 隐藏统计和概况
     const statsGrid = document.getElementById('statsGrid');
     const overviewCard = document.querySelector('.overview-card');
     if (statsGrid) statsGrid.style.display = 'none';
     if (overviewCard) overviewCard.style.display = 'none';
+    
+    // 确保图表容器显示
+    const chartContainer = document.querySelector('.chart-container');
+    if (chartContainer) chartContainer.style.display = 'block';
     
     // 加载线程曲线图数据
     await loadThreadChartData();
@@ -711,6 +750,18 @@ function initThreadChartPanel() {
     if (threadRuleSearch) {
         threadRuleSearch.addEventListener('input', updateThreadRules);
     }
+    
+    // 为线程曲线图内的 Runtime/Memory 菜单绑定切换事件
+    const threadMenuItems = document.querySelectorAll('#threadSidebar .menu-item');
+    threadMenuItems.forEach(item => {
+        item.addEventListener('click', () => {
+            // 更新活动状态
+            threadMenuItems.forEach(menu => menu.classList.remove('active'));
+            item.classList.add('active');
+            // 重新加载线程曲线图数据
+            loadThreadChartData();
+        });
+    });
 }
 
 /**
@@ -829,6 +880,9 @@ async function loadThreadChartData() {
 /**
  * 绘制线程曲线图
  */
+/**
+ * 绘制线程曲线图
+ */
 function drawThreadChart(chartData) {
     const container = document.getElementById('mainChart');
     if (!container) return;
@@ -840,16 +894,36 @@ function drawThreadChart(chartData) {
     threadChart = echarts.init(container);
     
     const { threads, runtimes, memories } = chartData;
-    const isRuntime = document.querySelector('[data-thread-chart="runtime"]')?.classList.contains('active') !== false;
+    
+    // 修复：正确获取线程曲线图中激活的菜单项
+    const activeThreadMenuItem = document.querySelector('#threadSidebar .menu-item.active');
+    const isRuntime = activeThreadMenuItem && activeThreadMenuItem.dataset.threadChart === 'runtime';
+    
     const yAxisName = isRuntime ? 'Runtime (s)' : 'Memory (MB)';
     const seriesData = isRuntime ? runtimes : memories;
+    const seriesName = isRuntime ? 'Runtime' : 'Memory';
+    
+    // 检查数据是否有效
+    if (!seriesData || seriesData.length === 0 || seriesData.every(v => v === null || v === undefined)) {
+        threadChart.setOption({
+            title: {
+                show: true,
+                text: '暂无数据',
+                left: 'center',
+                top: 'center',
+                textStyle: { color: '#94A3B8', fontSize: 14 }
+            }
+        });
+        return;
+    }
     
     const option = {
         backgroundColor: 'transparent',
         title: {
             text: isRuntime ? '线程数 vs Runtime' : '线程数 vs Memory',
             textStyle: { color: '#F1F5F9' },
-            left: 'center'
+            left: 'center',
+            top: 0
         },
         tooltip: {
             trigger: 'axis',
@@ -857,8 +931,13 @@ function drawThreadChart(chartData) {
             formatter: (params) => {
                 if (!params || params.length === 0) return '';
                 const data = params[0];
+                const value = data.value;
+                if (value === null || value === undefined) {
+                    return `<div style="font-weight:600">线程数: ${data.axisValue}</div>
+                            <div>${seriesName}: 无数据</div>`;
+                }
                 return `<div style="font-weight:600">线程数: ${data.axisValue}</div>
-                        <div>${isRuntime ? 'Runtime' : 'Memory'}: ${data.value?.toFixed(2) || 'N/A'}</div>`;
+                        <div>${seriesName}: ${value.toFixed(2)}</div>`;
             }
         },
         grid: {
@@ -883,7 +962,7 @@ function drawThreadChart(chartData) {
             splitLine: { lineStyle: { color: '#1E293B' } }
         },
         series: [{
-            name: isRuntime ? 'Runtime' : 'Memory',
+            name: seriesName,
             type: 'line',
             data: seriesData,
             smooth: false,
@@ -891,7 +970,8 @@ function drawThreadChart(chartData) {
             symbolSize: 8,
             lineStyle: { width: 3, color: '#00E5FF' },
             itemStyle: { color: '#00E5FF', borderColor: '#0F172A', borderWidth: 2 },
-            areaStyle: { opacity: 0.1, color: '#00E5FF' }
+            areaStyle: { opacity: 0.1, color: '#00E5FF' },
+            connectNulls: false
         }],
         toolbox: {
             feature: {
@@ -903,8 +983,9 @@ function drawThreadChart(chartData) {
     
     threadChart.setOption(option, true);
     
+    // 监听窗口大小变化
     window.addEventListener('resize', () => {
-        if (threadChart) {
+        if (threadChart && !threadChart.isDisposed()) {
             threadChart.resize();
         }
     });
@@ -970,7 +1051,7 @@ function showLoading(show) {
             refreshBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i><span>加载中...</span>';
         } else {
             refreshBtn.disabled = false;
-            refreshBtn.innerHTML = '<i class="fas fa-sync-alt"></i><span>刷新</span>';
+            refreshBtn.innerHTML = '↩<span>刷新</span>';
         }
     }
 }

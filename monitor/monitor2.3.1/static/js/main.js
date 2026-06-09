@@ -71,7 +71,7 @@ function createToolCard(toolId, tool) {
     
     card.innerHTML = `
         <div class="tool-card-icon">
-            <i class="fas fa-chart-line"></i>
+            ⚙
         </div>
         <h3>${escapeHtml(tool.tool_name || toolId)}</h3>
         <p>${escapeHtml(tool.description || '暂无描述')}</p>

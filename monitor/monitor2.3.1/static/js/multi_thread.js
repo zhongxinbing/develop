@@ -54,7 +54,43 @@ class MultiThreadManager {
         this.selectAllThreads = this.selectAllThreads.bind(this);
         this.clearAllThreads = this.clearAllThreads.bind(this);
     }
-
+    /**
+     * 同步对比面板的 casename 选项
+     */
+    syncComparisonCasenameSelect() {
+        if (!this.compCasenameSelect) return;
+        
+        // 只显示有多线程数据的项目
+        const casenames = Object.keys(this.allData).filter(name => {
+            const data = this.allData[name];
+            if (!data || typeof data !== 'object' || !data.daily_metrics) return false;
+            
+            // 检查是否包含 thread_metrics
+            for (const dateMetrics of Object.values(data.daily_metrics)) {
+                if (dateMetrics && typeof dateMetrics === 'object') {
+                    for (const ruleData of Object.values(dateMetrics)) {
+                        if (ruleData && ruleData.thread_metrics) {
+                            return true;
+                        }
+                    }
+                }
+            }
+            return false;
+        });
+        
+        const currentValue = this.compCasenameSelect.value;
+        const options = casenames.map(name => 
+            `<option value="${this.escapeHtml(name)}">${this.escapeHtml(name)}</option>`
+        ).join('');
+        
+        this.compCasenameSelect.innerHTML = options;
+        
+        if (currentValue && casenames.includes(currentValue)) {
+            this.compCasenameSelect.value = currentValue;
+        } else if (casenames.length > 0 && this.selectedCasename) {
+            this.compCasenameSelect.value = this.selectedCasename;
+        }
+    }
     /**
      * 初始化多线程模块
      */
@@ -138,7 +174,7 @@ class MultiThreadManager {
         if (this.allDates.length > 0) {
             this.selectLatest50Days();
         }
-        
+        this.updateOverview();
         console.log('MultiThreadManager.init 完成', { 
             allDates: this.allDates.length, 
             allRules: this.allRules.length,
@@ -157,7 +193,6 @@ class MultiThreadManager {
             const data = this.allData[name];
             if (!data || typeof data !== 'object' || !data.daily_metrics) return false;
             
-            // 检查是否包含 thread_metrics
             for (const dateMetrics of Object.values(data.daily_metrics)) {
                 if (dateMetrics && typeof dateMetrics === 'object') {
                     for (const ruleData of Object.values(dateMetrics)) {
@@ -179,6 +214,9 @@ class MultiThreadManager {
             this.selectedCasename = casenames[0];
             this.casenameSelect.value = this.selectedCasename;
         }
+        
+        // 同步对比面板的 casename 选项
+        this.syncComparisonCasenameSelect();
     }
     
     /**

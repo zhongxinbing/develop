@@ -129,7 +129,14 @@ body {
     top: 0;
     z-index: 100;
 }
-
+.logo-area.small {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%); /* 水平居中 */
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
 .logo-area {
     display: flex;
     align-items: center;
@@ -309,6 +316,16 @@ body {
     width: 100%;
     max-width: 1400px;
 }
+#toolsGrid {
+  /* 弹性布局，自动换行 */
+  display: flex;
+  flex-wrap: wrap;       /* 超出宽度自动换行 */
+  justify-content: center;/* 整体水平居中 */
+  align-items: flex-start;/* 所有子元素靠顶部排列 */
+  width: 100%;
+  box-sizing: border-box;
+  gap: 16px; /* 元素之间间距，按需调整 */
+}
 
 .tool-card {
     background: var(--bg-surface);
@@ -317,6 +334,7 @@ body {
     border: 1px solid var(--border-subtle);
     transition: transform var(--transition-fast), border-color var(--transition-fast);
     cursor: pointer;
+    width: 40%;
 }
 
 .tool-card:hover {
@@ -858,7 +876,16 @@ body {
     justify-content: space-between;
     padding: 0 var(--spacing-6);
 }
-
+.tool-info {
+  /* 水平居中 */
+  text-align: center;
+  /* 垂直居中，适配 header 横向弹性布局 */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1; /* 关键：占满中间剩余空间，实现整体左右居中 */
+}
 .tool-info h2 {
     font-size: 18px;
     font-weight: 600;
@@ -867,7 +894,10 @@ body {
 .tool-desc {
     font-size: 12px;
     color: var(--text-muted);
-    margin-left: var(--spacing-3);
+    display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center
 }
 
 .refresh-btn {
@@ -1561,3 +1591,14 @@ body {
     color: #00E5FF;
 }
 
+:root {
+    /* 中文字体优化 - 按优先级降级 */
+    --font-sans: -apple-system, BlinkMacSystemFont, 
+                 "Segoe UI", Roboto, "Helvetica Neue", 
+                 "Noto Sans", "PingFang SC", "Microsoft YaHei",
+                 system-ui, sans-serif;
+    
+    --font-mono: "SF Mono", Monaco, "Cascadia Code", 
+                 "Roboto Mono", "Fira Code", 
+                 "Consolas", "Courier New", monospace;
+}

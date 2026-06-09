@@ -93,10 +93,10 @@ function createToolConfigCard(toolId, tool) {
         </div>
         <div class="tool-config-actions">
             <button class="edit-btn" data-id="${toolId}" title="编辑">
-                <i class="fas fa-edit"></i>
+                编辑
             </button>
             <button class="delete-btn" data-id="${toolId}" title="删除">
-                <i class="fas fa-trash-alt"></i>
+                删除
             </button>
         </div>
     `;

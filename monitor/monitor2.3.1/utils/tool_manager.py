@@ -487,31 +487,6 @@ class ToolManager:
         
         if single_data:
             result['signal'] = single_data
-            # print(f"加载单线程数据，keys: {list(single_data.keys())}")
-            # for casename, case_data in single_data.items():
-            #     if casename in ['dataFiles', '__multi_processed_logs__']:
-            #         continue
-            #     if casename not in result:
-            #         result[casename] = {
-            #             'casename': casename,
-            #             'daily_metrics': {},
-            #             'available_dates': []
-            #         }
-                
-            #     # 合并 daily_metrics
-            #     if 'daily_metrics' in case_data:
-            #         for date, metrics in case_data['daily_metrics'].items():
-            #             if date not in result[casename]['daily_metrics']:
-            #                 result[casename]['daily_metrics'][date] = {}
-            #             for rule, rule_data in metrics.items():
-            #                 result[casename]['daily_metrics'][date][rule] = rule_data
-                    
-            #     # 合并 available_dates
-            #     if 'available_dates' in case_data:
-            #         result[casename]['available_dates'] = list(set(
-            #             result[casename].get('available_dates', []) + case_data['available_dates']
-            #         ))
-            #         result[casename]['available_dates'].sort()
         
         # 2. 加载多线程数据（关键修复）
         multi_data = self.load_multi_thread_data(user_id, tool_id)
@@ -520,60 +495,11 @@ class ToolManager:
             if "__multi_processed_logs__" in multi_data:
                 del multi_data['__multi_processed_logs__']
             result['multi'] = multi_data
-            # print(f"加载多线程数据，keys: {list(multi_data.keys())}")
-            # print(f"多线程数据样本: {list(multi_data.items())[0] if multi_data else 'None'}")
             
-            # for casename, case_data in multi_data.items():
-            #     if casename in ['dataFiles', '__multi_processed_logs__']:
-            #         continue
-                
-            #     print(f"处理多线程 case: {casename}, 数据类型: {type(case_data)}")
-                
-            #     if casename not in result:
-            #         result[casename] = {
-            #             'casename': casename,
-            #             'daily_metrics': {},
-            #             'available_dates': []
-            #         }
-                
-            #     # 合并 daily_metrics（多线程数据包含 thread_metrics）
-            #     if 'daily_metrics' in case_data:
-            #         print(f"  daily_metrics keys: {list(case_data['daily_metrics'].keys())}")
-            #         for date, metrics in case_data['daily_metrics'].items():
-            #             if date not in result[casename]['daily_metrics']:
-            #                 result[casename]['daily_metrics'][date] = {}
-                        
-            #             for rule, rule_data in metrics.items():
-            #                 result[casename]['daily_metrics'][date][rule] = rule_data
-                    
-            #         # 合并 available_dates
-            #         if 'available_dates' in case_data:
-            #             result[casename]['available_dates'] = list(set(
-            #                 result[casename].get('available_dates', []) + case_data['available_dates']
-            #             ))
-            #             result[casename]['available_dates'].sort()
-        
         # 3. 加载用户添加的数据
         extra_data = self.load_extra_data(user_id, tool_id)
         if extra_data:
             result['extra'] = extra_data
-            # print(f"加载用户数据，keys: {list(extra_data.keys())}")
-            # for casename, case_data in extra_data.items():
-            #     if casename not in result:
-            #         result[casename] = {
-            #             'casename': casename,
-            #             'daily_metrics': {},
-            #             'available_dates': []
-            #         }
-                
-            #     if 'daily_metrics' in case_data:
-            #         for date, metrics in case_data['daily_metrics'].items():
-            #             if date not in result[casename]['daily_metrics']:
-            #                 result[casename]['daily_metrics'][date] = {}
-            #             for rule, rule_data in metrics.items():
-            #                 result[casename]['daily_metrics'][date][rule] = rule_data
-        
-        
         return result
     
     def _copy_with_type(self, case_data: Dict, data_type: str) -> Dict:

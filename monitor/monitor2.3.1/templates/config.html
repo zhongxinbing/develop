@@ -4,8 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>工具配置中心 - EDA QOR</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
@@ -13,18 +11,14 @@
         <!-- 顶部导航栏 -->
         <header class="header">
             <button class="back-btn" id="backBtn">
-                <i class="fas fa-arrow-left"></i>
-                <span>返回主页</span>
+                <div class="logo-icon">📈 </div>
+                <div class="logo-text">
+                    <h1>EDA QOR</h1>
+                    <span>性能监控平台</span>
+                </div>
             </button>
             <div class="logo-area small">
-                <i class="fas fa-sliders-h"></i>
                 <span>工具配置中心</span>
-            </div>
-            <div class="header-actions">
-                <div class="user-info">
-                    <i class="fas fa-user-circle"></i>
-                    <span>用户</span>
-                </div>
             </div>
         </header>
 
