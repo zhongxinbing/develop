@@ -1,73 +1,7 @@
 {
   "users": {
     "0b44d2cb-fa68-49d3-8697-64cc1a8b7b47": {
-      "tools": {
-        "elint": {
-          "tool_name": "elint",
-          "description": "静态工具检查",
-          "single_thread_path": "C:\\Users\\xbzhong\\Desktop\\lint\\script\\monitor\\develop\\monitor\\test\\signal",
-          "single_thread_func": "get_elint_data",
-          "multi_thread_path": "C:\\Users\\xbzhong\\Desktop\\lint\\script\\monitor\\develop\\monitor\\test\\multi",
-          "multi_thread_func": "get_multi_data",
-          "extra_display_path": "",
-          "extra_display_func": "",
-          "custom_curve_func": "",
-          "created_at": "2026-06-08T12:57:25.969281",
-          "updated_at": "2026-06-09T17:09:33.369430"
-        },
-        "ecdc": {
-          "tool_name": "ecdc",
-          "description": "1",
-          "single_thread_path": "/home/xbzhong/develop/monitor/test/signal",
-          "single_thread_func": "555555",
-          "multi_thread_path": "C:\\Users\\xbzhong\\Desktop\\lint\\script\\monitor\\develop\\monitor\\test\\multi",
-          "multi_thread_func": "get_multi_data",
-          "extra_display_path": "",
-          "extra_display_func": "",
-          "custom_curve_func": "",
-          "created_at": "2026-06-09T16:43:09.711870",
-          "updated_at": "2026-06-09T16:43:09.711878"
-        },
-        "erpe": {
-          "tool_name": "erpe",
-          "description": "",
-          "single_thread_path": "C:\\Users\\xbzhong\\Desktop\\lint\\script\\monitor\\develop\\monitor\\test\\signal",
-          "single_thread_func": "555555",
-          "multi_thread_path": "",
-          "multi_thread_func": "",
-          "extra_display_path": "",
-          "extra_display_func": "",
-          "custom_curve_func": "",
-          "created_at": "2026-06-09T16:50:50.908263",
-          "updated_at": "2026-06-09T16:50:50.908269"
-        },
-        "Ecdc1": {
-          "tool_name": "Ecdc1",
-          "description": "",
-          "single_thread_path": "/home/xbzhong/develop/monitor/test/signal",
-          "single_thread_func": "555555",
-          "multi_thread_path": "",
-          "multi_thread_func": "",
-          "extra_display_path": "",
-          "extra_display_func": "",
-          "custom_curve_func": "",
-          "created_at": "2026-06-09T16:51:04.582203",
-          "updated_at": "2026-06-09T16:51:04.582210"
-        },
-        "ecdc6": {
-          "tool_name": "ecdc6",
-          "description": "",
-          "single_thread_path": "C:\\Users\\xbzhong\\Desktop\\lint\\script\\monitor\\develop\\monitor\\test\\signal",
-          "single_thread_func": "555555",
-          "multi_thread_path": "",
-          "multi_thread_func": "",
-          "extra_display_path": "",
-          "extra_display_func": "",
-          "custom_curve_func": "",
-          "created_at": "2026-06-09T16:51:11.779827",
-          "updated_at": "2026-06-09T16:51:11.779836"
-        }
-      }
+      "tools": {}
     }
   }
 }

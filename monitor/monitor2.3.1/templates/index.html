@@ -38,11 +38,7 @@
             <div class="tools-grid" id="toolsGrid">
                 <!-- 空状态 -->
                 <div class="empty-state" id="emptyState" style="display: none;">
-                    <div class="empty-icon">
-                        <i class="fas fa-cube"></i>
-                    </div>
-                    <h3>暂无配置工具</h3>
-                    <p>点击右下角 + 按钮开始配置您的第一个工具</p>
+                    <p style="color: crimson;">暂无配置工具</p><p>，点击右下角 + 按钮开始配置您的第一个工具</p>
                 </div>
             </div>
         </main>
@@ -53,7 +49,7 @@
         </button>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="{{ url_for('static', filename='js/axios.min.js') }}"></script>
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 </body>
 </html>
