@@ -506,7 +506,7 @@ class MultiThreadManager {
                 if (Object.keys(chartData.rules || {}).length === 0) {
                     this.showNoDataMessage();
                 } else {
-                    this.drawChart(chartData);
+                    this.multiDrawChart(chartData);
                     this.updateStatistics(chartData);
                 }
             } else {
@@ -524,7 +524,7 @@ class MultiThreadManager {
     /**
      * 绘制图表
      */
-    drawChart(chartData) {
+    multiDrawChart(chartData) {
         const { dates, rules, crash_dates } = chartData;
         const isRuntime = this.currentChartType === 'runtime';
         const yAxisName = isRuntime ? 'Runtime (s)' : 'Memory (MB)';

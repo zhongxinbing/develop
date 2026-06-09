@@ -308,7 +308,7 @@ class SingleThreadManager {
                 if (Object.keys(chartData.rules || {}).length === 0) {
                     this.showNoDataMessage();
                 } else {
-                    this.drawChart(chartData);
+                    this.signalDrawChart(chartData);
                     this.updateStatistics(chartData);
                 }
             } else {
@@ -325,7 +325,7 @@ class SingleThreadManager {
     /**
      * 绘制图表
      */
-    drawChart(chartData) {
+    signalDrawChart(chartData) {
         const { dates, rules, crash_dates } = chartData;
         const isRuntime = this.currentChartType === 'runtime';
         const yAxisName = isRuntime ? 'Runtime (s)' : 'Memory (MB)';
