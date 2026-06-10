@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>EDA QOR 性能监控平台</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="app-container">
+        <!-- 顶部导航栏 -->
+        <header class="header">
+            <button class="back-btn" id="backBtn">
+                <div class="logo-icon">📈 </div>
+                <div class="logo-text">
+                    <h1>EDA QOR</h1>
+                    <span>性能监控平台</span>
+                </div>
+            </button>
+        </header>
+
+        <!-- 主内容区 -->
+        <main class="main-content">
+            <!-- 工具统计卡片 -->
+            <div class="stats-card" id="statsCard">
+                <div class="stats-number" id="toolCount">0</div>
+                <div class="stats-label">已配置工具</div>
+                <div class="stats-tooltip" id="toolTooltip">
+                    <div class="tooltip-header">
+                        <span>工具列表</span>
+                    </div>
+                    <div class="tooltip-list" id="tooltipList"></div>
+                </div>
+            </div>
+
+            <!-- 工具卡片网格 -->
+            <div class="tools-grid" id="toolsGrid">
+                <!-- 空状态 -->
+                <div class="empty-state" id="emptyState" style="display: none;" title="点击此处或者右下 + 进行配置">
+                    <p style="color: crimson;text-decoration: underline;">暂无配置工具</p>
+                </div>
+            </div>
+        </main>
+
+        <!-- 配置入口按钮 -->
+        <button class="fab-btn" id="configBtn" title="配置工具">
+            <h1>➕</h1>
+        </button>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/axios.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

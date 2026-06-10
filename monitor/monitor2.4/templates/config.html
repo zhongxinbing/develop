@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>工具配置中心 - EDA QOR</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="app-container">
+        <!-- 顶部导航栏 -->
+        <header class="header">
+            <button class="back-btn" id="backBtn">
+                <div class="logo-icon">📈 </div>
+                <div class="logo-text">
+                    <h1>EDA QOR</h1>
+                    <span>性能监控平台</span>
+                </div>
+            </button>
+            <div class="logo-area small">
+                <span>🔧工具配置中心</span>
+            </div>
+        </header>
+
+        <!-- 主内容区 -->
+        <main class="config-main">
+            <!-- 已配置工具列表 -->
+            <div class="config-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-list-check"></i> 已注册工具</h2>
+                    <span class="section-count" id="toolCount">0</span>
+                </div>
+                <div class="tools-list" id="toolsList">
+                    <div class="loading-spinner">
+                        <i class="fas fa-spinner fa-spin"></i>
+                        <span>加载中...</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 添加工具按钮 -->
+            <div class="add-tool-btn-wrapper">
+                <button class="btn-primary btn-large" id="addToolBtn">
+                    <i class="fas fa-plus-circle"></i>
+                    <span>添加工具</span>
+                </button>
+            </div>
+        </main>
+    </div>
+
+    <!-- 工具配置弹窗 -->
+    <div class="modal" id="toolModal">
+        <div class="modal-overlay"></div>
+        <div class="modal-container">
+            <div class="modal-header">
+                <h3 id="modalTitle">添加工具</h3>
+                <button class="modal-close" id="closeModalBtn">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="toolForm">
+                    <!-- 基础信息 -->
+                    <div class="form-group">
+                        <label for="toolName">工具名称 <span class="required">*</span></label>
+                        <input type="text" id="toolName" name="toolName" placeholder="例如: QOR Analyzer" required>
+                        <div class="form-hint">工具名称必须唯一</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="toolDesc">工具描述</label>
+                        <textarea id="toolDesc" name="toolDesc" rows="3" placeholder="描述该工具的功能和用途..."></textarea>
+                    </div>
+
+                    <!-- 数据路径配置 -->
+                    <div class="form-divider">
+                        <span>数据源配置</span>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="singlePath">单线程数据路径</label>
+                        <input type="text" id="singlePath" name="singlePath" placeholder="/data/single/">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="singleFunc">单线程接口函数</label>
+                        <input type="text" id="singleFunc" name="singleFunc" placeholder="get_single_thread_data">
+                        <div class="form-hint">格式: module.function 或 path/to/file.py:function</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="multiPath">多线程数据路径</label>
+                        <input type="text" id="multiPath" name="multiPath" placeholder="/data/multi/ (可选)">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="multiFunc">多线程接口函数</label>
+                        <input type="text" id="multiFunc" name="multiFunc" placeholder="get_multi_thread_data">
+                    </div>
+
+                    <!-- 额外显示配置 -->
+                    <div class="form-divider">
+                        <span>额外显示配置 (可选)</span>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="extraPath">额外数据路径</label>
+                        <input type="text" id="extraPath" name="extraPath" placeholder="/data/extra/">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="extraFunc">额外数据函数</label>
+                        <input type="text" id="extraFunc" name="extraFunc" placeholder="fetch_extra_data" disabled>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="customFunc">自定义曲线函数</label>
+                        <input type="text" id="customFunc" name="customFunc" placeholder="get_custom_curve_data">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" id="cancelModalBtn">取消</button>
+                <button class="btn-primary" id="saveModalBtn">保存</button>
+                <button class="btn-primary btn-save-jump" id="saveAndJumpBtn">保存并跳转</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 删除确认弹窗 -->
+    <div class="modal confirm-modal" id="deleteModal">
+        <div class="modal-overlay"></div>
+        <div class="modal-container small">
+            <div class="modal-header">
+                <h3><i class="fas fa-trash-alt" style="color: #EF4444;"></i> 确认删除</h3>
+            </div>
+            <div class="modal-body">
+                <p>确定要删除工具 <strong id="deleteToolName"></strong> 吗？</p>
+                <p class="text-muted small">此操作不可恢复，所有相关数据将被清除。</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" id="cancelDeleteBtn">取消</button>
+                <button class="btn-danger" id="confirmDeleteBtn">确认删除</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/axios.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/config.js') }}"></script>
+</body>
+</html>

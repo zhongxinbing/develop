@@ -1,21 +1,23 @@
 /**
- * 单线程模块 - 处理单线程数据展示和图表渲染
+ * 多线程模块 - 处理多线程数据展示和图表渲染
  */
-class SingleThreadManager {
+class MultiThreadManager {
     constructor() {
         this.chart = null;
         this.currentChartType = 'runtime';
         this.selectedCasename = '';
         this.selectedRules = ['Overall'];
         this.selectedDates = [];
+        this.selectedThreads = [2, 4];
+        this.availableThreads = [];
         this.allDates = [];
         this.allRules = [];
         this.rawData = {};
         this.userAddedData = {};
         this.allData = {};
         
-        // ID前缀：使用 'single' 前缀区分
-        this.idPrefix = 'single';
+        // ID前缀：使用 'multi' 前缀区分
+        this.idPrefix = 'multi';
         
         // DOM 元素（延迟初始化，在 init 中获取）
         this.casenameSelect = null;
@@ -24,6 +26,12 @@ class SingleThreadManager {
         this.datePickerBtn = null;
         this.latest50Btn = null;
         this.addDataBtn = null;
+        
+        // 线程选择器元素
+        this.threadSelectorContainer = null;
+        this.threadOptions = null;
+        this.selectedThreadsDisplay = null;
+        this.threadSearchInput = null;
         
         // 对比面板元素
         this.compCasenameSelect = null;
@@ -37,18 +45,57 @@ class SingleThreadManager {
         this.memoryThreshold = null;
         this.errorModeSelect = null;
         
-        // 绑定方法
+        // 绑定方法（直接绑定，不调用外部方法）
         this.renderChart = this.renderChart.bind(this);
         this.updateRulesAndDates = this.updateRulesAndDates.bind(this);
         this.performComparison = this.performComparison.bind(this);
         this.exportComparison = this.exportComparison.bind(this);
+        this.toggleDropdown = this.toggleDropdown.bind(this);
+        this.selectAllThreads = this.selectAllThreads.bind(this);
+        this.clearAllThreads = this.clearAllThreads.bind(this);
     }
-    
     /**
-     * 初始化单线程模块
+     * 同步对比面板的 casename 选项
+     */
+    syncComparisonCasenameSelect() {
+        if (!this.compCasenameSelect) return;
+        
+        // 只显示有多线程数据的项目
+        const casenames = Object.keys(this.allData).filter(name => {
+            const data = this.allData[name];
+            if (!data || typeof data !== 'object' || !data.daily_metrics) return false;
+            
+            // 检查是否包含 thread_metrics
+            for (const dateMetrics of Object.values(data.daily_metrics)) {
+                if (dateMetrics && typeof dateMetrics === 'object') {
+                    for (const ruleData of Object.values(dateMetrics)) {
+                        if (ruleData && ruleData.thread_metrics) {
+                            return true;
+                        }
+                    }
+                }
+            }
+            return false;
+        });
+        
+        const currentValue = this.compCasenameSelect.value;
+        const options = casenames.map(name => 
+            `<option value="${this.escapeHtml(name)}">${this.escapeHtml(name)}</option>`
+        ).join('');
+        
+        this.compCasenameSelect.innerHTML = options;
+        
+        if (currentValue && casenames.includes(currentValue)) {
+            this.compCasenameSelect.value = currentValue;
+        } else if (casenames.length > 0 && this.selectedCasename) {
+            this.compCasenameSelect.value = this.selectedCasename;
+        }
+    }
+    /**
+     * 初始化多线程模块
      */
     async init(rawData, userAddedData) {
-        console.log('SingleThreadManager.init 开始');
+        console.log('MultiThreadManager.init 开始');
         
         // 获取 DOM 元素
         this.casenameSelect = document.getElementById(`${this.idPrefix}CasenameSelect`);
@@ -57,6 +104,12 @@ class SingleThreadManager {
         this.datePickerBtn = document.getElementById(`${this.idPrefix}DatePickerBtn`);
         this.latest50Btn = document.getElementById(`${this.idPrefix}Latest50Btn`);
         this.addDataBtn = document.getElementById(`${this.idPrefix}AddDataBtn`);
+        
+        // 线程选择器元素
+        this.threadSelectorContainer = document.getElementById(`${this.idPrefix}ThreadSelectorContainer`);
+        this.threadOptions = document.getElementById(`${this.idPrefix}ThreadOptions`);
+        this.selectedThreadsDisplay = document.getElementById(`${this.idPrefix}SelectedThreadsDisplay`);
+        this.threadSearchInput = document.getElementById(`${this.idPrefix}ThreadSearchInput`);
         
         // 对比面板元素
         this.compCasenameSelect = document.getElementById(`${this.idPrefix}CompCasenameSelect`);
@@ -80,12 +133,26 @@ class SingleThreadManager {
                     continue;
                 }
                 
-                // 验证数据格式：必须有 daily_metrics
-                if (value && typeof value === 'object') {
-                    if (value.daily_metrics) {
+                // 验证多线程数据格式：必须有 daily_metrics 且内部有 thread_metrics
+                if (value && typeof value === 'object' && value.daily_metrics) {
+                    // 检查是否包含多线程特征数据
+                    let hasMultiThread = false;
+                    for (const dateMetrics of Object.values(value.daily_metrics)) {
+                        if (dateMetrics && typeof dateMetrics === 'object') {
+                            for (const ruleData of Object.values(dateMetrics)) {
+                                if (ruleData && ruleData.thread_metrics) {
+                                    hasMultiThread = true;
+                                    break;
+                                }
+                            }
+                        }
+                        if (hasMultiThread) break;
+                    }
+                    
+                    if (hasMultiThread) {
                         cleanRawData[key] = value;
-                    } else if (value.casename && value.daily_metrics) {
-                        cleanRawData[key] = value;
+                    } else {
+                        console.log(`MultiThread: 项目 ${key} 没有多线程数据特征，跳过`);
                     }
                 }
             }
@@ -95,10 +162,11 @@ class SingleThreadManager {
         this.userAddedData = userAddedData || {};
         this.allData = { ...this.rawData, ...this.userAddedData };
         
-        console.log('SingleThreadManager 处理后数据 keys:', Object.keys(this.allData));
+        console.log('MultiThreadManager 处理后数据 keys:', Object.keys(this.allData));
         
         this.updateCasenameSelect();
         await this.updateRulesAndDates();
+        this.initThreadSelector();
         this.initEventListeners();
         this.initDatePickerModal();
         this.initAddDataModal();
@@ -106,10 +174,11 @@ class SingleThreadManager {
         if (this.allDates.length > 0) {
             this.selectLatest50Days();
         }
-        
-        console.log('SingleThreadManager.init 完成', { 
+        this.updateOverview();
+        console.log('MultiThreadManager.init 完成', { 
             allDates: this.allDates.length, 
-            allRules: this.allRules.length 
+            allRules: this.allRules.length,
+            availableThreads: this.availableThreads 
         });
     }
 
@@ -119,10 +188,21 @@ class SingleThreadManager {
     updateCasenameSelect() {
         if (!this.casenameSelect) return;
         
-        // 只显示有 daily_metrics 的项目
+        // 只显示有多线程数据的项目
         const casenames = Object.keys(this.allData).filter(name => {
             const data = this.allData[name];
-            return data && typeof data === 'object' && data.daily_metrics;
+            if (!data || typeof data !== 'object' || !data.daily_metrics) return false;
+            
+            for (const dateMetrics of Object.values(data.daily_metrics)) {
+                if (dateMetrics && typeof dateMetrics === 'object') {
+                    for (const ruleData of Object.values(dateMetrics)) {
+                        if (ruleData && ruleData.thread_metrics) {
+                            return true;
+                        }
+                    }
+                }
+            }
+            return false;
         });
         
         const options = casenames.map(name => 
@@ -138,34 +218,7 @@ class SingleThreadManager {
         // 同步对比面板的 casename 选项
         this.syncComparisonCasenameSelect();
     }
-
-    /**
-     * 同步对比面板的 casename 选项
-     */
-    syncComparisonCasenameSelect() {
-        if (!this.compCasenameSelect) return;
-        
-        // 只显示有 daily_metrics 的项目
-        const casenames = Object.keys(this.allData).filter(name => {
-            const data = this.allData[name];
-            return data && typeof data === 'object' && data.daily_metrics;
-        });
-        
-        const currentValue = this.compCasenameSelect.value;
-        const options = casenames.map(name => 
-            `<option value="${this.escapeHtml(name)}">${this.escapeHtml(name)}</option>`
-        ).join('');
-        
-        this.compCasenameSelect.innerHTML = options;
-        
-        // 保持选中的值或设置默认值
-        if (currentValue && casenames.includes(currentValue)) {
-            this.compCasenameSelect.value = currentValue;
-        } else if (casenames.length > 0 && this.selectedCasename) {
-            this.compCasenameSelect.value = this.selectedCasename;
-        }
-    }
-
+    
     /**
      * 更新Rules和Dates
      */
@@ -180,31 +233,47 @@ class SingleThreadManager {
         
         const rulesSet = new Set();
         const datesSet = new Set();
+        const threadsSet = new Set();
         
         Object.keys(dailyMetrics).forEach(date => {
             datesSet.add(date);
             const metrics = dailyMetrics[date];
-            if (metrics && typeof metrics === 'object') {
-                Object.keys(metrics).forEach(rule => {
-                    rulesSet.add(rule);
-                });
-            }
+            Object.keys(metrics).forEach(rule => {
+                rulesSet.add(rule);
+                const ruleData = metrics[rule];
+                if (ruleData && ruleData.thread_metrics) {
+                    Object.keys(ruleData.thread_metrics).forEach(tk => {
+                        try {
+                            threadsSet.add(parseInt(tk));
+                        } catch (e) {
+                            threadsSet.add(0);
+                        }
+                    });
+                }
+            });
         });
         
         this.allRules = Array.from(rulesSet).sort();
         this.allDates = Array.from(datesSet).sort();
+        this.availableThreads = Array.from(threadsSet).sort((a, b) => a - b);
         
+        // 确保 Overall 在第一位
         if (this.allRules.includes('Overall')) {
             this.allRules = ['Overall', ...this.allRules.filter(r => r !== 'Overall')];
         }
         
-        // 默认选择 Overall
-        if (this.allRules.includes('Overall') && this.selectedRules.length === 0) {
-            this.selectedRules = ['Overall'];
+        // 如果没有可用线程，使用默认值
+        if (this.availableThreads.length === 0) {
+            this.availableThreads = [2, 4];
         }
         
+        // 默认选择所有线程（但限制最多显示5个）
+        this.selectedThreads = [...this.availableThreads].slice(0, 5);
+        
         this.updateRuleSelect();
+        this.renderThreadOptions();
         this.updateDateSelects();
+        this.updateOverview();
     }
     
     /**
@@ -252,6 +321,127 @@ class SingleThreadManager {
     }
     
     /**
+     * 更新项目概况
+     */
+    updateOverview() {
+        const totalCases = Object.keys(this.allData).length;
+        const totalRules = this.allRules.length;
+        const totalDays = this.allDates.length;
+        
+        const totalCasesEl = document.getElementById('totalCases');
+        const totalRulesEl = document.getElementById('totalRules');
+        const totalDaysEl = document.getElementById('totalDays');
+        
+        if (totalCasesEl) totalCasesEl.textContent = totalCases;
+        if (totalRulesEl) totalRulesEl.textContent = totalRules;
+        if (totalDaysEl) totalDaysEl.textContent = totalDays;
+    }
+    
+    /**
+     * 渲染线程选项
+     */
+    renderThreadOptions() {
+        if (!this.threadOptions) return;
+        
+        if (this.availableThreads.length === 0) {
+            this.threadOptions.innerHTML = '<div style="padding: 12px; text-align: center; color: #94A3B8;">暂无线程数据</div>';
+            return;
+        }
+        
+        this.threadOptions.innerHTML = this.availableThreads.map(thread => `
+            <label class="multi-select-option" style="display: flex; align-items: center; gap: 8px; padding: 8px 12px; cursor: pointer;">
+                <input type="checkbox" value="${thread}" 
+                    ${this.selectedThreads.includes(thread) ? 'checked' : ''}
+                    onchange="window.multiThreadManager && window.multiThreadManager.toggleThreadSelection(${thread}, this.checked)">
+                <span>${thread} 线程</span>
+            </label>
+        `).join('');
+        
+        this.updateSelectedThreadsDisplay();
+    }
+    
+    /**
+     * 切换线程选择
+     */
+    toggleThreadSelection(thread, isSelected) {
+        if (isSelected) {
+            if (!this.selectedThreads.includes(thread)) {
+                this.selectedThreads.push(thread);
+            }
+        } else {
+            this.selectedThreads = this.selectedThreads.filter(t => t !== thread);
+        }
+        this.selectedThreads.sort((a, b) => a - b);
+        this.updateSelectedThreadsDisplay();
+        this.renderChart();
+    }
+    
+    /**
+     * 更新线程显示
+     */
+    updateSelectedThreadsDisplay() {
+        if (!this.selectedThreadsDisplay) return;
+        
+        if (this.selectedThreads.length === 0) {
+            this.selectedThreadsDisplay.textContent = '未选择';
+        } else if (this.selectedThreads.length <= 3) {
+            this.selectedThreadsDisplay.textContent = this.selectedThreads.map(t => `${t}线程`).join(', ');
+        } else {
+            this.selectedThreadsDisplay.textContent = `${this.selectedThreads.length}个线程`;
+        }
+    }
+    
+    /**
+     * 全选所有线程
+     */
+    selectAllThreads() {
+        this.selectedThreads = [...this.availableThreads];
+        this.renderThreadOptions();
+        this.renderChart();
+    }
+    
+    /**
+     * 清空所有线程
+     */
+    clearAllThreads() {
+        this.selectedThreads = [];
+        this.renderThreadOptions();
+        this.renderChart();
+    }
+    
+    /**
+     * 初始化线程选择器
+     */
+    initThreadSelector() {
+        if (this.threadSelectorContainer) {
+            this.threadSelectorContainer.style.display = 'block';
+        }
+        
+        if (this.threadSearchInput) {
+            this.threadSearchInput.addEventListener('input', (e) => {
+                this.filterThreadOptions(e.target.value);
+            });
+        }
+    }
+    
+    /**
+     * 过滤线程选项
+     */
+    filterThreadOptions(searchTerm) {
+        const options = document.querySelectorAll('.multi-select-option');
+        const term = searchTerm.toLowerCase();
+        
+        options.forEach(option => {
+            const text = option.querySelector('span')?.textContent.toLowerCase() || '';
+            if (term === '' || text.includes(term)) {
+                option.style.display = '';
+            } else {
+                option.style.display = 'none';
+            }
+        });
+    }
+    
+    /**
      * 选择最近50天
      */
     selectLatest50Days() {
@@ -265,7 +455,10 @@ class SingleThreadManager {
      */
     async renderChart() {
         if (!this.selectedCasename || !this.chart) {
-            console.log('renderChart: 缺少必要参数');
+            console.log('renderChart: 缺少必要参数', { 
+                selectedCasename: this.selectedCasename, 
+                hasChart: !!this.chart 
+            });
             return;
         }
         
@@ -275,6 +468,10 @@ class SingleThreadManager {
         
         if (this.selectedDates.length === 0) {
             this.selectedDates = this.allDates.slice(-50);
+        }
+        
+        if (this.selectedThreads.length === 0 && this.availableThreads.length > 0) {
+            this.selectedThreads = [this.availableThreads[0]];
         }
         
         // 显示加载状态
@@ -291,8 +488,9 @@ class SingleThreadManager {
                 casename: this.selectedCasename,
                 rules: this.selectedRules,
                 dates: this.selectedDates,
-                mode: 'single',
-                chart_type: this.currentChartType
+                mode: 'multi',
+                chart_type: this.currentChartType,
+                selected_threads: this.selectedThreads
             };
             
             const response = await axios.post('/api/chart/data', requestData);
@@ -308,10 +506,11 @@ class SingleThreadManager {
                 if (Object.keys(chartData.rules || {}).length === 0) {
                     this.showNoDataMessage();
                 } else {
-                    this.signalDrawChart(chartData);
+                    this.multiDrawChart(chartData);
                     this.updateStatistics(chartData);
                 }
             } else {
+                console.error('获取图表数据失败:', response.data.error);
                 this.chart.hideLoading();
                 this.showErrorMessage(response.data.error || '获取数据失败');
             }
@@ -325,7 +524,7 @@ class SingleThreadManager {
     /**
      * 绘制图表
      */
-    signalDrawChart(chartData) {
+    multiDrawChart(chartData) {
         const { dates, rules, crash_dates } = chartData;
         const isRuntime = this.currentChartType === 'runtime';
         const yAxisName = isRuntime ? 'Runtime (s)' : 'Memory (MB)';
@@ -333,9 +532,18 @@ class SingleThreadManager {
         const crashDatesSet = new Set(crash_dates || []);
         const formattedDates = dates.map(d => this.formatDate(d));
         
+        // 线程颜色映射
+        const threadColors = {
+            0: '#00E5FF', 2: '#A855F7', 4: '#10B981',
+            6: '#F59E0B', 8: '#EF4444', 16: '#8B5CF6',
+            32: '#EC4899', 64: '#14B8A6', 128: '#F97316'
+        };
+        
         const series = [];
         for (const [seriesName, ruleData] of Object.entries(rules)) {
             const values = ruleData.values || [];
+            const thread = ruleData.thread || 0;
+            const color = threadColors[thread] || '#A855F7';
             
             series.push({
                 name: seriesName,
@@ -345,7 +553,8 @@ class SingleThreadManager {
                 symbol: 'circle',
                 symbolSize: 6,
                 connectNulls: false,
-                lineStyle: { width: 2 },
+                lineStyle: { width: 2, color: color },
+                itemStyle: { color: color, borderColor: '#0F172A', borderWidth: 1 },
                 emphasis: { focus: 'series' },
                 tooltip: {
                     formatter: (params) => {
@@ -356,7 +565,7 @@ class SingleThreadManager {
                         
                         let html = `<div style="font-weight:600;margin-bottom:8px;">${this.formatDate(date)}</div>`;
                         html += `<div style="display:flex;justify-content:space-between;gap:16px;">
-                            <span>${this.escapeHtml(seriesName)}:</span>
+                            <span style="color:${color}">●</span>
                             <span>${this.escapeHtml(seriesName)}:</span>
                             <span style="font-family:monospace;font-weight:600;">${value !== null && value !== undefined ? value.toFixed(2) : 'N/A'}</span>
                         </div>`;
@@ -382,15 +591,15 @@ class SingleThreadManager {
                 top: 0,
                 pageIconColor: '#00E5FF',
                 pageTextStyle: { color: '#F1F5F9' },
-                pageIconSize: 12
+                pageIconSize: 12,
+                pageFormatter: '{current}/{total}'
             },
             grid: {
                 left: '3%',
                 right: '8%',
                 top: '18%',
                 bottom: '8%',
-                containLabel: true,
-                backgroundColor: 'transparent'
+                containLabel: true
             },
             xAxis: {
                 type: 'category',
@@ -416,6 +625,13 @@ class SingleThreadManager {
         };
         
         this.chart.setOption(option, true);
+        
+        // 监听窗口大小变化
+        window.addEventListener('resize', () => {
+            if (this.chart) {
+                this.chart.resize();
+            }
+        });
     }
     
     /**
@@ -494,23 +710,7 @@ class SingleThreadManager {
         this.updateCasenameSelect();
         await this.updateRulesAndDates();
         await this.renderChart();
-    }
-    
-    /**
-     * 更新项目概况
-     */
-    updateOverview() {
-        const totalCases = Object.keys(this.allData).length;
-        const totalRules = this.allRules.length;
-        const totalDays = this.allDates.length;
-        
-        const totalCasesEl = document.getElementById('totalCases');
-        const totalRulesEl = document.getElementById('totalRules');
-        const totalDaysEl = document.getElementById('totalDays');
-        
-        if (totalCasesEl) totalCasesEl.textContent = totalCases;
-        if (totalRulesEl) totalRulesEl.textContent = totalRules;
-        if (totalDaysEl) totalDaysEl.textContent = totalDays;
+        this.updateOverview();
     }
     
     /**
@@ -563,33 +763,6 @@ class SingleThreadManager {
                     this.selectedCasename = e.target.value;
                     this.updateRulesAndDates();
                 }
-            });
-        }
-        // 对比面板 casename 变化时同步到主面板
-        if (this.compCasenameSelect) {
-            this.compCasenameSelect.addEventListener('change', (e) => {
-                const newCasename = e.target.value;
-                if (this.casenameSelect) {
-                    this.casenameSelect.value = newCasename;
-                    this.selectedCasename = newCasename;
-                    this.updateRulesAndDates();
-                }
-            });
-        }
-        
-        // 主面板 casename 变化时同步到对比面板
-        if (this.casenameSelect) {
-            const originalChangeHandler = this.casenameSelect.onchange;
-            this.casenameSelect.addEventListener('change', async (e) => {
-                this.selectedCasename = e.target.value;
-                if (this.compCasenameSelect) {
-                    this.compCasenameSelect.value = this.selectedCasename;
-                }
-                await this.updateRulesAndDates();
-                this.selectedRules = ['Overall'];
-                this.selectedDates = this.allDates.slice(-50);
-                await this.renderChart();
-                this.updateOverview();
             });
         }
     }
@@ -916,15 +1089,35 @@ class SingleThreadManager {
     }
     
     /**
-     * 初始化图表容器
+     * 显示Toast提示
      */
-    initChartContainer() {
-        const container = document.getElementById('mainChart');
-        if (container && this.chart) {
-            this.chart.dispose();
-        }
-        if (container) {
-            this.chart = echarts.init(container);
+    showToast(message, type = 'info') {
+        const toast = document.createElement('div');
+        toast.textContent = message;
+        toast.style.cssText = `
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: ${type === 'success' ? '#10B981' : type === 'error' ? '#EF4444' : '#3B82F6'};
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            z-index: 1100;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        `;
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 3000);
+    }
+    
+    /**
+     * 切换下拉菜单（供全局调用）
+     */
+    toggleDropdown() {
+        const dropdown = document.getElementById(`${this.idPrefix}ThreadDropdown`);
+        if (dropdown) {
+            dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
         }
     }
     
@@ -951,30 +1144,7 @@ class SingleThreadManager {
         div.textContent = text;
         return div.innerHTML;
     }
-    
-    /**
-     * 显示Toast提示
-     */
-    showToast(message, type = 'info') {
-        const toast = document.createElement('div');
-        toast.textContent = message;
-        toast.style.cssText = `
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: ${type === 'success' ? '#10B981' : type === 'error' ? '#EF4444' : '#3B82F6'};
-            color: white;
-            padding: 10px 20px;
-            border-radius: 8px;
-            font-size: 14px;
-            z-index: 1100;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-        `;
-        document.body.appendChild(toast);
-        setTimeout(() => toast.remove(), 3000);
-    }
 }
 
 // 全局实例
-window.SingleThreadManager = SingleThreadManager;
+window.MultiThreadManager = MultiThreadManager;
