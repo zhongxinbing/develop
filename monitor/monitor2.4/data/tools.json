@@ -21,16 +21,16 @@
       "tools": {
         "elint": {
           "tool_name": "elint",
-          "description": "999999999999",
+          "description": "3333",
           "single_thread_path": "/home/xbzhong/develop/monitor/test/signal",
           "single_thread_func": "get_elint_data",
           "multi_thread_path": "/home/xbzhong/develop/monitor/test/multi",
           "multi_thread_func": "get_multi_data",
-          "extra_display_path": "",
-          "extra_display_func": "",
+          "extra_display_path": "/home/xbzhong/develop/monitor/test",
+          "extra_display_func": "get_perf",
           "custom_curve_func": "",
-          "created_at": "2026-06-09T21:21:57.258399",
-          "updated_at": "2026-06-09T21:21:57.258407"
+          "created_at": "2026-06-10T20:50:41.990196",
+          "updated_at": "2026-06-10T22:00:49.965052"
         }
       }
     }

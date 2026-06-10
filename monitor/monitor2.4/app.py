@@ -127,8 +127,9 @@ def api_load_tool_data(tool_id):
     # 检查缓存 - 获取所有类型的数据
     all_data = tool_manager.get_all_tool_data(user_id, tool_id)
     
-    if all_data:
-        return jsonify({'success': True, 'data': all_data})
+    # if all_data and type == 0:
+    #     print("不用更新数据")
+    #     return jsonify({'success': True, 'data': all_data})
     
     tool_config = tool_manager.get_tool(user_id, tool_id)
     if not tool_config:
@@ -146,7 +147,6 @@ def api_load_tool_data(tool_id):
                 del single_data['dataFiles']
             if '__multi_processed_logs__' in single_data:
                 del single_data['__multi_processed_logs__']
-            # result_data.update(result_data)
             result_data['signal'] = single_data
     
     # 获取多线程数据
@@ -163,6 +163,8 @@ def api_load_tool_data(tool_id):
                 del multi_data['__multi_processed_logs__']
             result_data['multi'] = multi_data
     
+    result_data['extra'] = data_manager.get_extra_data(user_id, tool_config)
+    print(result_data)
     return jsonify({'success': True, 'data': json.dumps(result_data)})
 
 
@@ -244,7 +246,7 @@ def api_get_chart_data():
     mode = data.get('mode', 'single')
     chart_type = data.get('chart_type', 'runtime')
     selected_threads = data.get('selected_threads', [0])
-    
+
     # 根据图表类型调用不同的解析方法
     if chart_type == 'memory':
         chart_data = data_parser.parse_for_memory_chart(

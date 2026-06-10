@@ -267,7 +267,7 @@ def read_csv(path):
     return data
 
 
-def get_perf(mem, cpu):
+def get_perf(mrPath):
     """
     获取性能数据（MR更新信息）
     
@@ -279,12 +279,17 @@ def get_perf(mem, cpu):
         dict: 性能数据字典
     """
     try:
-        mem_data = read_csv(Path(mem)) if mem else {}
-        cpu_data = read_csv(Path(cpu)) if cpu else {}
+
+        mem_data = read_csv(Path(mrPath) / "lint_mem.csv")
+        cpu_data = read_csv(Path(mrPath) / "lint_cpu.csv")
+        print("解析数据 MR 数据中:",mem_data)
+        print("解析数据 MR 数据中:",cpu_data)
+        
         perf = {
             "mem": mem_data,
             "cpu": cpu_data
         }
+        print(perf)
         return perf
     except Exception as e:
         log(f"执行异常: {e}")

@@ -81,13 +81,15 @@ async function loadData() {
             let signalData = {};
             let multiData = {};
             let extraData = {};
-            
+            let userData = {};
+
             if (typeof data === 'string') {
                 try {
                     const parsed = JSON.parse(data);
                     if (parsed.signal) signalData = parsed.signal;
                     if (parsed.multi) multiData = parsed.multi;
                     if (parsed.extra) extraData = parsed.extra;
+                    if (parsed.user) userData = parsed.user;
                 } catch (e) {
                     signalData = data;
                 }
@@ -95,11 +97,13 @@ async function loadData() {
                 if (data.signal) signalData = data.signal;
                 if (data.multi) multiData = data.multi;
                 if (data.extra) extraData = data.extra;
+                if (data.user) userData = data.user;
             }
-            
+
             window.signalData = signalData;
             window.multiData = multiData;
             window.extraData = extraData;
+            window.userData = userData;
             
             // 获取图表容器
             const container = document.getElementById('mainChart');
@@ -111,7 +115,7 @@ async function loadData() {
                 if (container) {
                     singleThreadManager.chart = echarts.init(container);
                 }
-                await singleThreadManager.init(signalData, extraData);
+                await singleThreadManager.init(signalData, userData, extraData);
                 // 强制更新 overview
                 singleThreadManager.updateOverview();
             }

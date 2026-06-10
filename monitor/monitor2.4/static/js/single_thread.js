@@ -47,8 +47,8 @@ class SingleThreadManager {
     /**
      * 初始化单线程模块
      */
-    async init(rawData, userAddedData) {
-        console.log('SingleThreadManager.init 开始');
+    async init(rawData, userAddedData, extraData) {
+        console.log('SingleThreadManager.init 开始',extraData);
         
         // 获取 DOM 元素
         this.casenameSelect = document.getElementById(`${this.idPrefix}CasenameSelect`);
@@ -88,11 +88,11 @@ class SingleThreadManager {
                 }
             }
         }
-        
+
         this.rawData = cleanRawData;
         this.userAddedData = userAddedData || {};
         this.allData = { ...this.rawData, ...this.userAddedData };
-        
+        this.extraData = extraData
         console.log('SingleThreadManager 处理后数据 keys:', Object.keys(this.allData));
         
         // 初始化图表容器
@@ -413,7 +413,7 @@ class SingleThreadManager {
                 markAreas.push([{ xAxis: startIndex }, { xAxis: dates.length - 1 }]);
             }
         }
-        
+
         const option = {
             backgroundColor: 'transparent',
             tooltip: {
@@ -428,19 +428,31 @@ class SingleThreadManager {
                     const dataIndex = params[0].dataIndex;
                     const date = dates[dataIndex];
                     
-                    let html = `<div style="font-weight:600;margin-bottom:8px;">${this.formatDate(date)}</div>`;
+                    let html = `<div style="font-weight:600;margin-bottom:8px;">📅 ${date}</div>`;
                     
                     for (const p of params) {
                         const value = p.value;
                         const seriesName = p.seriesName;
                         const color = p.color;
+                        const unit = isRuntime ? "s" :"MB"
                         html += `<div style="display:flex;justify-content:space-between;gap:16px;margin-bottom:4px;">
-                            <span style="color:${color}">●</span>
-                            <span>${this.escapeHtml(seriesName)}:</span>
-                            <span style="font-family:monospace;font-weight:600;">${value !== '-' && value !== null ? Number(value).toFixed(2) : 'N/A'}</span>
+                            <span style="color:${color}">● ${this.escapeHtml(seriesName)}</span>
+                            <span style="font-family:monospace;font-weight:600;">${value !== '-' && value !== null ? Number(value).toFixed(2) : 'N/A'} ${unit}</span>
                         </div>`;
                     }
-                    
+
+                    if (isRuntime) {
+                        if (this.extraData.cpu[date]) {
+                            html += `<div>MR更新: ${this.extraData.cpu[date]}</div>`
+                        }
+                    } else {
+                        if (this.extraData.mem[date]) {
+                            html += `<div>MR更新: ${this.extraData.mem[date]}</div>`
+                        }
+                    }
+                    // if (mrData.date) {
+                    //     html += `<div>MR更新: ${mrData.date}</div>`
+                    // }
                     if (crashDatesSet.has(date)) {
                         html += `<div style="color:#EF4444;font-size:11px;margin-top:6px;border-top:1px solid #334155;padding-top:4px;">
                             ⚠️ 该日期缺少 Overall 数据

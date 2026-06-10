@@ -87,7 +87,6 @@ class DataManager:
         try:
             # 调用用户配置的函数，传入用户隔离的 JSON 路径和原始数据路径
             result = func(str(json_path), data_path)
-            
             # 验证数据结构
             if self._validate_single_thread_data(dict(result)):
                 return result
@@ -164,6 +163,35 @@ class DataManager:
             print(f"获取自定义曲线数据失败: {e}")
             return {}
     
+    def get_extra_data(self, user_id: str, tool_config: Dict, extra_path: str = None) -> Dict:
+        """
+        获取自定义曲线数据
+        
+        参数:
+            user_id: 用户ID，用于隔离数据
+            tool_config: 工具配置
+            extra_path: 额外数据路径
+        """
+        func_name = tool_config.get('extra_display_func')
+        data_path = extra_path or tool_config.get('extra_display_path')
+        
+        if not func_name or not data_path:
+            return {}
+        
+        func = self._load_function(func_name, tool_config)
+        if not func:
+            return {}
+        
+        try:
+            result = func(data_path)
+            if result:
+                return result
+            return {}
+        except Exception as e:
+            print(f"获取自定义曲线数据失败: {e}")
+            return {}
+
+
     def _validate_single_thread_data(self, data: Dict) -> bool:
         """验证单线程数据格式"""
         if not isinstance(data, dict):
