@@ -103,10 +103,12 @@ class MultiThreadParser:
                 thread_key = str(thread_int)
                 color = get_thread_color(thread_int)
                 
-                if rule == 'Overall':
-                    series_name = f"Overall ({thread_int}线程)"
-                else:
-                    series_name = f"{rule} ({thread_int}线程)"
+                series_name = f"{rule}({thread_int})"
+                # if rule == 'Overall':
+                #     # series_name = f"Overall ({thread_int}线程)"
+                #     series_name = f"线程：{thread_int}"
+                # else:
+                #     series_name = f"{rule} ({thread_int}线程)"
                 
                 values = []
                 for date in dates:

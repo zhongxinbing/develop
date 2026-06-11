@@ -523,7 +523,7 @@ class MultiThreadManager {
                 if (typeof chartData === 'string') {
                     chartData = JSON.parse(chartData);
                 }
-                
+                // console.warn(chartData)
                 this.chart.hideLoading();
                 
                 if (Object.keys(chartData.rules || {}).length === 0) {
@@ -552,7 +552,6 @@ class MultiThreadManager {
             this.initChartContainer();
             if (!this.chart) return;
         }
-        
         const { dates, rules, crash_dates, all_threads, selected_threads } = chartData;
         const isRuntime = this.currentChartType === 'runtime';
         const yAxisName = isRuntime ? 'Runtime (s)' : 'Memory (MB)';
@@ -582,10 +581,12 @@ class MultiThreadManager {
         
         const series = [];
         for (const [seriesName, ruleData] of Object.entries(rules)) {
+            // console.warn(ruleData)
             const values = ruleData.values || [];
             const thread = ruleData.thread || 0;
             const color = threadColors[thread] || '#A855F7';
-
+            const name = ruleData.rule_name
+            
             // 为每个数据点添加样式
             const dataWithStyle = values.map((val, idx) => {
                 const date = dates[idx];
@@ -595,7 +596,7 @@ class MultiThreadManager {
                 }
                 return val;
             });
-
+            // console.warn(seriesName)
             series.push({
                 name: seriesName,
                 type: 'line',
@@ -609,7 +610,7 @@ class MultiThreadManager {
                 emphasis: { focus: 'series' }
             });
         }
-        
+        // console.warn(series)
         // 标记崩溃日期（红色背景区域）
         const markAreas = [];
         if (crashDatesSet.size > 0) {
@@ -646,7 +647,7 @@ class MultiThreadManager {
                     const date = dates[dataIndex];
                     
                     let html = `<div style="font-weight:600;margin-bottom:8px;">📅 ${date}</div>`;
-                    
+
                     for (const p of params) {
                         const value = p.value;
                         const seriesName = p.seriesName;

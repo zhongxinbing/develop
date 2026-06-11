@@ -351,7 +351,6 @@ class SingleThreadManager {
             this.initChartContainer();
             if (!this.chart) return;
         }
-        
         const { dates, rules, crash_dates } = chartData;
         const isRuntime = this.currentChartType === 'runtime';
         const yAxisName = isRuntime ? 'Runtime (s)' : 'Memory (MB)';
