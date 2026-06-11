@@ -519,8 +519,8 @@ def get_multi_data(jsonDataFile, path) -> Dict:
     logs = find(path, maxdepth=6, name_pattern=r"elint.log", file_type="f")
     
     # 过滤掉 signal 目录下的日志（如果有）
-    filtered_logs = [log_path for log_path in logs if not re.search(r'.*/signal/.*', str(log_path))]
-    
+    # filtered_logs = [log_path for log_path in logs if not re.search(r'.*/signal/.*', str(log_path))]
+    filtered_logs = logs
     # 记录已处理的日志列表
     processed_key = "__multi_processed_logs__"
     existing_logs = set(caseData.get(processed_key, []))
@@ -530,7 +530,7 @@ def get_multi_data(jsonDataFile, path) -> Dict:
         log(f"没有新的多线程日志文件，跳过处理")
         if processed_key in caseData:
             caseData[processed_key] = filtered_logs
-        return caseData, filtered_logs
+        return caseData
     
     log(f"发现 {len(new_logs)} 个新的多线程日志文件")
     
