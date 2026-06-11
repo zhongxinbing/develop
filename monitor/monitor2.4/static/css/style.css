@@ -1606,3 +1606,10 @@ body {
                  "Roboto Mono", "Fira Code", 
                  "Consolas", "Courier New", monospace;
 }
+
+.mr-update {
+    word-wrap: break-word;      /* 允许长单词换行 */
+    word-break: break-all;      /* 允许在任意字符间换行 */
+    white-space: normal;        /* 正常换行 */
+    max-width: 300px;           /* 限制最大宽度（可选） */
+}

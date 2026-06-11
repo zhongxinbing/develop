@@ -164,7 +164,7 @@ def api_load_tool_data(tool_id):
             result_data['multi'] = multi_data
     
     result_data['extra'] = data_manager.get_extra_data(user_id, tool_config)
-    print(result_data)
+
     return jsonify({'success': True, 'data': json.dumps(result_data)})
 
 

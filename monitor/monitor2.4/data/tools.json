@@ -9,11 +9,11 @@
           "single_thread_func": "get_elint_data",
           "multi_thread_path": "C:\\Users\\xbzhong\\Desktop\\lint\\script\\monitor\\develop\\monitor\\test\\multi",
           "multi_thread_func": "get_multi_data",
-          "extra_display_path": "",
-          "extra_display_func": "",
+          "extra_display_path": "C:\\Users\\xbzhong\\Desktop\\lint\\script\\monitor\\develop\\monitor\\test",
+          "extra_display_func": "get_perf",
           "custom_curve_func": "",
           "created_at": "2026-06-10T16:11:05.678991",
-          "updated_at": "2026-06-10T16:11:05.679002"
+          "updated_at": "2026-06-11T14:15:20.968168"
         }
       }
     },

@@ -359,24 +359,41 @@ class SingleThreadManager {
         const crashDatesSet = new Set(crash_dates || []);
         const formattedDates = dates.map(d => this.formatDate(d));
         
-        // 颜色列表
+        // 获取数据点样式的函数
+        const getItemStyle = (date) => {
+            if (this.extraData && this.extraData.cpu && this.extraData.cpu[date] && isRuntime) {
+                return { color: '#F59E0B', borderColor: '#D97706', borderWidth: 6 };
+            }
+            if (this.extraData && this.extraData.mem && this.extraData.mem[date] && !isRuntime) {
+                console.warn(date)
+                return { color: '#F59E0B', borderColor: '#D97706', borderWidth: 6 };
+            }
+            return null;
+        };
+        
         const colors = ['#00E5FF', '#A855F7', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#EC4899', '#14B8A6', '#F97316'];
         let colorIndex = 0;
         
-        // 生成系列数据
         const series = [];
         for (const [ruleName, ruleData] of Object.entries(rules)) {
             const values = ruleData.values || [];
             const color = colors[colorIndex % colors.length];
             colorIndex++;
             
-            // 处理数据点：将null转换为'-'用于显示，但保持null用于连线
-            const displayValues = values.map(v => v !== null && v !== undefined ? v : '-');
-            
+            // 为每个数据点添加样式
+            const dataWithStyle = values.map((val, idx) => {
+                const date = dates[idx];
+                const itemStyle = getItemStyle(date);
+                if (itemStyle && val !== null && val !== undefined) {
+                    return { value: val, itemStyle: itemStyle };
+                }
+                return val;
+            });
+                
             series.push({
                 name: ruleName,
                 type: 'line',
-                data: displayValues,
+                data: dataWithStyle,
                 smooth: false,
                 symbol: 'circle',
                 symbolSize: 6,
@@ -388,8 +405,7 @@ class SingleThreadManager {
                     borderWidth: 1,
                     borderRadius: 4
                 },
-                emphasis: { focus: 'series' },
-                step: false
+                emphasis: { focus: 'series' }
             });
         }
         
@@ -441,18 +457,17 @@ class SingleThreadManager {
                         </div>`;
                     }
 
-                    if (isRuntime) {
-                        if (this.extraData.cpu[date]) {
-                            html += `<div>MR更新: ${this.extraData.cpu[date]}</div>`
-                        }
-                    } else {
-                        if (this.extraData.mem[date]) {
-                            html += `<div>MR更新: ${this.extraData.mem[date]}</div>`
+                    if (this.extraData.cpu && this.extraData.mem) {
+                        if (isRuntime) {
+                            if (this.extraData.cpu[date]) {
+                                html += `<div class="mr-update">MR更新: ${this.extraData.cpu[date]}</div>`
+                            }
+                        } else {
+                            if (this.extraData.mem[date]) {
+                                html += `<div>MR更新: ${this.extraData.mem[date]}</div>`
+                            }
                         }
                     }
-                    // if (mrData.date) {
-                    //     html += `<div>MR更新: ${mrData.date}</div>`
-                    // }
                     if (crashDatesSet.has(date)) {
                         html += `<div style="color:#EF4444;font-size:11px;margin-top:6px;border-top:1px solid #334155;padding-top:4px;">
                             ⚠️ 该日期缺少 Overall 数据

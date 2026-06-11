@@ -99,12 +99,12 @@ async function loadData() {
                 if (data.extra) extraData = data.extra;
                 if (data.user) userData = data.user;
             }
-
+            console.warn(userData)
             window.signalData = signalData;
             window.multiData = multiData;
             window.extraData = extraData;
             window.userData = userData;
-            
+
             // 获取图表容器
             const container = document.getElementById('mainChart');
             
@@ -123,10 +123,12 @@ async function loadData() {
             // 初始化多线程模块
             if (window.MultiThreadManager) {
                 multiThreadManager = new window.MultiThreadManager();
+                // 创建图表实例
+                const container = document.getElementById('mainChart');
                 if (container) {
                     multiThreadManager.chart = echarts.init(container);
                 }
-                await multiThreadManager.init(multiData, extraData);
+                await multiThreadManager.init(multiData, userData, extraData);
                 // 强制更新 overview
                 multiThreadManager.updateOverview();
             }
