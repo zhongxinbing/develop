@@ -1,0 +1,42 @@
+{
+    "dates": [
+        "20260511",
+        "20260513",
+        "20260515",
+        "20260516",
+        "20260517"
+    ],
+    "rules": {
+        "save_session(2)": {
+            "dates": [
+                "20260511",
+                "20260513",
+                "20260515",
+                "20260516",
+                "20260517"
+            ],
+            "values": [
+                173.812,
+                null,
+                null,
+                null,
+                null
+            ],
+            "type": "line",
+            "name": "save_session(2)",
+            "thread": 2,
+            "color": "#A855F7",
+            "rule_name": "save_session",
+            "is_multi": true
+        }
+    },
+    "crash_dates": [],
+    "overall_data": null,
+    "all_threads": [
+        2
+    ],
+    "selected_threads": [
+        2,
+        4
+    ]
+}

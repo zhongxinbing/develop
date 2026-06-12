@@ -871,9 +871,16 @@ async function loadThreadChartData() {
             raw_data: currentManager.allData,
             casename: casename,
             rule: rule,
-            date: date
+            date: date,
+            toolID: window.toolId
         });
         
+        console.warn("线程数数据:", {
+            raw_data: currentManager.allData,
+            casename: casename,
+            rule: rule,
+            date: date
+        })
         if (response.data.success) {
             drawThreadChart(response.data.data);
         }

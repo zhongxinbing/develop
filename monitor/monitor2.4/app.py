@@ -251,14 +251,13 @@ def api_get_chart_data():
     tool_id = data.get('toolID', [])
     user_id = get_user_id()
     
-    json_path = Path(__file__).resolve().parent / 'data' / tool_id / user_id / mode / chart_type  / f'{rules[0]}.json'
+    json_path = Path(__file__).resolve().parent.joinpath("data", str(tool_id), str(user_id), str(mode), str(chart_type), f'{rules[0]}.json')
     # 如果已经存在有数据；就不需要重新全量解析  ===》 需要判断数据是否被更新了 to do
     if json_path.exists():
-        green(f"直接获取 {rules[0]} 信息")
+        green(f"{mode} 直接获取 {rules[0]} 信息")
         return jsonify({'success': True, 'data': load_json(json_path)})
     else:
         Path(json_path.parent).mkdir(parents=True, exist_ok=True)
-
 
     # 根据图表类型调用不同的解析方法
     if chart_type == 'memory':
@@ -281,9 +280,19 @@ def api_get_thread_chart_data():
     casename = data.get('casename', '')
     rule = data.get('rule', '')
     date = data.get('date', '')
-    
+    tool_id = data.get('toolID', [])
+    user_id = get_user_id()
+    json_path = Path(__file__).resolve().parent.joinpath("data", tool_id, user_id, "thread", casename, date, f'{rule}.json')
+
+    # 如果已经存在有数据；就不需要重新全量解析  ===》 需要判断数据是否被更新了 to do
+    if json_path.exists():
+        green(f"thread 直接获取 {rule} 信息")
+        return jsonify({'success': True, 'data': load_json(json_path)})
+    else:
+        Path(json_path.parent).mkdir(parents=True, exist_ok=True)
+
     chart_data = data_parser.parse_for_thread_chart(raw_data, casename, rule, date)
-    
+    save_json(json_path, chart_data)
     return jsonify({'success': True, 'data': chart_data})
 
 

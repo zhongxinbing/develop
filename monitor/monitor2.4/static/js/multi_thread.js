@@ -513,7 +513,8 @@ class MultiThreadManager {
                 dates: this.selectedDates,
                 mode: 'multi',
                 chart_type: this.currentChartType,
-                selected_threads: this.selectedThreads
+                selected_threads: this.selectedThreads,
+                toolID: window.toolId
             };
             
             const response = await axios.post('/api/chart/data', requestData);

@@ -1,0 +1,65 @@
+{
+    "dates": [
+        "20260511",
+        "20260513",
+        "20260515",
+        "20260516",
+        "20260517"
+    ],
+    "rules": {
+        "read_design (2线程)": {
+            "dates": [
+                "20260511",
+                "20260513",
+                "20260515",
+                "20260516",
+                "20260517"
+            ],
+            "values": [
+                20637.375,
+                15.0,
+                null,
+                null,
+                null
+            ],
+            "type": "line",
+            "name": "read_design (2线程)",
+            "thread": 2,
+            "color": "#A855F7",
+            "rule_name": "read_design",
+            "is_multi": true
+        },
+        "read_design (4线程)": {
+            "dates": [
+                "20260511",
+                "20260513",
+                "20260515",
+                "20260516",
+                "20260517"
+            ],
+            "values": [
+                15.0,
+                15.0,
+                15.0,
+                15.0,
+                15.0
+            ],
+            "type": "line",
+            "name": "read_design (4线程)",
+            "thread": 4,
+            "color": "#10B981",
+            "rule_name": "read_design",
+            "is_multi": true
+        }
+    },
+    "crash_dates": [],
+    "overall_data": null,
+    "all_threads": [
+        2,
+        4
+    ],
+    "selected_threads": [
+        2,
+        4
+    ]
+}
