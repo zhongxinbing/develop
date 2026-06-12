@@ -282,14 +282,13 @@ def get_perf(mrPath):
 
         mem_data = read_csv(Path(mrPath) / "lint_mem.csv")
         cpu_data = read_csv(Path(mrPath) / "lint_cpu.csv")
-        print("解析数据 MR 数据中:",mem_data)
-        print("解析数据 MR 数据中:",cpu_data)
+        print(f"解析数据 MR 数据中: cpu:{len(cpu_data)} mem: {len(mem_data)}")
         
         perf = {
             "mem": mem_data,
             "cpu": cpu_data
         }
-        print(perf)
+
         return perf
     except Exception as e:
         log(f"执行异常: {e}")

@@ -313,11 +313,12 @@ class SingleThreadManager {
                 rules: this.selectedRules,
                 dates: this.selectedDates,
                 mode: 'single',
-                chart_type: this.currentChartType
+                chart_type: this.currentChartType,
+                toolID: window.toolId
             };
-            
+            console.warn("渲染之前的数据", requestData)
             const response = await axios.post('/api/chart/data', requestData);
-            
+            console.warn("渲染之后的数据", response.data.data)
             if (response.data.success) {
                 let chartData = response.data.data;
                 if (typeof chartData === 'string') {
@@ -364,7 +365,6 @@ class SingleThreadManager {
                 return { color: '#F59E0B', borderColor: '#D97706', borderWidth: 6 };
             }
             if (this.extraData && this.extraData.mem && this.extraData.mem[date] && !isRuntime) {
-                console.warn(date)
                 return { color: '#F59E0B', borderColor: '#D97706', borderWidth: 6 };
             }
             return null;
@@ -467,6 +467,7 @@ class SingleThreadManager {
                             }
                         }
                     }
+                    
                     if (crashDatesSet.has(date)) {
                         html += `<div style="color:#EF4444;font-size:11px;margin-top:6px;border-top:1px solid #334155;padding-top:4px;">
                             ⚠️ 该日期缺少 Overall 数据
@@ -480,8 +481,10 @@ class SingleThreadManager {
                 data: series.map(s => s.name),
                 textStyle: { color: '#F1F5F9' },
                 type: 'scroll',
-                right: 10,
+                left: 10,
                 top: 0,
+                backgroundColor: 'rgba(11, 15, 26, 0.8)',
+                borderRadius: 8,
                 pageIconColor: '#00E5FF',
                 pageTextStyle: { color: '#F1F5F9' },
                 pageIconSize: 12,

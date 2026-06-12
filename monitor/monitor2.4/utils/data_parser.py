@@ -5,7 +5,7 @@ from typing import Dict, List, Any, Optional
 from utils.single_thread_parser import SingleThreadParser
 from utils.multi_thread_parser import MultiThreadParser
 from utils.common import log
-
+from debug.debug import green,red,blue
 
 class DataParser:
     """数据解析器 - 统一入口"""

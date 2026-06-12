@@ -99,7 +99,7 @@ async function loadData() {
                 if (data.extra) extraData = data.extra;
                 if (data.user) userData = data.user;
             }
-            console.warn(userData)
+            // console.warn(userData)
             window.signalData = signalData;
             window.multiData = multiData;
             window.extraData = extraData;

@@ -2,8 +2,9 @@
 单线程数据解析器 - 专门处理单线程数据
 """
 from typing import Dict, List, Any, Optional
+from tool.elint.elint import save_json
 from utils.common import get_thread_color, normalize_thread_key
-
+from debug.debug import *
 
 class SingleThreadParser:
     """单线程数据解析器"""
@@ -27,6 +28,8 @@ class SingleThreadParser:
         返回:
             图表数据格式
         """
+
+        red("传入的数据:rules",rules)
         result = {
             'dates': dates,
             'rules': {},
@@ -69,7 +72,8 @@ class SingleThreadParser:
             
             if rule == 'Overall':
                 result['overall_data'] = result['rules'][rule]
-        
+        green("解析后的数据:",result)
+
         return result
     
     @staticmethod
