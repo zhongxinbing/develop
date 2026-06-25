@@ -251,7 +251,7 @@ class ToolManager:
         
         # 优先从用户隔离目录加载
         user_data_path = self._get_user_data_path(user_id, tool_name, self.DATA_TYPE_SINGLE)
-
+        green(user_data_path)
         if user_data_path.exists():
             with open(user_data_path, 'r', encoding='utf-8') as f:
                 data = json.load(f)

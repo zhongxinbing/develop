@@ -10,7 +10,7 @@ from threading import Lock
 
 from config import DATA_DIR
 from utils.tool_manager import tool_manager
-
+from debug.debug import green,red,blue
 
 class DataManager:
     """数据管理器，负责调用用户配置的函数获取数据"""
@@ -71,6 +71,7 @@ class DataManager:
         data_path = tool_config.get('single_thread_path')
         tool_name = tool_config.get('tool_name')
 
+        green(f"获取工具 {tool_name} 单线程的数据中")
         if not func_name or not data_path:
             return {}
         
@@ -108,12 +109,12 @@ class DataManager:
         func_name = tool_config.get('multi_thread_func')
         data_path = tool_config.get('multi_thread_path')
         tool_name = tool_config.get('tool_name')
+        green(f"获取工具 {tool_name} 多线程的数据中")
 
         if not func_name or not data_path:
             return {}
 
         func = self._load_function(func_name, tool_config)
-        print(f"多线程使用的获取数据的函数为: {func}")
         if not func:
             return {}
         
@@ -129,7 +130,6 @@ class DataManager:
             if self._validate_multi_thread_data(dict(result)):
                 return result
             else:
-                print(f"多线程数据格式无效: {type(result)}, 需要是 dict")
                 return {}
         except Exception as e:
             print(f"获取多线程数据失败: {e}")
@@ -190,7 +190,6 @@ class DataManager:
         except Exception as e:
             print(f"获取自定义曲线数据失败: {e}")
             return {}
-
 
     def _validate_single_thread_data(self, data: Dict) -> bool:
         """验证单线程数据格式"""
@@ -271,13 +270,30 @@ class DataManager:
         
         return result
 
-    def _validate_init_data(user_id, tool_config):
+    def _get_init_data(self, user_id, tool_id):
         """
-        验证初始数据是否存在
+            获取初始数据
         """
-        pass
+        tool_config = tool_manager.get_tool(user_id, tool_id)
 
+        # 获取单线程的数据
+        signal_data = self.get_single_thread_data(user_id, tool_config)
+        if signal_data:
+            tool_manager.save_single_thread_data(user_id, tool_id, signal_data)
+            if 'dataFiles' in signal_data:
+                del signal_data['dataFiles']
+            if '__multi_processed_logs__' in signal_data:
+                del signal_data['__multi_processed_logs__']
 
+        multi_data = self.get_multi_thread_data(user_id, tool_config)
+        if multi_data:
+            tool_manager.save_multi_thread_data(user_id, tool_id, multi_data)
+            if 'dataFiles' in multi_data:
+                del multi_data['dataFiles']
+            if '__multi_processed_logs__' in multi_data:
+                del multi_data['__multi_processed_logs__']
+
+        return {"signal": signal_data, "multi": multi_data}
 
 # 全局实例
 data_manager = DataManager()

@@ -129,6 +129,10 @@ def api_load_tool_data(tool_id):
     # 检查缓存 - 获取所有类型的数据
     all_data = tool_manager.get_all_tool_data(user_id, tool_id)
 
+    if len(all_data) == 0:
+        green(f"获取工具 {tool_id} 中用户 {user_id} 的数据")
+        all_data = data_manager._get_init_data(user_id, tool_id)
+
     return jsonify({'success': True, 'data': json.dumps(all_data)})
 
 

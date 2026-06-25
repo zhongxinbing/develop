@@ -73,7 +73,7 @@ async function loadData() {
     try {
         showLoading(true);
         const response = await axios.post(`/api/tools/${toolId}/data`);
-        console.log("11111111111")
+        
         if (response.data.success) {
             const data = response.data.data || {};
             // 分离数据
