@@ -251,9 +251,11 @@ class ToolManager:
         
         # 优先从用户隔离目录加载
         user_data_path = self._get_user_data_path(user_id, tool_name, self.DATA_TYPE_SINGLE)
-        green(user_data_path)
+
         if user_data_path.exists():
+            print(f"尝试加载单线程数据文件: {user_data_path}")
             with open(user_data_path, 'r', encoding='utf-8') as f:
+                print(f"找到用户单线程数据文件: {user_data_path}")
                 data = json.load(f)
             
             # 清理数据中的类型问题
@@ -269,8 +271,9 @@ class ToolManager:
         
         # 回退到公共目录
         common_path = self._get_tool_data_path(tool_name, self.DATA_TYPE_SINGLE)
-        red(common_path)
+        print(f"尝试加载公共单线程数据文件: {common_path}")
         if common_path.exists():
+            print(f"找到公共单线程数据文件: {common_path}")
             with open(common_path, 'r', encoding='utf-8') as f:
                 data = json.load(f)
             
