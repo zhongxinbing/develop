@@ -7,7 +7,7 @@ from typing import Dict, Optional
 from threading import Lock
 
 from config import CONFIG_FILE, DATA_DIR, DEFAULT_CONFIG
-
+from debug.debug import green,red,blue
 
 class ToolManager:
     """工具管理器，支持多用户隔离和数据分层存储"""
@@ -243,7 +243,6 @@ class ToolManager:
             return None
         
         tool_name = tool_config.get('tool_name', tool_id)
-        
         # 检查缓存
         if user_id in self._cache:
             if tool_id in self._cache[user_id]:
@@ -252,6 +251,7 @@ class ToolManager:
         
         # 优先从用户隔离目录加载
         user_data_path = self._get_user_data_path(user_id, tool_name, self.DATA_TYPE_SINGLE)
+
         if user_data_path.exists():
             with open(user_data_path, 'r', encoding='utf-8') as f:
                 data = json.load(f)
@@ -269,6 +269,7 @@ class ToolManager:
         
         # 回退到公共目录
         common_path = self._get_tool_data_path(tool_name, self.DATA_TYPE_SINGLE)
+        red(common_path)
         if common_path.exists():
             with open(common_path, 'r', encoding='utf-8') as f:
                 data = json.load(f)
@@ -322,7 +323,6 @@ class ToolManager:
             if tool_id in self._cache[user_id]:
                 if self.DATA_TYPE_MULTI in self._cache[user_id][tool_id]:
                     cached_data = self._cache[user_id][tool_id][self.DATA_TYPE_MULTI]
-                    print(f"从缓存加载多线程数据，keys: {list(cached_data.keys())}")
                     return cached_data
         
         # 优先从用户隔离目录加载
@@ -495,7 +495,7 @@ class ToolManager:
                 del multi_data['__multi_processed_logs__']
             result['multi'] = multi_data
             
-        # 3. 加载用户添加的数据
+        # 3. 加载用户添加的数据    >> 这个也许不应该写在这里   todo
         extra_data = self.load_extra_data(user_id, tool_id)
         if extra_data:
             result['extra'] = extra_data

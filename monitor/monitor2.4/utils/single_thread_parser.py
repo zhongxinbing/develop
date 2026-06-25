@@ -28,8 +28,6 @@ class SingleThreadParser:
         返回:
             图表数据格式
         """
-
-        red("传入的数据:rules",rules)
         result = {
             'dates': dates,
             'rules': {},
@@ -72,7 +70,6 @@ class SingleThreadParser:
             
             if rule == 'Overall':
                 result['overall_data'] = result['rules'][rule]
-        green("解析后的数据:",result)
 
         return result
     

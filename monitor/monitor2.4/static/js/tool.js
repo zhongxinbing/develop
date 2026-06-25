@@ -73,16 +73,15 @@ async function loadData() {
     try {
         showLoading(true);
         const response = await axios.post(`/api/tools/${toolId}/data`);
-        
+        console.log("11111111111")
         if (response.data.success) {
             const data = response.data.data || {};
-            
             // 分离数据
             let signalData = {};
             let multiData = {};
             let extraData = {};
             let userData = {};
-
+            
             if (typeof data === 'string') {
                 try {
                     const parsed = JSON.parse(data);
@@ -313,7 +312,7 @@ async function refreshData() {
     try {
         showLoading(true);
         const response = await axios.post(`/api/tools/${toolId}/refresh`);
-        
+
         if (response.data.success) {
             const data = response.data.data || {};
             
@@ -929,7 +928,27 @@ function drawThreadChart(chartData) {
         });
         return;
     }
-    
+    // 计算平均值
+    const validValues = seriesData.filter(v => v !== null && v !== undefined);
+    let avgLine = null;
+    if (validValues.length > 0) {
+        const avgValue = validValues.reduce((a, b) => a + b, 0) / validValues.length;
+        avgLine = {
+            name: '平均值',
+            type: 'line',
+            data: Array(seriesData.length).fill(avgValue),
+            smooth: false,
+            symbol: 'none',
+            lineStyle: { 
+                width: 2, 
+                color: '#F59E0B',
+                type: 'dashed'
+            },
+            itemStyle: { color: '#F59E0B' },
+            emphasis: { focus: 'none' },
+            z: 1
+        };
+    }
     const option = {
         backgroundColor: 'transparent',
         title: {
@@ -985,7 +1004,9 @@ function drawThreadChart(chartData) {
             itemStyle: { color: '#00E5FF', borderColor: '#0F172A', borderWidth: 2 },
             areaStyle: { opacity: 0.1, color: '#00E5FF' },
             connectNulls: false
-        }],
+        },
+        ...(avgLine ? [avgLine] : [])
+        ],
         toolbox: {
             feature: {
                 saveAsImage: { title: '保存图片' }

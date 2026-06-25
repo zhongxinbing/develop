@@ -125,49 +125,11 @@ def api_delete_tool(tool_id):
 def api_load_tool_data(tool_id):
     """加载工具数据（使用分层存储）"""
     user_id = get_user_id()
-
+    green(f"加载工具 {tool_id} 数据中")
     # 检查缓存 - 获取所有类型的数据
     all_data = tool_manager.get_all_tool_data(user_id, tool_id)
-    
-    # if all_data and type == 0:
-    #     print("不用更新数据")
-    #     return jsonify({'success': True, 'data': all_data})
-    
-    tool_config = tool_manager.get_tool(user_id, tool_id)
-    if not tool_config:
-        return jsonify({'success': False, 'error': '工具不存在'})
-    
-    result_data = {}
-    # 获取单线程数据
-    if tool_config.get('single_thread_path') and tool_config.get('single_thread_func'):
-        single_data = data_manager.get_single_thread_data(user_id, tool_config)
-        if single_data:
-            # 保存单线程数据到独立文件
-            tool_manager.save_single_thread_data(user_id, tool_id, single_data)
-            # 移除内部字段
-            if 'dataFiles' in single_data:
-                del single_data['dataFiles']
-            if '__multi_processed_logs__' in single_data:
-                del single_data['__multi_processed_logs__']
-            result_data['signal'] = single_data
-    
-    # 获取多线程数据
-    if tool_config.get('multi_thread_path') and tool_config.get('multi_thread_func'):
-        multi_data = data_manager.get_multi_thread_data(user_id, tool_config)
-        if multi_data:
-            # 保存多线程数据到独立文件
-            tool_manager.save_multi_thread_data(user_id, tool_id, multi_data)
-            # 合并数据
-            # 移除内部字段
-            if 'dataFiles' in multi_data:
-                del multi_data['dataFiles']
-            if '__multi_processed_logs__' in multi_data:
-                del multi_data['__multi_processed_logs__']
-            result_data['multi'] = multi_data
-    
-    result_data['extra'] = data_manager.get_extra_data(user_id, tool_config)
 
-    return jsonify({'success': True, 'data': json.dumps(result_data)})
+    return jsonify({'success': True, 'data': json.dumps(all_data)})
 
 
 @app.route('/api/tools/<tool_id>/refresh', methods=['POST'])
@@ -250,12 +212,16 @@ def api_get_chart_data():
     selected_threads = data.get('selected_threads', [0])
     tool_id = data.get('toolID', [])
     user_id = get_user_id()
-    
-    json_path = Path(__file__).resolve().parent.joinpath("data", str(tool_id), str(user_id), str(mode), str(chart_type), f'{rules[0]}.json')
+
+    json_path = Path(__file__).resolve().parent.joinpath("data", str(tool_id), str(user_id), str(mode), str(chart_type), casename, f'{rules[0]}.json')
     # 如果已经存在有数据；就不需要重新全量解析  ===》 需要判断数据是否被更新了 to do
     if json_path.exists():
-        green(f"{mode} 直接获取 {rules[0]} 信息")
-        return jsonify({'success': True, 'data': load_json(json_path)})
+        rules_data = load_json(json_path)
+        add_dates = set(dates) - set(rules_data["dates"])
+        
+        if len(add_dates) == 0:
+            data = rules_data
+            return jsonify({'success': True, 'data': load_json(json_path)})
     else:
         Path(json_path.parent).mkdir(parents=True, exist_ok=True)
 
@@ -334,3 +300,4 @@ def api_get_comparison():
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5020)
+

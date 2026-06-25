@@ -7,7 +7,7 @@
         "20260517"
     ],
     "rules": {
-        "check_lint(2)": {
+        "Overall(2)": {
             "dates": [
                 "20260511",
                 "20260513",
@@ -16,20 +16,20 @@
                 "20260517"
             ],
             "values": [
-                962.211,
-                20.0,
+                2933.054,
+                10.0,
                 null,
                 null,
                 null
             ],
             "type": "line",
-            "name": "check_lint(2)",
+            "name": "Overall(2)",
             "thread": 2,
             "color": "#A855F7",
-            "rule_name": "check_lint",
+            "rule_name": "Overall",
             "is_multi": true
         },
-        "check_lint(4)": {
+        "Overall(4)": {
             "dates": [
                 "20260511",
                 "20260513",
@@ -38,22 +38,43 @@
                 "20260517"
             ],
             "values": [
-                20.0,
-                20.0,
-                20.0,
-                20.0,
-                20.0
+                10.0,
+                10.0,
+                10.0,
+                10.0,
+                10.0
             ],
             "type": "line",
-            "name": "check_lint(4)",
+            "name": "Overall(4)",
             "thread": 4,
             "color": "#10B981",
-            "rule_name": "check_lint",
+            "rule_name": "Overall",
             "is_multi": true
         }
     },
     "crash_dates": [],
-    "overall_data": null,
+    "overall_data": {
+        "dates": [
+            "20260511",
+            "20260513",
+            "20260515",
+            "20260516",
+            "20260517"
+        ],
+        "values": [
+            2933.054,
+            10.0,
+            null,
+            null,
+            null
+        ],
+        "type": "line",
+        "name": "Overall(2)",
+        "thread": 2,
+        "color": "#A855F7",
+        "rule_name": "Overall",
+        "is_multi": true
+    },
     "all_threads": [
         2,
         4

@@ -271,6 +271,13 @@ class DataManager:
         
         return result
 
+    def _validate_init_data(user_id, tool_config):
+        """
+        验证初始数据是否存在
+        """
+        pass
+
+
 
 # 全局实例
 data_manager = DataManager()

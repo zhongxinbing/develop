@@ -581,6 +581,8 @@ class MultiThreadManager {
         const visibleThreads = selected_threads || all_threads || [];
         
         const series = [];
+        // 存储所有有效数据用于计算平均值
+        let allValidValues = [];
         for (const [seriesName, ruleData] of Object.entries(rules)) {
             // console.warn(ruleData)
             const values = ruleData.values || [];
@@ -588,6 +590,10 @@ class MultiThreadManager {
             const color = threadColors[thread] || '#A855F7';
             const name = ruleData.rule_name
             
+            // 收集有效值
+            const validValues = values.filter(v => v !== null && v !== undefined);
+            allValidValues = allValidValues.concat(validValues);
+
             // 为每个数据点添加样式
             const dataWithStyle = values.map((val, idx) => {
                 const date = dates[idx];
@@ -609,6 +615,26 @@ class MultiThreadManager {
                 lineStyle: { width: 2, color: color },
                 itemStyle: { color: color, borderColor: '#0F172A', borderWidth: 1, borderRadius: 4 },
                 emphasis: { focus: 'series' }
+            });
+        }
+        // 计算平均值并添加虚线
+        if (allValidValues.length > 0) {
+            const avgValue = allValidValues.reduce((a, b) => a + b, 0) / allValidValues.length;
+            const avgColor = isRuntime ? '#F59E0B' : '#EC4899';
+            series.push({
+                name: '平均值',
+                type: 'line',
+                data: Array(dates.length).fill(avgValue),
+                smooth: false,
+                symbol: 'none',
+                lineStyle: { 
+                    width: 2, 
+                    color: avgColor,
+                    type: 'dashed'
+                },
+                itemStyle: { color: avgColor },
+                emphasis: { focus: 'none' },
+                z: 1
             });
         }
         // console.warn(series)
