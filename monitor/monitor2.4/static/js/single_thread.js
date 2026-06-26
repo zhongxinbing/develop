@@ -75,7 +75,7 @@ class SingleThreadManager {
         
         if (rawData && typeof rawData === 'object') {
             for (const [key, value] of Object.entries(rawData)) {
-                if (key === 'dataFiles' || key === '__multi_processed_logs__' || key === 'signal' || key === 'multi') {
+                if (key === 'dataFiles' || key === '__multi_processed_logs__' || key === 'single' || key === 'multi') {
                     continue;
                 }
                 

@@ -283,13 +283,13 @@ class DataManager:
         tool_config = tool_manager.get_tool(user_id, tool_id)
 
         # 获取单线程的数据
-        signal_data = self.get_single_thread_data(user_id, tool_config)
-        if signal_data:
-            tool_manager.save_single_thread_data(user_id, tool_id, signal_data)
-            if 'dataFiles' in signal_data:
-                del signal_data['dataFiles']
-            if '__multi_processed_logs__' in signal_data:
-                del signal_data['__multi_processed_logs__']
+        single_data = self.get_single_thread_data(user_id, tool_config)
+        if single_data:
+            tool_manager.save_single_thread_data(user_id, tool_id, single_data)
+            if 'dataFiles' in single_data:
+                del single_data['dataFiles']
+            if '__multi_processed_logs__' in single_data:
+                del single_data['__multi_processed_logs__']
 
         multi_data = self.get_multi_thread_data(user_id, tool_config)
         if multi_data:
@@ -299,26 +299,33 @@ class DataManager:
             if '__multi_processed_logs__' in multi_data:
                 del multi_data['__multi_processed_logs__']
 
-        return {"signal": signal_data, "multi": multi_data}
+        return {"single": single_data, "multi": multi_data}
 
     def upload_data(self, data, user_id, tool_id, type):
         tool_config = tool_manager.get_tool(user_id, tool_id)
-        path = tool_config.get(f"{type}_thread_path"),
+        path = tool_config.get(f"{type}_thread_path")
+        green(f"检查 {type} 是否需要更新")
+
         if not path:
             red(f"工具{tool_id}未设置获取多线程数据的路径")
             return 0
-        if type == "signal":
-            # 检查 signal 是否需要更新
+        
+
+        if type == "single":
+            # 检查 single 是否需要更新
             latest_files = find(path, maxdepth=3, name_pattern=r"^\d{8}_[^/]+\.txt$", file_type="f")
-            incremental_files = set(latest_files) - set(data[type]["dataFiles"])
+            incremental_files = set(latest_files) - set(data["dataFiles"])
             if incremental_files:
                 # 提取信息,并且要保存 to do
-                pass
+                green("需要更新")
+                func = self._load_function(tool_config.get(f"{type}_thread_func"), tool_config)
+                new_data = func(data, incremental_files)
+                return new_data
             else:
                 return 0
         else:
             latest_files = find(path)
-            incremental_files = set(latest_files) - set(data[type]["dataFiles"])
+            incremental_files = set(latest_files) - set(data["dataFiles"])
             if incremental_files:
                 # 提取信息 to do
                 pass
@@ -330,10 +337,11 @@ class DataManager:
         green(f"用户 {user_id} 请求查看数据是否需要更新")
 
         # 查看单线程
-        signal_data = self.upload_data(all_data['signal'], user_id, tool_id, "signal")
-        if signal_data != 0:
+        single_data = self.upload_data(all_data['single'], user_id, tool_id, "single")
+        if single_data:
             # 整合数据，以及保存新数据
-            pass
+            tool_manager.save_single_thread_data(user_id, tool_id, single_data)
+            all_data['single'] = single_data
 
         # 查看多线程
         multi_data = self.upload_data(all_data['multi'], user_id, tool_id, "multi")

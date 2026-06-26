@@ -77,7 +77,7 @@ async function loadData() {
         if (response.data.success) {
             const data = response.data.data || {};
             // 分离数据
-            let signalData = {};
+            let singleData = {};
             let multiData = {};
             let extraData = {};
             let userData = {};
@@ -85,21 +85,21 @@ async function loadData() {
             if (typeof data === 'string') {
                 try {
                     const parsed = JSON.parse(data);
-                    if (parsed.signal) signalData = parsed.signal;
+                    if (parsed.single) singleData = parsed.single;
                     if (parsed.multi) multiData = parsed.multi;
                     if (parsed.extra) extraData = parsed.extra;
                     if (parsed.user) userData = parsed.user;
                 } catch (e) {
-                    signalData = data;
+                    singleData = data;
                 }
             } else {
-                if (data.signal) signalData = data.signal;
+                if (data.single) singleData = data.single;
                 if (data.multi) multiData = data.multi;
                 if (data.extra) extraData = data.extra;
                 if (data.user) userData = data.user;
             }
             // console.warn(userData)
-            window.signalData = signalData;
+            window.singleData = singleData;
             window.multiData = multiData;
             window.extraData = extraData;
             window.userData = userData;
@@ -114,7 +114,7 @@ async function loadData() {
                 if (container) {
                     singleThreadManager.chart = echarts.init(container);
                 }
-                await singleThreadManager.init(signalData, userData, extraData);
+                await singleThreadManager.init(singleData, userData, extraData);
                 // 强制更新 overview
                 singleThreadManager.updateOverview();
             }
@@ -317,32 +317,32 @@ async function refreshData() {
             const data = response.data.data || {};
             
             // 完全分离三种数据类型
-            let signalData = {};
+            let singleData = {};
             let multiData = {};
             let extraData = {};
             
             if (typeof data === 'string') {
                 try {
                     const parsed = JSON.parse(data);
-                    if (parsed.signal) signalData = parsed.signal;
+                    if (parsed.single) singleData = parsed.single;
                     if (parsed.multi) multiData = parsed.multi;
                     if (parsed.extra) extraData = parsed.extra;
                 } catch (e) {
-                    signalData = data;
+                    singleData = data;
                 }
             } else {
-                if (data.signal) signalData = data.signal;
+                if (data.single) singleData = data.single;
                 if (data.multi) multiData = data.multi;
                 if (data.extra) extraData = data.extra;
             }
             
-            window.signalData = signalData;
+            window.singleData = singleData;
             window.multiData = multiData;
             window.extraData = extraData;
             
             // 刷新单线程模块
             if (singleThreadManager) {
-                await singleThreadManager.refreshWithData(signalData, extraData);
+                await singleThreadManager.refreshWithData(singleData, extraData);
             }
             
             // 刷新多线程模块

@@ -13,7 +13,7 @@ from pathlib import Path
 from datetime import datetime, timedelta
 import subprocess
 from typing import Dict, List, Any, Optional, Tuple
-
+from debug.debug import *
 
 def save_json(json_path, data):
     """
@@ -78,7 +78,7 @@ def gen_dict_data(caseData, data, thread):
     return rule_data
 
 
-def get_date_from_txt_signal(txts, caseData):
+def get_date_from_txt_single(txts, caseData):
     """从txt文件获取日期数据"""
     for txt in txts:
         txtname = Path(txt).name
@@ -123,7 +123,7 @@ def get_elint_performance(original_path, jsonDataFile) -> Tuple[Dict, List[str]]
     start = time.time()
     dataFiles = find(original_path, maxdepth=3, name_pattern=r"^\d{8}_[^/]+\.txt$", file_type="f")
     caseData = {}
-    caseData = get_date_from_txt_signal(dataFiles, caseData)
+    caseData = get_date_from_txt_single(dataFiles, caseData)
     caseData["dataFiles"] = sorted(dataFiles)
     # if jsonDataFile:
     #     save_json(jsonDataFile, caseData)
@@ -159,7 +159,7 @@ def get_incremental_data(
     log(f"发现 {len(new_files)} 个新文件，进行增量更新")
     
     # 只解析新增的文件
-    new_data = get_date_from_txt_signal(new_files, {})
+    new_data = get_date_from_txt_single(new_files, {})
     
     # 合并数据
     for casename, case_info in new_data.items():
@@ -468,7 +468,7 @@ def get_perf_data_from_log(caseData, log_path):
     
     thread = re.findall(r'Current Threads : (\d+)', content)
     if len(thread) == 0:
-        if re.match(r'.*/signal/*', log_path):
+        if re.match(r'.*/single/*', log_path):
             thread = 1
         else:
             thread = re.findall(r'thread_(\d+)', log_path)[0]
@@ -520,8 +520,8 @@ def get_multi_data(jsonDataFile, path) -> Dict:
     # 查找所有 elint.log 文件
     logs = find(path, maxdepth=6, name_pattern=r"elint.log", file_type="f")
     
-    # 过滤掉 signal 目录下的日志（如果有）
-    # filtered_logs = [log_path for log_path in logs if not re.search(r'.*/signal/.*', str(log_path))]
+    # 过滤掉 single 目录下的日志（如果有）
+    # filtered_logs = [log_path for log_path in logs if not re.search(r'.*/single/.*', str(log_path))]
     filtered_logs = logs
     # 记录已处理的日志列表
     processed_key = "__multi_processed_logs__"
@@ -581,6 +581,15 @@ def get_runtime (content):
         new = new + [(name, f"{cpu}", f"{elapse}", f"{peak}", "null")]
     return new
 
+from deepmerge import always_merger
+def get_single_data(single, files):
+    """
+        single: 单线程的数据
+        files: 从单线成配置的路径下获取的文件，需要解析的文件路径
+    """
+    green("单线程获取数据中")
 
-def get_signal_data(signal, files):
-    pass
+    new_data = get_date_from_txt_single(files, {})
+    all_data = always_merger.merge(single, new_data)
+    return all_data
+    

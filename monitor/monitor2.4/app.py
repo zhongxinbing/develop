@@ -23,6 +23,7 @@ def get_user_id() -> str:
     """获取或创建用户ID（用于数据隔离）"""
     if 'user_id' not in session:
         session['user_id'] = str(uuid.uuid4())
+        green(f"新用户加入{session['user_id']}")
     return session['user_id']
 
 

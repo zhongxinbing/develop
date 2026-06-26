@@ -21,7 +21,7 @@ class ToolManager:
     DATA_TYPE_EXTRA = 'extra'     # 用户添加数据
     
     # 数据文件命名常量
-    SINGLE_FILE_SUFFIX = '_signal.json'   # 单线程数据文件后缀
+    SINGLE_FILE_SUFFIX = '_single.json'   # 单线程数据文件后缀
     MULTI_FILE_SUFFIX = '_multi.json'     # 多线程数据文件后缀
     EXTRA_FILE_SUFFIX = '_extra.json'     # 用户添加数据文件后缀
     
@@ -62,7 +62,7 @@ class ToolManager:
         
         返回:
             Path: 数据文件路径
-            - 单线程: data/tool_name/tool_name_signal.json
+            - 单线程: data/tool_name/tool_name_single.json
             - 多线程: data/tool_name/tool_name_multi.json
             - 用户添加: data/tool_name/tool_name_extra.json
         """
@@ -489,7 +489,7 @@ class ToolManager:
         single_data = self.load_single_thread_data(user_id, tool_id)
         
         if single_data:
-            result['signal'] = single_data
+            result['single'] = single_data
         
         # 2. 加载多线程数据（关键修复）
         multi_data = self.load_multi_thread_data(user_id, tool_id)
