@@ -126,10 +126,14 @@ def api_load_tool_data(tool_id):
     """加载工具数据（使用分层存储）"""
     user_id = get_user_id()
     green(f"加载工具 {tool_id} 数据中")
-    # 检查缓存 - 获取所有类型的数据
+
+    # 检查缓存 - 获取所有类型的数据   从保存的文件中获取数据
     all_data = tool_manager.get_all_tool_data(user_id, tool_id)
 
-    if len(all_data) == 0:
+    if all_data:
+        # 判断是否更新单线程的数据并返回更新后的数据
+        all_data = data_manager.data_is_upload(all_data, user_id, tool_id)
+    else:
         green(f"获取工具 {tool_id} 中用户 {user_id} 的数据")
         all_data = data_manager._get_init_data(user_id, tool_id)
 

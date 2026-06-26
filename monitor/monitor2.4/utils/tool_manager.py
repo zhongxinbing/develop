@@ -494,8 +494,6 @@ class ToolManager:
         # 2. 加载多线程数据（关键修复）
         multi_data = self.load_multi_thread_data(user_id, tool_id)
         if multi_data:
-            if "__multi_processed_logs__" in multi_data:
-                del multi_data['__multi_processed_logs__']
             result['multi'] = multi_data
             
         # 3. 加载用户添加的数据    >> 这个也许不应该写在这里   todo

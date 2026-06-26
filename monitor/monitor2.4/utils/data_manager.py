@@ -2,15 +2,21 @@
 数据管理器 - 处理数据获取和解析
 """
 import importlib.util
+from os import path
 import sys
 from pathlib import Path
 from typing import Dict, Any, Optional, Callable, List
 from datetime import datetime
 from threading import Lock
 
+from matplotlib.pylab import multi_dot
+
 from config import DATA_DIR
 from utils.tool_manager import tool_manager
 from debug.debug import green,red,blue
+from utils.find_files import find
+
+
 
 class DataManager:
     """数据管理器，负责调用用户配置的函数获取数据"""
@@ -294,6 +300,49 @@ class DataManager:
                 del multi_data['__multi_processed_logs__']
 
         return {"signal": signal_data, "multi": multi_data}
+
+    def upload_data(self, data, user_id, tool_id, type):
+        tool_config = tool_manager.get_tool(user_id, tool_id)
+        path = tool_config.get(f"{type}_thread_path"),
+        if not path:
+            red(f"工具{tool_id}未设置获取多线程数据的路径")
+            return 0
+        if type == "signal":
+            # 检查 signal 是否需要更新
+            latest_files = find(path, maxdepth=3, name_pattern=r"^\d{8}_[^/]+\.txt$", file_type="f")
+            incremental_files = set(latest_files) - set(data[type]["dataFiles"])
+            if incremental_files:
+                # 提取信息,并且要保存 to do
+                pass
+            else:
+                return 0
+        else:
+            latest_files = find(path)
+            incremental_files = set(latest_files) - set(data[type]["dataFiles"])
+            if incremental_files:
+                # 提取信息 to do
+                pass
+            else:
+                return 0
+
+
+    def data_is_upload(self, all_data, user_id, tool_id):
+        green(f"用户 {user_id} 请求查看数据是否需要更新")
+
+        # 查看单线程
+        signal_data = self.upload_data(all_data['signal'], user_id, tool_id, "signal")
+        if signal_data != 0:
+            # 整合数据，以及保存新数据
+            pass
+
+        # 查看多线程
+        multi_data = self.upload_data(all_data['multi'], user_id, tool_id, "multi")
+        if multi_data != 0:
+            # 整合数据，以及保存新数据
+            pass
+        return all_data
+
+        
 
 # 全局实例
 data_manager = DataManager()
