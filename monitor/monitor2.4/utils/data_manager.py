@@ -280,6 +280,11 @@ class DataManager:
         """
             获取初始数据
         """
+        # 输出到网页的数据、判断数据是否更新了， 0 是没有更新， 1 是更新了
+        upload = {
+            'single': 1,
+            'multi': 1
+        }
         tool_config = tool_manager.get_tool(user_id, tool_id)
 
         # 获取单线程的数据
@@ -290,7 +295,8 @@ class DataManager:
                 del single_data['dataFiles']
             if '__multi_processed_logs__' in single_data:
                 del single_data['__multi_processed_logs__']
-
+        else:
+            upload['single'] = 0
         multi_data = self.get_multi_thread_data(user_id, tool_config)
         if multi_data:
             tool_manager.save_multi_thread_data(user_id, tool_id, multi_data)
@@ -298,8 +304,9 @@ class DataManager:
                 del multi_data['dataFiles']
             if '__multi_processed_logs__' in multi_data:
                 del multi_data['__multi_processed_logs__']
-
-        return {"single": single_data, "multi": multi_data}
+        else:
+            upload['multi'] = 0
+        return ({"single": single_data, "multi": multi_data}, upload)
 
     def upload_data(self, data, user_id, tool_id, type):
         tool_config = tool_manager.get_tool(user_id, tool_id)
@@ -309,12 +316,11 @@ class DataManager:
         if not path:
             red(f"工具{tool_id}未设置获取多线程数据的路径")
             return 0
-        
 
         if type == "single":
             # 检查 single 是否需要更新
             latest_files = find(path, maxdepth=3, name_pattern=r"^\d{8}_[^/]+\.txt$", file_type="f")
-            incremental_files = set(latest_files) - set(data["dataFiles"])
+            incremental_files = set(latest_files) - set(data.get("dataFiles"))
             if incremental_files:
                 # 提取信息,并且要保存 to do
                 green("需要更新")
@@ -322,6 +328,7 @@ class DataManager:
                 new_data = func(data, incremental_files)
                 return new_data
             else:
+                green("没有数据需要更新")
                 return 0
         else:
             latest_files = find(path)
@@ -335,20 +342,28 @@ class DataManager:
 
     def data_is_upload(self, all_data, user_id, tool_id):
         green(f"用户 {user_id} 请求查看数据是否需要更新")
-
+        # 输出到网页的数据、判断数据是否更新了， 0 是没有更新， 1 是更新了
+        upload = {
+            'single': 1,
+            'multi': 1
+        }
+        
         # 查看单线程
         single_data = self.upload_data(all_data['single'], user_id, tool_id, "single")
         if single_data:
             # 整合数据，以及保存新数据
             tool_manager.save_single_thread_data(user_id, tool_id, single_data)
             all_data['single'] = single_data
-
+        else:
+            upload['single'] = 0
         # 查看多线程
         multi_data = self.upload_data(all_data['multi'], user_id, tool_id, "multi")
         if multi_data != 0:
             # 整合数据，以及保存新数据
             pass
-        return all_data
+        else:
+            upload['multi'] = 0
+        return (all_data, upload)
 
         
 

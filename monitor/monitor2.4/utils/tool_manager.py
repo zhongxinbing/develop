@@ -476,8 +476,12 @@ class ToolManager:
 
     def get_all_tool_data(self, user_id: str, tool_id: str) -> Dict:
         """获取工具的所有数据（合并单线程、多线程、用户数据）"""
-        result = {}
-        
+        result = {
+            "single":{},
+            "multi":{},
+            "extra":{}
+        }
+
         # 获取工具配置
         tool_config = self.get_tool(user_id, tool_id)
         if not tool_config:

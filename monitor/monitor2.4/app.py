@@ -133,12 +133,12 @@ def api_load_tool_data(tool_id):
 
     if all_data:
         # 判断是否更新单线程的数据并返回更新后的数据
-        all_data = data_manager.data_is_upload(all_data, user_id, tool_id)
+        all_data, upload = data_manager.data_is_upload(all_data, user_id, tool_id)
     else:
         green(f"获取工具 {tool_id} 中用户 {user_id} 的数据")
         all_data = data_manager._get_init_data(user_id, tool_id)
 
-    return jsonify({'success': True, 'data': json.dumps(all_data)})
+    return jsonify({'success': True, 'data': json.dumps(all_data), 'upload': upload})
 
 
 @app.route('/api/tools/<tool_id>/refresh', methods=['POST'])
