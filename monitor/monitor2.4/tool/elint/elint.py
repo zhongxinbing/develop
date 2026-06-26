@@ -580,3 +580,7 @@ def get_runtime (content):
         peak = command[3].strip()
         new = new + [(name, f"{cpu}", f"{elapse}", f"{peak}", "null")]
     return new
+
+
+def get_signal_data(signal, files):
+    pass
