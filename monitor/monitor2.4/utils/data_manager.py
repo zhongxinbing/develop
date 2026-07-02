@@ -11,7 +11,7 @@ from threading import Lock
 
 from matplotlib.pylab import multi_dot
 
-from config import DATA_DIR
+from config import DATA_DIR, BASE_DIR
 from utils.tool_manager import tool_manager
 from debug.debug import green,red,blue
 from utils.find_files import find
@@ -93,7 +93,8 @@ class DataManager:
         
         try:
             # 调用用户配置的函数，传入用户隔离的 JSON 路径和原始数据路径
-            result = func(str(json_path), data_path)
+            # result = func(str(json_path), data_path)
+            result= func({}, data_path)
             # 验证数据结构
             if self._validate_single_thread_data(dict(result)):
                 return result
@@ -278,15 +279,11 @@ class DataManager:
 
     def _get_init_data(self, user_id, tool_id):
         """
-            获取初始数据
+            当数据部不存在时获取初始数据
         """
-        # 输出到网页的数据、判断数据是否更新了， 0 是没有更新， 1 是更新了
-        upload = {
-            'single': 1,
-            'multi': 1
-        }
-        tool_config = tool_manager.get_tool(user_id, tool_id)
-
+        tool_config = tool_manager.get_tool(tool_id)
+        upload = {'single':1,'multi':1,'extra':1}
+        all_data = {}
         # 获取单线程的数据
         single_data = self.get_single_thread_data(user_id, tool_config)
         if single_data:
@@ -295,8 +292,11 @@ class DataManager:
                 del single_data['dataFiles']
             if '__multi_processed_logs__' in single_data:
                 del single_data['__multi_processed_logs__']
+            all_data['single'] = single_data
         else:
             upload['single'] = 0
+
+        # 获取多线程的数据
         multi_data = self.get_multi_thread_data(user_id, tool_config)
         if multi_data:
             tool_manager.save_multi_thread_data(user_id, tool_id, multi_data)
@@ -304,12 +304,22 @@ class DataManager:
                 del multi_data['dataFiles']
             if '__multi_processed_logs__' in multi_data:
                 del multi_data['__multi_processed_logs__']
+            all_data['multi'] = multi_data
         else:
             upload['multi'] = 0
-        return ({"single": single_data, "multi": multi_data}, upload)
+
+        # 获取额外的其他数据
+        extra_data = self.get_extra_data(user_id, tool_config)
+        if extra_data:
+            tool_manager.save_extra_data(user_id, tool_id, extra_data)
+            all_data['extra'] = extra_data
+        else:
+            upload['extra'] = 0
+
+        return (all_data, upload)
 
     def upload_data(self, data, user_id, tool_id, type):
-        tool_config = tool_manager.get_tool(user_id, tool_id)
+        tool_config = tool_manager.get_tool(tool_id)
         path = tool_config.get(f"{type}_thread_path")
         green(f"检查 {type} 是否需要更新")
 
@@ -339,14 +349,9 @@ class DataManager:
             else:
                 return 0
 
-
     def data_is_upload(self, all_data, user_id, tool_id):
         green(f"用户 {user_id} 请求查看数据是否需要更新")
-        # 输出到网页的数据、判断数据是否更新了， 0 是没有更新， 1 是更新了
-        upload = {
-            'single': 1,
-            'multi': 1
-        }
+        upload = {'single':1,'multi':1,'extra':1}
         
         # 查看单线程
         single_data = self.upload_data(all_data['single'], user_id, tool_id, "single")
@@ -356,6 +361,7 @@ class DataManager:
             all_data['single'] = single_data
         else:
             upload['single'] = 0
+        
         # 查看多线程
         multi_data = self.upload_data(all_data['multi'], user_id, tool_id, "multi")
         if multi_data != 0:
@@ -365,7 +371,19 @@ class DataManager:
             upload['multi'] = 0
         return (all_data, upload)
 
+    # def judg_data_is_unlpad(self, old_files:List, new_files:List):
+    #     add_files = set(new_files) - set(old_files)
+    #     if add_files:
+    #         return new_files
+    #     return 0
         
+    # def get_data(self, user_id, tool_id):
+    #     """
+    #         获取已经存在的数据，并且更新到最新的数据
+    #     """
+
+
+
 
 # 全局实例
 data_manager = DataManager()

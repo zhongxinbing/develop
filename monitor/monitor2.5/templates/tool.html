@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>工具页面 - EDA QOR</title>
+    <script src="{{ url_for('static', filename='js/echarts.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/axios.min.js') }}"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="app-container tool-page">
+        <!-- 顶部导航栏 -->
+        <header class="tool-header">
+            <button class="back-btn" id="backBtn">
+                <div class="logo-icon">📈 </div>
+                <div class="logo-text">
+                    <h1>EDA QOR</h1>
+                    <span>性能监控平台</span>
+                </div>
+            </button>
+            <div class="tool-info">
+                <h2 id="toolName">加载中...</h2>
+                <span class="tool-desc" id="toolDesc"></span>
+            </div>
+            <!-- <button class="refresh-btn" id="refreshBtn" title="刷新数据">
+                <span>↩刷新</span>
+            </button> -->
+        </header>
+
+        <!-- 二级导航 -->
+        <div class="mode-nav">
+            <button class="mode-nav-item active" data-mode="single">
+                <i class="fas fa-chart-simple"></i>
+                <span>单线程</span>
+            </button>
+            <button class="mode-nav-item" data-mode="multi">
+                <i class="fas fa-diagram-project"></i>
+                <span>多线程</span>
+            </button>
+            <button class="mode-nav-item" data-mode="thread">
+                <i class="fas fa-chart-line"></i>
+                <span>线程曲线图</span>
+            </button>
+        </div>
+
+        <!-- 主内容区域 -->
+        <div class="tool-main">
+            <!-- ==================== 单线程侧边栏 ==================== -->
+            <aside class="sidebar" id="singleSidebar">
+                <div class="sidebar-content">
+                    <div class="sidebar-menu">
+                        <button class="menu-item active" data-chart="runtime">
+                            <i class="fas fa-clock"></i>
+                            <span>Runtime</span>
+                        </button>
+                        <button class="menu-item" data-chart="memory">
+                            <i class="fas fa-microchip"></i>
+                            <span>Memory</span>
+                        </button>
+                        <button class="menu-item" data-chart="comparison">
+                            <i class="fas fa-chart-line"></i>
+                            <span>数据对比</span>
+                        </button>
+                    </div>
+
+                    <!-- 单线程筛选控件区 -->
+                    <div class="filters-panel" id="singleFiltersPanel">
+                        <div class="filter-group">
+                            <label><i class="fas fa-folder"></i> Casename</label>
+                            <select id="singleCasenameSelect" class="filter-select"></select>
+                        </div>
+
+                        <div class="filter-group">
+                            <label><i class="fas fa-code-branch"></i> Rule</label>
+                            <div class="searchable-select">
+                                <div class="select-search">
+                                    <i class="fas fa-search"></i>
+                                    <input type="text" id="singleRuleSearch" placeholder="搜索 rule...">
+                                </div>
+                                <select id="singleRuleSelect" class="filter-select" multiple size="5"></select>
+                            </div>
+                        </div>
+
+                        <div class="filter-actions">
+                            <button class="btn-icon" id="singleDatePickerBtn" title="选择日期">
+                                <i class="fas fa-calendar-alt"></i>
+                                <span>选择日期</span>
+                            </button>
+                            <button class="btn-icon" id="singleLatest50Btn" title="最新50天">
+                                <i class="fas fa-calendar-week"></i>
+                                <span>最新50天</span>
+                            </button>
+                            <button class="btn-icon btn-success" id="singleAddDataBtn" title="添加数据">
+                                <i class="fas fa-plus-circle"></i>
+                                <span>添加数据</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 单线程数据对比控件 -->
+                    <div class="comparison-panel" id="singleComparisonPanel" style="display: none;">
+                        <div class="filter-group">
+                            <label><i class="fas fa-folder"></i> Casename</label>
+                            <select id="singleCompCasenameSelect" class="filter-select"></select>
+                        </div>
+
+                        <div class="filter-group">
+                            <label><i class="fas fa-chart-pie"></i> 对比模式</label>
+                            <select id="singleCompareModeSelect" class="filter-select">
+                                <option value="all">对比全部 rule</option>
+                            </select>
+                        </div>
+
+                        <div class="filter-group">
+                            <label><i class="fas fa-search"></i> 搜索 rule</label>
+                            <input type="text" id="singleCompRuleSearch" placeholder="搜索 rule..." class="filter-input">
+                        </div>
+
+                        <div class="filter-group">
+                            <label><i class="fas fa-calendar-day"></i> 日期1</label>
+                            <select id="singleDate1Select" class="filter-select"></select>
+                        </div>
+
+                        <div class="filter-group">
+                            <label><i class="fas fa-calendar-day"></i> 日期2</label>
+                            <select id="singleDate2Select" class="filter-select"></select>
+                        </div>
+
+                        <div class="filter-group">
+                            <label><i class="fas fa-percent"></i> 误差模式</label>
+                            <select id="singleErrorModeSelect" class="filter-select">
+                                <option value="absolute">绝对值</option>
+                                <option value="percentage">百分比</option>
+                            </select>
+                        </div>
+
+                        <div class="filter-group">
+                            <label><i class="fas fa-chart-simple"></i> 对比维度</label>
+                            <select id="singleDimensionSelect" class="filter-select">
+                                <option value="all">全部</option>
+                                <option value="runtime">Runtime</option>
+                                <option value="memory">Memory</option>
+                            </select>
+                        </div>
+
+                        <div class="filter-row">
+                            <div class="filter-group half">
+                                <label>Runtime 误差范围</label>
+                                <input type="number" id="singleRuntimeThreshold" class="filter-input" value="0" step="0.1">
+                            </div>
+                            <div class="filter-group half">
+                                <label>Memory 误差范围</label>
+                                <input type="number" id="singleMemoryThreshold" class="filter-input" value="0" step="0.1">
+                            </div>
+                        </div>
+
+                        <div class="filter-actions">
+                            <button class="btn-primary" id="singleConfirmCompareBtn">
+                                <i class="fas fa-chart-line"></i> 确认对比
+                            </button>
+                            <button class="btn-secondary" id="singleExportCompareBtn">
+                                <i class="fas fa-download"></i> 导出结果
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- ==================== 多线程侧边栏 ==================== -->
+            <aside class="sidebar" id="multiSidebar" style="display: none;">
+                <div class="sidebar-content">
+                    <div class="sidebar-menu">
+                        <button class="menu-item active" data-chart="runtime">
+                            <i class="fas fa-clock"></i>
+                            <span>Runtime</span>
+                        </button>
+                        <button class="menu-item" data-chart="memory">
+                            <i class="fas fa-microchip"></i>
+                            <span>Memory</span>
+                        </button>
+                        <button class="menu-item" data-chart="comparison">
+                            <i class="fas fa-chart-line"></i>
+                            <span>数据对比</span>
+                        </button>
+                    </div>
+
+                    <!-- 多线程筛选控件区 -->
+                    <div class="filters-panel" id="multiFiltersPanel">
+
+                        <div class="filter-group">
+                            <label><i class="fas fa-folder"></i> Casename</label>
+                            <select id="multiCasenameSelect" class="filter-select"></select>
+                        </div>
+
+                        <div class="filter-group">
+                            <label><i class="fas fa-code-branch"></i> Rule</label>
+                            <div class="searchable-select">
+                                <div class="select-search">
+                                    <i class="fas fa-search"></i>
+                                    <input type="text" id="multiRuleSearch" placeholder="搜索 rule...">
+                                </div>
+                                <select id="multiRuleSelect" class="filter-select" multiple size="5"></select>
+                            </div>
+                        </div>
+
+                        <div class="filter-actions">
+                            <button class="btn-icon" id="multiDatePickerBtn" title="选择日期">
+                                <i class="fas fa-calendar-alt"></i>
+                                <span>选择日期</span>
+                            </button>
+                            <button class="btn-icon" id="multiLatest50Btn" title="最新50天">
+                                <i class="fas fa-calendar-week"></i>
+                                <span>最新50天</span>
+                            </button>
+                            <button class="btn-icon btn-success" id="multiAddDataBtn" title="添加数据">
+                                <i class="fas fa-plus-circle"></i>
+                                <span>添加数据</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 多线程数据对比控件 -->
+                    <div class="comparison-panel" id="multiComparisonPanel" style="display: none;">
+                        <div class="filter-group">
+                            <label><i class="fas fa-folder"></i> Casename</label>
+                            <select id="multiCompCasenameSelect" class="filter-select"></select>
+                        </div>
+
+                        <div class="filter-group">
+                            <label><i class="fas fa-chart-pie"></i> 对比模式</label>
+                            <select id="multiCompareModeSelect" class="filter-select">
+                                <option value="all">对比全部 rule</option>
+                            </select>
+                        </div>
+
+                        <div class="filter-group">
+                            <label><i class="fas fa-search"></i> 搜索 rule</label>
+                            <input type="text" id="multiCompRuleSearch" placeholder="搜索 rule..." class="filter-input">
+                        </div>
+
+                        <div class="filter-group">
+                            <label><i class="fas fa-calendar-day"></i> 日期1</label>
+                            <select id="multiDate1Select" class="filter-select"></select>
+                        </div>
+
+                        <div class="filter-group">
+                            <label><i class="fas fa-calendar-day"></i> 日期2</label>
+                            <select id="multiDate2Select" class="filter-select"></select>
+                        </div>
+
+                        <div class="filter-group">
+                            <label><i class="fas fa-percent"></i> 误差模式</label>
+                            <select id="multiErrorModeSelect" class="filter-select">
+                                <option value="absolute">绝对值</option>
+                                <option value="percentage">百分比</option>
+                            </select>
+                        </div>
+
+                        <div class="filter-group">
+                            <label><i class="fas fa-chart-simple"></i> 对比维度</label>
+                            <select id="multiDimensionSelect" class="filter-select">
+                                <option value="all">全部</option>
+                                <option value="runtime">Runtime</option>
+                                <option value="memory">Memory</option>
+                            </select>
+                        </div>
+
+                        <div class="filter-row">
+                            <div class="filter-group half">
+                                <label>Runtime 误差范围</label>
+                                <input type="number" id="multiRuntimeThreshold" class="filter-input" value="0" step="0.1">
+                            </div>
+                            <div class="filter-group half">
+                                <label>Memory 误差范围</label>
+                                <input type="number" id="multiMemoryThreshold" class="filter-input" value="0" step="0.1">
+                            </div>
+                        </div>
+
+                        <div class="filter-actions">
+                            <button class="btn-primary" id="multiConfirmCompareBtn">
+                                <i class="fas fa-chart-line"></i> 确认对比
+                            </button>
+                            <button class="btn-secondary" id="multiExportCompareBtn">
+                                <i class="fas fa-download"></i> 导出结果
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- 线程曲线图侧边栏（独立） -->
+            <aside class="sidebar" id="threadSidebar" style="display: none;">
+                <div class="sidebar-content">
+                    <div class="sidebar-menu">
+                        <button class="menu-item active" data-thread-chart="runtime">
+                            <i class="fas fa-clock"></i>
+                            <span>Runtime</span>
+                        </button>
+                        <button class="menu-item" data-thread-chart="memory">
+                            <i class="fas fa-microchip"></i>
+                            <span>Memory</span>
+                        </button>
+                    </div>
+
+                    <div class="filters-panel" id="threadFiltersPanel">
+                        <div class="filter-group">
+                            <label><i class="fas fa-folder"></i> Casename</label>
+                            <select id="threadCasenameSelect" class="filter-select"></select>
+                        </div>
+
+                        <div class="filter-group">
+                            <label><i class="fas fa-code-branch"></i> Rule</label>
+                            <div class="searchable-select">
+                                <div class="select-search">
+                                    <i class="fas fa-search"></i>
+                                    <input type="text" id="threadRuleSearch" placeholder="搜索 rule...">
+                                </div>
+                                <select id="threadRuleSelect" class="filter-select" size="5"></select>
+                            </div>
+                        </div>
+
+                        <div class="filter-group">
+                            <label><i class="fas fa-calendar-day"></i> 选择日期</label>
+                            <select id="threadDateSelect" class="filter-select"></select>
+                        </div>
+
+                        <div class="filter-actions">
+                            <button class="btn-primary" id="refreshThreadChartBtn">
+                                <i class="fas fa-chart-line"></i> 更新图表
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- 中央内容区 -->
+            <main class="content-area" id="contentArea">
+                <div class="chart-container" id="chartContainer">
+                    <div id="mainChart" style="width: 100%; height: 400px;"></div>
+                </div>
+
+                <div class="stats-grid" id="statsGrid">
+                    <div class="stat-card">
+                        <div class="stat-value" id="dateRange">-</div>
+                        <div class="stat-label">日期范围</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="totalValue">-</div>
+                        <div class="stat-label" id="totalLabel">Total Runtime</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="avgValue">-</div>
+                        <div class="stat-label" id="avgLabel">Average</div>
+                    </div>
+                    <div class="stat-card tooltip-card">
+                        <div class="stat-value" id="maxValue">-</div>
+                        <div class="stat-label">Maximum <i class="fas fa-question-circle"></i></div>
+                        <div class="tooltip-content" id="maxTooltipContent"></div>
+                    </div>
+                    <div class="stat-card tooltip-card">
+                        <div class="stat-value" id="minValue">-</div>
+                        <div class="stat-label">Minimum <i class="fas fa-question-circle"></i></div>
+                        <div class="tooltip-content" id="minTooltipContent"></div>
+                    </div>
+                </div>
+
+                <div class="overview-card">
+                    <h4><i class="fas fa-info-circle"></i> 项目概况</h4>
+                    <div class="overview-stats" id="overviewStats">
+                        <div class="overview-item">
+                            <span class="overview-value" id="totalCases">-</span>
+                            <span class="overview-label">总 case 数</span>
+                        </div>
+                        <div class="overview-item">
+                            <span class="overview-value" id="totalRules">-</span>
+                            <span class="overview-label">总阶段数</span>
+                        </div>
+                        <div class="overview-item">
+                            <span class="overview-value" id="totalDays">-</span>
+                            <span class="overview-label">总天数</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 对比结果区域 -->
+                <div class="comparison-results" id="comparisonResults" style="display: none;">
+                    <div class="comparison-stats-grid" id="comparisonStatsGrid"></div>
+                    <div class="comparison-table-container">
+                        <div class="table-header">
+                            <input type="text" id="comparisonSearch" placeholder="搜索 rule..." class="filter-input">
+                        </div>
+                        <div class="table-wrapper">
+                            <table class="comparison-table" id="comparisonTable">
+                                <thead>
+                                    <tr>
+                                        <th>Rule</th>
+                                        <th>日期1值</th>
+                                        <th>日期2值</th>
+                                        <th>绝对差值</th>
+                                        <th>百分比变化</th>
+                                        <th>状态</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="comparisonTableBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- 日期选择弹窗（共用） -->
+    <div class="modal" id="datePickerModal">
+        <div class="modal-overlay"></div>
+        <div class="modal-container medium">
+            <div class="modal-header">
+                <h3><i class="fas fa-calendar-alt"></i> 选择日期</h3>
+                <button class="modal-close" id="closeDateModalBtn">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="date-search">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="dateSearch" placeholder="搜索日期..." class="filter-input">
+                </div>
+                <div class="date-actions">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="selectAllDates">
+                        <span>全选</span>
+                    </label>
+                </div>
+                <div class="date-list" id="dateList"></div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" id="cancelDateBtn">取消</button>
+                <button class="btn-primary" id="confirmDateBtn">确认</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 添加数据弹窗（共用） -->
+    <div class="modal" id="addDataModal">
+        <div class="modal-overlay"></div>
+        <div class="modal-container medium">
+            <div class="modal-header">
+                <h3><i class="fas fa-plus-circle"></i> 添加自定义数据</h3>
+                <button class="modal-close" id="closeAddDataModalBtn">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>数据路径</label>
+                    <textarea id="dataPaths" rows="6" placeholder="每行输入一个数据路径&#10;例如：&#10;/data/user1/&#10;/data/user2/" class="filter-input"></textarea>
+                    <div class="form-hint">支持 JSON 文件路径或目录路径</div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" id="cancelAddDataBtn">取消</button>
+                <button class="btn-primary" id="confirmAddDataBtn" disabled>确认</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    // 全局函数供多线程选择器使用
+    window.toggleMultiThreadDropdown = function() {
+        const dropdown = document.getElementById('multiThreadDropdown');
+        if (dropdown) {
+            dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
+        }
+    };
+    
+    // 点击外部关闭下拉框
+    document.addEventListener('click', function(e) {
+        const container = document.getElementById('multiThreadMultiSelect');
+        const dropdown = document.getElementById('multiThreadDropdown');
+        if (container && dropdown && !container.contains(e.target)) {
+            dropdown.style.display = 'none';
+        }
+    });
+    </script>
+    <script src="{{ url_for('static', filename='js/single_thread.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/multi_thread.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/tool.js') }}"></script>
+</body>
+</html>

@@ -51,7 +51,7 @@ def tool_page(tool_id):
 def api_get_tools():
     """获取工具列表"""
     user_id = get_user_id()
-    tools = tool_manager.get_tools(user_id)
+    tools = tool_manager.get_tools()
     return jsonify({'success': True, 'data': tools})
 
 
@@ -60,13 +60,13 @@ def api_add_tool():
     """添加工具"""
     user_id = get_user_id()
     data = request.json
-    
+
     tool_id = data.get('tool_id') or data.get('tool_name')
     if not tool_id:
         return jsonify({'success': False, 'error': '工具名称不能为空'})
     
     # 检查是否已存在
-    existing = tool_manager.get_tool(user_id, tool_id)
+    existing = tool_manager.get_tool(tool_id)
     if existing:
         return jsonify({'success': False, 'error': '工具名称已存在'})
     
@@ -81,8 +81,8 @@ def api_add_tool():
         'extra_display_func': data.get('extra_display_func', ''),
         'custom_curve_func': data.get('custom_curve_func', '')
     }
-    
-    success = tool_manager.add_tool(user_id, tool_id, tool_config)
+
+    success = tool_manager.add_tool(tool_id, tool_config)
     if success:
         return jsonify({'success': True, 'data': {'tool_id': tool_id}})
     return jsonify({'success': False, 'error': '添加失败'})
@@ -129,14 +129,15 @@ def api_load_tool_data(tool_id):
     green(f"加载工具 {tool_id} 数据中")
 
     # 检查缓存 - 获取所有类型的数据   从保存的文件中获取数据
+    tool_manager.upload_data()
     all_data = tool_manager.get_all_tool_data(user_id, tool_id)
 
     if all_data:
         # 判断是否更新单线程的数据并返回更新后的数据
         all_data, upload = data_manager.data_is_upload(all_data, user_id, tool_id)
     else:
-        green(f"获取工具 {tool_id} 中用户 {user_id} 的数据")
-        all_data = data_manager._get_init_data(user_id, tool_id)
+        green(f"获取工具 {tool_id} 中数据为空，用户 {user_id} 全量获取中")
+        all_data, upload = data_manager._get_init_data(user_id, tool_id)
 
     return jsonify({'success': True, 'data': json.dumps(all_data), 'upload': upload})
 
@@ -160,7 +161,8 @@ def api_get_extra_data(tool_id):
     data = request.json
     paths = data.get('paths', [])
     
-    tool_config = tool_manager.get_tool(user_id, tool_id)
+    # tool_config = tool_manager.get_tool(user_id, tool_id)
+    tool_config = tool_manager.get_tool(tool_id)
     if not tool_config:
         return jsonify({'success': False, 'error': '工具不存在'})
     

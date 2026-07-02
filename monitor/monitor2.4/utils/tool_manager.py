@@ -39,12 +39,25 @@ class ToolManager:
         self._initialized = True
         self._config = self._load_config()
         self._cache = {}  # 数据缓存 {user_id: {tool_id: {data_type: data}}}
+        # 输出到网页的数据、判断数据是否更新了， 0 是没有更新， 1 是更新了
+        if self._config.get('multi_thread_path') and self._config.get('extra_display_path'):
+            self.upload = {'single':1,'multi':1,'extra': 1}
+        else:
+            if self._config.get('multi_thread_path'):
+                self.upload = {'single':1,'multi':1}
+            elif self._config.get('extra_display_path'):
+                self.upload = {'single':1,'extra': 1}
+            else:
+                self.upload = {'single':1}
+
     
     def _load_config(self) -> Dict:
         """加载配置文件"""
         if CONFIG_FILE.exists():
             with open(CONFIG_FILE, 'r', encoding='utf-8') as f:
-                return json.load(f)
+                tool_config = json.load(f)
+                if tool_config:
+                    return tool_config
         return DEFAULT_CONFIG.copy()
     
     def _save_config(self):
@@ -108,24 +121,19 @@ class ToolManager:
     
     # ==================== 工具配置管理 ====================
     
-    def get_tools(self, user_id: str) -> Dict:
+    def get_tools(self) -> Dict:
         """获取用户的所有工具"""
-        user_tools = self._config.get('users', {}).get(user_id, {})
-        return user_tools.get('tools', {})
+        return self._config.get('tools', {})
     
-    def get_tool(self, user_id: str, tool_id: str) -> Optional[Dict]:
+    def get_tool(self, tool_id: str) -> Optional[Dict]:
         """获取指定工具"""
-        user_tools = self.get_tools(user_id)
-        return user_tools.get(tool_id)
+        user_tools = self.get_tools().get(tool_id, {})
+        return user_tools
     
-    def add_tool(self, user_id: str, tool_id: str, tool_config: Dict) -> bool:
+    def add_tool(self, tool_id: str, tool_config: Dict) -> bool:
         """添加工具"""
-        if 'users' not in self._config:
-            self._config['users'] = {}
-        if user_id not in self._config['users']:
-            self._config['users'][user_id] = {'tools': {}}
-        
-        tools = self._config['users'][user_id]['tools']
+        red(self._config)
+        tools = self._config['tools']
         if tool_id in tools:
             return False
         
@@ -138,7 +146,7 @@ class ToolManager:
     
     def update_tool(self, user_id: str, tool_id: str, tool_config: Dict) -> bool:
         """更新工具"""
-        tools = self.get_tools(user_id)
+        tools = self.get_tools()
         if tool_id not in tools:
             return False
         
@@ -156,7 +164,7 @@ class ToolManager:
     
     def delete_tool(self, user_id: str, tool_id: str) -> bool:
         """删除工具"""
-        tools = self.get_tools(user_id)
+        tools = self.get_tools()
         if tool_id not in tools:
             return False
         
@@ -208,7 +216,7 @@ class ToolManager:
     def save_single_thread_data(self, user_id: str, tool_id: str, data: Dict):
         """保存单线程数据（使用用户隔离存储）"""
         # 获取工具配置以获取工具名称
-        tool_config = self.get_tool(user_id, tool_id)
+        tool_config = self.get_tool(tool_id)
         if not tool_config:
             return
         
@@ -238,7 +246,7 @@ class ToolManager:
     def load_single_thread_data(self, user_id: str, tool_id: str) -> Optional[Dict]:
         """加载单线程数据（优先从用户隔离目录加载）"""
         # 获取工具配置以获取工具名称
-        tool_config = self.get_tool(user_id, tool_id)
+        tool_config = self.get_tool(tool_id)
         if not tool_config:
             return None
         
@@ -290,7 +298,7 @@ class ToolManager:
     
     def save_multi_thread_data(self, user_id: str, tool_id: str, data: Dict):
         """保存多线程数据（使用用户隔离存储）"""
-        tool_config = self.get_tool(user_id, tool_id)
+        tool_config = self.get_tool(tool_id)
         if not tool_config:
             return
         
@@ -315,7 +323,7 @@ class ToolManager:
     
     def load_multi_thread_data(self, user_id: str, tool_id: str) -> Optional[Dict]:
         """加载多线程数据（优先从用户隔离目录加载）"""
-        tool_config = self.get_tool(user_id, tool_id)
+        tool_config = self.get_tool(tool_id)
         if not tool_config:
             return None
         
@@ -375,7 +383,7 @@ class ToolManager:
     
     def save_extra_data(self, user_id: str, tool_id: str, data: Dict):
         """保存用户添加的数据（使用用户隔离存储）"""
-        tool_config = self.get_tool(user_id, tool_id)
+        tool_config = self.get_tool(tool_id)
         if not tool_config:
             return
         
@@ -400,7 +408,7 @@ class ToolManager:
     
     def load_extra_data(self, user_id: str, tool_id: str) -> Optional[Dict]:
         """加载用户添加的数据（优先从用户隔离目录加载）"""
-        tool_config = self.get_tool(user_id, tool_id)
+        tool_config = self.get_tool(tool_id)
         if not tool_config:
             return None
         
@@ -476,14 +484,10 @@ class ToolManager:
 
     def get_all_tool_data(self, user_id: str, tool_id: str) -> Dict:
         """获取工具的所有数据（合并单线程、多线程、用户数据）"""
-        result = {
-            "single":{},
-            "multi":{},
-            "extra":{}
-        }
+        result = {}
 
         # 获取工具配置
-        tool_config = self.get_tool(user_id, tool_id)
+        tool_config = self.get_tool(tool_id)
         if not tool_config:
             return result
         
@@ -590,6 +594,7 @@ class ToolManager:
             else:
                 stripped[k] = v
         return stripped
+    
     def clear_cache(self, user_id: str = None, tool_id: str = None, data_type: str = None):
         """清除缓存"""
         if user_id is None:
@@ -604,6 +609,10 @@ class ToolManager:
             if user_id in self._cache and tool_id in self._cache[user_id]:
                 if data_type in self._cache[user_id][tool_id]:
                     del self._cache[user_id][tool_id][data_type]
+
+    def upload_data(self, tool_id):
+        data_path = DATA_DIR / tool_id / f"{tool_id}_single.json"
+        data_path = DATA_DIR / tool_id / f"{tool_id}_multi.json"
 
 
 # 全局实例

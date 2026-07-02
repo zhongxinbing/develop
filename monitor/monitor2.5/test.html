@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>简单封装函数 - 鼠标悬停提示框</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: system-ui, 'Segoe UI', 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #f0f4ff 0%, #e6e9f0 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .card {
+            max-width: 900px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.96);
+            border-radius: 2rem;
+            box-shadow: 0 25px 45px -12px rgba(0, 0, 0, 0.25);
+            padding: 2rem 2rem 2.5rem;
+            transition: all 0.2s;
+        }
+
+        h1 {
+            font-size: 1.9rem;
+            background: linear-gradient(120deg, #1f3a5f, #2d5a8c);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            margin-bottom: 0.5rem;
+        }
+
+        .sub {
+            color: #4a627a;
+            border-left: 4px solid #3b82f6;
+            padding-left: 1rem;
+            margin-bottom: 2rem;
+            font-weight: 500;
+        }
+
+        /* demo 区域样式 */
+        .demo-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.8rem;
+            margin: 2rem 0;
+            justify-content: center;
+        }
+
+        .demo-box {
+            flex: 1;
+            min-width: 200px;
+            background: #ffffff;
+            border-radius: 1.5rem;
+            padding: 1.8rem 1rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            box-shadow: 0 5px 12px rgba(0, 0, 0, 0.08);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+        }
+
+        .demo-box:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 18px 28px -10px rgba(0, 0, 0, 0.2);
+            border-color: #3b82f6;
+            background: #fafcff;
+        }
+
+        .emoji-big {
+            font-size: 3rem;
+            margin-bottom: 0.75rem;
+            display: block;
+        }
+
+        .box-title {
+            font-weight: 700;
+            font-size: 1.2rem;
+            color: #1e293b;
+            margin-bottom: 0.4rem;
+        }
+
+        .box-desc {
+            font-size: 0.8rem;
+            color: #5b6e8c;
+        }
+
+        .code-block {
+            background: #1e293b;
+            color: #e2e8f0;
+            border-radius: 1.2rem;
+            padding: 1.2rem 1.5rem;
+            margin: 1.8rem 0 1rem;
+            font-family: 'Fira Code', 'Cascadia Code', monospace;
+            font-size: 0.85rem;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        .btn-custom {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 0.6rem 1.4rem;
+            border-radius: 2rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: 0.2s;
+            font-size: 0.9rem;
+            margin-top: 1rem;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        }
+
+        .btn-custom:hover {
+            background: #2563eb;
+            transform: scale(0.98);
+        }
+
+        .note {
+            background: #f1f5f9;
+            border-radius: 1rem;
+            padding: 1rem 1.2rem;
+            margin-top: 1.8rem;
+            color: #334155;
+            font-size: 0.85rem;
+            border-left: 5px solid #3b82f6;
+        }
+
+        hr {
+            margin: 1.2rem 0;
+            border: none;
+            height: 1px;
+            background: linear-gradient(to right, #cbd5e1, transparent);
+        }
+        footer {
+            text-align: center;
+            margin-top: 1rem;
+            font-size: 0.75rem;
+            color: #5b6e8c;
+        }
+    </style>
+</head>
+<body>
+<div class="card">
+    <h1>📦 极简封装函数</h1>
+    <div class="sub">一行代码为任意元素添加「鼠标悬停提示框」功能</div>
+
+    <div style="background: #f8fafc; border-radius: 1.5rem; padding: 0.2rem 0 0.8rem 0;">
+        <div class="code-block" style="background: #0f172a;">
+            // 💡 封装函数（复制即用，超简单）
+            function addHoverAlert(element, message) {
+                element.addEventListener('mouseenter', function() {
+                    alert(message || '🐱 鼠标放在了 div 上！');
+                });
+            }
+        </div>
+    </div>
+
+    <p style="margin: 0.5rem 0 0 0.2rem; font-size: 0.85rem; color: #2c3e66;">✨ 用法示例：<br> 
+    <strong>addHoverAlert( document.getElementById('myDiv'), '自定义提示内容' );</strong><br>
+    ➕ 第二个参数可选，默认提示 “🐱 鼠标放在了 div 上！”</p>
+
+    <hr>
+
+    <h3 style="margin-bottom: 0.5rem;">🎯 演示效果（下方三个div均已通过函数绑定）</h3>
+    <div class="demo-grid">
+        <div class="demo-box" id="box1">
+            <span class="emoji-big">🎨</span>
+            <div class="box-title">色块一</div>
+            <div class="box-desc">鼠标悬停弹出默认提示</div>
+        </div>
+        <div class="demo-box" id="box2">
+            <span class="emoji-big">💡</span>
+            <div class="box-title">自定义消息</div>
+            <div class="box-desc">鼠标悬停 → 专属提示框</div>
+        </div>
+        <div class="demo-box" id="box3">
+            <span class="emoji-big">⚙️</span>
+            <div class="box-title">动态添加</div>
+            <div class="box-desc">通过函数封装轻松绑定</div>
+        </div>
+    </div>
+
+    <div style="display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap; margin-top: 0.5rem;">
+        <button class="btn-custom" id="addNewBtn">➕ 动态创建新div并绑定</button>
+        <button class="btn-custom" id="resetDemo" style="background: #475569;">🔄 重置/说明</button>
+    </div>
+
+    <div id="dynamicContainer" style="display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 1.5rem; justify-content: center;"></div>
+
+    <div class="note">
+        📌 <strong>超简单封装原理</strong><br>
+        • 函数 <code>addHoverAlert(element, message)</code> 内部使用 <code>mouseenter</code> 事件（最稳定，无冒泡干扰）。<br>
+        • 只要传入 DOM 元素和可选提示文字，就能实现鼠标移入弹 alert。<br>
+        • 支持任意 HTML 元素（div、按钮、图片等），可复用，可批量调用。<br>
+        • 完全原生 JavaScript，无任何依赖，兼容所有现代浏览器。
+    </div>
+    <footer>
+        ⚡ 轻量 · 易封装 · 一个函数搞定所有悬停提示需求
+    </footer>
+</div>
+
+<script>
+    // ======================= 极简封装函数 =======================
+    /**
+     * 为指定元素添加鼠标悬停提示框功能
+     * @param {HTMLElement} element   - 目标DOM元素
+     * @param {string} [message]      - 可选的自定义提示消息，默认值: '🐱 鼠标放在了 div 上！'
+     */
+    function addHoverAlert(element, message) {
+        // 健壮性判断：如果传入的不是有效元素，直接返回并给出警告
+        if (!element || !(element instanceof HTMLElement)) {
+            console.warn('addHoverAlert: 第一个参数必须是有效的 DOM 元素');
+            return;
+        }
+        // 默认提示文本
+        const alertMsg = message || '🐱 鼠标放在了 div 上！';
+        // 使用 mouseenter 事件 (鼠标第一次进入时触发，最适合这种需求)
+        element.addEventListener('mouseenter', function() {
+            alert(alertMsg);
+        });
+    }
+
+    // =============== 演示绑定 ===============
+    // 1. 给第一个盒子绑定「默认提示」 (不传第二个参数)
+    const box1 = document.getElementById('box1');
+    addHoverAlert(box1);   // 将使用默认消息 "🐱 鼠标放在了 div 上！"
+
+    // 2. 给第二个盒子绑定「自定义提示消息」
+    const box2 = document.getElementById('box2');
+    addHoverAlert(box2, '🎉 你好！这是自定义提示框内容！\n鼠标正悬浮在 “自定义消息” 区域。');
+
+    // 3. 给第三个盒子绑定另一个有趣的自定义消息
+    const box3 = document.getElementById('box3');
+    addHoverAlert(box3, '⚙️ 通过封装函数轻松实现！\n代码简洁，复用性极强 ✨');
+
+    // =============== 动态创建新div并自动绑定函数（展示封装函数的强大） ===============
+    const dynamicContainer = document.getElementById('dynamicContainer');
+    const addBtn = document.getElementById('addNewBtn');
+
+    let dynamicCounter = 1;
+    addBtn.addEventListener('click', function() {
+        // 动态创建一个新的 div 元素
+        const newDiv = document.createElement('div');
+        newDiv.className = 'demo-box';
+        // 添加一点个性的背景色过渡
+        newDiv.style.background = '#ffffff';
+        newDiv.style.transition = 'all 0.2s';
+        newDiv.style.cursor = 'pointer';
+        
+        // 随机生成可爱的小图标
+        const icons = ['🐣', '🌟', '🔥', '💎', '🍕', '🚀', '🎈', '🐧'];
+        const randomIcon = icons[Math.floor(Math.random() * icons.length)];
+        const customMsg = `✨ 动态元素 #${dynamicCounter}\n鼠标悬停触发！\n提示内容可自定义，这个元素是动态添加的。`;
+        
+        newDiv.innerHTML = `
+            <span class="emoji-big">${randomIcon}</span>
+            <div class="box-title">动态块 #${dynamicCounter}</div>
+            <div class="box-desc">点击按钮后新创建，已自动绑定悬停提示</div>
+        `;
+        
+        // 核心: 对新创建的元素直接使用我们的封装函数进行绑定！
+        addHoverAlert(newDiv, customMsg);
+        
+        // 添加到容器中
+        dynamicContainer.appendChild(newDiv);
+        dynamicCounter++;
+        
+        // 优雅的滚动效果
+        newDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    });
+
+    // 重置/说明按钮：清理动态演示区域，并展示帮助信息
+    const resetBtn = document.getElementById('resetDemo');
+    resetBtn.addEventListener('click', function() {
+        // 清空动态容器里的所有子元素（保留空容器用于再次添加）
+        while (dynamicContainer.firstChild) {
+            dynamicContainer.removeChild(dynamicContainer.firstChild);
+        }
+        dynamicCounter = 1;
+        alert('🧹 已清空动态添加的div区域。\n您可以再次点击「动态创建新div并绑定」按钮体验封装函数对新元素的即时绑定能力。\n\n核心代码 addHoverAlert() 同样支持对新元素生效！');
+    });
+
+    // 额外展示: 控制台输出封装函数示例
+    console.log('✅ 封装函数 addHoverAlert 已就绪，示例：');
+    console.log('   addHoverAlert(document.body, "整个页面也会弹窗！") ;');
+    console.log('   当前页面所有演示div均通过该函数绑定，简洁可靠');
+</script>
+
+<!-- 
+    总结：
+    - 封装函数 addHoverAlert(element, message) 极其简洁，仅需3行核心逻辑。
+    - 使用 mouseenter 事件，完美实现“鼠标放在div上给出提示框”。
+    - 支持自定义消息，同时兼容动态生成的元素。
+    - 演示中包含了三种静态div + 动态添加div都完美工作。
+    - 这是最容易复用、最容易理解的最佳实践方案。 
+-->
+</body>
+</html>

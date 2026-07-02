@@ -29,6 +29,7 @@ let deleteTargetId = null;
 async function loadTools() {
     try {
         showLoading(true);
+
         const response = await axios.get(`${API_BASE}/tools`);
         if (response.data.success) {
             tools = response.data.data || {};
@@ -336,10 +337,10 @@ function showLoading(show) {
     if (show) {
         toolsList.innerHTML = `
             <div class="loading-spinner">
-                <i class="fas fa-spinner fa-spin"></i>
                 <span>加载中...</span>
             </div>
         `;
+        
     }
 }
 
@@ -427,7 +428,7 @@ function initEventListeners() {
     
     // 添加工具按钮
     addToolBtn.addEventListener('click', openAddModal);
-    
+
     // 弹窗关闭按钮
     document.querySelectorAll('.modal-close, .modal-overlay').forEach(el => {
         el.addEventListener('click', (e) => {
@@ -449,6 +450,7 @@ function initEventListeners() {
     
     // 额外显示路径变化监听
     document.getElementById('extraPath')?.addEventListener('input', handleExtraPathChange);
+    console.log("config 中监听函数执行完成")
 }
 
 /**
