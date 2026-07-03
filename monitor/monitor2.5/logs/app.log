@@ -907,3 +907,230 @@
 2026-07-03 17:07:20 - INFO - __main__ - app_new.py:162 - 启动性能监控平台后端服务
 2026-07-03 17:07:20 - WARN - werkzeug - _internal.py:97 -  * Debugger is active!
 2026-07-03 17:07:20 - INFO - werkzeug - _internal.py:97 -  * Debugger PIN: 144-814-780
+2026-07-03 17:07:56 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'c:\\Users\\xbzhong\\Desktop\\lint\\script\\monitor\\develop\\monitor\\monitor2.5\\utils\\signal_data.py', reloading
+2026-07-03 17:07:57 - INFO - werkzeug - _internal.py:97 -  * Restarting with watchdog (windowsapi)
+2026-07-03 17:07:57 - INFO - utils.tool_manager - tool_manager.py:54 - 加载工具配置文件: C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\data\tools.json
+2026-07-03 17:07:57 - INFO - utils.tool_manager - tool_manager.py:45 - 工具管理器初始化完成
+2026-07-03 17:07:57 - DEBUG - matplotlib - __init__.py:342 - matplotlib data path: C:\Users\xbzhong\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\matplotlib\mpl-data
+2026-07-03 17:07:57 - DEBUG - matplotlib - __init__.py:342 - CONFIGDIR=C:\Users\xbzhong\.matplotlib
+2026-07-03 17:07:57 - DEBUG - matplotlib - __init__.py:1560 - interactive is False
+2026-07-03 17:07:57 - DEBUG - matplotlib - __init__.py:1561 - platform is win32
+2026-07-03 17:07:57 - DEBUG - matplotlib - __init__.py:342 - CACHEDIR=C:\Users\xbzhong\.matplotlib
+2026-07-03 17:07:57 - DEBUG - matplotlib.font_manager - font_manager.py:1635 - Using fontManager instance from C:\Users\xbzhong\.matplotlib\fontlist-v390.json
+2026-07-03 17:07:58 - INFO - __main__ - app_new.py:162 - 启动性能监控平台后端服务
+2026-07-03 17:07:58 - WARN - werkzeug - _internal.py:97 -  * Debugger is active!
+2026-07-03 17:07:58 - INFO - werkzeug - _internal.py:97 -  * Debugger PIN: 144-814-780
+2026-07-03 17:09:52 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'c:\\Users\\xbzhong\\Desktop\\lint\\script\\monitor\\develop\\monitor\\monitor2.5\\app_new.py', reloading
+2026-07-03 17:09:53 - INFO - werkzeug - _internal.py:97 -  * Restarting with watchdog (windowsapi)
+2026-07-03 17:09:53 - INFO - utils.tool_manager - tool_manager.py:54 - 加载工具配置文件: C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\data\tools.json
+2026-07-03 17:09:53 - INFO - utils.tool_manager - tool_manager.py:45 - 工具管理器初始化完成
+2026-07-03 17:09:53 - DEBUG - matplotlib - __init__.py:342 - matplotlib data path: C:\Users\xbzhong\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\matplotlib\mpl-data
+2026-07-03 17:09:53 - DEBUG - matplotlib - __init__.py:342 - CONFIGDIR=C:\Users\xbzhong\.matplotlib
+2026-07-03 17:09:53 - DEBUG - matplotlib - __init__.py:1560 - interactive is False
+2026-07-03 17:09:53 - DEBUG - matplotlib - __init__.py:1561 - platform is win32
+2026-07-03 17:09:53 - DEBUG - matplotlib - __init__.py:342 - CACHEDIR=C:\Users\xbzhong\.matplotlib
+2026-07-03 17:09:53 - DEBUG - matplotlib.font_manager - font_manager.py:1635 - Using fontManager instance from C:\Users\xbzhong\.matplotlib\fontlist-v390.json
+2026-07-03 17:09:54 - INFO - __main__ - app_new.py:166 - 启动性能监控平台后端服务
+2026-07-03 17:09:54 - WARN - werkzeug - _internal.py:97 -  * Debugger is active!
+2026-07-03 17:09:54 - INFO - werkzeug - _internal.py:97 -  * Debugger PIN: 144-814-780
+2026-07-03 17:09:58 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [03/Jul/2026 17:09:58] "GET /tool/elint HTTP/1.1" 200 -
+2026-07-03 17:09:59 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [03/Jul/2026 17:09:59] "[36mGET /static/js/multi_thread.js HTTP/1.1[0m" 304 -
+2026-07-03 17:09:59 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [03/Jul/2026 17:09:59] "[36mGET /static/js/echarts.min.js HTTP/1.1[0m" 304 -
+2026-07-03 17:09:59 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [03/Jul/2026 17:09:59] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2026-07-03 17:09:59 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [03/Jul/2026 17:09:59] "GET /static/js/tool.js HTTP/1.1" 200 -
+2026-07-03 17:09:59 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [03/Jul/2026 17:09:59] "[36mGET /static/js/axios.min.js HTTP/1.1[0m" 304 -
+2026-07-03 17:09:59 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [03/Jul/2026 17:09:59] "GET /static/js/single_thread.js HTTP/1.1" 200 -
+2026-07-03 17:09:59 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [03/Jul/2026 17:09:59] "[33mGET /static/js/axios.min.js.map HTTP/1.1[0m" 404 -
+2026-07-03 17:09:59 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [03/Jul/2026 17:09:59] "GET /api/tools HTTP/1.1" 200 -
+2026-07-03 17:09:59 - INFO - __main__ - app_new.py:125 - 用户 a6bacc8b-63d2-400b-9163-68455855fc01 请求加载工具 elint 数据
+2026-07-03 17:09:59 - WARN - utils.data_manager - data_manager.py:63 - 用户 a6bacc8b-63d2-400b-9163-68455855fc01 需要全量更新 elint 数据
+2026-07-03 17:09:59 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [03/Jul/2026 17:09:59] "POST /api/tools/elint/data HTTP/1.1" 200 -
+2026-07-03 17:10:06 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'c:\\Users\\xbzhong\\Desktop\\lint\\script\\monitor\\develop\\monitor\\monitor2.5\\app_new.py', reloading
+2026-07-03 17:10:06 - INFO - werkzeug - _internal.py:97 -  * Restarting with watchdog (windowsapi)
+2026-07-03 17:10:07 - INFO - utils.tool_manager - tool_manager.py:54 - 加载工具配置文件: C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\data\tools.json
+2026-07-03 17:10:07 - INFO - utils.tool_manager - tool_manager.py:45 - 工具管理器初始化完成
+2026-07-03 17:10:07 - DEBUG - matplotlib - __init__.py:342 - matplotlib data path: C:\Users\xbzhong\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\matplotlib\mpl-data
+2026-07-03 17:10:07 - DEBUG - matplotlib - __init__.py:342 - CONFIGDIR=C:\Users\xbzhong\.matplotlib
+2026-07-03 17:10:07 - DEBUG - matplotlib - __init__.py:1560 - interactive is False
+2026-07-03 17:10:07 - DEBUG - matplotlib - __init__.py:1561 - platform is win32
+2026-07-03 17:10:07 - DEBUG - matplotlib - __init__.py:342 - CACHEDIR=C:\Users\xbzhong\.matplotlib
+2026-07-03 17:10:07 - DEBUG - matplotlib.font_manager - font_manager.py:1635 - Using fontManager instance from C:\Users\xbzhong\.matplotlib\fontlist-v390.json
+2026-07-03 17:10:08 - INFO - __main__ - app_new.py:166 - 启动性能监控平台后端服务
+2026-07-03 17:10:08 - WARN - werkzeug - _internal.py:97 -  * Debugger is active!
+2026-07-03 17:10:08 - INFO - werkzeug - _internal.py:97 -  * Debugger PIN: 144-814-780
+2026-07-03 17:10:08 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'c:\\Users\\xbzhong\\Desktop\\lint\\script\\monitor\\develop\\monitor\\monitor2.5\\app_new.py', reloading
+2026-07-03 17:10:08 - INFO - werkzeug - _internal.py:97 -  * Restarting with watchdog (windowsapi)
+2026-07-03 17:10:09 - INFO - utils.tool_manager - tool_manager.py:54 - 加载工具配置文件: C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\data\tools.json
+2026-07-03 17:10:09 - INFO - utils.tool_manager - tool_manager.py:45 - 工具管理器初始化完成
+2026-07-03 17:10:09 - DEBUG - matplotlib - __init__.py:342 - matplotlib data path: C:\Users\xbzhong\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\matplotlib\mpl-data
+2026-07-03 17:10:09 - DEBUG - matplotlib - __init__.py:342 - CONFIGDIR=C:\Users\xbzhong\.matplotlib
+2026-07-03 17:10:09 - DEBUG - matplotlib - __init__.py:1560 - interactive is False
+2026-07-03 17:10:09 - DEBUG - matplotlib - __init__.py:1561 - platform is win32
+2026-07-03 17:10:09 - DEBUG - matplotlib - __init__.py:342 - CACHEDIR=C:\Users\xbzhong\.matplotlib
+2026-07-03 17:10:09 - DEBUG - matplotlib.font_manager - font_manager.py:1635 - Using fontManager instance from C:\Users\xbzhong\.matplotlib\fontlist-v390.json
+2026-07-03 17:10:10 - INFO - __main__ - app_new.py:166 - 启动性能监控平台后端服务
+2026-07-03 17:10:10 - WARN - werkzeug - _internal.py:97 -  * Debugger is active!
+2026-07-03 17:10:10 - INFO - werkzeug - _internal.py:97 -  * Debugger PIN: 144-814-780
+2026-07-03 17:10:11 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [03/Jul/2026 17:10:11] "GET /tool/elint HTTP/1.1" 200 -
+2026-07-03 17:10:12 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [03/Jul/2026 17:10:12] "[36mGET /static/js/axios.min.js HTTP/1.1[0m" 304 -
+2026-07-03 17:10:12 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [03/Jul/2026 17:10:12] "[36mGET /static/js/echarts.min.js HTTP/1.1[0m" 304 -
+2026-07-03 17:10:12 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [03/Jul/2026 17:10:12] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2026-07-03 17:10:12 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [03/Jul/2026 17:10:12] "[36mGET /static/js/single_thread.js HTTP/1.1[0m" 304 -
+2026-07-03 17:10:12 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [03/Jul/2026 17:10:12] "[36mGET /static/js/tool.js HTTP/1.1[0m" 304 -
+2026-07-03 17:10:12 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [03/Jul/2026 17:10:12] "[36mGET /static/js/multi_thread.js HTTP/1.1[0m" 304 -
+2026-07-03 17:10:12 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [03/Jul/2026 17:10:12] "[33mGET /static/js/axios.min.js.map HTTP/1.1[0m" 404 -
+2026-07-03 17:10:12 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [03/Jul/2026 17:10:12] "GET /api/tools HTTP/1.1" 200 -
+2026-07-03 17:10:12 - INFO - __main__ - app_new.py:125 - 用户 a6bacc8b-63d2-400b-9163-68455855fc01 请求加载工具 elint 数据
+2026-07-03 17:10:12 - WARN - utils.data_manager - data_manager.py:63 - 用户 a6bacc8b-63d2-400b-9163-68455855fc01 需要全量更新 elint 数据
+2026-07-03 17:10:12 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [03/Jul/2026 17:10:12] "POST /api/tools/elint/data HTTP/1.1" 200 -
+2026-07-03 17:10:17 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'C:\\Users\\xbzhong\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python313\\site-packages\\flask\\json\\__init__.py', reloading
+2026-07-03 17:10:18 - INFO - werkzeug - _internal.py:97 -  * Restarting with watchdog (windowsapi)
+2026-07-03 17:10:18 - INFO - utils.tool_manager - tool_manager.py:54 - 加载工具配置文件: C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\data\tools.json
+2026-07-03 17:10:18 - INFO - utils.tool_manager - tool_manager.py:45 - 工具管理器初始化完成
+2026-07-03 17:10:18 - DEBUG - matplotlib - __init__.py:342 - matplotlib data path: C:\Users\xbzhong\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\matplotlib\mpl-data
+2026-07-03 17:10:18 - DEBUG - matplotlib - __init__.py:342 - CONFIGDIR=C:\Users\xbzhong\.matplotlib
+2026-07-03 17:10:18 - DEBUG - matplotlib - __init__.py:1560 - interactive is False
+2026-07-03 17:10:18 - DEBUG - matplotlib - __init__.py:1561 - platform is win32
+2026-07-03 17:10:18 - DEBUG - matplotlib - __init__.py:342 - CACHEDIR=C:\Users\xbzhong\.matplotlib
+2026-07-03 17:10:18 - DEBUG - matplotlib.font_manager - font_manager.py:1635 - Using fontManager instance from C:\Users\xbzhong\.matplotlib\fontlist-v390.json
+2026-07-03 17:10:19 - INFO - __main__ - app_new.py:166 - 启动性能监控平台后端服务
+2026-07-03 17:10:19 - WARN - werkzeug - _internal.py:97 -  * Debugger is active!
+2026-07-03 17:10:19 - INFO - werkzeug - _internal.py:97 -  * Debugger PIN: 144-814-780
+2026-07-03 17:10:19 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'c:\\Users\\xbzhong\\Desktop\\lint\\script\\monitor\\develop\\monitor\\monitor2.5\\app_new.py', reloading
+2026-07-03 17:10:19 - INFO - werkzeug - _internal.py:97 -  * Restarting with watchdog (windowsapi)
+2026-07-03 17:10:20 - INFO - utils.tool_manager - tool_manager.py:54 - 加载工具配置文件: C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\data\tools.json
+2026-07-03 17:10:20 - INFO - utils.tool_manager - tool_manager.py:45 - 工具管理器初始化完成
+2026-07-03 17:10:20 - DEBUG - matplotlib - __init__.py:342 - matplotlib data path: C:\Users\xbzhong\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\matplotlib\mpl-data
+2026-07-03 17:10:20 - DEBUG - matplotlib - __init__.py:342 - CONFIGDIR=C:\Users\xbzhong\.matplotlib
+2026-07-03 17:10:20 - DEBUG - matplotlib - __init__.py:1560 - interactive is False
+2026-07-03 17:10:20 - DEBUG - matplotlib - __init__.py:1561 - platform is win32
+2026-07-03 17:10:20 - DEBUG - matplotlib - __init__.py:342 - CACHEDIR=C:\Users\xbzhong\.matplotlib
+2026-07-03 17:10:20 - DEBUG - matplotlib.font_manager - font_manager.py:1635 - Using fontManager instance from C:\Users\xbzhong\.matplotlib\fontlist-v390.json
+2026-07-03 17:10:21 - INFO - __main__ - app_new.py:170 - 启动性能监控平台后端服务
+2026-07-03 17:10:21 - WARN - werkzeug - _internal.py:97 -  * Debugger is active!
+2026-07-03 17:10:21 - INFO - werkzeug - _internal.py:97 -  * Debugger PIN: 144-814-780
+2026-07-03 17:10:22 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'c:\\Users\\xbzhong\\Desktop\\lint\\script\\monitor\\develop\\monitor\\monitor2.5\\app_new.py', reloading
+2026-07-03 17:10:22 - INFO - werkzeug - _internal.py:97 -  * Restarting with watchdog (windowsapi)
+2026-07-03 17:10:22 - INFO - utils.tool_manager - tool_manager.py:54 - 加载工具配置文件: C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\data\tools.json
+2026-07-03 17:10:22 - INFO - utils.tool_manager - tool_manager.py:45 - 工具管理器初始化完成
+2026-07-03 17:10:23 - DEBUG - matplotlib - __init__.py:342 - matplotlib data path: C:\Users\xbzhong\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\matplotlib\mpl-data
+2026-07-03 17:10:23 - DEBUG - matplotlib - __init__.py:342 - CONFIGDIR=C:\Users\xbzhong\.matplotlib
+2026-07-03 17:10:23 - DEBUG - matplotlib - __init__.py:1560 - interactive is False
+2026-07-03 17:10:23 - DEBUG - matplotlib - __init__.py:1561 - platform is win32
+2026-07-03 17:10:23 - DEBUG - matplotlib - __init__.py:342 - CACHEDIR=C:\Users\xbzhong\.matplotlib
+2026-07-03 17:10:23 - DEBUG - matplotlib.font_manager - font_manager.py:1635 - Using fontManager instance from C:\Users\xbzhong\.matplotlib\fontlist-v390.json
+2026-07-03 17:10:23 - INFO - __main__ - app_new.py:166 - 启动性能监控平台后端服务
+2026-07-03 17:10:23 - WARN - werkzeug - _internal.py:97 -  * Debugger is active!
+2026-07-03 17:10:23 - INFO - werkzeug - _internal.py:97 -  * Debugger PIN: 144-814-780
+2026-07-03 17:10:26 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'c:\\Users\\xbzhong\\Desktop\\lint\\script\\monitor\\develop\\monitor\\monitor2.5\\app_new.py', reloading
+2026-07-03 17:10:26 - INFO - werkzeug - _internal.py:97 -  * Restarting with watchdog (windowsapi)
+2026-07-03 17:10:26 - INFO - utils.tool_manager - tool_manager.py:54 - 加载工具配置文件: C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\data\tools.json
+2026-07-03 17:10:26 - INFO - utils.tool_manager - tool_manager.py:45 - 工具管理器初始化完成
+2026-07-03 17:10:27 - DEBUG - matplotlib - __init__.py:342 - matplotlib data path: C:\Users\xbzhong\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\matplotlib\mpl-data
+2026-07-03 17:10:27 - DEBUG - matplotlib - __init__.py:342 - CONFIGDIR=C:\Users\xbzhong\.matplotlib
+2026-07-03 17:10:27 - DEBUG - matplotlib - __init__.py:1560 - interactive is False
+2026-07-03 17:10:27 - DEBUG - matplotlib - __init__.py:1561 - platform is win32
+2026-07-03 17:10:27 - DEBUG - matplotlib - __init__.py:342 - CACHEDIR=C:\Users\xbzhong\.matplotlib
+2026-07-03 17:10:27 - DEBUG - matplotlib.font_manager - font_manager.py:1635 - Using fontManager instance from C:\Users\xbzhong\.matplotlib\fontlist-v390.json
+2026-07-03 17:10:27 - INFO - __main__ - app_new.py:166 - 启动性能监控平台后端服务
+2026-07-03 17:10:27 - WARN - werkzeug - _internal.py:97 -  * Debugger is active!
+2026-07-03 17:10:27 - INFO - werkzeug - _internal.py:97 -  * Debugger PIN: 144-814-780
+2026-07-03 17:10:30 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'c:\\Users\\xbzhong\\Desktop\\lint\\script\\monitor\\develop\\monitor\\monitor2.5\\app_new.py', reloading
+2026-07-03 17:10:30 - INFO - werkzeug - _internal.py:97 -  * Restarting with watchdog (windowsapi)
+2026-07-03 17:10:30 - INFO - utils.tool_manager - tool_manager.py:54 - 加载工具配置文件: C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\data\tools.json
+2026-07-03 17:10:30 - INFO - utils.tool_manager - tool_manager.py:45 - 工具管理器初始化完成
+2026-07-03 17:10:30 - DEBUG - matplotlib - __init__.py:342 - matplotlib data path: C:\Users\xbzhong\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\matplotlib\mpl-data
+2026-07-03 17:10:30 - DEBUG - matplotlib - __init__.py:342 - CONFIGDIR=C:\Users\xbzhong\.matplotlib
+2026-07-03 17:10:30 - DEBUG - matplotlib - __init__.py:1560 - interactive is False
+2026-07-03 17:10:30 - DEBUG - matplotlib - __init__.py:1561 - platform is win32
+2026-07-03 17:10:30 - DEBUG - matplotlib - __init__.py:342 - CACHEDIR=C:\Users\xbzhong\.matplotlib
+2026-07-03 17:10:30 - DEBUG - matplotlib.font_manager - font_manager.py:1635 - Using fontManager instance from C:\Users\xbzhong\.matplotlib\fontlist-v390.json
+2026-07-03 17:10:31 - INFO - __main__ - app_new.py:170 - 启动性能监控平台后端服务
+2026-07-03 17:10:31 - WARN - werkzeug - _internal.py:97 -  * Debugger is active!
+2026-07-03 17:10:31 - INFO - werkzeug - _internal.py:97 -  * Debugger PIN: 144-814-780
+2026-07-03 17:10:33 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'c:\\Users\\xbzhong\\Desktop\\lint\\script\\monitor\\develop\\monitor\\monitor2.5\\app_new.py', reloading
+2026-07-03 17:10:33 - INFO - werkzeug - _internal.py:97 -  * Restarting with watchdog (windowsapi)
+2026-07-03 17:10:34 - INFO - utils.tool_manager - tool_manager.py:54 - 加载工具配置文件: C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\data\tools.json
+2026-07-03 17:10:34 - INFO - utils.tool_manager - tool_manager.py:45 - 工具管理器初始化完成
+2026-07-03 17:10:34 - DEBUG - matplotlib - __init__.py:342 - matplotlib data path: C:\Users\xbzhong\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\matplotlib\mpl-data
+2026-07-03 17:10:34 - DEBUG - matplotlib - __init__.py:342 - CONFIGDIR=C:\Users\xbzhong\.matplotlib
+2026-07-03 17:10:34 - DEBUG - matplotlib - __init__.py:1560 - interactive is False
+2026-07-03 17:10:34 - DEBUG - matplotlib - __init__.py:1561 - platform is win32
+2026-07-03 17:10:34 - DEBUG - matplotlib - __init__.py:342 - CACHEDIR=C:\Users\xbzhong\.matplotlib
+2026-07-03 17:10:34 - DEBUG - matplotlib.font_manager - font_manager.py:1635 - Using fontManager instance from C:\Users\xbzhong\.matplotlib\fontlist-v390.json
+2026-07-03 17:10:35 - INFO - __main__ - app_new.py:166 - 启动性能监控平台后端服务
+2026-07-03 17:10:35 - WARN - werkzeug - _internal.py:97 -  * Debugger is active!
+2026-07-03 17:10:35 - INFO - werkzeug - _internal.py:97 -  * Debugger PIN: 144-814-780
+2026-07-03 17:10:35 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [03/Jul/2026 17:10:35] "GET /tool/elint HTTP/1.1" 200 -
+2026-07-03 17:10:35 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [03/Jul/2026 17:10:35] "[36mGET /static/js/echarts.min.js HTTP/1.1[0m" 304 -
+2026-07-03 17:10:35 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [03/Jul/2026 17:10:35] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2026-07-03 17:10:35 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [03/Jul/2026 17:10:35] "[36mGET /static/js/axios.min.js HTTP/1.1[0m" 304 -
+2026-07-03 17:10:35 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [03/Jul/2026 17:10:35] "[36mGET /static/js/multi_thread.js HTTP/1.1[0m" 304 -
+2026-07-03 17:10:35 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [03/Jul/2026 17:10:35] "[36mGET /static/js/single_thread.js HTTP/1.1[0m" 304 -
+2026-07-03 17:10:35 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [03/Jul/2026 17:10:35] "[33mGET /static/js/axios.min.js.map HTTP/1.1[0m" 404 -
+2026-07-03 17:10:35 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [03/Jul/2026 17:10:35] "[36mGET /static/js/tool.js HTTP/1.1[0m" 304 -
+2026-07-03 17:10:35 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [03/Jul/2026 17:10:35] "GET /api/tools HTTP/1.1" 200 -
+2026-07-03 17:10:35 - INFO - __main__ - app_new.py:125 - 用户 a6bacc8b-63d2-400b-9163-68455855fc01 请求加载工具 elint 数据
+2026-07-03 17:10:35 - WARN - utils.data_manager - data_manager.py:63 - 用户 a6bacc8b-63d2-400b-9163-68455855fc01 需要全量更新 elint 数据
+2026-07-03 17:10:35 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [03/Jul/2026 17:10:35] "POST /api/tools/elint/data HTTP/1.1" 200 -
+2026-07-03 17:11:35 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [03/Jul/2026 17:11:35] "GET /tool/elint HTTP/1.1" 200 -
+2026-07-03 17:11:35 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [03/Jul/2026 17:11:35] "[36mGET /static/js/echarts.min.js HTTP/1.1[0m" 304 -
+2026-07-03 17:11:35 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [03/Jul/2026 17:11:35] "[36mGET /static/js/axios.min.js HTTP/1.1[0m" 304 -
+2026-07-03 17:11:35 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [03/Jul/2026 17:11:35] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2026-07-03 17:11:35 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [03/Jul/2026 17:11:35] "[36mGET /static/js/single_thread.js HTTP/1.1[0m" 304 -
+2026-07-03 17:11:35 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [03/Jul/2026 17:11:35] "[36mGET /static/js/multi_thread.js HTTP/1.1[0m" 304 -
+2026-07-03 17:11:35 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [03/Jul/2026 17:11:35] "[36mGET /static/js/tool.js HTTP/1.1[0m" 304 -
+2026-07-03 17:11:36 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [03/Jul/2026 17:11:36] "[33mGET /static/js/axios.min.js.map HTTP/1.1[0m" 404 -
+2026-07-03 17:11:36 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [03/Jul/2026 17:11:36] "GET /api/tools HTTP/1.1" 200 -
+2026-07-03 17:11:36 - INFO - __main__ - app_new.py:125 - 用户 a6bacc8b-63d2-400b-9163-68455855fc01 请求加载工具 elint 数据
+2026-07-03 17:11:36 - WARN - utils.data_manager - data_manager.py:63 - 用户 a6bacc8b-63d2-400b-9163-68455855fc01 需要全量更新 elint 数据
+2026-07-03 17:11:36 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [03/Jul/2026 17:11:36] "POST /api/tools/elint/data HTTP/1.1" 200 -
+2026-07-03 17:11:45 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [03/Jul/2026 17:11:45] "GET /tool/elint HTTP/1.1" 200 -
+2026-07-03 17:11:45 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [03/Jul/2026 17:11:45] "[36mGET /static/js/echarts.min.js HTTP/1.1[0m" 304 -
+2026-07-03 17:11:45 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [03/Jul/2026 17:11:45] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2026-07-03 17:11:45 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [03/Jul/2026 17:11:45] "[36mGET /static/js/axios.min.js HTTP/1.1[0m" 304 -
+2026-07-03 17:11:45 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [03/Jul/2026 17:11:45] "[36mGET /static/js/single_thread.js HTTP/1.1[0m" 304 -
+2026-07-03 17:11:45 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [03/Jul/2026 17:11:45] "[36mGET /static/js/multi_thread.js HTTP/1.1[0m" 304 -
+2026-07-03 17:11:45 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [03/Jul/2026 17:11:45] "GET /static/js/tool.js HTTP/1.1" 200 -
+2026-07-03 17:11:45 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [03/Jul/2026 17:11:45] "[33mGET /static/js/axios.min.js.map HTTP/1.1[0m" 404 -
+2026-07-03 17:11:45 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [03/Jul/2026 17:11:45] "GET /api/tools HTTP/1.1" 200 -
+2026-07-03 17:11:45 - INFO - __main__ - app_new.py:125 - 用户 a6bacc8b-63d2-400b-9163-68455855fc01 请求加载工具 elint 数据
+2026-07-03 17:11:45 - WARN - utils.data_manager - data_manager.py:63 - 用户 a6bacc8b-63d2-400b-9163-68455855fc01 需要全量更新 elint 数据
+2026-07-03 17:11:45 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [03/Jul/2026 17:11:45] "POST /api/tools/elint/data HTTP/1.1" 200 -
+2026-07-03 17:11:51 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [03/Jul/2026 17:11:51] "GET /tool/elint HTTP/1.1" 200 -
+2026-07-03 17:11:51 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [03/Jul/2026 17:11:51] "[36mGET /static/js/echarts.min.js HTTP/1.1[0m" 304 -
+2026-07-03 17:11:51 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [03/Jul/2026 17:11:51] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2026-07-03 17:11:51 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [03/Jul/2026 17:11:51] "[36mGET /static/js/axios.min.js HTTP/1.1[0m" 304 -
+2026-07-03 17:11:51 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [03/Jul/2026 17:11:51] "[36mGET /static/js/single_thread.js HTTP/1.1[0m" 304 -
+2026-07-03 17:11:51 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [03/Jul/2026 17:11:51] "[36mGET /static/js/multi_thread.js HTTP/1.1[0m" 304 -
+2026-07-03 17:11:51 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [03/Jul/2026 17:11:51] "GET /static/js/tool.js HTTP/1.1" 200 -
+2026-07-03 17:11:51 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [03/Jul/2026 17:11:51] "[33mGET /static/js/axios.min.js.map HTTP/1.1[0m" 404 -
+2026-07-03 17:11:51 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [03/Jul/2026 17:11:51] "GET /api/tools HTTP/1.1" 200 -
+2026-07-03 17:11:51 - INFO - __main__ - app_new.py:125 - 用户 a6bacc8b-63d2-400b-9163-68455855fc01 请求加载工具 elint 数据
+2026-07-03 17:11:51 - WARN - utils.data_manager - data_manager.py:63 - 用户 a6bacc8b-63d2-400b-9163-68455855fc01 需要全量更新 elint 数据
+2026-07-03 17:11:51 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [03/Jul/2026 17:11:51] "POST /api/tools/elint/data HTTP/1.1" 200 -
+2026-07-03 17:12:01 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'c:\\Users\\xbzhong\\Desktop\\lint\\script\\monitor\\develop\\monitor\\monitor2.5\\app_new.py', reloading
+2026-07-03 17:12:01 - INFO - werkzeug - _internal.py:97 -  * Restarting with watchdog (windowsapi)
+2026-07-03 17:12:02 - INFO - utils.tool_manager - tool_manager.py:54 - 加载工具配置文件: C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\data\tools.json
+2026-07-03 17:12:02 - INFO - utils.tool_manager - tool_manager.py:45 - 工具管理器初始化完成
+2026-07-03 17:12:02 - DEBUG - matplotlib - __init__.py:342 - matplotlib data path: C:\Users\xbzhong\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\matplotlib\mpl-data
+2026-07-03 17:12:02 - DEBUG - matplotlib - __init__.py:342 - CONFIGDIR=C:\Users\xbzhong\.matplotlib
+2026-07-03 17:12:02 - DEBUG - matplotlib - __init__.py:1560 - interactive is False
+2026-07-03 17:12:02 - DEBUG - matplotlib - __init__.py:1561 - platform is win32
+2026-07-03 17:12:02 - DEBUG - matplotlib - __init__.py:342 - CACHEDIR=C:\Users\xbzhong\.matplotlib
+2026-07-03 17:12:02 - DEBUG - matplotlib.font_manager - font_manager.py:1635 - Using fontManager instance from C:\Users\xbzhong\.matplotlib\fontlist-v390.json
+2026-07-03 17:12:03 - INFO - __main__ - app_new.py:166 - 启动性能监控平台后端服务
+2026-07-03 17:12:03 - WARN - werkzeug - _internal.py:97 -  * Debugger is active!
+2026-07-03 17:12:03 - INFO - werkzeug - _internal.py:97 -  * Debugger PIN: 144-814-780
+2026-07-03 17:12:03 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [03/Jul/2026 17:12:03] "GET /tool/elint HTTP/1.1" 200 -
+2026-07-03 17:12:03 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [03/Jul/2026 17:12:03] "[36mGET /static/js/echarts.min.js HTTP/1.1[0m" 304 -
+2026-07-03 17:12:03 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [03/Jul/2026 17:12:03] "[36mGET /static/js/axios.min.js HTTP/1.1[0m" 304 -
+2026-07-03 17:12:03 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [03/Jul/2026 17:12:03] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2026-07-03 17:12:03 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [03/Jul/2026 17:12:03] "[36mGET /static/js/multi_thread.js HTTP/1.1[0m" 304 -
+2026-07-03 17:12:03 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [03/Jul/2026 17:12:03] "[33mGET /static/js/axios.min.js.map HTTP/1.1[0m" 404 -
+2026-07-03 17:12:03 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [03/Jul/2026 17:12:03] "GET /static/js/tool.js HTTP/1.1" 200 -
+2026-07-03 17:12:03 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [03/Jul/2026 17:12:03] "[36mGET /static/js/single_thread.js HTTP/1.1[0m" 304 -
+2026-07-03 17:12:03 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [03/Jul/2026 17:12:03] "GET /api/tools HTTP/1.1" 200 -
+2026-07-03 17:12:03 - INFO - __main__ - app_new.py:125 - 用户 a6bacc8b-63d2-400b-9163-68455855fc01 请求加载工具 elint 数据
+2026-07-03 17:12:03 - WARN - utils.data_manager - data_manager.py:63 - 用户 a6bacc8b-63d2-400b-9163-68455855fc01 需要全量更新 elint 数据
+2026-07-03 17:12:03 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [03/Jul/2026 17:12:03] "POST /api/tools/elint/data HTTP/1.1" 200 -

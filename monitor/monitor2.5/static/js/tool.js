@@ -146,11 +146,11 @@ async function loadData() {
             }
         } else {
             console.error('加载数据失败:', response.data.error);
-            showError('加载数据失败: ' + (response.data.error || '未知错误'));
+            showError('加载数据失败:2 ' + (response.data.error || '未知错误'));
         }
     } catch (error) {
         console.error('加载数据失败:', error);
-        showError('加载数据失败: ' + (error.response?.data?.error || error.message));
+        showError('加载数据失败:' + (error.response?.data?.error || error.message));
     } finally {
         showLoading(false);
     }

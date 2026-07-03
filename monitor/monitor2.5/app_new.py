@@ -134,10 +134,14 @@ def api_load_tool_data(tool_id):
         return jsonify({'success': False, 'error': f'数据不需要更新，直接返回数据'})
     elif flag == 2:
         # 数据需要更新
-        return jsonify({'success': False, 'error': f'数据需要更新'})
+        return jsonify({'success': False, 'data': f'数据需要更新'})
     elif flag == 3:
         # 需要更新所有的数据
-        return jsonify({'success': False, 'error': f'需要更新所有的数据'})
+        data = {
+            "single" : {},
+            "multi": {}
+        }
+        return jsonify({'success': True, 'error': data})
     else:
         # 如果目录创建失败，返回错误信息
         return jsonify({'success': False, 'error': f'数据更新出现错误'})
