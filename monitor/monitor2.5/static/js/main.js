@@ -125,9 +125,9 @@ function updateTooltip() {
  */
 function navigateToTool(toolId) {
     // 使用 window.location.href 跳转到工具页面
-    // window.location.href = `/tool/${encodeURIComponent(toolId)}`;
+    window.location.href = `/tool/${encodeURIComponent(toolId)}`;
     // 使用 window.open 打开新窗口
-    window.open(`/tool/${encodeURIComponent(toolId)}`, '_blank');
+    // window.open(`/tool/${encodeURIComponent(toolId)}`, '_blank');
 }
 
 /**

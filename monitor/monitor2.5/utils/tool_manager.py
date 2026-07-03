@@ -102,6 +102,12 @@ class ToolManager:
         self._save_config()
         
         return True
+    # =================== 工具配置管理 -> 获取指定工具的配置信息 ====================
+    def get_tool(self, tool_id: str) -> Optional[Dict]:
+        """获取指定工具"""
+        user_tools = self.get_tools().get(tool_id, {})
+        return user_tools
+
 
     # def _get_tool_data_path(self, tool_name: str, data_type: str) -> Path:
     #     """

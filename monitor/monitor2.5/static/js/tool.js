@@ -59,6 +59,9 @@ async function loadToolConfig() {
             } else {
                 showError('工具不存在');
             }
+        } else {
+            console.error('加载工具配置失败:', response.data.error);
+            showError('加载工具配置失败: ' + (response.data.error || '未知错误'));
         }
     } catch (error) {
         console.error('加载工具配置失败:', error);
@@ -75,6 +78,7 @@ async function loadData() {
         const response = await axios.post(`/api/tools/${toolId}/data`);
         
         if (response.data.success) {
+            showSuccess('正在加载数据，请稍等...');
             const data = response.data.data || {};
             // 分离数据
             let singleData = {};
@@ -140,6 +144,9 @@ async function loadData() {
             } else {
                 await switchToSingleMode(); // 默认显示单线程
             }
+        } else {
+            console.error('加载数据失败:', response.data.error);
+            showError('加载数据失败: ' + (response.data.error || '未知错误'));
         }
     } catch (error) {
         console.error('加载数据失败:', error);

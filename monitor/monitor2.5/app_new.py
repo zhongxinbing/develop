@@ -10,6 +10,7 @@ from flask import Flask, render_template, request, jsonify, session
 from config import SECRET_KEY
 from tool.elint.elint import load_json, save_json
 from utils.tool_manager import tool_manager
+from utils.data_manager import data_manager
 from utils.log import *
 
 
@@ -45,6 +46,16 @@ def api_add_tool():
     # 获取请求数据
     data = request.json
     logger.debug(f"添加工具请求数据: {data}")
+    # 验证路径是否存在
+    if data.get('single_thread_path') is None or not Path(data.get('single_thread_path')).exists():
+        return jsonify({'success': False, 'error': '单线程路径不能为空或者不存在'})
+    else:
+        # 验证多线程路径是否存在
+        if not Path(data.get('multi_thread_path')).exists():
+            return jsonify({'success': False, 'error': '多线程路径不存在'})
+    # 验证额外显示路径是否存在
+    if data.get('extra_display_path') and not Path(data.get('extra_display_path')).exists():
+        return jsonify({'success': False, 'error': 'extra 路径 不存在'})
 
     tool_config = {
         'tool_name': data.get('tool_name'),
@@ -106,25 +117,43 @@ def api_update_tool(tool_id):
     return jsonify({'success': False, 'error': '更新失败'})
 
 ################################################################### 工具页面 ###################################################################
-# 加载工具数据（使用分层存储）
+# 加载数据（使用分层存储）
 @app.route('/api/tools/<tool_id>/data', methods=['POST'])
 def api_load_tool_data(tool_id):
     """加载工具数据（使用分层存储）"""
     user_id = get_user_id()
     logger.info(f"用户 {user_id} 请求加载工具 {tool_id} 数据")
 
-    # 检查缓存 - 获取所有类型的数据   从保存的文件中获取数据
-    tool_manager.upload_data()
-    all_data = tool_manager.get_all_tool_data(user_id, tool_id)
-
-    if all_data:
-        # 判断是否更新单线程的数据并返回更新后的数据
-        all_data, upload = data_manager.data_is_upload(all_data, user_id, tool_id)
+    # 判断用户数据目录是否存在
+    flag = data_manager.refresh_data(user_id, tool_id)
+    if flag == 0:
+        """ 调用加载数据的函数 """
+        return jsonify({'success': False, 'error': f'数据更新出现错误'})
+    elif flag == 1:
+        # 数据不需要更新，直接返回数据
+        return jsonify({'success': False, 'error': f'数据不需要更新，直接返回数据'})
+    elif flag == 2:
+        # 数据需要更新
+        return jsonify({'success': False, 'error': f'数据需要更新'})
+    elif flag == 3:
+        # 需要更新所有的数据
+        return jsonify({'success': False, 'error': f'需要更新所有的数据'})
     else:
-        logger.info(f"获取工具 {tool_id} 中数据为空，用户 {user_id} 全量获取中")
-        all_data, upload = data_manager._get_init_data(user_id, tool_id)
+        # 如果目录创建失败，返回错误信息
+        return jsonify({'success': False, 'error': f'数据更新出现错误'})
 
-    return jsonify({'success': True, 'data': json.dumps(all_data), 'upload': upload})
+    # # 检查缓存 - 获取所有类型的数据   从保存的文件中获取数据
+    # tool_manager.upload_data()
+    # all_data = tool_manager.get_all_tool_data(user_id, tool_id)
+
+    # if all_data:
+    #     # 判断是否更新单线程的数据并返回更新后的数据
+    #     all_data, upload = data_manager.data_is_upload(all_data, user_id, tool_id)
+    # else:
+    #     logger.info(f"获取工具 {tool_id} 中数据为空，用户 {user_id} 全量获取中")
+    #     all_data, upload = data_manager._get_init_data(user_id, tool_id)
+
+    # return jsonify({'success': True, 'data': json.dumps(all_data), 'upload': upload})
 
 
 if __name__ == '__main__':

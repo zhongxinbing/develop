@@ -4,18 +4,20 @@
 import importlib.util
 from os import path
 import sys
+import shutil
 from pathlib import Path
 from typing import Dict, Any, Optional, Callable, List
 from datetime import datetime
 from threading import Lock
 
 from matplotlib.pylab import multi_dot
+from streamlit import user
 
 from config import DATA_DIR, BASE_DIR
 from utils.tool_manager import tool_manager
 from debug.debug import green,red,blue
 from utils.find_files import find
-
+from utils.log import *
 
 
 class DataManager:
@@ -36,34 +38,56 @@ class DataManager:
         # 缓存用户配置的函数，避免重复加载
         self._function_cache = {}
         self._cache = {}  # 数据缓存 {user_id: {tool_id: {data_type: data}}}
-
-    # 刷新数据
-    def _refresh_data(self, user_id: str, tool_id: str) -> Dict[str, Any]:
-        """刷新数据缓存"""
+        setup_logger(log_dir='logs', level='DEBUG')
+        self.logger = get_logger(__name__)
         
-
-
-        
-
-    def _judge_user_data_dir(self, user_id: str, tool_id: str) -> Path:
-        """判断用户数据目录是否存在，如果不存在则创建"""
+    # 判断用户数据目录是否存在以及数据是否需要更新，如果不存在则创建
+    def refresh_data(self, user_id: str, tool_id: str) -> Path:
+        """
+            判断用户数据目录是否存在，如果不存在则创建:
+                返回 0 就说明存在问题
+                返回 1 不需要更新用户数据 
+                返回 2 需要用户更新数据 
+                返回 3 需要更新原始数据
+        """
         user_data_dir = DATA_DIR / tool_id / user_id
-        if not user_data_dir.exists():
-            user_data_dir.mkdir(parents=True, exist_ok=True)
-            return False
+        try:
+            # 如果用户数据目录不存在，则创建，并复制相应的文件；到了这里说明工具配置无问题
+            if not user_data_dir.exists():
+                user_data_dir.mkdir(parents=True, exist_ok=True)
+                self.logger.info(f"创建用户数据目录: {user_data_dir}，并copy相应的文件")
 
-        return False
+            # 先判断 dataFiles.json 是否存在，如果存在就说明可以直接复制，不存在需要全部重新获取数据
+            original_data_files = DATA_DIR / tool_id / "original" / "dataFiles.json"
+            if not Path(original_data_files).exists():
+                self.logger.warn(f"用户 {user_id} 需要全量更新 {tool_id} 数据")
+                return 3
+            else:
+                # 如果用户的 dataFiles.json 需要冲缓存中获取上一次copy是原始 dataFiles.json 的最后修改时间，如果一致就不copy，如果不一致就需要copy
+                user_data_files = user_data_dir / "dataFiles.json"
+                mtime = Path(original_data_files).stat().st_mtime
+                if Path(user_data_files).exists():
+                    if self._cache[tool_id][user_id] and mtime == self._cache[tool_id][user_id]:
+                        # 数据不用更新
+                        return 1
+                    else:
+                        shutil.copytree(original_data_files, user_data_files)
+                        self._cache[tool_id][user_id] = mtime
+                        self.logger.info(f"为用户 {user_id} 更新 user_data_files")
+                        return 2
+                else:
+                    # 用户的 dataFiles.json 不存在，直接进行 copy
+                    shutil.copytree(original_data_files, user_data_files)
+                    self._cache[tool_id][user_id] = mtime
+                    self.logger.info(f"为用户 {user_id} 复制 {user_data_files}")
+                    return 2
+        except Exception as e: 
+            self.logger.error(f"在为用户 {user_id} 检查 {tool_id} 数据更新的时候出现错误 {e}")
+            return 0
 
-    
-        
+    # 加载工具数据
 
-
-
-
-
-
-
-        return user_data_dir
+    # 
 
 
 #     def _load_function(self, function_name: str, tool_config) -> Optional[Callable]:
