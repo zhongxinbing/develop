@@ -108,8 +108,8 @@ def get_date_from_txt_single(txts, caseData):
                 if date not in caseData[casename]["available_dates"]:
                     caseData[casename]["available_dates"].append(date)
         except Exception as e:
-            log(f"出现错误: get_date_from_txt: {date} {casename} {e}")
-            break
+            log(f"出现错误: get_date_from_txt: {date} {casename} {e}，跳过该文件继续处理")
+            continue
     return caseData
 
 
@@ -539,7 +539,11 @@ def get_multi_data(jsonDataFile, path) -> Dict:
     # 处理新日志
     for log_path in new_logs:
         log(f"处理多线程日志: {log_path}")
-        caseData = get_perf_data_from_log(caseData, log_path)
+        try:
+            caseData = get_perf_data_from_log(caseData, log_path)
+        except Exception as e:
+            log(f"解析多线程日志失败 {log_path}: {e}，跳过该文件继续处理")
+            continue
         
 
     # 更新已处理日志列表

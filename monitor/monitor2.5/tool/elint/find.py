@@ -1,5 +1,6 @@
 import os
 import re
+import sys
 from pathlib import Path
 
 class FindCommand:
@@ -99,10 +100,9 @@ class FindCommand:
                         continue
                     self._walk(item_path, current_depth + 1, maxdepth, 
                               name_pattern, file_type, results, debug)
-            except PermissionError:
-                if debug:
-                    print(f"{indent}  权限不足，跳过目录: {current_path}")
-                pass
+            except PermissionError as e:
+                # 权限不足时跳过该目录，但记录警告，避免静默丢失数据
+                print(f"警告: 权限不足，跳过目录: {current_path} ({e})", file=sys.stderr)
     
     @staticmethod
     def print_results(results):
