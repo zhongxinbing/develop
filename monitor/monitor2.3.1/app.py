@@ -190,11 +190,12 @@ def api_get_extra_data(tool_id):
         return jsonify({'success': False, 'error': '工具不存在'})
     
     extra_data = {}
+    allowed_base = tool_config.get('extra_display_path', '')
     for path in paths:
         path = path.strip()
         if not path:
             continue
-        
+
         func_path = tool_config.get('extra_display_func')
         if func_path:
             result = data_manager.get_custom_curve_data(user_id, tool_config, path)
@@ -202,9 +203,12 @@ def api_get_extra_data(tool_id):
                 extra_data.update(result)
         else:
             try:
-                path_obj = Path(path)
-                if path_obj.exists():
-                    import json
+                path_obj = Path(path).resolve()
+                if allowed_base and not str(path_obj).startswith(str(Path(allowed_base).resolve())):
+                    continue
+                if '..' in str(path):
+                    continue
+                if path_obj.exists() and path_obj.suffix == '.json':
                     with open(path_obj, 'r', encoding='utf-8') as f:
                         result = json.load(f)
                         extra_data.update(result)
@@ -309,4 +313,7 @@ def api_get_comparison():
     return jsonify({'success': True, 'data': comparison})
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=5020)
+    import os
+    debug = os.environ.get('FLASK_DEBUG', 'false').lower() in ('true', '1')
+    host = os.environ.get('FLASK_HOST', '127.0.0.1')
+    app.run(debug=debug, host=host, port=5020)

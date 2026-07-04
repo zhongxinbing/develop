@@ -1,6 +1,7 @@
 """
 系统配置模块
 """
+import os
 from pathlib import Path
 from common import load_json
 
@@ -8,9 +9,9 @@ from common import load_json
 # 系统配置
 # ==================================================
 CONFIG = {
-    'host': '0.0.0.0',
+    'host': os.environ.get('FLASK_HOST', '127.0.0.1'),
     'port': 6060,
-    'debug': True,
+    'debug': os.environ.get('FLASK_DEBUG', 'false').lower() in ('true', '1'),
     'auto_open_browser': False,
     'cache_enabled': True,
     'cache_ttl': 300,           # 缓存生存时间（秒）

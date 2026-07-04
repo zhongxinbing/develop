@@ -280,5 +280,7 @@ def serve_static(path):
 if __name__ == '__main__':
     print(f"Frontend directory: {FRONTEND_DIR}")
     print(f"Data directory: {DATA_ROOT}")
-    print("\nStarting server at http://localhost:5000")
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    debug = os.environ.get('FLASK_DEBUG', 'false').lower() in ('true', '1')
+    host = os.environ.get('FLASK_HOST', '127.0.0.1')
+    print(f"\nStarting server at http://{host}:5000")
+    app.run(host=host, port=5000, debug=debug)

@@ -19,6 +19,11 @@ app = Flask(__name__)
 app.secret_key = SECRET_KEY
 
 
+def _sanitize_path_component(value: str) -> str:
+    """Remove path traversal characters from a user-supplied path component."""
+    return str(value).replace('..', '').replace('/', '_').replace('\\', '_')
+
+
 def get_user_id() -> str:
     """获取或创建用户ID（用于数据隔离）"""
     if 'user_id' not in session:
@@ -167,11 +172,12 @@ def api_get_extra_data(tool_id):
         return jsonify({'success': False, 'error': '工具不存在'})
     
     extra_data = {}
+    allowed_base = tool_config.get('extra_display_path', '')
     for path in paths:
         path = path.strip()
         if not path:
             continue
-        
+
         func_path = tool_config.get('extra_display_func')
         if func_path:
             result = data_manager.get_custom_curve_data(user_id, tool_config, path)
@@ -179,9 +185,12 @@ def api_get_extra_data(tool_id):
                 extra_data.update(result)
         else:
             try:
-                path_obj = Path(path)
-                if path_obj.exists():
-                    import json
+                path_obj = Path(path).resolve()
+                if allowed_base and not str(path_obj).startswith(str(Path(allowed_base).resolve())):
+                    continue
+                if '..' in str(path):
+                    continue
+                if path_obj.exists() and path_obj.suffix == '.json':
                     with open(path_obj, 'r', encoding='utf-8') as f:
                         result = json.load(f)
                         extra_data.update(result)
@@ -224,7 +233,7 @@ def api_get_chart_data():
     tool_id = data.get('toolID', [])
     user_id = get_user_id()
 
-    json_path = Path(__file__).resolve().parent.joinpath("data", str(tool_id), str(user_id), str(mode), str(chart_type), casename, f'{rules[0]}.json')
+    json_path = Path(__file__).resolve().parent.joinpath("data", _sanitize_path_component(tool_id), _sanitize_path_component(user_id), _sanitize_path_component(mode), _sanitize_path_component(chart_type), _sanitize_path_component(casename), f'{_sanitize_path_component(rules[0])}.json')
     # 如果已经存在有数据；就不需要重新全量解析  ===》 需要判断数据是否被更新了 to do
     if json_path.exists():
         rules_data = load_json(json_path)
@@ -259,7 +268,7 @@ def api_get_thread_chart_data():
     date = data.get('date', '')
     tool_id = data.get('toolID', [])
     user_id = get_user_id()
-    json_path = Path(__file__).resolve().parent.joinpath("data", tool_id, user_id, "thread", casename, date, f'{rule}.json')
+    json_path = Path(__file__).resolve().parent.joinpath("data", _sanitize_path_component(tool_id), _sanitize_path_component(user_id), "thread", _sanitize_path_component(casename), _sanitize_path_component(date), f'{_sanitize_path_component(rule)}.json')
 
     # 如果已经存在有数据；就不需要重新全量解析  ===》 需要判断数据是否被更新了 to do
     if json_path.exists():
@@ -310,5 +319,8 @@ def api_get_comparison():
     return jsonify({'success': True, 'data': comparison})
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=5020)
+    import os
+    debug = os.environ.get('FLASK_DEBUG', 'false').lower() in ('true', '1')
+    host = os.environ.get('FLASK_HOST', '127.0.0.1')
+    app.run(debug=debug, host=host, port=5020)
 
