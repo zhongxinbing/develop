@@ -67,3 +67,63 @@ def normalize_thread_key(thread: Any) -> str:
         return str(int(thread))
     except (ValueError, TypeError):
         return '0'
+
+
+def find_crash_dates(daily_metrics: Dict, dates: List[str]) -> List[str]:
+    """找出缺失或没有Overall数据的日期（崩溃日期）"""
+    crash_dates = []
+    for date in dates:
+        if date in daily_metrics:
+            if not daily_metrics[date].get('Overall'):
+                crash_dates.append(date)
+        else:
+            crash_dates.append(date)
+    return crash_dates
+
+
+def get_thread_metric_value(thread_metrics: Dict, thread_int: int, key: str) -> Optional[Any]:
+    """从thread_metrics中按线程数取指定指标值，兼容字符串/整数键"""
+    thread_key = str(thread_int)
+    if thread_key in thread_metrics:
+        return thread_metrics[thread_key].get(key)
+    for tk, tv in thread_metrics.items():
+        try:
+            if int(tk) == thread_int:
+                return tv.get(key)
+        except (ValueError, TypeError):
+            if tk == thread_key:
+                return tv.get(key)
+    return None
+
+
+def to_float_or_none(value: Any) -> Optional[float]:
+    """尝试转换为浮点数，失败返回None"""
+    if value is None:
+        return None
+    try:
+        return float(value)
+    except (ValueError, TypeError):
+        return None
+
+
+def compute_basic_statistics(values: List[Any]) -> Dict[str, Any]:
+    """计算总和/平均/最大/最小等基础统计信息，并返回最大最小值的索引"""
+    valid_values = [(i, v) for i, v in enumerate(values) if v is not None]
+    if not valid_values:
+        return {
+            'total': 0, 'avg': 0, 'max': 0, 'min': 0,
+            'max_idx': -1, 'min_idx': -1
+        }
+
+    values_list = [v for _, v in valid_values]
+    total = sum(values_list)
+    max_val = max(values_list)
+    min_val = min(values_list)
+    return {
+        'total': total,
+        'avg': total / len(values_list),
+        'max': max_val,
+        'min': min_val,
+        'max_idx': values.index(max_val) if max_val in values else -1,
+        'min_idx': values.index(min_val) if min_val in values else -1
+    }
