@@ -125,26 +125,49 @@ def api_load_tool_data(tool_id):
     logger.info(f"用户 {user_id} 请求加载工具 {tool_id} 数据")
 
     # 判断用户数据目录是否存在
-    flag = data_manager.refresh_data(user_id, tool_id)
-    if flag == 0:
-        """ 调用加载数据的函数 """
-        return jsonify({'success': False, 'error': f'数据更新出现错误'})
-    elif flag == 1:
-        # 数据不需要更新，直接返回数据
-        return jsonify({'success': False, 'error': f'数据不需要更新，直接返回数据'})
-    elif flag == 2:
-        # 数据需要更新
-        return jsonify({'success': False, 'data': f'数据需要更新'})
-    elif flag == 3:
-        # 需要更新所有的数据
-        data = {
-            "single" : {},
-            "multi": {}
-        }
-        return jsonify({'success': True, 'error': data})
-    else:
-        # 如果目录创建失败，返回错误信息
-        return jsonify({'success': False, 'error': f'数据更新出现错误'})
+    data_manager.create_user_data_dir(user_id, tool_id)
+    # 加载所有数据
+
+    single = data_manager.load_data(tool_id, user_id, "single")
+    # multi = data_manager.load_data(tool_id, user_id, "multi")
+    # extra = data_manager.load_data(tool_id, user_id, "extra_display")
+    # if single == "None":
+    #     logger.info(f"工具 {tool_id} 单线程数据不用更新.")
+    # if multi == "None":
+    #     logger.info(f"工具 {tool_id} 多线程数据不用更新.")
+    # if extra == "None":
+    #     logger.info(f"工具 {tool_id} 额外显示数据不用更新.")
+    
+    
+    
+    
+    return jsonify({'success': False, 'error': f'数据更新出现错误'})
+    # 解析数据，并放在 对应的目录中
+
+
+
+
+
+    # flag = data_manager.refresh_data(user_id, tool_id)
+    # if flag == 0:
+    #     """ 调用加载数据的函数 """
+    #     return jsonify({'success': False, 'error': f'数据更新出现错误'})
+    # elif flag == 1:
+    #     # 数据不需要更新，直接返回数据
+    #     return jsonify({'success': False, 'error': f'数据不需要更新，直接返回数据'})
+    # elif flag == 2:
+    #     # 数据需要更新
+    #     return jsonify({'success': False, 'data': f'数据需要更新'})
+    # elif flag == 3:
+    #     # 需要更新所有的数据
+    #     data = {
+    #         "single" : {},
+    #         "multi": {}
+    #     }
+    #     return jsonify({'success': True, 'error': data})
+    # else:
+    #     # 如果目录创建失败，返回错误信息
+    #     return jsonify({'success': False, 'error': f'数据更新出现错误'})
 
     # # 检查缓存 - 获取所有类型的数据   从保存的文件中获取数据
     # tool_manager.upload_data()

@@ -1,7 +1,9 @@
 """
 数据管理器 - 处理数据获取和解析
 """
+from importlib.metadata import files
 import importlib.util
+from json import tool
 from os import path
 import sys
 import shutil
@@ -11,13 +13,13 @@ from datetime import datetime
 from threading import Lock
 
 from matplotlib.pylab import multi_dot
-from streamlit import user
 
 from config import DATA_DIR, BASE_DIR
 from utils.tool_manager import tool_manager
 from debug.debug import green,red,blue
 from utils.find_files import find
 from utils.log import *
+import json
 
 
 class DataManager:
@@ -37,131 +39,156 @@ class DataManager:
     def __init__(self):
         # 缓存用户配置的函数，避免重复加载
         self._function_cache = {}
-        self._cache = {}  # 数据缓存 {user_id: {tool_id: {data_type: data}}}
+        self.data_files = {}
         setup_logger(log_dir='logs', level='DEBUG')
         self.logger = get_logger(__name__)
+        self.logger.info("数据管理器初始化")
         
     # 判断用户数据目录是否存在以及数据是否需要更新，如果不存在则创建
-    def refresh_data(self, user_id: str, tool_id: str) -> Path:
+    def create_user_data_dir(self, user_id: str, tool_id: str) -> Path:
         """
-            判断用户数据目录是否存在，如果不存在则创建:
-                返回 0 就说明存在问题
-                返回 1 不需要更新用户数据 
-                返回 2 需要用户更新数据 
-                返回 3 需要更新原始数据
+            判断用户目录是否存在，如果不存在则创建:
         """
         user_data_dir = DATA_DIR / tool_id / user_id
+        if not user_data_dir.exists():
+            user_data_dir.mkdir(parents=True, exist_ok=True)
+            self.logger.info(f"创建用户数据目录: {user_data_dir}，并copy相应的文件")
+        else:
+            self.logger.info(f"用户数据目录: {user_data_dir} 已存在")
+
+    # 加载对应工具对应的类型需要的函数
+    def _load_function(self, function_name: str, tool_config) -> Optional[Callable]:
+        """动态加载Python函数"""
+        tool_name = tool_config.get('tool_name')
+        # 在 tool 目录下查找对应工具的函数模块
+        
+        script_path = BASE_DIR / "tool" / tool_name /f"{tool_name}.py"
+        cache_key = f"{script_path}:{function_name}"
+        
+        if cache_key in self._function_cache:
+            return self._function_cache[cache_key]
+
         try:
-            # 如果用户数据目录不存在，则创建，并复制相应的文件；到了这里说明工具配置无问题
-            if not user_data_dir.exists():
-                user_data_dir.mkdir(parents=True, exist_ok=True)
-                self.logger.info(f"创建用户数据目录: {user_data_dir}，并copy相应的文件")
-
-            # 先判断 dataFiles.json 是否存在，如果存在就说明可以直接复制，不存在需要全部重新获取数据
-            original_data_files = DATA_DIR / tool_id / "original" / "dataFiles.json"
-            if not Path(original_data_files).exists():
-                self.logger.warn(f"用户 {user_id} 需要全量更新 {tool_id} 数据")
-                return 3
+            if Path(script_path).exists():
+                spec = importlib.util.spec_from_file_location(
+                    f"dynamic_module_{tool_name}_{hash(script_path)}", 
+                    script_path
+                )
+                if spec and spec.loader:
+                    module = importlib.util.module_from_spec(spec)
+                    spec.loader.exec_module(module)
+                    func = getattr(module, function_name, None)
+                    if func and callable(func):
+                        self._function_cache[cache_key] = func
+                        return func
             else:
-                # 如果用户的 dataFiles.json 需要冲缓存中获取上一次copy是原始 dataFiles.json 的最后修改时间，如果一致就不copy，如果不一致就需要copy
-                user_data_files = user_data_dir / "dataFiles.json"
-                mtime = Path(original_data_files).stat().st_mtime
-                if Path(user_data_files).exists():
-                    if self._cache[tool_id][user_id] and mtime == self._cache[tool_id][user_id]:
-                        # 数据不用更新
-                        return 1
-                    else:
-                        shutil.copytree(original_data_files, user_data_files)
-                        self._cache[tool_id][user_id] = mtime
-                        self.logger.info(f"为用户 {user_id} 更新 user_data_files")
-                        return 2
-                else:
-                    # 用户的 dataFiles.json 不存在，直接进行 copy
-                    shutil.copytree(original_data_files, user_data_files)
-                    self._cache[tool_id][user_id] = mtime
-                    self.logger.info(f"为用户 {user_id} 复制 {user_data_files}")
-                    return 2
-        except Exception as e: 
-            self.logger.error(f"在为用户 {user_id} 检查 {tool_id} 数据更新的时候出现错误 {e}")
-            return 0
-
-    # 加载工具数据
-
-    # 
-
-
-#     def _load_function(self, function_name: str, tool_config) -> Optional[Callable]:
-#         """动态加载Python函数"""
-#         tool_name = tool_config.get('tool_name')
-#         # 在 tool 目录下查找对应工具的函数模块
-#         module_path = Path(__file__).resolve().parent.parent / 'tool' / tool_name / f'{tool_name}.py'
-#         cache_key = f"{module_path}:{function_name}"
-        
-#         if cache_key in self._function_cache:
-#             return self._function_cache[cache_key]
-
-#         try:
-#             if Path(module_path).exists():
-#                 spec = importlib.util.spec_from_file_location(
-#                     f"dynamic_module_{tool_name}_{hash(module_path)}", 
-#                     module_path
-#                 )
-#                 if spec and spec.loader:
-#                     module = importlib.util.module_from_spec(spec)
-#                     spec.loader.exec_module(module)
-#                     func = getattr(module, function_name, None)
-#                     if func and callable(func):
-#                         self._function_cache[cache_key] = func
-#                         return func
-#             else:
-#                 print(f"路径不存在：{module_path}")
-#                 return None
+                self.logger.error(f"路径不存在：{script_path}")
+                return None
             
-#             print(f"无法加载函数: {function_name}")
-#             return None
-#         except Exception as e:
-#             print(f"加载函数失败 {function_name}: {e}")
-#             return None
+            self.logger.error(f"无法加载函数: {function_name}")
+            return None
+        except Exception as e:
+            self.logger.error(f"加载函数失败 {function_name}: {e}")
+            return None
     
-#     def get_single_thread_data(self, user_id: str, tool_config: Dict) -> Dict:
-#         """
-#         获取单线程数据
-        
-#         参数:
-#             user_id: 用户ID，用于隔离数据
-#             tool_config: 工具配置
-#         """
-#         func_name = tool_config.get('single_thread_func')
-#         data_path = tool_config.get('single_thread_path')
-#         tool_name = tool_config.get('tool_name')
+    # 保存工具数据到文件
+    def save_tool_data(self, filename:str, data:Dict):
+        """
+        保存工具数据到文件
+        """
+        with open(filename, "w") as f:
+            json.dump(data, f, indent=4)
+        self.logger.info(f"保存工具数据到文件: {filename}")
 
-#         green(f"获取工具 {tool_name} 单线程的数据中")
-#         if not func_name or not data_path:
-#             return {}
+    def load_tool_data(self, filename:str) -> Dict:
+        """
+        从文件加载工具数据
+        """
+        with open(filename, "r") as f:
+            data = json.load(f)
+        self.logger.info(f"从文件加载工具数据: {filename}")
+        return data
+
+    # 加载工具数据从文件
+    def load_data(self, tool_id: str, user_id: str, type):
+        """
+        加载工具数据从文件
+        """
+        data_files_json_path = DATA_DIR / tool_id / user_id / f"dataFiles_{type}.json"
+
+        self.logger.info(f"工具 {tool_id} 加载 {type} 数据")
+        # 获取工具配置，这里获取的一定是最新的数据
+        self._config = tool_manager._config["tools"][tool_id]
+        func = self._load_function(self._config.get(f'{type}_thread_func'), self._config)
+        new_data_files_paths = func(self._config.get(f'{type}_thread_path'), 0)
+
+        # 如果缓存中没有数据，重新获取所有的数据; 包含 单线程、多线程、额外数据
+        if not data_files_json_path.exists():
+            # 如果缓存中没有数据，说明是第一次加载数据，直接返回
+            data = func(new_data_files_paths, 1)
+            self.data_files[type] = new_data_files_paths
+            self.logger.info(f"用户 {user_id} 第一次加载 {type} 数据，返回所有数据")
+        else:
+            # 从文件加载旧数据
+            self.data_files = self.load_tool_data(data_files_json_path)
+            old_data_files_paths = self.data_files[type]
+            # 对比新增数据
+            add_data_files_paths = set(new_data_files_paths) - set(old_data_files_paths)
+            if add_data_files_paths:
+                # 如果有新增数据，从新加载
+                data = func(add_data_files_paths, 1)
+                self.logger.info(f"用户 {user_id} 新增 {type} 数据，返回新增数据")
+                self.data_files[type] = add_data_files_paths
+            else:
+                # 如果没有新增数据，直接返回 None
+                self.logger.info(f"用户 {user_id} 没有新增 {type} 数据")
+                return None
+        # 更新缓存中的数据
+        self.logger.info(f"用户 {user_id} 更新 {type} 数据缓存")
+
+        # 保存新增数据到文件
+        self.save_tool_data(DATA_DIR / tool_id / f"dataFiles_{type}.json", self.data_files)
+        return data
+
+
+
+    # def get_single_thread_data(self, user_id: str, tool_config: Dict) -> Dict:
+    #     """
+    #     获取单线程数据
         
-#         func = self._load_function(func_name, tool_config)
-#         if not func:
-#             return {}
+    #     参数:
+    #         user_id: 用户ID，用于隔离数据
+    #         tool_config: 工具配置
+    #     """
+    #     func_name = tool_config.get('single_thread_func')
+    #     data_path = tool_config.get('single_thread_path')
+    #     tool_name = tool_config.get('tool_name')
+
+    #     green(f"获取工具 {tool_name} 单线程的数据中")
+    #     if not func_name or not data_path:
+    #         return {}
         
-#         # 构建用户隔离的 JSON 路径
-#         # 新路径格式: data/{tool_name}/{user_id}/{tool_name}_single.json
-#         user_data_dir = DATA_DIR / tool_name / user_id
-#         user_data_dir.mkdir(parents=True, exist_ok=True)
-#         json_path = user_data_dir / f'{tool_name}_single.json'
+    #     func = self._load_function(func_name, tool_config)
+    #     if not func:
+    #         return {}
         
-#         try:
-#             # 调用用户配置的函数，传入用户隔离的 JSON 路径和原始数据路径
-#             # result = func(str(json_path), data_path)
-#             result= func({}, data_path)
-#             # 验证数据结构
-#             if self._validate_single_thread_data(dict(result)):
-#                 return result
-#             else:
-#                 print(f"单线程数据格式无效: {type(result)}, 需要是 dict")
-#                 return {}
-#         except Exception as e:
-#             print(f"获取单线程数据失败: {e}")
-#             return {}
+    #     # 构建用户隔离的 JSON 路径
+    #     # 新路径格式: data/{tool_name}/{user_id}/{tool_name}_single.json
+    #     user_data_dir = DATA_DIR / tool_name / user_id / "single"
+    #     user_data_dir.mkdir(parents=True, exist_ok=True)
+        
+    #     try:
+    #         # 调用用户配置的函数，传入用户隔离的 JSON 路径和原始数据路径
+    #         result= func({}, data_path)
+    #         # 验证数据结构
+    #         if self._validate_single_thread_data(dict(result)):
+    #             return result
+    #         else:
+    #             self.logger.error(f"单线程数据格式无效: {type(result)}, 需要是 dict")
+    #             return {}
+    #     except Exception as e:
+    #         self.logger.error(f"获取单线程数据失败: {e}")
+    #         return {}
     
 #     def get_multi_thread_data(self, user_id: str, tool_config: Dict) -> Dict:
 #         """

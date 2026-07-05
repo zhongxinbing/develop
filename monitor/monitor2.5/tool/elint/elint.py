@@ -15,6 +15,8 @@ import subprocess
 from typing import Dict, List, Any, Optional, Tuple
 from debug.debug import *
 
+
+
 def save_json(json_path, data):
     """
     保存数据到JSON文件
@@ -582,19 +584,18 @@ def get_runtime (content):
     return new
 
 from deepmerge import always_merger
-def get_single_data(single, files):
+def get_single_data(files, flag):
     """
         single: 单线程的数据
-        files: 从单线成配置的路径下获取的文件，需要解析的文件路径
+        flag: 0 表示只获取文件路径，1 表示解析全量数据
     """
-    green("单线程获取数据中")
 
-    if Path(files).exists():
-        files = find(files, maxdepth=3, name_pattern=r"^\d{8}_[^/]+\.txt$", file_type="f")
-
-    new_data = get_date_from_txt_single(files, {})
-    all_data = always_merger.merge(single, new_data)
-    return all_data
+    if flag == 0:
+        print(11111111111111111111111111111111111111)
+        return find(files, maxdepth=3, name_pattern=r"^\d{8}_[^/]+\.txt$", file_type="f")
+    else:
+        all_data = get_date_from_txt_single(files, {})
+        return all_data
     
 
 # def signal_adta(files):
