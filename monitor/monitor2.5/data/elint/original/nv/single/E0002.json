@@ -1,0 +1,20 @@
+{
+    "dates": [
+        "20260516"
+    ],
+    "rules": {
+        "E0002": {
+            "dates": [
+                "20260516"
+            ],
+            "values": [
+                142.1
+            ],
+            "type": "line",
+            "name": "E0002",
+            "is_single": true
+        }
+    },
+    "crash_dates": {},
+    "overall_data": null
+}

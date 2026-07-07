@@ -11,6 +11,7 @@ from config import SECRET_KEY
 from tool.elint.elint import load_json, save_json
 from utils.tool_manager import tool_manager
 from utils.data_manager import data_manager
+from utils.data_parser import data_parser
 from utils.log import *
 
 
@@ -129,16 +130,17 @@ def api_load_tool_data(tool_id):
     # 加载所有数据
 
     single = data_manager.load_data(tool_id, user_id, "single")
+    logger.info(f"加载工具 {tool_id} 单线程数据 - {single}")
     # multi = data_manager.load_data(tool_id, user_id, "multi")
     # extra = data_manager.load_data(tool_id, user_id, "extra_display")
-    # if single == "None":
-    #     logger.info(f"工具 {tool_id} 单线程数据不用更新.")
+    if single == "None":
+        logger.info(f"工具 {tool_id} 单线程数据不用更新.")
     # if multi == "None":
     #     logger.info(f"工具 {tool_id} 多线程数据不用更新.")
     # if extra == "None":
     #     logger.info(f"工具 {tool_id} 额外显示数据不用更新.")
     
-    
+    data_parser.parse_all_data(tool_id, single, 'single')
     
     
     return jsonify({'success': False, 'error': f'数据更新出现错误'})

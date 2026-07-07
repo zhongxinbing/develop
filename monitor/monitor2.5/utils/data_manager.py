@@ -114,7 +114,7 @@ class DataManager:
         """
         加载工具数据从文件
         """
-        data_files_json_path = DATA_DIR / tool_id / user_id / f"dataFiles_{type}.json"
+        data_files_json_path = DATA_DIR / tool_id  / f"dataFiles_{type}.json"
 
         self.logger.info(f"工具 {tool_id} 加载 {type} 数据")
         # 获取工具配置，这里获取的一定是最新的数据
@@ -149,8 +149,6 @@ class DataManager:
         # 保存新增数据到文件
         self.save_tool_data(DATA_DIR / tool_id / f"dataFiles_{type}.json", self.data_files)
         return data
-
-
 
     # def get_single_thread_data(self, user_id: str, tool_config: Dict) -> Dict:
     #     """

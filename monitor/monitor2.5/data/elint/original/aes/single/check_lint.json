@@ -1,0 +1,20 @@
+{
+    "dates": [
+        "20260516"
+    ],
+    "rules": {
+        "check_lint": {
+            "dates": [
+                "20260516"
+            ],
+            "values": [
+                103.1
+            ],
+            "type": "line",
+            "name": "check_lint",
+            "is_single": true
+        }
+    },
+    "crash_dates": {},
+    "overall_data": null
+}

@@ -1,0 +1,20 @@
+{
+    "dates": [
+        "20260516"
+    ],
+    "rules": {
+        "read_design": {
+            "dates": [
+                "20260516"
+            ],
+            "values": [
+                102.1
+            ],
+            "type": "line",
+            "name": "read_design",
+            "is_single": true
+        }
+    },
+    "crash_dates": {},
+    "overall_data": null
+}
