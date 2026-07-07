@@ -108,6 +108,8 @@ async function loadData() {
             window.extraData = extraData;
             window.userData = userData;
 
+            showSuccess(response.data.message);
+
             // 获取图表容器
             const container = document.getElementById('mainChart');
             

@@ -6,6 +6,7 @@ import uuid
 from pathlib import Path
 from datetime import datetime
 from flask import Flask, render_template, request, jsonify, session
+from sympy import true
 
 from config import SECRET_KEY
 from tool.elint.elint import load_json, save_json
@@ -133,17 +134,38 @@ def api_load_tool_data(tool_id):
     logger.info(f"加载工具 {tool_id} 单线程数据 - {single}")
     # multi = data_manager.load_data(tool_id, user_id, "multi")
     # extra = data_manager.load_data(tool_id, user_id, "extra_display")
-    if single == "None":
-        logger.info(f"工具 {tool_id} 单线程数据不用更新.")
-    # if multi == "None":
-    #     logger.info(f"工具 {tool_id} 多线程数据不用更新.")
-    # if extra == "None":
-    #     logger.info(f"工具 {tool_id} 额外显示数据不用更新.")
+    multi = None
+    extra = None
+
+    all_data = {}
+    message = ''
+    if single:
+        all_data['single'] = single
+        message += ' 单线程'
+        data_parser.parse_all_data(tool_id, single, 'single')
+    else:
+        all_data['single'] = {}
+        
+    if multi:
+        all_data['multi'] = multi
+        message += ' 多线程'
+        data_parser.parse_all_data(tool_id, multi, 'multi')
+    else:
+        all_data['multi'] = {}
+        
+    if extra:
+        all_data['extra'] = extra
+        message += ' 其他'
+        data_parser.parse_all_data(tool_id, extra, 'extra_display')
+    else:
+        all_data['extra'] = {}
     
-    data_parser.parse_all_data(tool_id, single, 'single')
+    if message:
+        message = "更新:" + message
+    else:
+        message = "数据不需要更新"
     
-    
-    return jsonify({'success': False, 'error': f'数据更新出现错误'})
+    return jsonify({'success': True, 'data': all_data, 'message': message})
     # 解析数据，并放在 对应的目录中
 
 

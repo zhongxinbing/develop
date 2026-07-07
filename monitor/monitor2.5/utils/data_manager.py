@@ -97,14 +97,14 @@ class DataManager:
         保存工具数据到文件
         """
         with open(filename, "w") as f:
-            json.dump(data, f, indent=4)
+            json.dump(data, f, ensure_ascii=False, indent=2)
         self.logger.info(f"保存工具数据到文件: {filename}")
 
     def load_tool_data(self, filename:str) -> Dict:
         """
         从文件加载工具数据
         """
-        with open(filename, "r") as f:
+        with open(filename, "r", encoding="utf-8") as f:
             data = json.load(f)
         self.logger.info(f"从文件加载工具数据: {filename}")
         return data
@@ -138,14 +138,12 @@ class DataManager:
                 # 如果有新增数据，从新加载
                 data = func(add_data_files_paths, 1)
                 self.logger.info(f"用户 {user_id} 新增 {type} 数据，返回新增数据")
-                self.data_files[type] = add_data_files_paths
+                self.data_files[type] = new_data_files_paths
             else:
                 # 如果没有新增数据，直接返回 None
                 self.logger.info(f"用户 {user_id} 没有新增 {type} 数据")
                 return None
-        # 更新缓存中的数据
-        self.logger.info(f"用户 {user_id} 更新 {type} 数据缓存")
-
+        print(self.data_files)
         # 保存新增数据到文件
         self.save_tool_data(DATA_DIR / tool_id / f"dataFiles_{type}.json", self.data_files)
         return data
