@@ -172,41 +172,6 @@ def api_load_tool_data(tool_id):
 
 
 
-    # flag = data_manager.refresh_data(user_id, tool_id)
-    # if flag == 0:
-    #     """ 调用加载数据的函数 """
-    #     return jsonify({'success': False, 'error': f'数据更新出现错误'})
-    # elif flag == 1:
-    #     # 数据不需要更新，直接返回数据
-    #     return jsonify({'success': False, 'error': f'数据不需要更新，直接返回数据'})
-    # elif flag == 2:
-    #     # 数据需要更新
-    #     return jsonify({'success': False, 'data': f'数据需要更新'})
-    # elif flag == 3:
-    #     # 需要更新所有的数据
-    #     data = {
-    #         "single" : {},
-    #         "multi": {}
-    #     }
-    #     return jsonify({'success': True, 'error': data})
-    # else:
-    #     # 如果目录创建失败，返回错误信息
-    #     return jsonify({'success': False, 'error': f'数据更新出现错误'})
-
-    # # 检查缓存 - 获取所有类型的数据   从保存的文件中获取数据
-    # tool_manager.upload_data()
-    # all_data = tool_manager.get_all_tool_data(user_id, tool_id)
-
-    # if all_data:
-    #     # 判断是否更新单线程的数据并返回更新后的数据
-    #     all_data, upload = data_manager.data_is_upload(all_data, user_id, tool_id)
-    # else:
-    #     logger.info(f"获取工具 {tool_id} 中数据为空，用户 {user_id} 全量获取中")
-    #     all_data, upload = data_manager._get_init_data(user_id, tool_id)
-
-    # return jsonify({'success': True, 'data': json.dumps(all_data), 'upload': upload})
-
-
 if __name__ == '__main__':
     setup_logger(log_dir='logs', level='DEBUG')
     logger = get_logger(__name__)
