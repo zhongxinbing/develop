@@ -48,7 +48,7 @@ class SingleThreadManager {
      * 初始化单线程模块
      */
     async init(rawData, userAddedData, extraData) {
-        console.log('SingleThreadManager.init 开始',extraData);
+        console.log('SingleThreadManager.init 开始',rawData);
         
         // 获取 DOM 元素
         this.casenameSelect = document.getElementById(`${this.idPrefix}CasenameSelect`);
@@ -72,7 +72,7 @@ class SingleThreadManager {
         
         // 清理和验证数据格式
         let cleanRawData = {};
-        
+        console.log('SingleThreadManager.init 原始数据 keys:', Object.keys(rawData));
         if (rawData && typeof rawData === 'object') {
             for (const [key, value] of Object.entries(rawData)) {
                 if (key === 'dataFiles' || key === '__multi_processed_logs__' || key === 'single' || key === 'multi') {

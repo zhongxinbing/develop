@@ -2497,3 +2497,73 @@
 2026-07-07 22:14:05 - INFO - utils.data_manager - data_manager.py:144 - 用户 2145ba72-55a3-4e14-9098-c818e7647899 没有新增 single 数据
 2026-07-07 22:14:05 - INFO - __main__ - app_new.py:134 - 加载工具 elint 单线程数据 - None
 2026-07-07 22:14:05 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [07/Jul/2026 22:14:05] "POST /api/tools/elint/data HTTP/1.1" 200 -
+2026-07-08 21:18:34 - INFO - utils.tool_manager - tool_manager.py:54 - 加载工具配置文件: E:\git\develop\monitor\monitor2.5\data\tools.json
+2026-07-08 21:18:34 - INFO - utils.tool_manager - tool_manager.py:45 - 工具管理器初始化完成
+2026-07-08 21:18:34 - DEBUG - matplotlib - __init__.py:333 - matplotlib data path: E:\python\3.8\lib\site-packages\matplotlib\mpl-data
+2026-07-08 21:18:34 - DEBUG - matplotlib - __init__.py:333 - CONFIGDIR=C:\Users\Administrator\.matplotlib
+2026-07-08 21:18:34 - DEBUG - matplotlib - __init__.py:1507 - interactive is False
+2026-07-08 21:18:34 - DEBUG - matplotlib - __init__.py:1508 - platform is win32
+2026-07-08 21:18:34 - DEBUG - matplotlib - __init__.py:333 - CACHEDIR=C:\Users\Administrator\.matplotlib
+2026-07-08 21:18:34 - DEBUG - matplotlib.font_manager - font_manager.py:1543 - Using fontManager instance from C:\Users\Administrator\.matplotlib\fontlist-v330.json
+2026-07-08 21:18:34 - INFO - utils.data_manager - data_manager.py:45 - 数据管理器初始化
+2026-07-08 21:18:34 - INFO - utils.data_parser - data_parser.py:18 - 数据管理器初始化
+2026-07-08 21:18:34 - INFO - __main__ - app_new.py:177 - 启动性能监控平台后端服务
+2026-07-08 21:18:34 - INFO - werkzeug - _internal.py:97 - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5020
+ * Running on http://192.168.1.33:5020
+2026-07-08 21:18:34 - INFO - werkzeug - _internal.py:97 - [33mPress CTRL+C to quit[0m
+2026-07-08 21:18:34 - INFO - werkzeug - _internal.py:97 -  * Restarting with watchdog (windowsapi)
+2026-07-08 21:18:35 - INFO - utils.tool_manager - tool_manager.py:54 - 加载工具配置文件: E:\git\develop\monitor\monitor2.5\data\tools.json
+2026-07-08 21:18:35 - INFO - utils.tool_manager - tool_manager.py:45 - 工具管理器初始化完成
+2026-07-08 21:18:35 - DEBUG - matplotlib - __init__.py:333 - matplotlib data path: E:\python\3.8\lib\site-packages\matplotlib\mpl-data
+2026-07-08 21:18:35 - DEBUG - matplotlib - __init__.py:333 - CONFIGDIR=C:\Users\Administrator\.matplotlib
+2026-07-08 21:18:35 - DEBUG - matplotlib - __init__.py:1507 - interactive is False
+2026-07-08 21:18:35 - DEBUG - matplotlib - __init__.py:1508 - platform is win32
+2026-07-08 21:18:35 - DEBUG - matplotlib - __init__.py:333 - CACHEDIR=C:\Users\Administrator\.matplotlib
+2026-07-08 21:18:35 - DEBUG - matplotlib.font_manager - font_manager.py:1543 - Using fontManager instance from C:\Users\Administrator\.matplotlib\fontlist-v330.json
+2026-07-08 21:18:35 - INFO - utils.data_manager - data_manager.py:45 - 数据管理器初始化
+2026-07-08 21:18:35 - INFO - utils.data_parser - data_parser.py:18 - 数据管理器初始化
+2026-07-08 21:18:36 - INFO - __main__ - app_new.py:177 - 启动性能监控平台后端服务
+2026-07-08 21:18:36 - WARN - werkzeug - _internal.py:97 -  * Debugger is active!
+2026-07-08 21:18:36 - INFO - werkzeug - _internal.py:97 -  * Debugger PIN: 644-902-559
+2026-07-08 21:18:40 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Jul/2026 21:18:40] "GET / HTTP/1.1" 200 -
+2026-07-08 21:18:40 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Jul/2026 21:18:40] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2026-07-08 21:18:40 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Jul/2026 21:18:40] "[36mGET /static/js/main.js HTTP/1.1[0m" 304 -
+2026-07-08 21:18:40 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Jul/2026 21:18:40] "[36mGET /static/js/axios.min.js HTTP/1.1[0m" 304 -
+2026-07-08 21:18:40 - INFO - __main__ - app_new.py:26 - 新用户加入 7e50fd61-7037-4c80-9d9b-8da90fd44f39
+2026-07-08 21:18:40 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Jul/2026 21:18:40] "GET /api/tools HTTP/1.1" 200 -
+2026-07-08 21:18:41 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Jul/2026 21:18:41] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2026-07-08 21:18:42 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Jul/2026 21:18:42] "GET /tool/elint HTTP/1.1" 200 -
+2026-07-08 21:18:42 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Jul/2026 21:18:42] "[36mGET /static/js/echarts.min.js HTTP/1.1[0m" 304 -
+2026-07-08 21:18:42 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Jul/2026 21:18:42] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2026-07-08 21:18:42 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Jul/2026 21:18:42] "[36mGET /static/js/axios.min.js HTTP/1.1[0m" 304 -
+2026-07-08 21:18:42 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Jul/2026 21:18:42] "GET /static/js/single_thread.js HTTP/1.1" 200 -
+2026-07-08 21:18:42 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Jul/2026 21:18:42] "[36mGET /static/js/multi_thread.js HTTP/1.1[0m" 304 -
+2026-07-08 21:18:42 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Jul/2026 21:18:42] "GET /static/js/tool.js HTTP/1.1" 200 -
+2026-07-08 21:18:42 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Jul/2026 21:18:42] "GET /api/tools HTTP/1.1" 200 -
+2026-07-08 21:18:42 - INFO - __main__ - app_new.py:127 - 用户 7e50fd61-7037-4c80-9d9b-8da90fd44f39 请求加载工具 elint 数据
+2026-07-08 21:18:42 - INFO - utils.data_manager - data_manager.py:55 - 创建用户数据目录: E:\git\develop\monitor\monitor2.5\data\elint\7e50fd61-7037-4c80-9d9b-8da90fd44f39，并copy相应的文件
+2026-07-08 21:18:42 - INFO - utils.data_manager - data_manager.py:119 - 工具 elint 加载 single 数据
+2026-07-08 21:18:42 - INFO - utils.data_manager - data_manager.py:109 - 从文件加载工具数据: E:\git\develop\monitor\monitor2.5\data\elint\dataFiles_single.json
+2026-07-08 21:18:42 - INFO - utils.data_manager - data_manager.py:144 - 用户 7e50fd61-7037-4c80-9d9b-8da90fd44f39 没有新增 single 数据
+2026-07-08 21:18:42 - INFO - __main__ - app_new.py:134 - 加载工具 elint 单线程数据 - None
+2026-07-08 21:18:42 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Jul/2026 21:18:42] "POST /api/tools/elint/data HTTP/1.1" 200 -
+2026-07-08 21:18:44 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Jul/2026 21:18:44] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2026-07-08 21:18:44 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Jul/2026 21:18:44] "[33mGET /static/js/axios.min.js.map HTTP/1.1[0m" 404 -
+2026-07-08 21:20:01 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Jul/2026 21:20:01] "GET /tool/elint HTTP/1.1" 200 -
+2026-07-08 21:20:01 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Jul/2026 21:20:01] "[36mGET /static/js/axios.min.js HTTP/1.1[0m" 304 -
+2026-07-08 21:20:01 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Jul/2026 21:20:01] "[36mGET /static/js/echarts.min.js HTTP/1.1[0m" 304 -
+2026-07-08 21:20:01 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Jul/2026 21:20:01] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2026-07-08 21:20:01 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Jul/2026 21:20:01] "GET /static/js/single_thread.js HTTP/1.1" 200 -
+2026-07-08 21:20:01 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Jul/2026 21:20:01] "[36mGET /static/js/multi_thread.js HTTP/1.1[0m" 304 -
+2026-07-08 21:20:01 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Jul/2026 21:20:01] "[36mGET /static/js/tool.js HTTP/1.1[0m" 304 -
+2026-07-08 21:20:01 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Jul/2026 21:20:01] "[33mGET /static/js/axios.min.js.map HTTP/1.1[0m" 404 -
+2026-07-08 21:20:01 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Jul/2026 21:20:01] "GET /api/tools HTTP/1.1" 200 -
+2026-07-08 21:20:01 - INFO - __main__ - app_new.py:127 - 用户 7e50fd61-7037-4c80-9d9b-8da90fd44f39 请求加载工具 elint 数据
+2026-07-08 21:20:01 - INFO - utils.data_manager - data_manager.py:57 - 用户数据目录: E:\git\develop\monitor\monitor2.5\data\elint\7e50fd61-7037-4c80-9d9b-8da90fd44f39 已存在
+2026-07-08 21:20:01 - INFO - utils.data_manager - data_manager.py:119 - 工具 elint 加载 single 数据
+2026-07-08 21:20:01 - INFO - utils.data_manager - data_manager.py:109 - 从文件加载工具数据: E:\git\develop\monitor\monitor2.5\data\elint\dataFiles_single.json
+2026-07-08 21:20:01 - INFO - utils.data_manager - data_manager.py:144 - 用户 7e50fd61-7037-4c80-9d9b-8da90fd44f39 没有新增 single 数据
+2026-07-08 21:20:01 - INFO - __main__ - app_new.py:134 - 加载工具 elint 单线程数据 - None
+2026-07-08 21:20:01 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Jul/2026 21:20:01] "POST /api/tools/elint/data HTTP/1.1" 200 -

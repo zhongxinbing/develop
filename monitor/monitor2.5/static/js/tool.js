@@ -192,7 +192,7 @@ async function switchToSingleMode() {
     
     const filtersPanel = document.getElementById('singleFiltersPanel');
     const comparisonPanel = document.getElementById('singleComparisonPanel');
-    
+    // 切换比较面板显示
     if (currentChartType === 'comparison') {
         if (filtersPanel) filtersPanel.style.display = 'none';
         if (comparisonPanel) comparisonPanel.style.display = 'block';
