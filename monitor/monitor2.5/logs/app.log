@@ -2567,3 +2567,681 @@
 2026-07-08 21:20:01 - INFO - utils.data_manager - data_manager.py:144 - 用户 7e50fd61-7037-4c80-9d9b-8da90fd44f39 没有新增 single 数据
 2026-07-08 21:20:01 - INFO - __main__ - app_new.py:134 - 加载工具 elint 单线程数据 - None
 2026-07-08 21:20:01 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Jul/2026 21:20:01] "POST /api/tools/elint/data HTTP/1.1" 200 -
+2026-07-09 21:51:42 - INFO - utils.tool_manager - tool_manager.py:54 - 加载工具配置文件: E:\git\develop\monitor\monitor2.5\data\tools.json
+2026-07-09 21:51:42 - INFO - utils.tool_manager - tool_manager.py:45 - 工具管理器初始化完成
+2026-07-09 21:51:42 - DEBUG - matplotlib - __init__.py:333 - matplotlib data path: E:\python\3.8\lib\site-packages\matplotlib\mpl-data
+2026-07-09 21:51:42 - DEBUG - matplotlib - __init__.py:333 - CONFIGDIR=C:\Users\Administrator\.matplotlib
+2026-07-09 21:51:42 - DEBUG - matplotlib - __init__.py:1507 - interactive is False
+2026-07-09 21:51:42 - DEBUG - matplotlib - __init__.py:1508 - platform is win32
+2026-07-09 21:51:42 - DEBUG - matplotlib - __init__.py:333 - CACHEDIR=C:\Users\Administrator\.matplotlib
+2026-07-09 21:51:42 - DEBUG - matplotlib.font_manager - font_manager.py:1543 - Using fontManager instance from C:\Users\Administrator\.matplotlib\fontlist-v330.json
+2026-07-09 21:51:42 - INFO - utils.data_manager - data_manager.py:45 - 数据管理器初始化
+2026-07-09 21:51:42 - INFO - utils.data_parser - data_parser.py:18 - 数据管理器初始化
+2026-07-09 21:51:42 - INFO - __main__ - app_new.py:246 - 启动性能监控平台后端服务
+2026-07-09 21:51:42 - INFO - werkzeug - _internal.py:97 - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5020
+ * Running on http://192.168.1.33:5020
+2026-07-09 21:51:42 - INFO - werkzeug - _internal.py:97 - [33mPress CTRL+C to quit[0m
+2026-07-09 21:51:42 - INFO - werkzeug - _internal.py:97 -  * Restarting with watchdog (windowsapi)
+2026-07-09 21:51:43 - INFO - utils.tool_manager - tool_manager.py:54 - 加载工具配置文件: E:\git\develop\monitor\monitor2.5\data\tools.json
+2026-07-09 21:51:43 - INFO - utils.tool_manager - tool_manager.py:45 - 工具管理器初始化完成
+2026-07-09 21:51:43 - DEBUG - matplotlib - __init__.py:333 - matplotlib data path: E:\python\3.8\lib\site-packages\matplotlib\mpl-data
+2026-07-09 21:51:43 - DEBUG - matplotlib - __init__.py:333 - CONFIGDIR=C:\Users\Administrator\.matplotlib
+2026-07-09 21:51:43 - DEBUG - matplotlib - __init__.py:1507 - interactive is False
+2026-07-09 21:51:43 - DEBUG - matplotlib - __init__.py:1508 - platform is win32
+2026-07-09 21:51:43 - DEBUG - matplotlib - __init__.py:333 - CACHEDIR=C:\Users\Administrator\.matplotlib
+2026-07-09 21:51:43 - DEBUG - matplotlib.font_manager - font_manager.py:1543 - Using fontManager instance from C:\Users\Administrator\.matplotlib\fontlist-v330.json
+2026-07-09 21:51:44 - INFO - utils.data_manager - data_manager.py:45 - 数据管理器初始化
+2026-07-09 21:51:44 - INFO - utils.data_parser - data_parser.py:18 - 数据管理器初始化
+2026-07-09 21:51:44 - INFO - __main__ - app_new.py:246 - 启动性能监控平台后端服务
+2026-07-09 21:51:44 - WARN - werkzeug - _internal.py:97 -  * Debugger is active!
+2026-07-09 21:51:44 - INFO - werkzeug - _internal.py:97 -  * Debugger PIN: 644-902-559
+2026-07-09 21:51:51 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [09/Jul/2026 21:51:51] "GET / HTTP/1.1" 200 -
+2026-07-09 21:51:51 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [09/Jul/2026 21:51:51] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2026-07-09 21:51:51 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [09/Jul/2026 21:51:51] "[36mGET /static/js/axios.min.js HTTP/1.1[0m" 304 -
+2026-07-09 21:51:51 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [09/Jul/2026 21:51:51] "[36mGET /static/js/main.js HTTP/1.1[0m" 304 -
+2026-07-09 21:51:51 - INFO - __main__ - app_new.py:26 - 新用户加入 a55e6f8d-c90d-4044-8e7f-42fec9e297b6
+2026-07-09 21:51:51 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [09/Jul/2026 21:51:51] "GET /api/tools HTTP/1.1" 200 -
+2026-07-09 21:51:52 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [09/Jul/2026 21:51:52] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2026-07-09 21:51:56 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [09/Jul/2026 21:51:56] "GET /config HTTP/1.1" 200 -
+2026-07-09 21:51:56 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [09/Jul/2026 21:51:56] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2026-07-09 21:51:56 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [09/Jul/2026 21:51:56] "[36mGET /static/js/axios.min.js HTTP/1.1[0m" 304 -
+2026-07-09 21:51:56 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [09/Jul/2026 21:51:56] "[36mGET /static/js/config.js HTTP/1.1[0m" 304 -
+2026-07-09 21:51:56 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [09/Jul/2026 21:51:56] "GET /api/tools HTTP/1.1" 200 -
+2026-07-09 21:52:03 - DEBUG - utils.tool_manager - tool_manager.py:93 - 尝试更新工具: elint 配置: {'tool_name': 'elint', 'description': '工具静态检查。最基础的“规矩”检查，包括代码风格、命名规范、可综合性等。能发现诸如信号位宽不匹配、组合逻辑中意外生成锁存器（Latch）、未使用的信号等基础问题', 'single_thread_path': 'E:\\git\\develop\\monitor\\test\\signal', 'single_thread_func': 'get_single_data', 'multi_thread_path': '', 'multi_thread_func': '', 'extra_display_path': '', 'extra_display_func': '', 'custom_curve_func': ''}
+2026-07-09 21:52:03 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [09/Jul/2026 21:52:03] "PUT /api/tools/elint HTTP/1.1" 200 -
+2026-07-09 21:52:03 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [09/Jul/2026 21:52:03] "GET /tool/elint HTTP/1.1" 200 -
+2026-07-09 21:52:03 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [09/Jul/2026 21:52:03] "[36mGET /static/js/axios.min.js HTTP/1.1[0m" 304 -
+2026-07-09 21:52:03 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [09/Jul/2026 21:52:03] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2026-07-09 21:52:03 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [09/Jul/2026 21:52:03] "[36mGET /static/js/echarts.min.js HTTP/1.1[0m" 304 -
+2026-07-09 21:52:03 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [09/Jul/2026 21:52:03] "GET /static/js/single_thread.js HTTP/1.1" 200 -
+2026-07-09 21:52:03 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [09/Jul/2026 21:52:03] "[36mGET /static/js/multi_thread.js HTTP/1.1[0m" 304 -
+2026-07-09 21:52:03 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [09/Jul/2026 21:52:03] "GET /static/js/tool.js HTTP/1.1" 200 -
+2026-07-09 21:52:03 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [09/Jul/2026 21:52:03] "GET /api/tools HTTP/1.1" 200 -
+2026-07-09 21:52:03 - INFO - __main__ - app_new.py:127 - 用户 a55e6f8d-c90d-4044-8e7f-42fec9e297b6 请求加载工具 elint 数据
+2026-07-09 21:52:03 - INFO - utils.data_manager - data_manager.py:55 - 创建用户数据目录: E:\git\develop\monitor\monitor2.5\data\elint\a55e6f8d-c90d-4044-8e7f-42fec9e297b6，并copy相应的文件
+2026-07-09 21:52:03 - INFO - utils.data_manager - data_manager.py:119 - 工具 elint 加载 single 数据
+2026-07-09 21:52:03 - INFO - utils.data_manager - data_manager.py:109 - 从文件加载工具数据: E:\git\develop\monitor\monitor2.5\data\elint\dataFiles_single.json
+2026-07-09 21:52:03 - INFO - utils.data_manager - data_manager.py:140 - 用户 a55e6f8d-c90d-4044-8e7f-42fec9e297b6 新增 single 数据，返回新增数据
+2026-07-09 21:52:03 - INFO - utils.data_manager - data_manager.py:101 - 保存工具数据到文件: E:\git\develop\monitor\monitor2.5\data\elint\dataFiles_single.json
+2026-07-09 21:52:03 - INFO - __main__ - app_new.py:134 - 加载工具 elint 单线程数据 - {'aes': {'casename': 'aes', 'daily_metrics': {'20260517': {'E0001': {'runtime': 103.1, 'memory': 193.2}, 'E0002': {'runtime': 143.1, 'memory': 103.2}, 'E0003': {'runtime': 163.1, 'memory': 103.2}, 'E0004': {'runtime': 153.1, 'memory': 113.2}, 'E0005': {'runtime': 103.1, 'memory': 103.2}, 'E0006': {'runtime': 1203.1, 'memory': 1203.2}, 'E0007': {'runtime': 103.1, 'memory': 103.2}, 'Overall': {'runtime': 103.1, 'memory': 103.2}, 'read_design': {'runtime': 103.1, 'memory': 103.2}, 'check_lint': {'runtime': 103.1, 'memory': 103.2}, 'E0008': {'runtime': 1203.1, 'memory': 103.2}}, '20260510': {'E0001': {'runtime': 10.1, 'memory': 19.2}, 'E0002': {'runtime': 14.1, 'memory': 10.2}, 'E0003': {'runtime': 16.1, 'memory': 10.2}, 'E0004': {'runtime': 15.1, 'memory': 11.2}, 'E0005': {'runtime': 10.1, 'memory': 10.2}, 'E0006': {'runtime': 120.1, 'memory': 120.2}, 'E0007': {'runtime': 10.1, 'memory': 10.2}, 'Overall': {'runtime': 10.1, 'memory': 10.2}, 'read_design': {'runtime': 10.1, 'memory': 10.2}, 'check_lint': {'runtime': 10.1, 'memory': 10.2}, 'E0008': {'runtime': 120.1, 'memory': 10.2}}, '20260511': {'E0001': {'runtime': 16.1, 'memory': 132.0}, 'E0002': {'runtime': 18.1, 'memory': 15.2}, 'E0003': {'runtime': 16.1, 'memory': 102.0}, 'E0004': {'runtime': 18.1, 'memory': 15.2}, 'E0005': {'runtime': 19.1, 'memory': 102.0}, 'E0006': {'runtime': 10.1, 'memory': 122.0}, 'E0007': {'runtime': 100.1, 'memory': 102.0}, 'Overall': {'runtime': 123.1, 'memory': 1.2}, 'read_design': {'runtime': 15620.1, 'memory': 1.2}, 'check_lint': {'runtime': 133.1, 'memory': 1.2}, 'E0008': {'runtime': 1205.1, 'memory': 12.0}}, '20260512': {'E0001': {'runtime': 101.1, 'memory': 191.2}, 'E0002': {'runtime': 141.1, 'memory': 101.2}, 'E0003': {'runtime': 161.1, 'memory': 101.2}, 'E0004': {'runtime': 151.1, 'memory': 111.2}, 'E0005': {'runtime': 101.1, 'memory': 101.2}, 'E0006': {'runtime': 1201.1, 'memory': 1201.2}, 'E0007': {'runtime': 101.1, 'memory': 101.2}, 'Overall': {'runtime': 101.1, 'memory': 101.2}, 'read_design': {'runtime': 101.1, 'memory': 101.2}, 'check_lint': {'runtime': 101.1, 'memory': 101.2}, 'E0008': {'runtime': 1201.1, 'memory': 101.2}}, '20260514': {'E0001': {'runtime': 100.1, 'memory': 190.2}, 'E0002': {'runtime': 140.1, 'memory': 100.2}, 'E0003': {'runtime': 160.1, 'memory': 100.2}, 'E0004': {'runtime': 150.1, 'memory': 110.2}, 'E0005': {'runtime': 100.1, 'memory': 100.2}, 'E0006': {'runtime': 1200.1, 'memory': 1200.2}, 'E0007': {'runtime': 100.1, 'memory': 100.2}, 'Overall': {'runtime': 100.1, 'memory': 100.2}, 'read_design': {'runtime': 100.1, 'memory': 100.2}, 'check_lint': {'runtime': 100.1, 'memory': 100.2}, 'E0008': {'runtime': 1200.1, 'memory': 100.2}}, '20260513': {'E0001': {'runtime': 106.1, 'memory': 196.2}, 'E0002': {'runtime': 146.1, 'memory': 106.2}, 'E0003': {'runtime': 166.1, 'memory': 106.2}, 'E0004': {'runtime': 156.1, 'memory': 116.2}, 'E0005': {'runtime': 106.1, 'memory': 106.2}, 'E0006': {'runtime': 1206.1, 'memory': 1206.2}, 'E0007': {'runtime': 106.1, 'memory': 106.2}, 'Overall': {'runtime': 106.1, 'memory': 106.2}, 'read_design': {'runtime': 106.1, 'memory': 106.2}, 'check_lint': {'runtime': 106.1, 'memory': 106.2}, 'E0008': {'runtime': 1206.1, 'memory': 106.2}}, '20260515': {'E0001': {'runtime': 103.1, 'memory': 193.2}, 'E0002': {'runtime': 143.1, 'memory': 103.2}, 'E0003': {'runtime': 163.1, 'memory': 103.2}, 'E0004': {'runtime': 153.1, 'memory': 113.2}, 'E0005': {'runtime': 103.1, 'memory': 103.2}, 'E0006': {'runtime': 1203.1, 'memory': 1203.2}, 'E0007': {'runtime': 103.1, 'memory': 103.2}, 'Overall': {'runtime': 103.1, 'memory': 103.2}, 'read_design': {'runtime': 103.1, 'memory': 103.2}, 'check_lint': {'runtime': 103.1, 'memory': 103.2}, 'E0008': {'runtime': 1203.1, 'memory': 103.2}}, '20260516': {'E0001': {'runtime': 103.1, 'memory': 193.2}, 'E0002': {'runtime': 143.1, 'memory': 103.2}, 'E0003': {'runtime': 163.1, 'memory': 103.2}, 'E0004': {'runtime': 153.1, 'memory': 113.2}, 'E0005': {'runtime': 103.1, 'memory': 103.2}, 'E0006': {'runtime': 1203.1, 'memory': 1203.2}, 'E0007': {'runtime': 103.1, 'memory': 103.2}, 'Overall': {'runtime': 103.1, 'memory': 103.2}, 'read_design': {'runtime': 103.1, 'memory': 103.2}, 'check_lint': {'runtime': 103.1, 'memory': 103.2}, 'E0008': {'runtime': 1203.1, 'memory': 103.2}}}, 'available_dates': ['20260517', '20260510', '20260511', '20260512', '20260514', '20260513', '20260515', '20260516']}, 'nv': {'casename': 'nv', 'daily_metrics': {'20260510': {'E0001': {'runtime': 10.1, 'memory': 19.2}, 'E0002': {'runtime': 14.1, 'memory': 10.2}, 'E0003': {'runtime': 16.1, 'memory': 10.2}, 'E0004': {'runtime': 15.1, 'memory': 11.2}, 'E0005': {'runtime': 10.1, 'memory': 10.2}, 'E0006': {'runtime': 120.1, 'memory': 120.2}, 'E0007': {'runtime': 10.1, 'memory': 10.2}, 'Overall': {'runtime': 10.1, 'memory': 10.2}, 'read_design': {'runtime': 10.1, 'memory': 10.2}, 'check_lint': {'runtime': 10.1, 'memory': 10.2}, 'E0008': {'runtime': 120.1, 'memory': 10.2}}, '20260514': {'E0001': {'runtime': 101.1, 'memory': 191.2}, 'E0002': {'runtime': 141.1, 'memory': 101.2}, 'E0003': {'runtime': 161.1, 'memory': 101.2}, 'E0004': {'runtime': 151.1, 'memory': 111.2}, 'E0005': {'runtime': 101.1, 'memory': 101.2}, 'E0006': {'runtime': 1201.1, 'memory': 1201.2}, 'E0007': {'runtime': 101.1, 'memory': 101.2}, 'Overall': {'runtime': 101.1, 'memory': 101.2}, 'read_design': {'runtime': 101.1, 'memory': 101.2}, 'check_lint': {'runtime': 101.1, 'memory': 101.2}, 'E0008': {'runtime': 1201.1, 'memory': 101.2}}, '20260516': {'E0001': {'runtime': 102.1, 'memory': 192.2}, 'E0002': {'runtime': 142.1, 'memory': 102.2}, 'E0003': {'runtime': 162.1, 'memory': 102.2}, 'E0004': {'runtime': 152.1, 'memory': 112.2}, 'E0005': {'runtime': 102.1, 'memory': 102.2}, 'E0006': {'runtime': 1202.1, 'memory': 1202.2}, 'E0007': {'runtime': 102.1, 'memory': 102.2}, 'Overall': {'runtime': 102.1, 'memory': 102.2}, 'read_design': {'runtime': 102.1, 'memory': 102.2}, 'check_lint': {'runtime': 102.1, 'memory': 102.2}, 'E0008': {'runtime': 1202.1, 'memory': 102.2}}, '20260511': {'E0001': {'runtime': 1099.1, 'memory': 192.0}, 'E0002': {'runtime': 1469.1, 'memory': 102.0}, 'E0003': {'runtime': 1699.1, 'memory': 1062.0}, 'E0004': {'runtime': 1599.1, 'memory': 112.0}, 'E0005': {'runtime': 1059.1, 'memory': 1002.0}, 'E0006': {'runtime': 12059.1, 'memory': 12509.2}, 'E0007': {'runtime': 10859.1, 'memory': 1069.2}, 'Overall': {'runtime': 1069.1, 'memory': 1069.2}, 'read_design': {'runtime': 1009.1, 'memory': 1459.2}, 'check_lint': {'runtime': 199.1, 'memory': 509.2}, 'E0008': {'runtime': 1219.1, 'memory': 169.2}}, '20260515': {'E0001': {'runtime': 102.1, 'memory': 192.2}, 'E0002': {'runtime': 142.1, 'memory': 102.2}, 'E0003': {'runtime': 162.1, 'memory': 102.2}, 'E0004': {'runtime': 152.1, 'memory': 112.2}, 'E0005': {'runtime': 102.1, 'memory': 102.2}, 'E0006': {'runtime': 1202.1, 'memory': 1202.2}, 'E0007': {'runtime': 102.1, 'memory': 102.2}, 'Overall': {'runtime': 102.1, 'memory': 102.2}, 'read_design': {'runtime': 102.1, 'memory': 102.2}, 'check_lint': {'runtime': 102.1, 'memory': 102.2}, 'E0008': {'runtime': 1202.1, 'memory': 102.2}}, '20260517': {'E0001': {'runtime': 102.1, 'memory': 192.2}, 'E0002': {'runtime': 142.1, 'memory': 102.2}, 'E0003': {'runtime': 162.1, 'memory': 102.2}, 'E0004': {'runtime': 152.1, 'memory': 112.2}, 'E0005': {'runtime': 102.1, 'memory': 102.2}, 'E0006': {'runtime': 1202.1, 'memory': 1202.2}, 'E0007': {'runtime': 102.1, 'memory': 102.2}, 'Overall': {'runtime': 102.1, 'memory': 102.2}, 'read_design': {'runtime': 102.1, 'memory': 102.2}, 'check_lint': {'runtime': 102.1, 'memory': 102.2}, 'E0008': {'runtime': 1202.1, 'memory': 102.2}}, '20260512': {'E0001': {'runtime': 108.1, 'memory': 198.2}, 'E0002': {'runtime': 148.1, 'memory': 108.2}, 'E0003': {'runtime': 168.1, 'memory': 108.2}, 'E0004': {'runtime': 158.1, 'memory': 118.2}, 'E0005': {'runtime': 108.1, 'memory': 108.2}, 'E0006': {'runtime': 1208.1, 'memory': 1208.2}, 'E0007': {'runtime': 108.1, 'memory': 108.2}, 'Overall': {'runtime': 108.1, 'memory': 108.2}, 'read_design': {'runtime': 108.1, 'memory': 108.2}, 'check_lint': {'runtime': 108.1, 'memory': 108.2}, 'E0008': {'runtime': 1208.1, 'memory': 108.2}}, '20260513': {'E0001': {'runtime': 105.1, 'memory': 195.2}, 'E0002': {'runtime': 145.1, 'memory': 105.2}, 'E0003': {'runtime': 165.1, 'memory': 105.2}, 'E0004': {'runtime': 155.1, 'memory': 115.2}, 'E0005': {'runtime': 105.1, 'memory': 105.2}, 'E0006': {'runtime': 1205.1, 'memory': 1205.2}, 'E0007': {'runtime': 105.1, 'memory': 105.2}, 'Overall': {'runtime': 105.1, 'memory': 105.2}, 'read_design': {'runtime': 105.1, 'memory': 105.2}, 'check_lint': {'runtime': 105.1, 'memory': 105.2}, 'E0008': {'runtime': 1205.1, 'memory': 105.2}}}, 'available_dates': ['20260510', '20260514', '20260516', '20260511', '20260515', '20260517', '20260512', '20260513']}}
+2026-07-09 21:52:03 - INFO - utils.data_parser - data_parser.py:31 - 解析单线程数据 - elint
+2026-07-09 21:52:03 - INFO - utils.single_thread_parser - single_thread_parser.py:19 - 数据管理器初始化
+2026-07-09 21:52:03 - INFO - utils.data_manager - data_manager.py:109 - 从文件加载工具数据: E:\git\develop\monitor\monitor2.5\data\elint\original\aes\single\runtime\E0001.json
+2026-07-09 21:52:03 - INFO - utils.data_manager - data_manager.py:101 - 保存工具数据到文件: E:\git\develop\monitor\monitor2.5\data\elint\original\aes\single\runtime\E0001.json
+2026-07-09 21:52:03 - INFO - utils.data_manager - data_manager.py:109 - 从文件加载工具数据: E:\git\develop\monitor\monitor2.5\data\elint\original\aes\single\runtime\E0002.json
+2026-07-09 21:52:03 - INFO - utils.data_manager - data_manager.py:101 - 保存工具数据到文件: E:\git\develop\monitor\monitor2.5\data\elint\original\aes\single\runtime\E0002.json
+2026-07-09 21:52:03 - INFO - utils.data_manager - data_manager.py:109 - 从文件加载工具数据: E:\git\develop\monitor\monitor2.5\data\elint\original\aes\single\runtime\E0003.json
+2026-07-09 21:52:03 - INFO - utils.data_manager - data_manager.py:101 - 保存工具数据到文件: E:\git\develop\monitor\monitor2.5\data\elint\original\aes\single\runtime\E0003.json
+2026-07-09 21:52:03 - INFO - utils.data_manager - data_manager.py:109 - 从文件加载工具数据: E:\git\develop\monitor\monitor2.5\data\elint\original\aes\single\runtime\E0004.json
+2026-07-09 21:52:03 - INFO - utils.data_manager - data_manager.py:101 - 保存工具数据到文件: E:\git\develop\monitor\monitor2.5\data\elint\original\aes\single\runtime\E0004.json
+2026-07-09 21:52:03 - INFO - utils.data_manager - data_manager.py:109 - 从文件加载工具数据: E:\git\develop\monitor\monitor2.5\data\elint\original\aes\single\runtime\E0005.json
+2026-07-09 21:52:03 - INFO - utils.data_manager - data_manager.py:101 - 保存工具数据到文件: E:\git\develop\monitor\monitor2.5\data\elint\original\aes\single\runtime\E0005.json
+2026-07-09 21:52:03 - INFO - utils.data_manager - data_manager.py:109 - 从文件加载工具数据: E:\git\develop\monitor\monitor2.5\data\elint\original\aes\single\runtime\E0006.json
+2026-07-09 21:52:03 - INFO - utils.data_manager - data_manager.py:101 - 保存工具数据到文件: E:\git\develop\monitor\monitor2.5\data\elint\original\aes\single\runtime\E0006.json
+2026-07-09 21:52:03 - INFO - utils.data_manager - data_manager.py:109 - 从文件加载工具数据: E:\git\develop\monitor\monitor2.5\data\elint\original\aes\single\runtime\E0007.json
+2026-07-09 21:52:03 - INFO - utils.data_manager - data_manager.py:101 - 保存工具数据到文件: E:\git\develop\monitor\monitor2.5\data\elint\original\aes\single\runtime\E0007.json
+2026-07-09 21:52:03 - INFO - utils.data_manager - data_manager.py:109 - 从文件加载工具数据: E:\git\develop\monitor\monitor2.5\data\elint\original\aes\single\runtime\Overall.json
+2026-07-09 21:52:03 - INFO - utils.data_manager - data_manager.py:101 - 保存工具数据到文件: E:\git\develop\monitor\monitor2.5\data\elint\original\aes\single\runtime\Overall.json
+2026-07-09 21:52:03 - INFO - utils.data_manager - data_manager.py:109 - 从文件加载工具数据: E:\git\develop\monitor\monitor2.5\data\elint\original\aes\single\runtime\read_design.json
+2026-07-09 21:52:03 - INFO - utils.data_manager - data_manager.py:101 - 保存工具数据到文件: E:\git\develop\monitor\monitor2.5\data\elint\original\aes\single\runtime\read_design.json
+2026-07-09 21:52:03 - INFO - utils.data_manager - data_manager.py:109 - 从文件加载工具数据: E:\git\develop\monitor\monitor2.5\data\elint\original\aes\single\runtime\check_lint.json
+2026-07-09 21:52:03 - INFO - utils.data_manager - data_manager.py:101 - 保存工具数据到文件: E:\git\develop\monitor\monitor2.5\data\elint\original\aes\single\runtime\check_lint.json
+2026-07-09 21:52:03 - INFO - utils.data_manager - data_manager.py:109 - 从文件加载工具数据: E:\git\develop\monitor\monitor2.5\data\elint\original\aes\single\runtime\E0008.json
+2026-07-09 21:52:03 - INFO - utils.data_manager - data_manager.py:101 - 保存工具数据到文件: E:\git\develop\monitor\monitor2.5\data\elint\original\aes\single\runtime\E0008.json
+2026-07-09 21:52:03 - INFO - utils.data_manager - data_manager.py:109 - 从文件加载工具数据: E:\git\develop\monitor\monitor2.5\data\elint\original\aes\single\memory\E0001.json
+2026-07-09 21:52:03 - INFO - utils.data_manager - data_manager.py:101 - 保存工具数据到文件: E:\git\develop\monitor\monitor2.5\data\elint\original\aes\single\memory\E0001.json
+2026-07-09 21:52:03 - INFO - utils.data_manager - data_manager.py:109 - 从文件加载工具数据: E:\git\develop\monitor\monitor2.5\data\elint\original\aes\single\memory\E0002.json
+2026-07-09 21:52:03 - INFO - utils.data_manager - data_manager.py:101 - 保存工具数据到文件: E:\git\develop\monitor\monitor2.5\data\elint\original\aes\single\memory\E0002.json
+2026-07-09 21:52:03 - INFO - utils.data_manager - data_manager.py:109 - 从文件加载工具数据: E:\git\develop\monitor\monitor2.5\data\elint\original\aes\single\memory\E0003.json
+2026-07-09 21:52:03 - INFO - utils.data_manager - data_manager.py:101 - 保存工具数据到文件: E:\git\develop\monitor\monitor2.5\data\elint\original\aes\single\memory\E0003.json
+2026-07-09 21:52:03 - INFO - utils.data_manager - data_manager.py:109 - 从文件加载工具数据: E:\git\develop\monitor\monitor2.5\data\elint\original\aes\single\memory\E0004.json
+2026-07-09 21:52:03 - INFO - utils.data_manager - data_manager.py:101 - 保存工具数据到文件: E:\git\develop\monitor\monitor2.5\data\elint\original\aes\single\memory\E0004.json
+2026-07-09 21:52:03 - INFO - utils.data_manager - data_manager.py:109 - 从文件加载工具数据: E:\git\develop\monitor\monitor2.5\data\elint\original\aes\single\memory\E0005.json
+2026-07-09 21:52:03 - INFO - utils.data_manager - data_manager.py:101 - 保存工具数据到文件: E:\git\develop\monitor\monitor2.5\data\elint\original\aes\single\memory\E0005.json
+2026-07-09 21:52:03 - INFO - utils.data_manager - data_manager.py:109 - 从文件加载工具数据: E:\git\develop\monitor\monitor2.5\data\elint\original\aes\single\memory\E0006.json
+2026-07-09 21:52:03 - INFO - utils.data_manager - data_manager.py:101 - 保存工具数据到文件: E:\git\develop\monitor\monitor2.5\data\elint\original\aes\single\memory\E0006.json
+2026-07-09 21:52:03 - INFO - utils.data_manager - data_manager.py:109 - 从文件加载工具数据: E:\git\develop\monitor\monitor2.5\data\elint\original\aes\single\memory\E0007.json
+2026-07-09 21:52:03 - INFO - utils.data_manager - data_manager.py:101 - 保存工具数据到文件: E:\git\develop\monitor\monitor2.5\data\elint\original\aes\single\memory\E0007.json
+2026-07-09 21:52:03 - INFO - utils.data_manager - data_manager.py:109 - 从文件加载工具数据: E:\git\develop\monitor\monitor2.5\data\elint\original\aes\single\memory\Overall.json
+2026-07-09 21:52:03 - INFO - utils.data_manager - data_manager.py:101 - 保存工具数据到文件: E:\git\develop\monitor\monitor2.5\data\elint\original\aes\single\memory\Overall.json
+2026-07-09 21:52:03 - INFO - utils.data_manager - data_manager.py:109 - 从文件加载工具数据: E:\git\develop\monitor\monitor2.5\data\elint\original\aes\single\memory\read_design.json
+2026-07-09 21:52:03 - INFO - utils.data_manager - data_manager.py:101 - 保存工具数据到文件: E:\git\develop\monitor\monitor2.5\data\elint\original\aes\single\memory\read_design.json
+2026-07-09 21:52:03 - INFO - utils.data_manager - data_manager.py:109 - 从文件加载工具数据: E:\git\develop\monitor\monitor2.5\data\elint\original\aes\single\memory\check_lint.json
+2026-07-09 21:52:03 - INFO - utils.data_manager - data_manager.py:101 - 保存工具数据到文件: E:\git\develop\monitor\monitor2.5\data\elint\original\aes\single\memory\check_lint.json
+2026-07-09 21:52:03 - INFO - utils.data_manager - data_manager.py:109 - 从文件加载工具数据: E:\git\develop\monitor\monitor2.5\data\elint\original\aes\single\memory\E0008.json
+2026-07-09 21:52:03 - INFO - utils.data_manager - data_manager.py:101 - 保存工具数据到文件: E:\git\develop\monitor\monitor2.5\data\elint\original\aes\single\memory\E0008.json
+2026-07-09 21:52:03 - INFO - utils.data_manager - data_manager.py:109 - 从文件加载工具数据: E:\git\develop\monitor\monitor2.5\data\elint\original\nv\single\runtime\E0001.json
+2026-07-09 21:52:03 - INFO - utils.data_manager - data_manager.py:101 - 保存工具数据到文件: E:\git\develop\monitor\monitor2.5\data\elint\original\nv\single\runtime\E0001.json
+2026-07-09 21:52:03 - INFO - utils.data_manager - data_manager.py:109 - 从文件加载工具数据: E:\git\develop\monitor\monitor2.5\data\elint\original\nv\single\runtime\E0002.json
+2026-07-09 21:52:03 - INFO - utils.data_manager - data_manager.py:101 - 保存工具数据到文件: E:\git\develop\monitor\monitor2.5\data\elint\original\nv\single\runtime\E0002.json
+2026-07-09 21:52:03 - INFO - utils.data_manager - data_manager.py:109 - 从文件加载工具数据: E:\git\develop\monitor\monitor2.5\data\elint\original\nv\single\runtime\E0003.json
+2026-07-09 21:52:03 - INFO - utils.data_manager - data_manager.py:101 - 保存工具数据到文件: E:\git\develop\monitor\monitor2.5\data\elint\original\nv\single\runtime\E0003.json
+2026-07-09 21:52:03 - INFO - utils.data_manager - data_manager.py:109 - 从文件加载工具数据: E:\git\develop\monitor\monitor2.5\data\elint\original\nv\single\runtime\E0004.json
+2026-07-09 21:52:03 - INFO - utils.data_manager - data_manager.py:101 - 保存工具数据到文件: E:\git\develop\monitor\monitor2.5\data\elint\original\nv\single\runtime\E0004.json
+2026-07-09 21:52:03 - INFO - utils.data_manager - data_manager.py:109 - 从文件加载工具数据: E:\git\develop\monitor\monitor2.5\data\elint\original\nv\single\runtime\E0005.json
+2026-07-09 21:52:03 - INFO - utils.data_manager - data_manager.py:101 - 保存工具数据到文件: E:\git\develop\monitor\monitor2.5\data\elint\original\nv\single\runtime\E0005.json
+2026-07-09 21:52:03 - INFO - utils.data_manager - data_manager.py:109 - 从文件加载工具数据: E:\git\develop\monitor\monitor2.5\data\elint\original\nv\single\runtime\E0006.json
+2026-07-09 21:52:03 - INFO - utils.data_manager - data_manager.py:101 - 保存工具数据到文件: E:\git\develop\monitor\monitor2.5\data\elint\original\nv\single\runtime\E0006.json
+2026-07-09 21:52:03 - INFO - utils.data_manager - data_manager.py:109 - 从文件加载工具数据: E:\git\develop\monitor\monitor2.5\data\elint\original\nv\single\runtime\E0007.json
+2026-07-09 21:52:03 - INFO - utils.data_manager - data_manager.py:101 - 保存工具数据到文件: E:\git\develop\monitor\monitor2.5\data\elint\original\nv\single\runtime\E0007.json
+2026-07-09 21:52:03 - INFO - utils.data_manager - data_manager.py:109 - 从文件加载工具数据: E:\git\develop\monitor\monitor2.5\data\elint\original\nv\single\runtime\Overall.json
+2026-07-09 21:52:03 - INFO - utils.data_manager - data_manager.py:101 - 保存工具数据到文件: E:\git\develop\monitor\monitor2.5\data\elint\original\nv\single\runtime\Overall.json
+2026-07-09 21:52:03 - INFO - utils.data_manager - data_manager.py:109 - 从文件加载工具数据: E:\git\develop\monitor\monitor2.5\data\elint\original\nv\single\runtime\read_design.json
+2026-07-09 21:52:03 - INFO - utils.data_manager - data_manager.py:101 - 保存工具数据到文件: E:\git\develop\monitor\monitor2.5\data\elint\original\nv\single\runtime\read_design.json
+2026-07-09 21:52:03 - INFO - utils.data_manager - data_manager.py:109 - 从文件加载工具数据: E:\git\develop\monitor\monitor2.5\data\elint\original\nv\single\runtime\check_lint.json
+2026-07-09 21:52:03 - INFO - utils.data_manager - data_manager.py:101 - 保存工具数据到文件: E:\git\develop\monitor\monitor2.5\data\elint\original\nv\single\runtime\check_lint.json
+2026-07-09 21:52:03 - INFO - utils.data_manager - data_manager.py:109 - 从文件加载工具数据: E:\git\develop\monitor\monitor2.5\data\elint\original\nv\single\runtime\E0008.json
+2026-07-09 21:52:03 - INFO - utils.data_manager - data_manager.py:101 - 保存工具数据到文件: E:\git\develop\monitor\monitor2.5\data\elint\original\nv\single\runtime\E0008.json
+2026-07-09 21:52:03 - INFO - utils.data_manager - data_manager.py:109 - 从文件加载工具数据: E:\git\develop\monitor\monitor2.5\data\elint\original\nv\single\memory\E0001.json
+2026-07-09 21:52:03 - INFO - utils.data_manager - data_manager.py:101 - 保存工具数据到文件: E:\git\develop\monitor\monitor2.5\data\elint\original\nv\single\memory\E0001.json
+2026-07-09 21:52:03 - INFO - utils.data_manager - data_manager.py:109 - 从文件加载工具数据: E:\git\develop\monitor\monitor2.5\data\elint\original\nv\single\memory\E0002.json
+2026-07-09 21:52:03 - INFO - utils.data_manager - data_manager.py:101 - 保存工具数据到文件: E:\git\develop\monitor\monitor2.5\data\elint\original\nv\single\memory\E0002.json
+2026-07-09 21:52:03 - INFO - utils.data_manager - data_manager.py:109 - 从文件加载工具数据: E:\git\develop\monitor\monitor2.5\data\elint\original\nv\single\memory\E0003.json
+2026-07-09 21:52:03 - INFO - utils.data_manager - data_manager.py:101 - 保存工具数据到文件: E:\git\develop\monitor\monitor2.5\data\elint\original\nv\single\memory\E0003.json
+2026-07-09 21:52:03 - INFO - utils.data_manager - data_manager.py:109 - 从文件加载工具数据: E:\git\develop\monitor\monitor2.5\data\elint\original\nv\single\memory\E0004.json
+2026-07-09 21:52:03 - INFO - utils.data_manager - data_manager.py:101 - 保存工具数据到文件: E:\git\develop\monitor\monitor2.5\data\elint\original\nv\single\memory\E0004.json
+2026-07-09 21:52:03 - INFO - utils.data_manager - data_manager.py:109 - 从文件加载工具数据: E:\git\develop\monitor\monitor2.5\data\elint\original\nv\single\memory\E0005.json
+2026-07-09 21:52:03 - INFO - utils.data_manager - data_manager.py:101 - 保存工具数据到文件: E:\git\develop\monitor\monitor2.5\data\elint\original\nv\single\memory\E0005.json
+2026-07-09 21:52:03 - INFO - utils.data_manager - data_manager.py:109 - 从文件加载工具数据: E:\git\develop\monitor\monitor2.5\data\elint\original\nv\single\memory\E0006.json
+2026-07-09 21:52:03 - INFO - utils.data_manager - data_manager.py:101 - 保存工具数据到文件: E:\git\develop\monitor\monitor2.5\data\elint\original\nv\single\memory\E0006.json
+2026-07-09 21:52:03 - INFO - utils.data_manager - data_manager.py:109 - 从文件加载工具数据: E:\git\develop\monitor\monitor2.5\data\elint\original\nv\single\memory\E0007.json
+2026-07-09 21:52:03 - INFO - utils.data_manager - data_manager.py:101 - 保存工具数据到文件: E:\git\develop\monitor\monitor2.5\data\elint\original\nv\single\memory\E0007.json
+2026-07-09 21:52:03 - INFO - utils.data_manager - data_manager.py:109 - 从文件加载工具数据: E:\git\develop\monitor\monitor2.5\data\elint\original\nv\single\memory\Overall.json
+2026-07-09 21:52:03 - INFO - utils.data_manager - data_manager.py:101 - 保存工具数据到文件: E:\git\develop\monitor\monitor2.5\data\elint\original\nv\single\memory\Overall.json
+2026-07-09 21:52:03 - INFO - utils.data_manager - data_manager.py:109 - 从文件加载工具数据: E:\git\develop\monitor\monitor2.5\data\elint\original\nv\single\memory\read_design.json
+2026-07-09 21:52:03 - INFO - utils.data_manager - data_manager.py:101 - 保存工具数据到文件: E:\git\develop\monitor\monitor2.5\data\elint\original\nv\single\memory\read_design.json
+2026-07-09 21:52:03 - INFO - utils.data_manager - data_manager.py:109 - 从文件加载工具数据: E:\git\develop\monitor\monitor2.5\data\elint\original\nv\single\memory\check_lint.json
+2026-07-09 21:52:03 - INFO - utils.data_manager - data_manager.py:101 - 保存工具数据到文件: E:\git\develop\monitor\monitor2.5\data\elint\original\nv\single\memory\check_lint.json
+2026-07-09 21:52:03 - INFO - utils.data_manager - data_manager.py:109 - 从文件加载工具数据: E:\git\develop\monitor\monitor2.5\data\elint\original\nv\single\memory\E0008.json
+2026-07-09 21:52:03 - INFO - utils.data_manager - data_manager.py:101 - 保存工具数据到文件: E:\git\develop\monitor\monitor2.5\data\elint\original\nv\single\memory\E0008.json
+2026-07-09 21:52:03 - INFO - utils.data_manager - data_manager.py:101 - 保存工具数据到文件: E:\git\develop\monitor\monitor2.5\data\elint\single.json
+2026-07-09 21:52:03 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [09/Jul/2026 21:52:03] "POST /api/tools/elint/data HTTP/1.1" 200 -
+2026-07-09 21:52:03 - INFO - __main__ - app_new.py:193 - 收到用户 a55e6f8d-c90d-4044-8e7f-42fec9e297b6 请求图表数据: single runtime Overall 
+2026-07-09 21:52:03 - INFO - __main__ - app_new.py:193 - 收到用户 a55e6f8d-c90d-4044-8e7f-42fec9e297b6 请求图表数据: single runtime Overall 
+2026-07-09 21:52:03 - INFO - utils.data_manager - data_manager.py:109 - 从文件加载工具数据: E:\git\develop\monitor\monitor2.5\data\elint\original\aes\single\runtime\Overall.json
+2026-07-09 21:52:03 - INFO - utils.data_manager - data_manager.py:109 - 从文件加载工具数据: E:\git\develop\monitor\monitor2.5\data\elint\original\aes\single\runtime\Overall.json
+2026-07-09 21:52:03 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [09/Jul/2026 21:52:03] "POST /api/chart/data HTTP/1.1" 200 -
+2026-07-09 21:52:03 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [09/Jul/2026 21:52:03] "POST /api/chart/data HTTP/1.1" 200 -
+2026-07-09 21:52:09 - INFO - utils.data_manager - data_manager.py:109 - 从文件加载工具数据: E:\git\develop\monitor\monitor2.5\data\elint\single.json
+2026-07-09 21:52:09 - INFO - utils.data_manager - data_manager.py:109 - 从文件加载工具数据: E:\git\develop\monitor\monitor2.5\data\elint\original\aes\single\runtime\E0001.json
+2026-07-09 21:52:09 - INFO - utils.data_manager - data_manager.py:109 - 从文件加载工具数据: E:\git\develop\monitor\monitor2.5\data\elint\original\aes\single\runtime\check_lint.json
+2026-07-09 21:52:09 - INFO - utils.data_manager - data_manager.py:109 - 从文件加载工具数据: E:\git\develop\monitor\monitor2.5\data\elint\original\aes\single\runtime\E0003.json
+2026-07-09 21:52:09 - INFO - utils.data_manager - data_manager.py:109 - 从文件加载工具数据: E:\git\develop\monitor\monitor2.5\data\elint\original\aes\single\runtime\E0004.json
+2026-07-09 21:52:09 - INFO - utils.data_manager - data_manager.py:109 - 从文件加载工具数据: E:\git\develop\monitor\monitor2.5\data\elint\original\aes\single\runtime\E0007.json
+2026-07-09 21:52:09 - INFO - utils.data_manager - data_manager.py:109 - 从文件加载工具数据: E:\git\develop\monitor\monitor2.5\data\elint\original\aes\single\runtime\E0008.json
+2026-07-09 21:52:09 - INFO - utils.data_manager - data_manager.py:109 - 从文件加载工具数据: E:\git\develop\monitor\monitor2.5\data\elint\original\aes\single\runtime\Overall.json
+2026-07-09 21:52:09 - INFO - utils.data_manager - data_manager.py:109 - 从文件加载工具数据: E:\git\develop\monitor\monitor2.5\data\elint\original\aes\single\runtime\E0002.json
+2026-07-09 21:52:09 - INFO - utils.data_manager - data_manager.py:109 - 从文件加载工具数据: E:\git\develop\monitor\monitor2.5\data\elint\original\aes\single\runtime\read_design.json
+2026-07-09 21:52:09 - INFO - utils.data_manager - data_manager.py:109 - 从文件加载工具数据: E:\git\develop\monitor\monitor2.5\data\elint\original\aes\single\runtime\E0005.json
+2026-07-09 21:52:09 - INFO - utils.data_manager - data_manager.py:109 - 从文件加载工具数据: E:\git\develop\monitor\monitor2.5\data\elint\original\aes\single\runtime\E0006.json
+2026-07-09 21:52:09 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [09/Jul/2026 21:52:09] "POST /api/comparison HTTP/1.1" 200 -
+2026-07-09 21:52:15 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [09/Jul/2026 21:52:15] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2026-07-09 21:52:15 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [09/Jul/2026 21:52:15] "[33mGET /static/js/axios.min.js.map HTTP/1.1[0m" 404 -
+2026-07-09 21:52:26 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'E:\\python\\3.8\\Lib\\site-packages\\matplotlib\\pylab.py', reloading
+2026-07-09 21:52:26 - INFO - werkzeug - _internal.py:97 -  * Restarting with watchdog (windowsapi)
+2026-07-09 21:52:27 - INFO - utils.tool_manager - tool_manager.py:54 - 加载工具配置文件: E:\git\develop\monitor\monitor2.5\data\tools.json
+2026-07-09 21:52:27 - INFO - utils.tool_manager - tool_manager.py:45 - 工具管理器初始化完成
+2026-07-09 21:52:27 - DEBUG - matplotlib - __init__.py:333 - matplotlib data path: E:\python\3.8\lib\site-packages\matplotlib\mpl-data
+2026-07-09 21:52:27 - DEBUG - matplotlib - __init__.py:333 - CONFIGDIR=C:\Users\Administrator\.matplotlib
+2026-07-09 21:52:27 - DEBUG - matplotlib - __init__.py:1507 - interactive is False
+2026-07-09 21:52:27 - DEBUG - matplotlib - __init__.py:1508 - platform is win32
+2026-07-09 21:52:27 - DEBUG - matplotlib - __init__.py:333 - CACHEDIR=C:\Users\Administrator\.matplotlib
+2026-07-09 21:52:27 - DEBUG - matplotlib.font_manager - font_manager.py:1543 - Using fontManager instance from C:\Users\Administrator\.matplotlib\fontlist-v330.json
+2026-07-09 21:52:27 - INFO - utils.data_manager - data_manager.py:45 - 数据管理器初始化
+2026-07-09 21:52:27 - INFO - utils.data_parser - data_parser.py:18 - 数据管理器初始化
+2026-07-09 21:52:27 - INFO - __main__ - app_new.py:246 - 启动性能监控平台后端服务
+2026-07-09 21:52:27 - WARN - werkzeug - _internal.py:97 -  * Debugger is active!
+2026-07-09 21:52:27 - INFO - werkzeug - _internal.py:97 -  * Debugger PIN: 644-902-559
+2026-07-09 21:59:25 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'e:\\git\\develop\\monitor\\monitor2.5\\utils\\data_manager.py', reloading
+2026-07-09 21:59:25 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'e:\\git\\develop\\monitor\\monitor2.5\\utils\\data_manager.py', reloading
+2026-07-09 21:59:26 - INFO - werkzeug - _internal.py:97 -  * Restarting with watchdog (windowsapi)
+2026-07-09 21:59:26 - INFO - utils.tool_manager - tool_manager.py:54 - 加载工具配置文件: E:\git\develop\monitor\monitor2.5\data\tools.json
+2026-07-09 21:59:26 - INFO - utils.tool_manager - tool_manager.py:45 - 工具管理器初始化完成
+2026-07-09 21:59:26 - DEBUG - matplotlib - __init__.py:333 - matplotlib data path: E:\python\3.8\lib\site-packages\matplotlib\mpl-data
+2026-07-09 21:59:26 - DEBUG - matplotlib - __init__.py:333 - CONFIGDIR=C:\Users\Administrator\.matplotlib
+2026-07-09 21:59:26 - DEBUG - matplotlib - __init__.py:1507 - interactive is False
+2026-07-09 21:59:26 - DEBUG - matplotlib - __init__.py:1508 - platform is win32
+2026-07-09 21:59:27 - DEBUG - matplotlib - __init__.py:333 - CACHEDIR=C:\Users\Administrator\.matplotlib
+2026-07-09 21:59:27 - DEBUG - matplotlib.font_manager - font_manager.py:1543 - Using fontManager instance from C:\Users\Administrator\.matplotlib\fontlist-v330.json
+2026-07-09 21:59:27 - INFO - utils.data_manager - data_manager.py:45 - 数据管理器初始化
+2026-07-09 21:59:27 - INFO - utils.data_parser - data_parser.py:18 - 数据管理器初始化
+2026-07-09 21:59:27 - INFO - __main__ - app_new.py:246 - 启动性能监控平台后端服务
+2026-07-09 21:59:27 - WARN - werkzeug - _internal.py:97 -  * Debugger is active!
+2026-07-09 21:59:27 - INFO - werkzeug - _internal.py:97 -  * Debugger PIN: 644-902-559
+2026-07-09 21:59:30 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'e:\\git\\develop\\monitor\\monitor2.5\\utils\\data_manager.py', reloading
+2026-07-09 21:59:30 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'e:\\git\\develop\\monitor\\monitor2.5\\utils\\data_manager.py', reloading
+2026-07-09 21:59:31 - INFO - werkzeug - _internal.py:97 -  * Restarting with watchdog (windowsapi)
+2026-07-09 21:59:32 - INFO - utils.tool_manager - tool_manager.py:54 - 加载工具配置文件: E:\git\develop\monitor\monitor2.5\data\tools.json
+2026-07-09 21:59:32 - INFO - utils.tool_manager - tool_manager.py:45 - 工具管理器初始化完成
+2026-07-09 21:59:32 - DEBUG - matplotlib - __init__.py:333 - matplotlib data path: E:\python\3.8\lib\site-packages\matplotlib\mpl-data
+2026-07-09 21:59:32 - DEBUG - matplotlib - __init__.py:333 - CONFIGDIR=C:\Users\Administrator\.matplotlib
+2026-07-09 21:59:32 - DEBUG - matplotlib - __init__.py:1507 - interactive is False
+2026-07-09 21:59:32 - DEBUG - matplotlib - __init__.py:1508 - platform is win32
+2026-07-09 21:59:32 - DEBUG - matplotlib - __init__.py:333 - CACHEDIR=C:\Users\Administrator\.matplotlib
+2026-07-09 21:59:32 - DEBUG - matplotlib.font_manager - font_manager.py:1543 - Using fontManager instance from C:\Users\Administrator\.matplotlib\fontlist-v330.json
+2026-07-09 21:59:32 - INFO - utils.data_manager - data_manager.py:45 - 数据管理器初始化
+2026-07-09 21:59:32 - INFO - utils.data_parser - data_parser.py:18 - 数据管理器初始化
+2026-07-09 21:59:32 - INFO - __main__ - app_new.py:246 - 启动性能监控平台后端服务
+2026-07-09 21:59:32 - WARN - werkzeug - _internal.py:97 -  * Debugger is active!
+2026-07-09 21:59:32 - INFO - werkzeug - _internal.py:97 -  * Debugger PIN: 644-902-559
+2026-07-09 22:12:09 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'e:\\git\\develop\\monitor\\monitor2.5\\utils\\data_manager.py', reloading
+2026-07-09 22:12:09 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'e:\\git\\develop\\monitor\\monitor2.5\\utils\\data_manager.py', reloading
+2026-07-09 22:12:09 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'e:\\git\\develop\\monitor\\monitor2.5\\utils\\data_manager.py', reloading
+2026-07-09 22:12:10 - INFO - werkzeug - _internal.py:97 -  * Restarting with watchdog (windowsapi)
+2026-07-09 22:12:10 - INFO - utils.tool_manager - tool_manager.py:54 - 加载工具配置文件: E:\git\develop\monitor\monitor2.5\data\tools.json
+2026-07-09 22:12:10 - INFO - utils.tool_manager - tool_manager.py:45 - 工具管理器初始化完成
+2026-07-09 22:12:11 - DEBUG - matplotlib - __init__.py:333 - matplotlib data path: E:\python\3.8\lib\site-packages\matplotlib\mpl-data
+2026-07-09 22:12:11 - DEBUG - matplotlib - __init__.py:333 - CONFIGDIR=C:\Users\Administrator\.matplotlib
+2026-07-09 22:12:11 - DEBUG - matplotlib - __init__.py:1507 - interactive is False
+2026-07-09 22:12:11 - DEBUG - matplotlib - __init__.py:1508 - platform is win32
+2026-07-09 22:12:11 - DEBUG - matplotlib - __init__.py:333 - CACHEDIR=C:\Users\Administrator\.matplotlib
+2026-07-09 22:12:11 - DEBUG - matplotlib.font_manager - font_manager.py:1543 - Using fontManager instance from C:\Users\Administrator\.matplotlib\fontlist-v330.json
+2026-07-09 22:12:11 - INFO - utils.data_manager - data_manager.py:45 - 数据管理器初始化
+2026-07-09 22:12:11 - INFO - utils.data_parser - data_parser.py:18 - 数据管理器初始化
+2026-07-09 22:12:11 - INFO - __main__ - app_new.py:246 - 启动性能监控平台后端服务
+2026-07-09 22:12:11 - WARN - werkzeug - _internal.py:97 -  * Debugger is active!
+2026-07-09 22:12:11 - INFO - werkzeug - _internal.py:97 -  * Debugger PIN: 644-902-559
+2026-07-09 22:12:27 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'e:\\git\\develop\\monitor\\monitor2.5\\utils\\data_manager.py', reloading
+2026-07-09 22:12:27 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'e:\\git\\develop\\monitor\\monitor2.5\\utils\\data_manager.py', reloading
+2026-07-09 22:12:28 - INFO - werkzeug - _internal.py:97 -  * Restarting with watchdog (windowsapi)
+2026-07-09 22:12:29 - INFO - utils.tool_manager - tool_manager.py:54 - 加载工具配置文件: E:\git\develop\monitor\monitor2.5\data\tools.json
+2026-07-09 22:12:29 - INFO - utils.tool_manager - tool_manager.py:45 - 工具管理器初始化完成
+2026-07-09 22:12:29 - DEBUG - matplotlib - __init__.py:333 - matplotlib data path: E:\python\3.8\lib\site-packages\matplotlib\mpl-data
+2026-07-09 22:12:29 - DEBUG - matplotlib - __init__.py:333 - CONFIGDIR=C:\Users\Administrator\.matplotlib
+2026-07-09 22:12:29 - DEBUG - matplotlib - __init__.py:1507 - interactive is False
+2026-07-09 22:12:29 - DEBUG - matplotlib - __init__.py:1508 - platform is win32
+2026-07-09 22:12:29 - DEBUG - matplotlib - __init__.py:333 - CACHEDIR=C:\Users\Administrator\.matplotlib
+2026-07-09 22:12:29 - DEBUG - matplotlib.font_manager - font_manager.py:1543 - Using fontManager instance from C:\Users\Administrator\.matplotlib\fontlist-v330.json
+2026-07-09 22:12:29 - INFO - utils.data_manager - data_manager.py:45 - 数据管理器初始化
+2026-07-09 22:12:29 - INFO - utils.data_parser - data_parser.py:18 - 数据管理器初始化
+2026-07-09 22:12:29 - INFO - __main__ - app_new.py:246 - 启动性能监控平台后端服务
+2026-07-09 22:12:29 - WARN - werkzeug - _internal.py:97 -  * Debugger is active!
+2026-07-09 22:12:29 - INFO - werkzeug - _internal.py:97 -  * Debugger PIN: 644-902-559
+2026-07-09 22:12:34 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'E:\\python\\3.8\\Lib\\typing.py', reloading
+2026-07-09 22:12:35 - INFO - werkzeug - _internal.py:97 -  * Restarting with watchdog (windowsapi)
+2026-07-09 22:12:36 - INFO - utils.tool_manager - tool_manager.py:54 - 加载工具配置文件: E:\git\develop\monitor\monitor2.5\data\tools.json
+2026-07-09 22:12:36 - INFO - utils.tool_manager - tool_manager.py:45 - 工具管理器初始化完成
+2026-07-09 22:12:36 - DEBUG - matplotlib - __init__.py:333 - matplotlib data path: E:\python\3.8\lib\site-packages\matplotlib\mpl-data
+2026-07-09 22:12:36 - DEBUG - matplotlib - __init__.py:333 - CONFIGDIR=C:\Users\Administrator\.matplotlib
+2026-07-09 22:12:36 - DEBUG - matplotlib - __init__.py:1507 - interactive is False
+2026-07-09 22:12:36 - DEBUG - matplotlib - __init__.py:1508 - platform is win32
+2026-07-09 22:12:36 - DEBUG - matplotlib - __init__.py:333 - CACHEDIR=C:\Users\Administrator\.matplotlib
+2026-07-09 22:12:36 - DEBUG - matplotlib.font_manager - font_manager.py:1543 - Using fontManager instance from C:\Users\Administrator\.matplotlib\fontlist-v330.json
+2026-07-09 22:12:37 - INFO - utils.data_manager - data_manager.py:45 - 数据管理器初始化
+2026-07-09 22:12:37 - INFO - utils.data_parser - data_parser.py:18 - 数据管理器初始化
+2026-07-09 22:12:37 - INFO - __main__ - app_new.py:246 - 启动性能监控平台后端服务
+2026-07-09 22:12:37 - WARN - werkzeug - _internal.py:97 -  * Debugger is active!
+2026-07-09 22:12:37 - INFO - werkzeug - _internal.py:97 -  * Debugger PIN: 644-902-559
+2026-07-09 22:12:39 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'e:\\git\\develop\\monitor\\monitor2.5\\utils\\data_manager.py', reloading
+2026-07-09 22:12:39 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'e:\\git\\develop\\monitor\\monitor2.5\\utils\\data_manager.py', reloading
+2026-07-09 22:12:40 - INFO - werkzeug - _internal.py:97 -  * Restarting with watchdog (windowsapi)
+2026-07-09 22:12:40 - INFO - utils.tool_manager - tool_manager.py:54 - 加载工具配置文件: E:\git\develop\monitor\monitor2.5\data\tools.json
+2026-07-09 22:12:40 - INFO - utils.tool_manager - tool_manager.py:45 - 工具管理器初始化完成
+2026-07-09 22:12:41 - DEBUG - matplotlib - __init__.py:333 - matplotlib data path: E:\python\3.8\lib\site-packages\matplotlib\mpl-data
+2026-07-09 22:12:41 - DEBUG - matplotlib - __init__.py:333 - CONFIGDIR=C:\Users\Administrator\.matplotlib
+2026-07-09 22:12:41 - DEBUG - matplotlib - __init__.py:1507 - interactive is False
+2026-07-09 22:12:41 - DEBUG - matplotlib - __init__.py:1508 - platform is win32
+2026-07-09 22:12:41 - DEBUG - matplotlib - __init__.py:333 - CACHEDIR=C:\Users\Administrator\.matplotlib
+2026-07-09 22:12:41 - DEBUG - matplotlib.font_manager - font_manager.py:1543 - Using fontManager instance from C:\Users\Administrator\.matplotlib\fontlist-v330.json
+2026-07-09 22:12:41 - INFO - utils.data_manager - data_manager.py:45 - 数据管理器初始化
+2026-07-09 22:12:41 - INFO - utils.data_parser - data_parser.py:18 - 数据管理器初始化
+2026-07-09 22:12:41 - INFO - __main__ - app_new.py:246 - 启动性能监控平台后端服务
+2026-07-09 22:12:41 - WARN - werkzeug - _internal.py:97 -  * Debugger is active!
+2026-07-09 22:12:41 - INFO - werkzeug - _internal.py:97 -  * Debugger PIN: 644-902-559
+2026-07-09 22:12:45 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'e:\\git\\develop\\monitor\\monitor2.5\\utils\\data_manager.py', reloading
+2026-07-09 22:12:45 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'e:\\git\\develop\\monitor\\monitor2.5\\utils\\data_manager.py', reloading
+2026-07-09 22:12:45 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'e:\\git\\develop\\monitor\\monitor2.5\\utils\\data_manager.py', reloading
+2026-07-09 22:12:45 - INFO - werkzeug - _internal.py:97 -  * Restarting with watchdog (windowsapi)
+2026-07-09 22:12:46 - INFO - utils.tool_manager - tool_manager.py:54 - 加载工具配置文件: E:\git\develop\monitor\monitor2.5\data\tools.json
+2026-07-09 22:12:46 - INFO - utils.tool_manager - tool_manager.py:45 - 工具管理器初始化完成
+2026-07-09 22:12:46 - DEBUG - matplotlib - __init__.py:333 - matplotlib data path: E:\python\3.8\lib\site-packages\matplotlib\mpl-data
+2026-07-09 22:12:46 - DEBUG - matplotlib - __init__.py:333 - CONFIGDIR=C:\Users\Administrator\.matplotlib
+2026-07-09 22:12:46 - DEBUG - matplotlib - __init__.py:1507 - interactive is False
+2026-07-09 22:12:46 - DEBUG - matplotlib - __init__.py:1508 - platform is win32
+2026-07-09 22:12:46 - DEBUG - matplotlib - __init__.py:333 - CACHEDIR=C:\Users\Administrator\.matplotlib
+2026-07-09 22:12:46 - DEBUG - matplotlib.font_manager - font_manager.py:1543 - Using fontManager instance from C:\Users\Administrator\.matplotlib\fontlist-v330.json
+2026-07-09 22:12:46 - INFO - utils.data_manager - data_manager.py:45 - 数据管理器初始化
+2026-07-09 22:12:46 - INFO - utils.data_parser - data_parser.py:18 - 数据管理器初始化
+2026-07-09 22:12:46 - INFO - __main__ - app_new.py:246 - 启动性能监控平台后端服务
+2026-07-09 22:12:46 - WARN - werkzeug - _internal.py:97 -  * Debugger is active!
+2026-07-09 22:12:46 - INFO - werkzeug - _internal.py:97 -  * Debugger PIN: 644-902-559
+2026-07-09 22:12:49 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'e:\\git\\develop\\monitor\\monitor2.5\\utils\\data_manager.py', reloading
+2026-07-09 22:12:49 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'e:\\git\\develop\\monitor\\monitor2.5\\utils\\data_manager.py', reloading
+2026-07-09 22:12:49 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'e:\\git\\develop\\monitor\\monitor2.5\\utils\\data_manager.py', reloading
+2026-07-09 22:12:49 - INFO - werkzeug - _internal.py:97 -  * Restarting with watchdog (windowsapi)
+2026-07-09 22:12:50 - INFO - utils.tool_manager - tool_manager.py:54 - 加载工具配置文件: E:\git\develop\monitor\monitor2.5\data\tools.json
+2026-07-09 22:12:50 - INFO - utils.tool_manager - tool_manager.py:45 - 工具管理器初始化完成
+2026-07-09 22:12:50 - DEBUG - matplotlib - __init__.py:333 - matplotlib data path: E:\python\3.8\lib\site-packages\matplotlib\mpl-data
+2026-07-09 22:12:50 - DEBUG - matplotlib - __init__.py:333 - CONFIGDIR=C:\Users\Administrator\.matplotlib
+2026-07-09 22:12:50 - DEBUG - matplotlib - __init__.py:1507 - interactive is False
+2026-07-09 22:12:50 - DEBUG - matplotlib - __init__.py:1508 - platform is win32
+2026-07-09 22:12:50 - DEBUG - matplotlib - __init__.py:333 - CACHEDIR=C:\Users\Administrator\.matplotlib
+2026-07-09 22:12:50 - DEBUG - matplotlib.font_manager - font_manager.py:1543 - Using fontManager instance from C:\Users\Administrator\.matplotlib\fontlist-v330.json
+2026-07-09 22:12:50 - INFO - utils.data_manager - data_manager.py:45 - 数据管理器初始化
+2026-07-09 22:12:50 - INFO - utils.data_parser - data_parser.py:18 - 数据管理器初始化
+2026-07-09 22:12:50 - INFO - __main__ - app_new.py:246 - 启动性能监控平台后端服务
+2026-07-09 22:12:50 - WARN - werkzeug - _internal.py:97 -  * Debugger is active!
+2026-07-09 22:12:50 - INFO - werkzeug - _internal.py:97 -  * Debugger PIN: 644-902-559
+2026-07-09 22:13:03 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'e:\\git\\develop\\monitor\\monitor2.5\\utils\\data_manager.py', reloading
+2026-07-09 22:13:03 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'e:\\git\\develop\\monitor\\monitor2.5\\utils\\data_manager.py', reloading
+2026-07-09 22:13:04 - INFO - werkzeug - _internal.py:97 -  * Restarting with watchdog (windowsapi)
+2026-07-09 22:13:04 - INFO - utils.tool_manager - tool_manager.py:54 - 加载工具配置文件: E:\git\develop\monitor\monitor2.5\data\tools.json
+2026-07-09 22:13:04 - INFO - utils.tool_manager - tool_manager.py:45 - 工具管理器初始化完成
+2026-07-09 22:13:04 - DEBUG - matplotlib - __init__.py:333 - matplotlib data path: E:\python\3.8\lib\site-packages\matplotlib\mpl-data
+2026-07-09 22:13:04 - DEBUG - matplotlib - __init__.py:333 - CONFIGDIR=C:\Users\Administrator\.matplotlib
+2026-07-09 22:13:04 - DEBUG - matplotlib - __init__.py:1507 - interactive is False
+2026-07-09 22:13:04 - DEBUG - matplotlib - __init__.py:1508 - platform is win32
+2026-07-09 22:13:04 - DEBUG - matplotlib - __init__.py:333 - CACHEDIR=C:\Users\Administrator\.matplotlib
+2026-07-09 22:13:04 - DEBUG - matplotlib.font_manager - font_manager.py:1543 - Using fontManager instance from C:\Users\Administrator\.matplotlib\fontlist-v330.json
+2026-07-09 22:13:05 - INFO - utils.data_manager - data_manager.py:45 - 数据管理器初始化
+2026-07-09 22:13:05 - INFO - utils.data_parser - data_parser.py:18 - 数据管理器初始化
+2026-07-09 22:13:05 - INFO - __main__ - app_new.py:246 - 启动性能监控平台后端服务
+2026-07-09 22:13:05 - WARN - werkzeug - _internal.py:97 -  * Debugger is active!
+2026-07-09 22:13:05 - INFO - werkzeug - _internal.py:97 -  * Debugger PIN: 644-902-559
+2026-07-09 22:13:18 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'E:\\python\\3.8\\Lib\\site-packages\\numpy\\typing\\__init__.py', reloading
+2026-07-09 22:13:18 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'E:\\python\\3.8\\Lib\\site-packages\\numpy\\_typing\\_extended_precision.py', reloading
+2026-07-09 22:13:19 - INFO - werkzeug - _internal.py:97 -  * Restarting with watchdog (windowsapi)
+2026-07-09 22:13:20 - INFO - utils.tool_manager - tool_manager.py:54 - 加载工具配置文件: E:\git\develop\monitor\monitor2.5\data\tools.json
+2026-07-09 22:13:20 - INFO - utils.tool_manager - tool_manager.py:45 - 工具管理器初始化完成
+2026-07-09 22:13:20 - DEBUG - matplotlib - __init__.py:333 - matplotlib data path: E:\python\3.8\lib\site-packages\matplotlib\mpl-data
+2026-07-09 22:13:20 - DEBUG - matplotlib - __init__.py:333 - CONFIGDIR=C:\Users\Administrator\.matplotlib
+2026-07-09 22:13:20 - DEBUG - matplotlib - __init__.py:1507 - interactive is False
+2026-07-09 22:13:20 - DEBUG - matplotlib - __init__.py:1508 - platform is win32
+2026-07-09 22:13:20 - DEBUG - matplotlib - __init__.py:333 - CACHEDIR=C:\Users\Administrator\.matplotlib
+2026-07-09 22:13:20 - DEBUG - matplotlib.font_manager - font_manager.py:1543 - Using fontManager instance from C:\Users\Administrator\.matplotlib\fontlist-v330.json
+2026-07-09 22:13:20 - INFO - utils.data_manager - data_manager.py:45 - 数据管理器初始化
+2026-07-09 22:13:20 - INFO - utils.data_parser - data_parser.py:18 - 数据管理器初始化
+2026-07-09 22:13:20 - INFO - __main__ - app_new.py:246 - 启动性能监控平台后端服务
+2026-07-09 22:13:20 - WARN - werkzeug - _internal.py:97 -  * Debugger is active!
+2026-07-09 22:13:20 - INFO - werkzeug - _internal.py:97 -  * Debugger PIN: 644-902-559
+2026-07-09 22:14:07 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'e:\\git\\develop\\monitor\\monitor2.5\\utils\\data_manager.py', reloading
+2026-07-09 22:14:07 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'e:\\git\\develop\\monitor\\monitor2.5\\utils\\data_manager.py', reloading
+2026-07-09 22:14:07 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'e:\\git\\develop\\monitor\\monitor2.5\\utils\\data_manager.py', reloading
+2026-07-09 22:14:08 - INFO - werkzeug - _internal.py:97 -  * Restarting with watchdog (windowsapi)
+2026-07-09 22:14:08 - INFO - utils.tool_manager - tool_manager.py:54 - 加载工具配置文件: E:\git\develop\monitor\monitor2.5\data\tools.json
+2026-07-09 22:14:08 - INFO - utils.tool_manager - tool_manager.py:45 - 工具管理器初始化完成
+2026-07-09 22:14:08 - DEBUG - matplotlib - __init__.py:333 - matplotlib data path: E:\python\3.8\lib\site-packages\matplotlib\mpl-data
+2026-07-09 22:14:08 - DEBUG - matplotlib - __init__.py:333 - CONFIGDIR=C:\Users\Administrator\.matplotlib
+2026-07-09 22:14:08 - DEBUG - matplotlib - __init__.py:1507 - interactive is False
+2026-07-09 22:14:08 - DEBUG - matplotlib - __init__.py:1508 - platform is win32
+2026-07-09 22:14:09 - DEBUG - matplotlib - __init__.py:333 - CACHEDIR=C:\Users\Administrator\.matplotlib
+2026-07-09 22:14:09 - DEBUG - matplotlib.font_manager - font_manager.py:1543 - Using fontManager instance from C:\Users\Administrator\.matplotlib\fontlist-v330.json
+2026-07-09 22:14:09 - INFO - utils.data_manager - data_manager.py:45 - 数据管理器初始化
+2026-07-09 22:14:09 - INFO - utils.data_parser - data_parser.py:18 - 数据管理器初始化
+2026-07-09 22:14:09 - INFO - __main__ - app_new.py:246 - 启动性能监控平台后端服务
+2026-07-09 22:14:09 - WARN - werkzeug - _internal.py:97 -  * Debugger is active!
+2026-07-09 22:14:09 - INFO - werkzeug - _internal.py:97 -  * Debugger PIN: 644-902-559
+2026-07-09 22:33:47 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'e:\\git\\develop\\monitor\\monitor2.5\\utils\\data_manager.py', reloading
+2026-07-09 22:33:47 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'e:\\git\\develop\\monitor\\monitor2.5\\utils\\data_manager.py', reloading
+2026-07-09 22:33:47 - INFO - werkzeug - _internal.py:97 -  * Restarting with watchdog (windowsapi)
+2026-07-09 22:33:48 - INFO - utils.tool_manager - tool_manager.py:54 - 加载工具配置文件: E:\git\develop\monitor\monitor2.5\data\tools.json
+2026-07-09 22:33:48 - INFO - utils.tool_manager - tool_manager.py:45 - 工具管理器初始化完成
+2026-07-09 22:33:48 - DEBUG - matplotlib - __init__.py:333 - matplotlib data path: E:\python\3.8\lib\site-packages\matplotlib\mpl-data
+2026-07-09 22:33:48 - DEBUG - matplotlib - __init__.py:333 - CONFIGDIR=C:\Users\Administrator\.matplotlib
+2026-07-09 22:33:48 - DEBUG - matplotlib - __init__.py:1507 - interactive is False
+2026-07-09 22:33:48 - DEBUG - matplotlib - __init__.py:1508 - platform is win32
+2026-07-09 22:33:48 - DEBUG - matplotlib - __init__.py:333 - CACHEDIR=C:\Users\Administrator\.matplotlib
+2026-07-09 22:33:48 - DEBUG - matplotlib.font_manager - font_manager.py:1543 - Using fontManager instance from C:\Users\Administrator\.matplotlib\fontlist-v330.json
+2026-07-09 22:33:48 - INFO - utils.data_manager - data_manager.py:45 - 数据管理器初始化
+2026-07-09 22:33:48 - INFO - utils.data_parser - data_parser.py:18 - 数据管理器初始化
+2026-07-09 22:33:48 - INFO - __main__ - app_new.py:246 - 启动性能监控平台后端服务
+2026-07-09 22:33:48 - WARN - werkzeug - _internal.py:97 -  * Debugger is active!
+2026-07-09 22:33:48 - INFO - werkzeug - _internal.py:97 -  * Debugger PIN: 644-902-559
+2026-07-09 22:34:00 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'e:\\git\\develop\\monitor\\monitor2.5\\utils\\data_manager.py', reloading
+2026-07-09 22:34:00 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'e:\\git\\develop\\monitor\\monitor2.5\\utils\\data_manager.py', reloading
+2026-07-09 22:34:01 - INFO - werkzeug - _internal.py:97 -  * Restarting with watchdog (windowsapi)
+2026-07-09 22:34:02 - INFO - utils.tool_manager - tool_manager.py:54 - 加载工具配置文件: E:\git\develop\monitor\monitor2.5\data\tools.json
+2026-07-09 22:34:02 - INFO - utils.tool_manager - tool_manager.py:45 - 工具管理器初始化完成
+2026-07-09 22:34:02 - DEBUG - matplotlib - __init__.py:333 - matplotlib data path: E:\python\3.8\lib\site-packages\matplotlib\mpl-data
+2026-07-09 22:34:02 - DEBUG - matplotlib - __init__.py:333 - CONFIGDIR=C:\Users\Administrator\.matplotlib
+2026-07-09 22:34:02 - DEBUG - matplotlib - __init__.py:1507 - interactive is False
+2026-07-09 22:34:02 - DEBUG - matplotlib - __init__.py:1508 - platform is win32
+2026-07-09 22:34:02 - DEBUG - matplotlib - __init__.py:333 - CACHEDIR=C:\Users\Administrator\.matplotlib
+2026-07-09 22:34:02 - DEBUG - matplotlib.font_manager - font_manager.py:1543 - Using fontManager instance from C:\Users\Administrator\.matplotlib\fontlist-v330.json
+2026-07-09 22:34:02 - INFO - utils.data_manager - data_manager.py:45 - 数据管理器初始化
+2026-07-09 22:34:02 - INFO - utils.data_parser - data_parser.py:18 - 数据管理器初始化
+2026-07-09 22:34:02 - INFO - __main__ - app_new.py:246 - 启动性能监控平台后端服务
+2026-07-09 22:34:02 - WARN - werkzeug - _internal.py:97 -  * Debugger is active!
+2026-07-09 22:34:02 - INFO - werkzeug - _internal.py:97 -  * Debugger PIN: 644-902-559
+2026-07-09 22:34:26 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'e:\\git\\develop\\monitor\\monitor2.5\\utils\\data_manager.py', reloading
+2026-07-09 22:34:26 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'e:\\git\\develop\\monitor\\monitor2.5\\utils\\data_manager.py', reloading
+2026-07-09 22:34:27 - INFO - werkzeug - _internal.py:97 -  * Restarting with watchdog (windowsapi)
+2026-07-09 22:34:27 - INFO - utils.tool_manager - tool_manager.py:54 - 加载工具配置文件: E:\git\develop\monitor\monitor2.5\data\tools.json
+2026-07-09 22:34:27 - INFO - utils.tool_manager - tool_manager.py:45 - 工具管理器初始化完成
+2026-07-09 22:34:28 - DEBUG - matplotlib - __init__.py:333 - matplotlib data path: E:\python\3.8\lib\site-packages\matplotlib\mpl-data
+2026-07-09 22:34:28 - DEBUG - matplotlib - __init__.py:333 - CONFIGDIR=C:\Users\Administrator\.matplotlib
+2026-07-09 22:34:28 - DEBUG - matplotlib - __init__.py:1507 - interactive is False
+2026-07-09 22:34:28 - DEBUG - matplotlib - __init__.py:1508 - platform is win32
+2026-07-09 22:34:28 - DEBUG - matplotlib - __init__.py:333 - CACHEDIR=C:\Users\Administrator\.matplotlib
+2026-07-09 22:34:28 - DEBUG - matplotlib.font_manager - font_manager.py:1543 - Using fontManager instance from C:\Users\Administrator\.matplotlib\fontlist-v330.json
+2026-07-09 22:34:28 - INFO - utils.data_manager - data_manager.py:45 - 数据管理器初始化
+2026-07-09 22:34:28 - INFO - utils.data_parser - data_parser.py:18 - 数据管理器初始化
+2026-07-09 22:34:28 - INFO - __main__ - app_new.py:246 - 启动性能监控平台后端服务
+2026-07-09 22:34:28 - WARN - werkzeug - _internal.py:97 -  * Debugger is active!
+2026-07-09 22:34:28 - INFO - werkzeug - _internal.py:97 -  * Debugger PIN: 644-902-559
+2026-07-09 22:35:56 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'e:\\git\\develop\\monitor\\monitor2.5\\utils\\data_manager.py', reloading
+2026-07-09 22:35:56 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'e:\\git\\develop\\monitor\\monitor2.5\\utils\\data_manager.py', reloading
+2026-07-09 22:35:57 - INFO - werkzeug - _internal.py:97 -  * Restarting with watchdog (windowsapi)
+2026-07-09 22:35:58 - INFO - utils.tool_manager - tool_manager.py:54 - 加载工具配置文件: E:\git\develop\monitor\monitor2.5\data\tools.json
+2026-07-09 22:35:58 - INFO - utils.tool_manager - tool_manager.py:45 - 工具管理器初始化完成
+2026-07-09 22:35:58 - DEBUG - matplotlib - __init__.py:333 - matplotlib data path: E:\python\3.8\lib\site-packages\matplotlib\mpl-data
+2026-07-09 22:35:58 - DEBUG - matplotlib - __init__.py:333 - CONFIGDIR=C:\Users\Administrator\.matplotlib
+2026-07-09 22:35:58 - DEBUG - matplotlib - __init__.py:1507 - interactive is False
+2026-07-09 22:35:58 - DEBUG - matplotlib - __init__.py:1508 - platform is win32
+2026-07-09 22:35:58 - DEBUG - matplotlib - __init__.py:333 - CACHEDIR=C:\Users\Administrator\.matplotlib
+2026-07-09 22:35:58 - DEBUG - matplotlib.font_manager - font_manager.py:1543 - Using fontManager instance from C:\Users\Administrator\.matplotlib\fontlist-v330.json
+2026-07-09 22:35:58 - INFO - utils.data_manager - data_manager.py:45 - 数据管理器初始化
+2026-07-09 22:35:58 - INFO - utils.data_parser - data_parser.py:18 - 数据管理器初始化
+2026-07-09 22:35:58 - INFO - __main__ - app_new.py:246 - 启动性能监控平台后端服务
+2026-07-09 22:35:58 - WARN - werkzeug - _internal.py:97 -  * Debugger is active!
+2026-07-09 22:35:58 - INFO - werkzeug - _internal.py:97 -  * Debugger PIN: 644-902-559
+2026-07-09 22:36:36 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'e:\\git\\develop\\monitor\\monitor2.5\\utils\\data_manager.py', reloading
+2026-07-09 22:36:36 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'e:\\git\\develop\\monitor\\monitor2.5\\utils\\data_manager.py', reloading
+2026-07-09 22:36:36 - INFO - werkzeug - _internal.py:97 -  * Restarting with watchdog (windowsapi)
+2026-07-09 22:36:37 - INFO - utils.tool_manager - tool_manager.py:54 - 加载工具配置文件: E:\git\develop\monitor\monitor2.5\data\tools.json
+2026-07-09 22:36:37 - INFO - utils.tool_manager - tool_manager.py:45 - 工具管理器初始化完成
+2026-07-09 22:36:37 - DEBUG - matplotlib - __init__.py:333 - matplotlib data path: E:\python\3.8\lib\site-packages\matplotlib\mpl-data
+2026-07-09 22:36:37 - DEBUG - matplotlib - __init__.py:333 - CONFIGDIR=C:\Users\Administrator\.matplotlib
+2026-07-09 22:36:37 - DEBUG - matplotlib - __init__.py:1507 - interactive is False
+2026-07-09 22:36:37 - DEBUG - matplotlib - __init__.py:1508 - platform is win32
+2026-07-09 22:36:37 - DEBUG - matplotlib - __init__.py:333 - CACHEDIR=C:\Users\Administrator\.matplotlib
+2026-07-09 22:36:37 - DEBUG - matplotlib.font_manager - font_manager.py:1543 - Using fontManager instance from C:\Users\Administrator\.matplotlib\fontlist-v330.json
+2026-07-09 22:36:38 - INFO - utils.data_manager - data_manager.py:45 - 数据管理器初始化
+2026-07-09 22:36:38 - INFO - utils.data_parser - data_parser.py:18 - 数据管理器初始化
+2026-07-09 22:36:38 - INFO - __main__ - app_new.py:246 - 启动性能监控平台后端服务
+2026-07-09 22:36:38 - WARN - werkzeug - _internal.py:97 -  * Debugger is active!
+2026-07-09 22:36:38 - INFO - werkzeug - _internal.py:97 -  * Debugger PIN: 644-902-559
+2026-07-09 22:37:11 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'e:\\git\\develop\\monitor\\monitor2.5\\utils\\data_manager.py', reloading
+2026-07-09 22:37:11 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'e:\\git\\develop\\monitor\\monitor2.5\\utils\\data_manager.py', reloading
+2026-07-09 22:37:12 - INFO - werkzeug - _internal.py:97 -  * Restarting with watchdog (windowsapi)
+2026-07-09 22:37:13 - INFO - utils.tool_manager - tool_manager.py:54 - 加载工具配置文件: E:\git\develop\monitor\monitor2.5\data\tools.json
+2026-07-09 22:37:13 - INFO - utils.tool_manager - tool_manager.py:45 - 工具管理器初始化完成
+2026-07-09 22:37:13 - DEBUG - matplotlib - __init__.py:333 - matplotlib data path: E:\python\3.8\lib\site-packages\matplotlib\mpl-data
+2026-07-09 22:37:13 - DEBUG - matplotlib - __init__.py:333 - CONFIGDIR=C:\Users\Administrator\.matplotlib
+2026-07-09 22:37:13 - DEBUG - matplotlib - __init__.py:1507 - interactive is False
+2026-07-09 22:37:13 - DEBUG - matplotlib - __init__.py:1508 - platform is win32
+2026-07-09 22:37:13 - DEBUG - matplotlib - __init__.py:333 - CACHEDIR=C:\Users\Administrator\.matplotlib
+2026-07-09 22:37:13 - DEBUG - matplotlib.font_manager - font_manager.py:1543 - Using fontManager instance from C:\Users\Administrator\.matplotlib\fontlist-v330.json
+2026-07-09 22:37:13 - INFO - utils.data_manager - data_manager.py:45 - 数据管理器初始化
+2026-07-09 22:37:13 - INFO - utils.data_parser - data_parser.py:18 - 数据管理器初始化
+2026-07-09 22:37:13 - INFO - __main__ - app_new.py:246 - 启动性能监控平台后端服务
+2026-07-09 22:37:13 - WARN - werkzeug - _internal.py:97 -  * Debugger is active!
+2026-07-09 22:37:13 - INFO - werkzeug - _internal.py:97 -  * Debugger PIN: 644-902-559
+2026-07-09 22:37:18 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'e:\\git\\develop\\monitor\\monitor2.5\\utils\\data_manager.py', reloading
+2026-07-09 22:37:18 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'e:\\git\\develop\\monitor\\monitor2.5\\utils\\data_manager.py', reloading
+2026-07-09 22:37:18 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'e:\\git\\develop\\monitor\\monitor2.5\\utils\\data_manager.py', reloading
+2026-07-09 22:37:18 - INFO - werkzeug - _internal.py:97 -  * Restarting with watchdog (windowsapi)
+2026-07-09 22:37:19 - INFO - utils.tool_manager - tool_manager.py:54 - 加载工具配置文件: E:\git\develop\monitor\monitor2.5\data\tools.json
+2026-07-09 22:37:19 - INFO - utils.tool_manager - tool_manager.py:45 - 工具管理器初始化完成
+2026-07-09 22:37:19 - DEBUG - matplotlib - __init__.py:333 - matplotlib data path: E:\python\3.8\lib\site-packages\matplotlib\mpl-data
+2026-07-09 22:37:19 - DEBUG - matplotlib - __init__.py:333 - CONFIGDIR=C:\Users\Administrator\.matplotlib
+2026-07-09 22:37:19 - DEBUG - matplotlib - __init__.py:1507 - interactive is False
+2026-07-09 22:37:19 - DEBUG - matplotlib - __init__.py:1508 - platform is win32
+2026-07-09 22:37:19 - DEBUG - matplotlib - __init__.py:333 - CACHEDIR=C:\Users\Administrator\.matplotlib
+2026-07-09 22:37:19 - DEBUG - matplotlib.font_manager - font_manager.py:1543 - Using fontManager instance from C:\Users\Administrator\.matplotlib\fontlist-v330.json
+2026-07-09 22:37:19 - INFO - utils.data_manager - data_manager.py:45 - 数据管理器初始化
+2026-07-09 22:37:19 - INFO - utils.data_parser - data_parser.py:18 - 数据管理器初始化
+2026-07-09 22:37:19 - INFO - __main__ - app_new.py:246 - 启动性能监控平台后端服务
+2026-07-09 22:37:19 - WARN - werkzeug - _internal.py:97 -  * Debugger is active!
+2026-07-09 22:37:19 - INFO - werkzeug - _internal.py:97 -  * Debugger PIN: 644-902-559
+2026-07-09 22:37:20 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'e:\\git\\develop\\monitor\\monitor2.5\\utils\\data_manager.py', reloading
+2026-07-09 22:37:20 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'e:\\git\\develop\\monitor\\monitor2.5\\utils\\data_manager.py', reloading
+2026-07-09 22:37:20 - INFO - werkzeug - _internal.py:97 -  * Restarting with watchdog (windowsapi)
+2026-07-09 22:37:21 - INFO - utils.tool_manager - tool_manager.py:54 - 加载工具配置文件: E:\git\develop\monitor\monitor2.5\data\tools.json
+2026-07-09 22:37:21 - INFO - utils.tool_manager - tool_manager.py:45 - 工具管理器初始化完成
+2026-07-09 22:37:21 - DEBUG - matplotlib - __init__.py:333 - matplotlib data path: E:\python\3.8\lib\site-packages\matplotlib\mpl-data
+2026-07-09 22:37:21 - DEBUG - matplotlib - __init__.py:333 - CONFIGDIR=C:\Users\Administrator\.matplotlib
+2026-07-09 22:37:21 - DEBUG - matplotlib - __init__.py:1507 - interactive is False
+2026-07-09 22:37:21 - DEBUG - matplotlib - __init__.py:1508 - platform is win32
+2026-07-09 22:37:21 - DEBUG - matplotlib - __init__.py:333 - CACHEDIR=C:\Users\Administrator\.matplotlib
+2026-07-09 22:37:21 - DEBUG - matplotlib.font_manager - font_manager.py:1543 - Using fontManager instance from C:\Users\Administrator\.matplotlib\fontlist-v330.json
+2026-07-09 22:37:22 - INFO - utils.data_manager - data_manager.py:45 - 数据管理器初始化
+2026-07-09 22:37:22 - INFO - utils.data_parser - data_parser.py:18 - 数据管理器初始化
+2026-07-09 22:37:22 - INFO - __main__ - app_new.py:246 - 启动性能监控平台后端服务
+2026-07-09 22:37:22 - WARN - werkzeug - _internal.py:97 -  * Debugger is active!
+2026-07-09 22:37:22 - INFO - werkzeug - _internal.py:97 -  * Debugger PIN: 644-902-559
+2026-07-09 22:37:27 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'e:\\git\\develop\\monitor\\monitor2.5\\utils\\data_manager.py', reloading
+2026-07-09 22:37:27 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'e:\\git\\develop\\monitor\\monitor2.5\\utils\\data_manager.py', reloading
+2026-07-09 22:37:28 - INFO - werkzeug - _internal.py:97 -  * Restarting with watchdog (windowsapi)
+2026-07-09 22:37:28 - INFO - utils.tool_manager - tool_manager.py:54 - 加载工具配置文件: E:\git\develop\monitor\monitor2.5\data\tools.json
+2026-07-09 22:37:28 - INFO - utils.tool_manager - tool_manager.py:45 - 工具管理器初始化完成
+2026-07-09 22:37:29 - DEBUG - matplotlib - __init__.py:333 - matplotlib data path: E:\python\3.8\lib\site-packages\matplotlib\mpl-data
+2026-07-09 22:37:29 - DEBUG - matplotlib - __init__.py:333 - CONFIGDIR=C:\Users\Administrator\.matplotlib
+2026-07-09 22:37:29 - DEBUG - matplotlib - __init__.py:1507 - interactive is False
+2026-07-09 22:37:29 - DEBUG - matplotlib - __init__.py:1508 - platform is win32
+2026-07-09 22:37:29 - DEBUG - matplotlib - __init__.py:333 - CACHEDIR=C:\Users\Administrator\.matplotlib
+2026-07-09 22:37:29 - DEBUG - matplotlib.font_manager - font_manager.py:1543 - Using fontManager instance from C:\Users\Administrator\.matplotlib\fontlist-v330.json
+2026-07-09 22:37:29 - INFO - utils.data_manager - data_manager.py:45 - 数据管理器初始化
+2026-07-09 22:37:29 - INFO - utils.data_parser - data_parser.py:18 - 数据管理器初始化
+2026-07-09 22:37:29 - INFO - __main__ - app_new.py:246 - 启动性能监控平台后端服务
+2026-07-09 22:37:29 - WARN - werkzeug - _internal.py:97 -  * Debugger is active!
+2026-07-09 22:37:29 - INFO - werkzeug - _internal.py:97 -  * Debugger PIN: 644-902-559
+2026-07-09 22:38:29 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'e:\\git\\develop\\monitor\\monitor2.5\\utils\\data_manager.py', reloading
+2026-07-09 22:38:29 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'e:\\git\\develop\\monitor\\monitor2.5\\utils\\data_manager.py', reloading
+2026-07-09 22:38:29 - INFO - werkzeug - _internal.py:97 -  * Restarting with watchdog (windowsapi)
+2026-07-09 22:38:29 - INFO - utils.tool_manager - tool_manager.py:54 - 加载工具配置文件: E:\git\develop\monitor\monitor2.5\data\tools.json
+2026-07-09 22:38:29 - INFO - utils.tool_manager - tool_manager.py:45 - 工具管理器初始化完成
+2026-07-09 22:38:29 - DEBUG - matplotlib - __init__.py:333 - matplotlib data path: E:\python\3.8\lib\site-packages\matplotlib\mpl-data
+2026-07-09 22:38:29 - DEBUG - matplotlib - __init__.py:333 - CONFIGDIR=C:\Users\Administrator\.matplotlib
+2026-07-09 22:38:29 - DEBUG - matplotlib - __init__.py:1507 - interactive is False
+2026-07-09 22:38:29 - DEBUG - matplotlib - __init__.py:1508 - platform is win32
+2026-07-09 22:38:30 - DEBUG - matplotlib - __init__.py:333 - CACHEDIR=C:\Users\Administrator\.matplotlib
+2026-07-09 22:38:30 - DEBUG - matplotlib.font_manager - font_manager.py:1543 - Using fontManager instance from C:\Users\Administrator\.matplotlib\fontlist-v330.json
+2026-07-09 22:38:30 - INFO - utils.data_manager - data_manager.py:45 - 数据管理器初始化
+2026-07-09 22:38:30 - INFO - utils.data_parser - data_parser.py:18 - 数据管理器初始化
+2026-07-09 22:38:30 - INFO - __main__ - app_new.py:246 - 启动性能监控平台后端服务
+2026-07-09 22:38:30 - WARN - werkzeug - _internal.py:97 -  * Debugger is active!
+2026-07-09 22:38:30 - INFO - werkzeug - _internal.py:97 -  * Debugger PIN: 644-902-559
+2026-07-09 22:39:20 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'e:\\git\\develop\\monitor\\monitor2.5\\utils\\data_manager.py', reloading
+2026-07-09 22:39:20 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'e:\\git\\develop\\monitor\\monitor2.5\\utils\\data_manager.py', reloading
+2026-07-09 22:39:20 - INFO - werkzeug - _internal.py:97 -  * Restarting with watchdog (windowsapi)
+2026-07-09 22:39:21 - INFO - utils.tool_manager - tool_manager.py:54 - 加载工具配置文件: E:\git\develop\monitor\monitor2.5\data\tools.json
+2026-07-09 22:39:21 - INFO - utils.tool_manager - tool_manager.py:45 - 工具管理器初始化完成
+2026-07-09 22:39:21 - DEBUG - matplotlib - __init__.py:333 - matplotlib data path: E:\python\3.8\lib\site-packages\matplotlib\mpl-data
+2026-07-09 22:39:21 - DEBUG - matplotlib - __init__.py:333 - CONFIGDIR=C:\Users\Administrator\.matplotlib
+2026-07-09 22:39:21 - DEBUG - matplotlib - __init__.py:1507 - interactive is False
+2026-07-09 22:39:21 - DEBUG - matplotlib - __init__.py:1508 - platform is win32
+2026-07-09 22:39:21 - DEBUG - matplotlib - __init__.py:333 - CACHEDIR=C:\Users\Administrator\.matplotlib
+2026-07-09 22:39:21 - DEBUG - matplotlib.font_manager - font_manager.py:1543 - Using fontManager instance from C:\Users\Administrator\.matplotlib\fontlist-v330.json
+2026-07-09 22:39:21 - INFO - utils.data_manager - data_manager.py:45 - 数据管理器初始化
+2026-07-09 22:39:21 - INFO - utils.data_parser - data_parser.py:18 - 数据管理器初始化
+2026-07-09 22:39:21 - INFO - __main__ - app_new.py:246 - 启动性能监控平台后端服务
+2026-07-09 22:39:21 - WARN - werkzeug - _internal.py:97 -  * Debugger is active!
+2026-07-09 22:39:22 - INFO - werkzeug - _internal.py:97 -  * Debugger PIN: 644-902-559
+2026-07-09 22:39:22 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'e:\\git\\develop\\monitor\\monitor2.5\\utils\\data_manager.py', reloading
+2026-07-09 22:39:22 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'e:\\git\\develop\\monitor\\monitor2.5\\utils\\data_manager.py', reloading
+2026-07-09 22:39:22 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'e:\\git\\develop\\monitor\\monitor2.5\\utils\\data_manager.py', reloading
+2026-07-09 22:39:23 - INFO - werkzeug - _internal.py:97 -  * Restarting with watchdog (windowsapi)
+2026-07-09 22:39:23 - INFO - utils.tool_manager - tool_manager.py:54 - 加载工具配置文件: E:\git\develop\monitor\monitor2.5\data\tools.json
+2026-07-09 22:39:23 - INFO - utils.tool_manager - tool_manager.py:45 - 工具管理器初始化完成
+2026-07-09 22:39:23 - DEBUG - matplotlib - __init__.py:333 - matplotlib data path: E:\python\3.8\lib\site-packages\matplotlib\mpl-data
+2026-07-09 22:39:23 - DEBUG - matplotlib - __init__.py:333 - CONFIGDIR=C:\Users\Administrator\.matplotlib
+2026-07-09 22:39:23 - DEBUG - matplotlib - __init__.py:1507 - interactive is False
+2026-07-09 22:39:23 - DEBUG - matplotlib - __init__.py:1508 - platform is win32
+2026-07-09 22:39:24 - DEBUG - matplotlib - __init__.py:333 - CACHEDIR=C:\Users\Administrator\.matplotlib
+2026-07-09 22:39:24 - DEBUG - matplotlib.font_manager - font_manager.py:1543 - Using fontManager instance from C:\Users\Administrator\.matplotlib\fontlist-v330.json
+2026-07-09 22:39:24 - INFO - utils.data_manager - data_manager.py:45 - 数据管理器初始化
+2026-07-09 22:39:24 - INFO - utils.data_parser - data_parser.py:18 - 数据管理器初始化
+2026-07-09 22:39:24 - INFO - __main__ - app_new.py:246 - 启动性能监控平台后端服务
+2026-07-09 22:39:24 - WARN - werkzeug - _internal.py:97 -  * Debugger is active!
+2026-07-09 22:39:24 - INFO - werkzeug - _internal.py:97 -  * Debugger PIN: 644-902-559
+2026-07-09 22:39:30 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'e:\\git\\develop\\monitor\\monitor2.5\\utils\\data_manager.py', reloading
+2026-07-09 22:39:30 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'e:\\git\\develop\\monitor\\monitor2.5\\utils\\data_manager.py', reloading
+2026-07-09 22:39:30 - INFO - werkzeug - _internal.py:97 -  * Restarting with watchdog (windowsapi)
+2026-07-09 22:39:31 - INFO - utils.tool_manager - tool_manager.py:54 - 加载工具配置文件: E:\git\develop\monitor\monitor2.5\data\tools.json
+2026-07-09 22:39:31 - INFO - utils.tool_manager - tool_manager.py:45 - 工具管理器初始化完成
+2026-07-09 22:39:31 - DEBUG - matplotlib - __init__.py:333 - matplotlib data path: E:\python\3.8\lib\site-packages\matplotlib\mpl-data
+2026-07-09 22:39:31 - DEBUG - matplotlib - __init__.py:333 - CONFIGDIR=C:\Users\Administrator\.matplotlib
+2026-07-09 22:39:31 - DEBUG - matplotlib - __init__.py:1507 - interactive is False
+2026-07-09 22:39:31 - DEBUG - matplotlib - __init__.py:1508 - platform is win32
+2026-07-09 22:39:31 - DEBUG - matplotlib - __init__.py:333 - CACHEDIR=C:\Users\Administrator\.matplotlib
+2026-07-09 22:39:31 - DEBUG - matplotlib.font_manager - font_manager.py:1543 - Using fontManager instance from C:\Users\Administrator\.matplotlib\fontlist-v330.json
+2026-07-09 22:39:31 - INFO - utils.data_manager - data_manager.py:45 - 数据管理器初始化
+2026-07-09 22:39:31 - INFO - utils.data_parser - data_parser.py:18 - 数据管理器初始化
+2026-07-09 22:39:31 - INFO - __main__ - app_new.py:246 - 启动性能监控平台后端服务
+2026-07-09 22:39:31 - WARN - werkzeug - _internal.py:97 -  * Debugger is active!
+2026-07-09 22:39:31 - INFO - werkzeug - _internal.py:97 -  * Debugger PIN: 644-902-559
+2026-07-09 22:40:25 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'e:\\git\\develop\\monitor\\monitor2.5\\utils\\data_manager.py', reloading
+2026-07-09 22:40:25 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'e:\\git\\develop\\monitor\\monitor2.5\\utils\\data_manager.py', reloading
+2026-07-09 22:40:25 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'e:\\git\\develop\\monitor\\monitor2.5\\utils\\data_manager.py', reloading
+2026-07-09 22:40:26 - INFO - werkzeug - _internal.py:97 -  * Restarting with watchdog (windowsapi)
+2026-07-09 22:40:26 - INFO - utils.tool_manager - tool_manager.py:54 - 加载工具配置文件: E:\git\develop\monitor\monitor2.5\data\tools.json
+2026-07-09 22:40:26 - INFO - utils.tool_manager - tool_manager.py:45 - 工具管理器初始化完成
+2026-07-09 22:40:26 - DEBUG - matplotlib - __init__.py:333 - matplotlib data path: E:\python\3.8\lib\site-packages\matplotlib\mpl-data
+2026-07-09 22:40:26 - DEBUG - matplotlib - __init__.py:333 - CONFIGDIR=C:\Users\Administrator\.matplotlib
+2026-07-09 22:40:26 - DEBUG - matplotlib - __init__.py:1507 - interactive is False
+2026-07-09 22:40:26 - DEBUG - matplotlib - __init__.py:1508 - platform is win32
+2026-07-09 22:40:27 - DEBUG - matplotlib - __init__.py:333 - CACHEDIR=C:\Users\Administrator\.matplotlib
+2026-07-09 22:40:27 - DEBUG - matplotlib.font_manager - font_manager.py:1543 - Using fontManager instance from C:\Users\Administrator\.matplotlib\fontlist-v330.json
+2026-07-09 22:40:27 - INFO - utils.data_manager - data_manager.py:45 - 数据管理器初始化
+2026-07-09 22:40:27 - INFO - utils.data_parser - data_parser.py:18 - 数据管理器初始化
+2026-07-09 22:40:27 - INFO - __main__ - app_new.py:246 - 启动性能监控平台后端服务
+2026-07-09 22:40:27 - WARN - werkzeug - _internal.py:97 -  * Debugger is active!
+2026-07-09 22:40:27 - INFO - werkzeug - _internal.py:97 -  * Debugger PIN: 644-902-559
+2026-07-09 22:40:37 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'e:\\git\\develop\\monitor\\monitor2.5\\utils\\data_manager.py', reloading
+2026-07-09 22:40:37 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'e:\\git\\develop\\monitor\\monitor2.5\\utils\\data_manager.py', reloading
+2026-07-09 22:40:38 - INFO - werkzeug - _internal.py:97 -  * Restarting with watchdog (windowsapi)
+2026-07-09 22:40:39 - INFO - utils.tool_manager - tool_manager.py:54 - 加载工具配置文件: E:\git\develop\monitor\monitor2.5\data\tools.json
+2026-07-09 22:40:39 - INFO - utils.tool_manager - tool_manager.py:45 - 工具管理器初始化完成
+2026-07-09 22:40:39 - DEBUG - matplotlib - __init__.py:333 - matplotlib data path: E:\python\3.8\lib\site-packages\matplotlib\mpl-data
+2026-07-09 22:40:39 - DEBUG - matplotlib - __init__.py:333 - CONFIGDIR=C:\Users\Administrator\.matplotlib
+2026-07-09 22:40:39 - DEBUG - matplotlib - __init__.py:1507 - interactive is False
+2026-07-09 22:40:39 - DEBUG - matplotlib - __init__.py:1508 - platform is win32
+2026-07-09 22:40:39 - DEBUG - matplotlib - __init__.py:333 - CACHEDIR=C:\Users\Administrator\.matplotlib
+2026-07-09 22:40:39 - DEBUG - matplotlib.font_manager - font_manager.py:1543 - Using fontManager instance from C:\Users\Administrator\.matplotlib\fontlist-v330.json
+2026-07-09 22:40:39 - INFO - utils.data_manager - data_manager.py:45 - 数据管理器初始化
+2026-07-09 22:40:39 - INFO - utils.data_parser - data_parser.py:18 - 数据管理器初始化
+2026-07-09 22:40:39 - INFO - __main__ - app_new.py:246 - 启动性能监控平台后端服务
+2026-07-09 22:40:39 - WARN - werkzeug - _internal.py:97 -  * Debugger is active!
+2026-07-09 22:40:39 - INFO - werkzeug - _internal.py:97 -  * Debugger PIN: 644-902-559
+2026-07-09 22:40:55 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'e:\\git\\develop\\monitor\\monitor2.5\\utils\\data_manager.py', reloading
+2026-07-09 22:40:55 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'e:\\git\\develop\\monitor\\monitor2.5\\utils\\data_manager.py', reloading
+2026-07-09 22:40:55 - INFO - werkzeug - _internal.py:97 -  * Restarting with watchdog (windowsapi)
+2026-07-09 22:40:56 - INFO - utils.tool_manager - tool_manager.py:54 - 加载工具配置文件: E:\git\develop\monitor\monitor2.5\data\tools.json
+2026-07-09 22:40:56 - INFO - utils.tool_manager - tool_manager.py:45 - 工具管理器初始化完成
+2026-07-09 22:40:56 - DEBUG - matplotlib - __init__.py:333 - matplotlib data path: E:\python\3.8\lib\site-packages\matplotlib\mpl-data
+2026-07-09 22:40:56 - DEBUG - matplotlib - __init__.py:333 - CONFIGDIR=C:\Users\Administrator\.matplotlib
+2026-07-09 22:40:56 - DEBUG - matplotlib - __init__.py:1507 - interactive is False
+2026-07-09 22:40:56 - DEBUG - matplotlib - __init__.py:1508 - platform is win32
+2026-07-09 22:40:56 - DEBUG - matplotlib - __init__.py:333 - CACHEDIR=C:\Users\Administrator\.matplotlib
+2026-07-09 22:40:56 - DEBUG - matplotlib.font_manager - font_manager.py:1543 - Using fontManager instance from C:\Users\Administrator\.matplotlib\fontlist-v330.json
+2026-07-09 22:40:56 - INFO - utils.data_manager - data_manager.py:45 - 数据管理器初始化
+2026-07-09 22:40:56 - INFO - utils.data_parser - data_parser.py:18 - 数据管理器初始化
+2026-07-09 22:40:56 - INFO - __main__ - app_new.py:246 - 启动性能监控平台后端服务
+2026-07-09 22:40:56 - WARN - werkzeug - _internal.py:97 -  * Debugger is active!
+2026-07-09 22:40:56 - INFO - werkzeug - _internal.py:97 -  * Debugger PIN: 644-902-559
+2026-07-09 22:41:08 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'e:\\git\\develop\\monitor\\monitor2.5\\utils\\data_manager.py', reloading
+2026-07-09 22:41:08 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'e:\\git\\develop\\monitor\\monitor2.5\\utils\\data_manager.py', reloading
+2026-07-09 22:41:09 - INFO - werkzeug - _internal.py:97 -  * Restarting with watchdog (windowsapi)
+2026-07-09 22:41:09 - INFO - utils.tool_manager - tool_manager.py:54 - 加载工具配置文件: E:\git\develop\monitor\monitor2.5\data\tools.json
+2026-07-09 22:41:09 - INFO - utils.tool_manager - tool_manager.py:45 - 工具管理器初始化完成
+2026-07-09 22:41:09 - DEBUG - matplotlib - __init__.py:333 - matplotlib data path: E:\python\3.8\lib\site-packages\matplotlib\mpl-data
+2026-07-09 22:41:09 - DEBUG - matplotlib - __init__.py:333 - CONFIGDIR=C:\Users\Administrator\.matplotlib
+2026-07-09 22:41:09 - DEBUG - matplotlib - __init__.py:1507 - interactive is False
+2026-07-09 22:41:09 - DEBUG - matplotlib - __init__.py:1508 - platform is win32
+2026-07-09 22:41:10 - DEBUG - matplotlib - __init__.py:333 - CACHEDIR=C:\Users\Administrator\.matplotlib
+2026-07-09 22:41:10 - DEBUG - matplotlib.font_manager - font_manager.py:1543 - Using fontManager instance from C:\Users\Administrator\.matplotlib\fontlist-v330.json
+2026-07-09 22:41:10 - INFO - utils.data_manager - data_manager.py:45 - 数据管理器初始化
+2026-07-09 22:41:10 - INFO - utils.data_parser - data_parser.py:18 - 数据管理器初始化
+2026-07-09 22:41:10 - INFO - __main__ - app_new.py:246 - 启动性能监控平台后端服务
+2026-07-09 22:41:10 - WARN - werkzeug - _internal.py:97 -  * Debugger is active!
+2026-07-09 22:41:10 - INFO - werkzeug - _internal.py:97 -  * Debugger PIN: 644-902-559
+2026-07-09 22:42:41 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'e:\\git\\develop\\monitor\\monitor2.5\\utils\\data_manager.py', reloading
+2026-07-09 22:42:41 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'e:\\git\\develop\\monitor\\monitor2.5\\utils\\data_manager.py', reloading
+2026-07-09 22:42:41 - INFO - werkzeug - _internal.py:97 -  * Restarting with watchdog (windowsapi)
+2026-07-09 22:42:41 - INFO - utils.tool_manager - tool_manager.py:54 - 加载工具配置文件: E:\git\develop\monitor\monitor2.5\data\tools.json
+2026-07-09 22:42:41 - INFO - utils.tool_manager - tool_manager.py:45 - 工具管理器初始化完成
+2026-07-09 22:42:42 - DEBUG - matplotlib - __init__.py:333 - matplotlib data path: E:\python\3.8\lib\site-packages\matplotlib\mpl-data
+2026-07-09 22:42:42 - DEBUG - matplotlib - __init__.py:333 - CONFIGDIR=C:\Users\Administrator\.matplotlib
+2026-07-09 22:42:42 - DEBUG - matplotlib - __init__.py:1507 - interactive is False
+2026-07-09 22:42:42 - DEBUG - matplotlib - __init__.py:1508 - platform is win32
+2026-07-09 22:42:42 - DEBUG - matplotlib - __init__.py:333 - CACHEDIR=C:\Users\Administrator\.matplotlib
+2026-07-09 22:42:42 - DEBUG - matplotlib.font_manager - font_manager.py:1543 - Using fontManager instance from C:\Users\Administrator\.matplotlib\fontlist-v330.json
+2026-07-09 22:42:42 - INFO - utils.data_manager - data_manager.py:45 - 数据管理器初始化
+2026-07-09 22:42:42 - INFO - utils.data_parser - data_parser.py:18 - 数据管理器初始化
+2026-07-09 22:42:42 - INFO - __main__ - app_new.py:246 - 启动性能监控平台后端服务
+2026-07-09 22:42:42 - WARN - werkzeug - _internal.py:97 -  * Debugger is active!
+2026-07-09 22:42:42 - INFO - werkzeug - _internal.py:97 -  * Debugger PIN: 644-902-559
+2026-07-09 22:49:00 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'e:\\git\\develop\\monitor\\monitor2.5\\utils\\data_manager.py', reloading
+2026-07-09 22:49:00 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'e:\\git\\develop\\monitor\\monitor2.5\\utils\\data_manager.py', reloading
+2026-07-09 22:49:00 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'e:\\git\\develop\\monitor\\monitor2.5\\utils\\data_manager.py', reloading
+2026-07-09 22:49:01 - INFO - werkzeug - _internal.py:97 -  * Restarting with watchdog (windowsapi)
+2026-07-09 22:49:02 - INFO - utils.tool_manager - tool_manager.py:54 - 加载工具配置文件: E:\git\develop\monitor\monitor2.5\data\tools.json
+2026-07-09 22:49:02 - INFO - utils.tool_manager - tool_manager.py:45 - 工具管理器初始化完成
+2026-07-09 22:49:02 - DEBUG - matplotlib - __init__.py:333 - matplotlib data path: E:\python\3.8\lib\site-packages\matplotlib\mpl-data
+2026-07-09 22:49:02 - DEBUG - matplotlib - __init__.py:333 - CONFIGDIR=C:\Users\Administrator\.matplotlib
+2026-07-09 22:49:02 - DEBUG - matplotlib - __init__.py:1507 - interactive is False
+2026-07-09 22:49:02 - DEBUG - matplotlib - __init__.py:1508 - platform is win32
+2026-07-09 22:49:02 - DEBUG - matplotlib - __init__.py:333 - CACHEDIR=C:\Users\Administrator\.matplotlib
+2026-07-09 22:49:02 - DEBUG - matplotlib.font_manager - font_manager.py:1543 - Using fontManager instance from C:\Users\Administrator\.matplotlib\fontlist-v330.json
+2026-07-09 22:49:02 - INFO - utils.data_manager - data_manager.py:45 - 数据管理器初始化
+2026-07-09 22:49:02 - INFO - utils.data_parser - data_parser.py:18 - 数据管理器初始化
+2026-07-09 22:49:02 - INFO - __main__ - app_new.py:246 - 启动性能监控平台后端服务
+2026-07-09 22:49:02 - WARN - werkzeug - _internal.py:97 -  * Debugger is active!
+2026-07-09 22:49:02 - INFO - werkzeug - _internal.py:97 -  * Debugger PIN: 644-902-559
+2026-07-09 22:49:12 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'e:\\git\\develop\\monitor\\monitor2.5\\utils\\data_manager.py', reloading
+2026-07-09 22:49:12 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'e:\\git\\develop\\monitor\\monitor2.5\\utils\\data_manager.py', reloading
+2026-07-09 22:49:12 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'e:\\git\\develop\\monitor\\monitor2.5\\utils\\data_manager.py', reloading
+2026-07-09 22:49:12 - INFO - werkzeug - _internal.py:97 -  * Restarting with watchdog (windowsapi)
