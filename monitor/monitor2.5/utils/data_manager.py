@@ -220,6 +220,40 @@ class DataManager:
         error_mode: 错误模式，absolute 或 relative
         """
         result = {}
+
+        # 对比百分比阈值
+
+        for rule in runtime_data:
+            if error_mode == 'percentage':
+                result[rule]["runtime"] =  self.judge_compare_reuslt(runtime_data, result, rule, "_percent", runtime_threshold)
+            else:
+                result[rule]["runtime"] = self.judge_compare_reuslt(runtime_data, result, rule, "", runtime_threshold)
+
+        for rule in memory_data:
+            if error_mode == 'percentage':
+                result[rule]["memory"] = self.judge_compare_reuslt(memory_data, result, rule, "_percent", memory_threshold)
+            else:
+                result[rule]["memory"] = self.judge_compare_reuslt(memory_data, result, rule, "", memory_threshold)
+
+        statistics = self.statistics_compare_result_data(result)
+        return result
+
+    def judge_compare_reuslt(self, data, compare_result, rule, diff, threshold):
+        if rule not in compare_result:
+            compare_result[rule] = {}
+
+        date1_data = data[rule]["date1_data"]
+        date2_data = data[rule]["date2_data"]
+        diff = data[rule][f"diff{diff}"]
+
+        if diff > threshold:
+            return [date1_data,date2_data,diff, "⬆️增加"]
+        elif diff == threshold:
+            return [date1_data,date2_data,diff, "· 无变化"]
+        else:
+            return [date1_data,date2_data,diff, "⬇️减少"]
+
+    def statistics_compare_result_data(self, compare_result_data):
         statistics = {
             "runtime_increased": [], 
             "runtime_decreased": [], 
@@ -232,40 +266,6 @@ class DataManager:
             "max_memory_increase": [],
             "max_memory_decrease": [],
         }
-        # 对比百分比阈值
-        if dimension == 'all' or dimension == 'runtime' and runtime_data:
-            for rule in runtime_data:
-                result[rule] = {}
-                date1_data = runtime_data[rule]["date1_data"]
-                date2_data = runtime_data[rule]["date2_data"]
-                diff = runtime_data[rule]["diff"]
-                diff_percent = runtime_data[rule]["diff_percent"]
-                if error_mode == 'percentage':
-                    result[rule]["runtime"] =  self.judge_compare_reuslt(date1_data, date2_data, diff_percent, runtime_threshold, statistics)
-                else:
-                    result[rule]["runtime"] = self.judge_compare_reuslt(date1_data, date2_data, diff, runtime_threshold)
-        elif dimension == 'memory' and memory_data:
-            for rule in memory_data:
-                result[rule] = {}
-                date1_data = memory_data[rule]["date1_data"]
-                date2_data = memory_data[rule]["date2_data"]
-                diff = memory_data[rule]["diff"]
-                diff_percent = memory_data[rule]["diff_percent"]
-                if error_mode == 'percentage':
-                    result[rule]["memory"] = self.judge_compare_reuslt(date1_data, date2_data, diff_percent, memory_threshold)
-                else:
-                    result[rule]["memory"] = self.judge_compare_reuslt(date1_data, date2_data, diff, memory_threshold)
-        else:
-            result = {}
-        return result
-
-    def judge_compare_reuslt(self, date1_data, date2_data, diff, threshold):
-        if diff > threshold:
-            return [date1_data,date2_data,diff, "⬆️增加"]
-        elif diff == threshold:
-            return [date1_data,date2_data,diff, "· 无变化"]
-        else:
-            return [date1_data,date2_data,diff, "⬇️减少"]
 
     # def get_single_thread_data(self, user_id: str, tool_config: Dict) -> Dict:
     #     """

@@ -8564,3 +8564,118 @@
 2026-07-09 17:43:15 - INFO - __main__ - app_new.py:246 - 启动性能监控平台后端服务
 2026-07-09 17:43:15 - WARN - werkzeug - _internal.py:97 -  * Debugger is active!
 2026-07-09 17:43:15 - INFO - werkzeug - _internal.py:97 -  * Debugger PIN: 144-814-780
+2026-07-09 17:44:55 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'c:\\Users\\xbzhong\\Desktop\\lint\\script\\monitor\\develop\\monitor\\monitor2.5\\utils\\data_manager.py', reloading
+2026-07-09 17:44:56 - INFO - werkzeug - _internal.py:97 -  * Restarting with watchdog (windowsapi)
+2026-07-09 17:44:56 - INFO - utils.tool_manager - tool_manager.py:54 - 加载工具配置文件: C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\data\tools.json
+2026-07-09 17:44:56 - INFO - utils.tool_manager - tool_manager.py:45 - 工具管理器初始化完成
+2026-07-09 17:44:56 - DEBUG - matplotlib - __init__.py:342 - matplotlib data path: C:\Users\xbzhong\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\matplotlib\mpl-data
+2026-07-09 17:44:56 - DEBUG - matplotlib - __init__.py:342 - CONFIGDIR=C:\Users\xbzhong\.matplotlib
+2026-07-09 17:44:56 - DEBUG - matplotlib - __init__.py:1560 - interactive is False
+2026-07-09 17:44:56 - DEBUG - matplotlib - __init__.py:1561 - platform is win32
+2026-07-09 17:44:56 - DEBUG - matplotlib - __init__.py:342 - CACHEDIR=C:\Users\xbzhong\.matplotlib
+2026-07-09 17:44:56 - DEBUG - matplotlib.font_manager - font_manager.py:1635 - Using fontManager instance from C:\Users\xbzhong\.matplotlib\fontlist-v390.json
+2026-07-09 17:44:56 - INFO - utils.data_manager - data_manager.py:45 - 数据管理器初始化
+2026-07-09 17:44:56 - INFO - utils.data_parser - data_parser.py:18 - 数据管理器初始化
+2026-07-09 17:44:56 - INFO - __main__ - app_new.py:246 - 启动性能监控平台后端服务
+2026-07-09 17:44:56 - WARN - werkzeug - _internal.py:97 -  * Debugger is active!
+2026-07-09 17:44:56 - INFO - werkzeug - _internal.py:97 -  * Debugger PIN: 144-814-780
+2026-07-09 17:45:01 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'c:\\Users\\xbzhong\\Desktop\\lint\\script\\monitor\\develop\\monitor\\monitor2.5\\utils\\data_manager.py', reloading
+2026-07-09 17:45:01 - INFO - werkzeug - _internal.py:97 -  * Restarting with watchdog (windowsapi)
+2026-07-09 17:45:01 - INFO - utils.tool_manager - tool_manager.py:54 - 加载工具配置文件: C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\data\tools.json
+2026-07-09 17:45:01 - INFO - utils.tool_manager - tool_manager.py:45 - 工具管理器初始化完成
+2026-07-09 17:45:01 - DEBUG - matplotlib - __init__.py:342 - matplotlib data path: C:\Users\xbzhong\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\matplotlib\mpl-data
+2026-07-09 17:45:01 - DEBUG - matplotlib - __init__.py:342 - CONFIGDIR=C:\Users\xbzhong\.matplotlib
+2026-07-09 17:45:01 - DEBUG - matplotlib - __init__.py:1560 - interactive is False
+2026-07-09 17:45:01 - DEBUG - matplotlib - __init__.py:1561 - platform is win32
+2026-07-09 17:45:01 - DEBUG - matplotlib - __init__.py:342 - CACHEDIR=C:\Users\xbzhong\.matplotlib
+2026-07-09 17:45:01 - DEBUG - matplotlib.font_manager - font_manager.py:1635 - Using fontManager instance from C:\Users\xbzhong\.matplotlib\fontlist-v390.json
+2026-07-09 17:45:02 - INFO - utils.data_manager - data_manager.py:45 - 数据管理器初始化
+2026-07-09 17:45:02 - INFO - utils.data_parser - data_parser.py:18 - 数据管理器初始化
+2026-07-09 17:45:02 - INFO - __main__ - app_new.py:246 - 启动性能监控平台后端服务
+2026-07-09 17:45:02 - WARN - werkzeug - _internal.py:97 -  * Debugger is active!
+2026-07-09 17:45:02 - INFO - werkzeug - _internal.py:97 -  * Debugger PIN: 144-814-780
+2026-07-09 17:45:26 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'c:\\Users\\xbzhong\\Desktop\\lint\\script\\monitor\\develop\\monitor\\monitor2.5\\utils\\data_manager.py', reloading
+2026-07-09 17:45:26 - INFO - werkzeug - _internal.py:97 -  * Restarting with watchdog (windowsapi)
+2026-07-09 17:45:26 - INFO - utils.tool_manager - tool_manager.py:54 - 加载工具配置文件: C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\data\tools.json
+2026-07-09 17:45:26 - INFO - utils.tool_manager - tool_manager.py:45 - 工具管理器初始化完成
+2026-07-09 17:45:26 - DEBUG - matplotlib - __init__.py:342 - matplotlib data path: C:\Users\xbzhong\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\matplotlib\mpl-data
+2026-07-09 17:45:26 - DEBUG - matplotlib - __init__.py:342 - CONFIGDIR=C:\Users\xbzhong\.matplotlib
+2026-07-09 17:45:26 - DEBUG - matplotlib - __init__.py:1560 - interactive is False
+2026-07-09 17:45:26 - DEBUG - matplotlib - __init__.py:1561 - platform is win32
+2026-07-09 17:45:26 - DEBUG - matplotlib - __init__.py:342 - CACHEDIR=C:\Users\xbzhong\.matplotlib
+2026-07-09 17:45:26 - DEBUG - matplotlib.font_manager - font_manager.py:1635 - Using fontManager instance from C:\Users\xbzhong\.matplotlib\fontlist-v390.json
+2026-07-09 17:45:27 - INFO - utils.data_manager - data_manager.py:45 - 数据管理器初始化
+2026-07-09 17:45:27 - INFO - utils.data_parser - data_parser.py:18 - 数据管理器初始化
+2026-07-09 17:45:27 - INFO - __main__ - app_new.py:246 - 启动性能监控平台后端服务
+2026-07-09 17:45:27 - WARN - werkzeug - _internal.py:97 -  * Debugger is active!
+2026-07-09 17:45:27 - INFO - werkzeug - _internal.py:97 -  * Debugger PIN: 144-814-780
+2026-07-09 17:45:58 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'c:\\Users\\xbzhong\\Desktop\\lint\\script\\monitor\\develop\\monitor\\monitor2.5\\utils\\data_manager.py', reloading
+2026-07-09 17:45:59 - INFO - werkzeug - _internal.py:97 -  * Restarting with watchdog (windowsapi)
+2026-07-09 17:45:59 - INFO - utils.tool_manager - tool_manager.py:54 - 加载工具配置文件: C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\data\tools.json
+2026-07-09 17:45:59 - INFO - utils.tool_manager - tool_manager.py:45 - 工具管理器初始化完成
+2026-07-09 17:55:00 - INFO - utils.tool_manager - tool_manager.py:54 - 加载工具配置文件: C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\data\tools.json
+2026-07-09 17:55:00 - INFO - utils.tool_manager - tool_manager.py:45 - 工具管理器初始化完成
+2026-07-09 17:55:00 - DEBUG - matplotlib - __init__.py:342 - matplotlib data path: C:\Users\xbzhong\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\matplotlib\mpl-data
+2026-07-09 17:55:00 - DEBUG - matplotlib - __init__.py:342 - CONFIGDIR=C:\Users\xbzhong\.matplotlib
+2026-07-09 17:55:00 - DEBUG - matplotlib - __init__.py:1560 - interactive is False
+2026-07-09 17:55:00 - DEBUG - matplotlib - __init__.py:1561 - platform is win32
+2026-07-09 17:55:01 - DEBUG - matplotlib - __init__.py:342 - CACHEDIR=C:\Users\xbzhong\.matplotlib
+2026-07-09 17:55:01 - DEBUG - matplotlib.font_manager - font_manager.py:1635 - Using fontManager instance from C:\Users\xbzhong\.matplotlib\fontlist-v390.json
+2026-07-09 17:55:01 - INFO - utils.data_manager - data_manager.py:45 - 数据管理器初始化
+2026-07-09 17:55:01 - INFO - utils.data_parser - data_parser.py:18 - 数据管理器初始化
+2026-07-09 17:55:01 - INFO - __main__ - app_new.py:246 - 启动性能监控平台后端服务
+2026-07-09 17:55:01 - INFO - werkzeug - _internal.py:97 - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5020
+ * Running on http://192.168.0.112:5020
+2026-07-09 17:55:01 - INFO - werkzeug - _internal.py:97 - [33mPress CTRL+C to quit[0m
+2026-07-09 17:55:01 - INFO - werkzeug - _internal.py:97 -  * Restarting with watchdog (windowsapi)
+2026-07-09 17:55:01 - INFO - utils.tool_manager - tool_manager.py:54 - 加载工具配置文件: C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\data\tools.json
+2026-07-09 17:55:01 - INFO - utils.tool_manager - tool_manager.py:45 - 工具管理器初始化完成
+2026-07-09 17:55:01 - DEBUG - matplotlib - __init__.py:342 - matplotlib data path: C:\Users\xbzhong\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\matplotlib\mpl-data
+2026-07-09 17:55:01 - DEBUG - matplotlib - __init__.py:342 - CONFIGDIR=C:\Users\xbzhong\.matplotlib
+2026-07-09 17:55:01 - DEBUG - matplotlib - __init__.py:1560 - interactive is False
+2026-07-09 17:55:01 - DEBUG - matplotlib - __init__.py:1561 - platform is win32
+2026-07-09 17:55:01 - DEBUG - matplotlib - __init__.py:342 - CACHEDIR=C:\Users\xbzhong\.matplotlib
+2026-07-09 17:55:01 - DEBUG - matplotlib.font_manager - font_manager.py:1635 - Using fontManager instance from C:\Users\xbzhong\.matplotlib\fontlist-v390.json
+2026-07-09 17:55:02 - INFO - utils.data_manager - data_manager.py:45 - 数据管理器初始化
+2026-07-09 17:55:02 - INFO - utils.data_parser - data_parser.py:18 - 数据管理器初始化
+2026-07-09 17:55:02 - INFO - __main__ - app_new.py:246 - 启动性能监控平台后端服务
+2026-07-09 17:55:02 - WARN - werkzeug - _internal.py:97 -  * Debugger is active!
+2026-07-09 17:55:02 - INFO - werkzeug - _internal.py:97 -  * Debugger PIN: 144-814-780
+2026-07-09 17:55:04 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [09/Jul/2026 17:55:04] "GET /tool/elint HTTP/1.1" 200 -
+2026-07-09 17:55:04 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [09/Jul/2026 17:55:04] "[36mGET /static/js/multi_thread.js HTTP/1.1[0m" 304 -
+2026-07-09 17:55:05 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [09/Jul/2026 17:55:05] "[36mGET /static/js/single_thread.js HTTP/1.1[0m" 304 -
+2026-07-09 17:55:05 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [09/Jul/2026 17:55:05] "[36mGET /static/js/axios.min.js HTTP/1.1[0m" 304 -
+2026-07-09 17:55:05 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [09/Jul/2026 17:55:05] "[36mGET /static/js/tool.js HTTP/1.1[0m" 304 -
+2026-07-09 17:55:05 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [09/Jul/2026 17:55:05] "[36mGET /static/js/echarts.min.js HTTP/1.1[0m" 304 -
+2026-07-09 17:55:05 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [09/Jul/2026 17:55:05] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2026-07-09 17:55:05 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [09/Jul/2026 17:55:05] "[33mGET /static/js/axios.min.js.map HTTP/1.1[0m" 404 -
+2026-07-09 17:55:05 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [09/Jul/2026 17:55:05] "GET /api/tools HTTP/1.1" 200 -
+2026-07-09 17:55:05 - INFO - __main__ - app_new.py:127 - 用户 a6bacc8b-63d2-400b-9163-68455855fc01 请求加载工具 elint 数据
+2026-07-09 17:55:05 - INFO - utils.data_manager - data_manager.py:57 - 用户数据目录: C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\data\elint\a6bacc8b-63d2-400b-9163-68455855fc01 已存在
+2026-07-09 17:55:05 - INFO - utils.data_manager - data_manager.py:119 - 工具 elint 加载 single 数据
+2026-07-09 17:55:05 - INFO - utils.data_manager - data_manager.py:109 - 从文件加载工具数据: C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\data\elint\dataFiles_single.json
+2026-07-09 17:55:05 - INFO - utils.data_manager - data_manager.py:144 - 用户 a6bacc8b-63d2-400b-9163-68455855fc01 没有新增 single 数据
+2026-07-09 17:55:05 - INFO - __main__ - app_new.py:134 - 加载工具 elint 单线程数据 - None
+2026-07-09 17:55:05 - INFO - utils.data_manager - data_manager.py:109 - 从文件加载工具数据: C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\data\elint\single.json
+2026-07-09 17:55:05 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [09/Jul/2026 17:55:05] "POST /api/tools/elint/data HTTP/1.1" 200 -
+2026-07-09 17:55:05 - INFO - __main__ - app_new.py:193 - 收到用户 a6bacc8b-63d2-400b-9163-68455855fc01 请求图表数据: single runtime Overall 
+2026-07-09 17:55:05 - INFO - __main__ - app_new.py:193 - 收到用户 a6bacc8b-63d2-400b-9163-68455855fc01 请求图表数据: single runtime Overall 
+2026-07-09 17:55:05 - INFO - utils.data_manager - data_manager.py:109 - 从文件加载工具数据: C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\data\elint\original\aes\single\runtime\Overall.json
+2026-07-09 17:55:05 - INFO - utils.data_manager - data_manager.py:109 - 从文件加载工具数据: C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\data\elint\original\aes\single\runtime\Overall.json
+2026-07-09 17:55:05 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [09/Jul/2026 17:55:05] "POST /api/chart/data HTTP/1.1" 200 -
+2026-07-09 17:55:05 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [09/Jul/2026 17:55:05] "POST /api/chart/data HTTP/1.1" 200 -
+2026-07-09 17:55:09 - INFO - utils.data_manager - data_manager.py:109 - 从文件加载工具数据: C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\data\elint\single.json
+2026-07-09 17:55:09 - INFO - utils.data_manager - data_manager.py:109 - 从文件加载工具数据: C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\data\elint\original\aes\single\runtime\read_design.json
+2026-07-09 17:55:09 - INFO - utils.data_manager - data_manager.py:109 - 从文件加载工具数据: C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\data\elint\original\aes\single\runtime\E0003.json
+2026-07-09 17:55:09 - INFO - utils.data_manager - data_manager.py:109 - 从文件加载工具数据: C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\data\elint\original\aes\single\runtime\E0005.json
+2026-07-09 17:55:09 - INFO - utils.data_manager - data_manager.py:109 - 从文件加载工具数据: C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\data\elint\original\aes\single\runtime\E0006.json
+2026-07-09 17:55:09 - INFO - utils.data_manager - data_manager.py:109 - 从文件加载工具数据: C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\data\elint\original\aes\single\runtime\E0007.json
+2026-07-09 17:55:09 - INFO - utils.data_manager - data_manager.py:109 - 从文件加载工具数据: C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\data\elint\original\aes\single\runtime\E0001.json
+2026-07-09 17:55:09 - INFO - utils.data_manager - data_manager.py:109 - 从文件加载工具数据: C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\data\elint\original\aes\single\runtime\E0008.json
+2026-07-09 17:55:09 - INFO - utils.data_manager - data_manager.py:109 - 从文件加载工具数据: C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\data\elint\original\aes\single\runtime\check_lint.json
+2026-07-09 17:55:09 - INFO - utils.data_manager - data_manager.py:109 - 从文件加载工具数据: C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\data\elint\original\aes\single\runtime\Overall.json
+2026-07-09 17:55:09 - INFO - utils.data_manager - data_manager.py:109 - 从文件加载工具数据: C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\data\elint\original\aes\single\runtime\E0002.json
+2026-07-09 17:55:09 - INFO - utils.data_manager - data_manager.py:109 - 从文件加载工具数据: C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\data\elint\original\aes\single\runtime\E0004.json
+2026-07-09 17:55:09 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [09/Jul/2026 17:55:09] "POST /api/comparison HTTP/1.1" 200 -
