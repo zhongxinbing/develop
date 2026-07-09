@@ -26,8 +26,9 @@ class SingleThreadParser:
             tool_id: 工具ID
             data: 原始数据
         """
-
-        for name, case_data in all_data.items():
+        # 记录 case 有哪些 rule 有哪些 date
+        casename_rule_dates = {}
+        for casename, case_data in all_data.items():
             daily_metrics = case_data.get('daily_metrics', {})
             dates = sorted(list(daily_metrics.keys()))
             crash_dates = self.judge_date_is_overall(dates, daily_metrics)
@@ -41,10 +42,15 @@ class SingleThreadParser:
 
                     rule_data_runtime.setdefault(rule, {})[date] = result.get('runtime', {})
                     rule_data_memory.setdefault(rule, {})[date] = result.get('memory', {})
-            self.record_paser_rules(tool_id, name, rule_data_runtime, crash_dates)
-            self.record_paser_rules(tool_id, name, rule_data_memory, crash_dates)
+            rule_dates_runtime = self.record_paser_rules(tool_id, casename, rule_data_runtime, crash_dates, 'runtime')
+            rule_dates_memory = self.record_paser_rules(tool_id, casename, rule_data_memory, crash_dates, 'memory')
+            casename_rule_dates[casename] = {
+                'runtime': rule_dates_runtime,
+                'memory': rule_dates_memory
+            }
+        return casename_rule_dates
     # 记录解析到的规则数据
-    def record_paser_rules(self, tool_id: str, casename: str, runtime_or_memory_data: Dict, crash_dates: List[str]):
+    def record_paser_rules(self, tool_id: str, casename: str, runtime_or_memory_data: Dict, crash_dates: List[str], type: str):
         """
         记录解析到的规则数据
         
@@ -52,8 +58,10 @@ class SingleThreadParser:
             rule_data_runtime: 运行时数据
             rule_data_memory: 内存数据
         """
+        # 记录 rule 有那些日期
+        rule_dates = {}
         for rule, data in runtime_or_memory_data.items():
-            rule_path = DATA_DIR / tool_id / "original" / casename / 'single' / f'{rule}.json'
+            rule_path = DATA_DIR / tool_id / "original" / casename / 'single' / type /f'{rule}.json'
             if not rule_path.exists():
                 rule_path.parent.mkdir(parents=True, exist_ok=True)
             all_values = []
@@ -75,9 +83,11 @@ class SingleThreadParser:
                 'crash_dates': crash_dates,
                 'overall_data': None
             }
+            rule_dates[rule] = all_dates
             
             rule_data = self.increment_rule_data(rule_data, rule_path, rule)
             data_manager.save_tool_data(rule_path, rule_data)
+        return rule_dates
     # 增加规则数据
     def increment_rule_data(self, rule_data: Dict, data_path: str, rule: str):
         """

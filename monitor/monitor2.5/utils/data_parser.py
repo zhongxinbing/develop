@@ -36,6 +36,14 @@ class DataParser:
             return MultiThreadParser.parse_single_data(tool_id, mode, all_data)
 
 
+
+
+
+
+
+
+
+
     @staticmethod
     def parse_for_chart(
         raw_data: Dict,

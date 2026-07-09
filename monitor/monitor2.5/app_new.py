@@ -6,9 +6,9 @@ import uuid
 from pathlib import Path
 from datetime import datetime
 from flask import Flask, render_template, request, jsonify, session
-from sympy import true
+# from sympy import true
 
-from config import SECRET_KEY
+from config import SECRET_KEY,DATA_DIR
 from tool.elint.elint import load_json, save_json
 from utils.tool_manager import tool_manager
 from utils.data_manager import data_manager
@@ -130,45 +130,114 @@ def api_load_tool_data(tool_id):
     data_manager.create_user_data_dir(user_id, tool_id)
     # 加载所有数据
 
-    single = data_manager.load_data(tool_id, user_id, "single")
+    single = data_manager.get_all_data(tool_id, user_id, "single")
     logger.info(f"加载工具 {tool_id} 单线程数据 - {single}")
-    # multi = data_manager.load_data(tool_id, user_id, "multi")
-    # extra = data_manager.load_data(tool_id, user_id, "extra_display")
+    # multi = data_manager.get_all_data(tool_id, user_id, "multi")
+    # extra = data_manager.get_all_data(tool_id, user_id, "extra_display")
     multi = None
     extra = None
 
     all_data = {}
     message = ''
     if single:
+        # 需要更新数据
         all_data['single'] = single
         message += ' 单线程'
-        data_parser.parse_all_data(tool_id, single, 'single')
+        single_casename_rule_dates = data_parser.parse_all_data(tool_id, single, 'single')
+        all_data['single'] = single_casename_rule_dates
+        data_manager.save_tool_data(DATA_DIR / tool_id / 'single.json', single_casename_rule_dates)
     else:
-        all_data['single'] = {}
+        all_data['single'] = data_manager.load_tool_data(DATA_DIR / tool_id / 'single.json')
         
-    if multi:
-        all_data['multi'] = multi
-        message += ' 多线程'
-        data_parser.parse_all_data(tool_id, multi, 'multi')
-    else:
-        all_data['multi'] = {}
+    # if multi:
+    #     # 需要更新数据
+    #     all_data['multi'] = multi
+    #     message += ' 多线程'
+    #     multi_casename_rule_dates = data_parser.parse_all_data(tool_id, multi, 'multi')
+    #     data_manager.save_tool_data(DATA_DIR / tool_id / 'multi.json', multi_casename_rule_dates)
+    # else:
+    #     all_data['multi'] = data_manager.load_tool_data(DATA_DIR / tool_id / 'multi.json')
         
-    if extra:
-        all_data['extra'] = extra
-        message += ' 其他'
-        data_parser.parse_all_data(tool_id, extra, 'extra_display')
-    else:
-        all_data['extra'] = {}
+    # if extra:
+    #     # 需要更新数据
+    #     all_data['extra'] = extra
+    #     message += ' 其他'
+    #     extra_casename_rule_dates = data_parser.parse_all_data(tool_id, extra, 'extra_display')
+    #     data_manager.save_tool_data(DATA_DIR / tool_id / 'extra.json', extra_casename_rule_dates)
+    # else:
+    #     all_data['extra'] = data_manager.load_tool_data(DATA_DIR / tool_id / 'extra.json')
     
     if message:
         message = "更新:" + message
     else:
         message = "数据不需要更新"
     
+    # 需要在 data 中给出 每个线程的 casename 每个 rule 对应的日期，为一个嵌套字典， casename rule date
+
     return jsonify({'success': True, 'data': all_data, 'message': message})
     # 解析数据，并放在 对应的目录中
+# 从前端获取图需要显示数据，解析后返回图表数据   ->>>>>  单线线程
+@app.route('/api/chart/data', methods=['POST'])
+def api_get_chart_data():
+    """获取图表数据（支持Runtime和Memory）"""
+    data = request.json
+    user_id = get_user_id()
+
+    tool_id = data.get('toolID', '')
+    casename = data.get('casename', '')
+    mode = data.get('mode', 'single')
+    chart_type = data.get('chart_type', 'runtime')
+    rules = data.get('rules', [])
+    dates = data.get('dates', [])
+
+    logger.info(f"收到用户 {user_id} 请求图表数据: {mode} {chart_type} {rules[0]} ")
+    data_path = DATA_DIR / tool_id / "original" / casename / 'single' / chart_type / f'{rules[0]}.json'
+    data = data_manager.load_tool_data(data_path)
+
+    # 根据前端发送来的日期，筛选出对应的 values，并返回给前端
+    chioce_data = {}
+    chioce_data["dates"] = list(set(dates))
+    chioce_data.setdefault("rules", {}).setdefault(rules[0], {})["dates"] = list(set(dates))
+    values = []
+    crash_date = []
+
+    for date in dates:
+        index = data["rules"][rules[0]]["dates"].index(date)
+        values.append(data["rules"][rules[0]]["values"][index])
+        if date in data["crash_dates"]:
+            crash_date.append(date)
+
+    chioce_data.setdefault("rules", {}).setdefault(rules[0], {})["values"] = values
+    chioce_data.setdefault("rules", {}).setdefault(rules[0], {})["type"] = data["rules"][rules[0]]["type"]
+    chioce_data.setdefault("rules", {}).setdefault(rules[0], {})["name"] = data["rules"][rules[0]]["name"]
+    chioce_data.setdefault("rules", {}).setdefault(rules[0], "")["is_single"] = data["rules"][rules[0]]["is_single"]
+    chioce_data.setdefault("rules", {}).setdefault(rules[0], [])["crash_dates"] = crash_date
+    chioce_data.setdefault("rules", {}).setdefault(rules[0], [])["overall_data"] = data["overall_data"]
+    
+    return jsonify({'success': True, 'data': chioce_data})
 
 
+# 数据对比
+@app.route('/api/comparison', methods=['POST'])
+def api_get_comparison():
+    """获取对比数据"""
+    data = request.json
+    
+    tool_id = data.get('tool_id', '')
+    mode = data.get('mode', 'single')
+    casename = data.get('casename', '')
+    date1 = data.get('date1', '')
+    date2 = data.get('date2', '')
+    compare_mode = data.get('compare_mode', 'all')
+    dimension = data.get('dimension', 'all')
+    runtime_threshold = float(data.get('runtime_threshold', 0))
+    memory_threshold = float(data.get('memory_threshold', 0))
+    error_mode = data.get('error_mode', 'absolute')
+    
+
+    compare_result = data_manager.compare_data(tool_id, mode, casename, date1, date2, compare_mode, dimension, runtime_threshold, memory_threshold, error_mode)
+    
+    return jsonify({'success': True, 'data': compare_result})
 
 
 if __name__ == '__main__':

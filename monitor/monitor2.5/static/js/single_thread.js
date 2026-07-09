@@ -36,6 +36,7 @@ class SingleThreadManager {
         this.runtimeThreshold = null;
         this.memoryThreshold = null;
         this.errorModeSelect = null;
+        this.compRuleSearch = null;
         
         // 绑定方法
         this.renderChart = this.renderChart.bind(this);
@@ -69,45 +70,32 @@ class SingleThreadManager {
         this.runtimeThreshold = document.getElementById(`${this.idPrefix}RuntimeThreshold`);
         this.memoryThreshold = document.getElementById(`${this.idPrefix}MemoryThreshold`);
         this.errorModeSelect = document.getElementById(`${this.idPrefix}ErrorModeSelect`);
-        
-        // 清理和验证数据格式
-        let cleanRawData = {};
-        console.log('SingleThreadManager.init 原始数据 keys:', Object.keys(rawData));
-        if (rawData && typeof rawData === 'object') {
-            for (const [key, value] of Object.entries(rawData)) {
-                if (key === 'dataFiles' || key === '__multi_processed_logs__' || key === 'single' || key === 'multi') {
-                    continue;
-                }
-                
-                if (value && typeof value === 'object') {
-                    if (value.daily_metrics) {
-                        cleanRawData[key] = value;
-                    } else if (value.casename && value.daily_metrics) {
-                        cleanRawData[key] = value;
-                    }
-                }
-            }
-        }
+        this.compRuleSearch = document.getElementById(`${this.idPrefix}CompRuleSearch`);
 
-        this.rawData = cleanRawData;
+
+        this.rawData = rawData;
+        // this.rawData = cleanRawData;
         this.userAddedData = userAddedData || {};
         this.allData = { ...this.rawData, ...this.userAddedData };
         this.extraData = extraData
-        console.log('SingleThreadManager 处理后数据 keys:', Object.keys(this.allData));
         
         // 初始化图表容器
         this.initChartContainer();
-        
+        // 初始化Casename选择框
         this.updateCasenameSelect();
+        // 初始化 rule 选择框
         await this.updateRulesAndDates();
+        // 初始化事件监听器
         this.initEventListeners();
+        // 初始化日期选择器
         this.initDatePickerModal();
+        // 初始化添加数据弹窗
         this.initAddDataModal();
-        
+        // 初始化对比面板
         if (this.allDates.length > 0) {
             this.selectLatest50Days();
         }
-        
+        // 初始化对比面板元素
         console.log('SingleThreadManager.init 完成', { 
             allDates: this.allDates.length, 
             allRules: this.allRules.length 
@@ -137,10 +125,10 @@ class SingleThreadManager {
         if (!this.casenameSelect) return;
         
         const casenames = Object.keys(this.allData).filter(name => {
-            const data = this.allData[name];
-            return data && typeof data === 'object' && data.daily_metrics;
+            const rule = this.allData[name];
+            return rule ;
         });
-        
+        console.log('SingleThreadManager.updateCasenameSelect casenames:', casenames);
         const options = casenames.map(name => 
             `<option value="${this.escapeHtml(name)}">${this.escapeHtml(name)}</option>`
         ).join('');
@@ -151,19 +139,15 @@ class SingleThreadManager {
             this.casenameSelect.value = this.selectedCasename;
         }
         
-        this.syncComparisonCasenameSelect();
+        this.syncComparisonCasenameSelect(casenames);
     }
 
     /**
      * 同步对比面板的 casename 选项
      */
-    syncComparisonCasenameSelect() {
-        if (!this.compCasenameSelect) return;
+    syncComparisonCasenameSelect(casenames) {
         
-        const casenames = Object.keys(this.allData).filter(name => {
-            const data = this.allData[name];
-            return data && typeof data === 'object' && data.daily_metrics;
-        });
+        if (!this.compCasenameSelect) return;
         
         const currentValue = this.compCasenameSelect.value;
         const options = casenames.map(name => 
@@ -188,24 +172,14 @@ class SingleThreadManager {
             return;
         }
         
-        const caseData = this.allData[this.selectedCasename];
-        const dailyMetrics = caseData.daily_metrics || {};
-        
-        const rulesSet = new Set();
-        const datesSet = new Set();
-        
-        Object.keys(dailyMetrics).forEach(date => {
-            datesSet.add(date);
-            const metrics = dailyMetrics[date];
-            if (metrics && typeof metrics === 'object') {
-                Object.keys(metrics).forEach(rule => {
-                    rulesSet.add(rule);
-                });
-            }
-        });
+        const ruleData = this.allData[this.selectedCasename];
+        if (!ruleData || typeof ruleData !== 'object') {
+            console.log('updateRulesAndDates: 无有效的 rule 数据', this.selectedCasename);
+            return;
+        }
+        const rulesSet = new Set(Object.keys(ruleData[this.currentChartType]));
         
         this.allRules = Array.from(rulesSet).sort();
-        this.allDates = Array.from(datesSet).sort();
         
         if (this.allRules.includes('Overall')) {
             this.allRules = ['Overall', ...this.allRules.filter(r => r !== 'Overall')];
@@ -214,9 +188,13 @@ class SingleThreadManager {
         if (this.allRules.includes('Overall') && this.selectedRules.length === 0) {
             this.selectedRules = ['Overall'];
         }
-        
+        // 更新规则选择框
         this.updateRuleSelect();
+        // 更新对比 rule 选择框
+        this.updateCompareModeSelect();
+        // 更新日期选择框
         this.updateDateSelects();
+        // 更新概览
         this.updateOverview();
     }
     
@@ -246,15 +224,19 @@ class SingleThreadManager {
      * 更新日期选择框
      */
     updateDateSelects() {
+        // 对比数据中的 日期 1选择框
         if (this.date1Select) {
-            const options = this.allDates.map(date => 
+            const options = this.allData[this.selectedCasename][this.currentChartType][this.selectedRules].map(date => 
                 `<option value="${date}">${this.formatDate(date)}</option>`
             ).join('');
             this.date1Select.innerHTML = options;
         }
-        
+        // 对比数据中的 日期 2选择框
         if (this.date2Select) {
-            const options = this.allDates.map(date => 
+            const allDates = new Set(this.allData[this.selectedCasename][this.currentChartType][this.selectedRules]);
+            this.allDates = Array.from(allDates).sort();
+            
+            const options = this.allData[this.selectedCasename][this.currentChartType][this.selectedRules].map(date => 
                 `<option value="${date}">${this.formatDate(date)}</option>`
             ).join('');
             this.date2Select.innerHTML = options;
@@ -308,7 +290,7 @@ class SingleThreadManager {
         
         try {
             const requestData = {
-                raw_data: this.allData,
+                // raw_data: this.allData,
                 casename: this.selectedCasename,
                 rules: this.selectedRules,
                 dates: this.selectedDates,
@@ -748,6 +730,12 @@ class SingleThreadManager {
                 }
             });
         }
+
+        if (this.compRuleSearch) {
+            this.compRuleSearch.addEventListener('input', () => {
+                this.updateCompareModeSelect();
+            });
+        }
     }
     
     /**
@@ -756,14 +744,19 @@ class SingleThreadManager {
     async performComparison() {
         const date1 = this.date1Select ? this.date1Select.value : '';
         const date2 = this.date2Select ? this.date2Select.value : '';
+        // 对比 rule
         const compareMode = this.compareModeSelect ? this.compareModeSelect.value : 'all';
+        // 对比维度
         const dimension = this.dimensionSelect ? this.dimensionSelect.value : 'all';
+        // 对比阈值
         const runtimeThresholdVal = parseFloat(this.runtimeThreshold?.value || 0);
         const memoryThresholdVal = parseFloat(this.memoryThreshold?.value || 0);
+       
         const errorMode = this.errorModeSelect ? this.errorModeSelect.value : 'absolute';
         
         let rulesToCompare = [];
         if (compareMode === 'all') {
+            console.log(compareMode);
             rulesToCompare = this.allRules;
         } else {
             rulesToCompare = [compareMode];
@@ -775,19 +768,21 @@ class SingleThreadManager {
         }
         
         try {
-            const response = await axios.post('/api/comparison', {
-                raw_data: this.allData,
+            const responseData = {
+                tool_id: window.toolId,
+                mode: this.idPrefix,
                 casename: this.selectedCasename,
                 date1: date1,
                 date2: date2,
-                rules: rulesToCompare,
                 compare_mode: compareMode,
                 dimension: dimension,
                 runtime_threshold: runtimeThresholdVal,
                 memory_threshold: memoryThresholdVal,
                 error_mode: errorMode
-            });
-            
+            }
+            console.log(responseData);
+            const response = await axios.post('/api/comparison', responseData);
+
             if (response.data.success) {
                 this.renderComparisonResults(response.data.data);
                 const comparisonResults = document.getElementById('comparisonResults');
@@ -806,6 +801,28 @@ class SingleThreadManager {
             console.error('执行对比失败:', error);
             this.showToast('执行对比失败', 'error');
         }
+    }
+    
+    /**
+     * 更新对比 rule 选择框
+     */
+    updateCompareModeSelect() {
+        
+        const compareModeTerm = this.compRuleSearch ? this.compRuleSearch.value.toLowerCase() : '';
+        const filteredCompareRules = compareModeTerm 
+            ? this.allRules.filter(rule => rule.toLowerCase().includes(compareModeTerm))
+            : this.allRules;
+
+        let compareModeOptions = `<option value="all" >对比全部 rule</option>`
+       
+        compareModeOptions += filteredCompareRules.map(rule => 
+            `<option value="${this.escapeHtml(rule)}"}>
+                ${this.escapeHtml(rule)}
+            </option>`
+        ).join('');
+
+        
+        this.compareModeSelect.innerHTML = compareModeOptions;
     }
     
     /**
@@ -900,37 +917,39 @@ class SingleThreadManager {
         const dateSearch = document.getElementById('dateSearch');
         
         if (!openBtn || !modal) return;
-        
+        // 点击打开弹窗
         openBtn.addEventListener('click', () => {
             this.updateDatePickerModal();
             modal.classList.add('active');
             document.body.style.overflow = 'hidden';
         });
-        
+        // 点击关闭弹窗
         const closeModal = () => {
             modal.classList.remove('active');
             document.body.style.overflow = '';
         };
-        
+        // 点击关闭弹窗
         if (closeBtn) closeBtn.addEventListener('click', closeModal);
         if (cancelBtn) cancelBtn.addEventListener('click', closeModal);
-        
+        // 点击确认选择
         if (confirmBtn) {
             confirmBtn.addEventListener('click', () => {
                 const checkboxes = document.querySelectorAll('.date-checkbox:checked');
                 this.selectedDates = Array.from(checkboxes).map(cb => cb.value);
+                // 确认选择后，关闭弹窗
                 closeModal();
                 this.renderChart();
             });
+            
         }
-        
+        // 点击全选/取消全选
         if (selectAllCheckbox) {
             selectAllCheckbox.addEventListener('change', (e) => {
                 const checkboxes = document.querySelectorAll('.date-checkbox');
                 checkboxes.forEach(cb => cb.checked = e.target.checked);
             });
         }
-        
+        // 点击搜索日期
         if (dateSearch) {
             dateSearch.addEventListener('input', (e) => {
                 const searchTerm = e.target.value.toLowerCase();

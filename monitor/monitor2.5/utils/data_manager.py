@@ -110,7 +110,7 @@ class DataManager:
         return data
 
     # 加载工具数据从文件
-    def load_data(self, tool_id: str, user_id: str, type):
+    def get_all_data(self, tool_id: str, user_id: str, type):
         """
         加载工具数据从文件
         """
@@ -147,6 +147,125 @@ class DataManager:
         # 保存新增数据到文件
         self.save_tool_data(DATA_DIR / tool_id / f"dataFiles_{type}.json", self.data_files)
         return data
+
+
+##################################################################################################################################################################
+    def compare_data(self, 
+        tool_id: str, 
+        type: str,
+        casename: str, 
+        date1: str, 
+        date2: str, 
+        compare_mode: str = 'all',
+        dimension: str = 'all',
+        runtime_threshold: float = 0,
+        memory_threshold: float = 0,
+        error_mode: str = 'absolute'):
+        """
+        runtime_threshold: 运行时间阈值
+        memory_threshold: 内存阈值
+        error_mode: 错误模式，absolute 或 relative
+        """
+        if dimension != 'all' and dimension != 'runtime' and dimension != 'memory':
+            return False
+        # 对比所有 rule
+        if compare_mode == "all":
+            mode_path = DATA_DIR / tool_id / f"{type}.json"
+            mode_data = self.load_tool_data(mode_path)
+            rules = mode_data[casename]["runtime"].keys() | mode_data[casename]["memory"].keys()
+        else:
+            rules = compare_mode
+        # 对比数据
+        rule_data_compare_data_runtime = {}
+        rule_data_compare_data_memory = {}
+        for rule in rules:
+            if dimension == 'all' or dimension == 'runtime':
+                case_data_runtime = self.load_tool_data(DATA_DIR / tool_id / "original" /casename / type /"runtime" / f"{rule}.json")
+                date1_data, date2_data, runtime_diff, runtime_diff_percent = self.calculation_error(case_data_runtime, rule, date1, date2)
+                rule_data_compare_data_runtime[rule] = {
+                    "date1_data": date1_data,
+                    "date2_data": date2_data,
+                    "diff": runtime_diff,
+                    "diff_percent": runtime_diff_percent,
+                }
+                
+            if dimension == 'memory':
+                case_data_memory = self.load_tool_data(DATA_DIR / tool_id / casename / type /"memory" / f"{rule}.json")
+                date1_data, date2_data, memory_diff, memory_diff_percent = self.calculation_error(case_data_memory, rule, date1, date2)
+                rule_data_compare_data_memory[rule] = {
+                    "date1_data": date1_data,
+                    "date2_data": date2_data,
+                    "diff": memory_diff,
+                    "diff_percent": memory_diff_percent,
+                }
+        return self.statistical_compare_result_data(rule_data_compare_data_runtime, rule_data_compare_data_memory, dimension, runtime_threshold, memory_threshold, error_mode)
+
+    def calculation_error(self, data, rule: str, date1: str, date2: str):
+
+        dates = data["rules"][rule]["dates"]
+        index1 = dates.index(date1)
+        date1_data = data["rules"][rule]["values"][index1]
+        index2 = dates.index(date2)
+        date2_data = data["rules"][rule]["values"][index2]
+
+        diff = date2_data - date1_data
+        diff_percent = (diff / date1_data) * 100
+        return date1_data, date2_data, diff, diff_percent
+
+    def statistical_compare_result_data(self, runtime_data, memory_data, dimension: str, runtime_threshold: float, memory_threshold: float, error_mode: str):
+
+        """
+        runtime_threshold: 运行时间阈值
+        memory_threshold: 内存阈值
+        error_mode: 错误模式，absolute 或 relative
+        """
+        result = {}
+        statistics = {
+            "runtime_increased": [], 
+            "runtime_decreased": [], 
+            "memory_increased": [], 
+            "memory_decreased": [],
+            "avg_runtime_change": 0,
+            "avg_memory_change": 0,
+            "max_runtime_increase": [],
+            "max_runtime_decrease": [],
+            "max_memory_increase": [],
+            "max_memory_decrease": [],
+        }
+        # 对比百分比阈值
+        if dimension == 'all' or dimension == 'runtime' and runtime_data:
+            for rule in runtime_data:
+                result[rule] = {}
+                date1_data = runtime_data[rule]["date1_data"]
+                date2_data = runtime_data[rule]["date2_data"]
+                diff = runtime_data[rule]["diff"]
+                diff_percent = runtime_data[rule]["diff_percent"]
+                if error_mode == 'percentage':
+                    result[rule]["runtime"] =  self.judge_compare_reuslt(date1_data, date2_data, diff_percent, runtime_threshold, statistics)
+                else:
+                    result[rule]["runtime"] = self.judge_compare_reuslt(date1_data, date2_data, diff, runtime_threshold)
+        elif dimension == 'memory' and memory_data:
+            for rule in memory_data:
+                result[rule] = {}
+                date1_data = memory_data[rule]["date1_data"]
+                date2_data = memory_data[rule]["date2_data"]
+                diff = memory_data[rule]["diff"]
+                diff_percent = memory_data[rule]["diff_percent"]
+                if error_mode == 'percentage':
+                    result[rule]["memory"] = self.judge_compare_reuslt(date1_data, date2_data, diff_percent, memory_threshold)
+                else:
+                    result[rule]["memory"] = self.judge_compare_reuslt(date1_data, date2_data, diff, memory_threshold)
+        else:
+            result = {}
+        return result
+
+    def judge_compare_reuslt(self, date1_data, date2_data, diff, threshold):
+        if diff > threshold:
+            return [date1_data,date2_data,diff, "⬆️增加"]
+        elif diff == threshold:
+            return [date1_data,date2_data,diff, "· 无变化"]
+        else:
+            return [date1_data,date2_data,diff, "⬇️减少"]
 
     # def get_single_thread_data(self, user_id: str, tool_config: Dict) -> Dict:
     #     """
