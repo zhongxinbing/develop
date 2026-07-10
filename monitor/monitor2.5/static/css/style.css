@@ -1240,24 +1240,112 @@ body {
     margin-top: var(--spacing-4);
 }
 
-.comparison-stats-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: var(--spacing-4);
-    margin-bottom: var(--spacing-4);
-}
-
-.comparison-stat-card {
-    background: var(--bg-surface);
-    border-radius: var(--radius-lg);
-    padding: var(--spacing-3);
-}
 
 .comparison-stat-card h4 {
     font-size: 12px;
     color: var(--text-muted);
     margin-bottom: var(--spacing-2);
 }
+
+
+/* 使用 Flexbox 实现固定5列 */
+.comparison-stats-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-4);
+    margin-bottom: var(--spacing-4);
+    width: 100%;
+    box-sizing: border-box;
+    overflow: visible !important;
+}
+
+.comparison-stat-card {
+    flex: 0 0 calc(20% - var(--spacing-4)); /* 固定5列 */
+    min-width: 0;
+    background: var(--bg-surface);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-4);
+    box-sizing: border-box;
+    overflow: visible;
+    transition: all var(--transition-fast);
+}
+
+/* 响应式调整 - 保持5列，调整大小 */
+@media (max-width: 1023px) {
+    .comparison-stats-grid {
+        gap: var(--spacing-3);
+    }
+    
+    .comparison-stat-card {
+        flex: 0 0 calc(20% - var(--spacing-3));
+        padding: var(--spacing-3);
+        border-radius: var(--radius-md);
+    }
+    
+    .comparison-stat-value {
+        font-size: 15px;
+    }
+}
+
+@media (max-width: 767px) {
+    .comparison-stats-grid {
+        gap: var(--spacing-2);
+    }
+    
+    .comparison-stat-card {
+        flex: 0 0 calc(20% - var(--spacing-2));
+        padding: var(--spacing-2);
+        border-radius: var(--radius-sm);
+    }
+    
+    .comparison-stat-value {
+        font-size: 13px;
+    }
+}
+
+@media (max-width: 599px) {
+    .comparison-stats-grid {
+        gap: 6px;
+    }
+    
+    .comparison-stat-card {
+        flex: 0 0 calc(20% - 6px);
+        padding: 6px 3px;
+        border-radius: 4px;
+    }
+    
+    .comparison-stat-value {
+        font-size: 11px;
+    }
+}
+
+@media (max-width: 479px) {
+    .comparison-stats-grid {
+        gap: 4px;
+    }
+    
+    .comparison-stat-card {
+        flex: 0 0 calc(20% - 4px);
+        padding: 4px 2px;
+        border-radius: 3px;
+    }
+    
+    .comparison-stat-value {
+        font-size: 9px;
+    }
+    
+    .comparison-stat-card h4 {
+        font-size: 7px;
+        color: var(--text-muted);
+        margin-bottom: 1px;
+    }
+}
+
+
+
+
+
+
 
 .comparison-stat-value {
     font-size: 18px;
@@ -1612,4 +1700,389 @@ body {
     word-break: break-all;      /* 允许在任意字符间换行 */
     white-space: normal;        /* 正常换行 */
     max-width: 300px;           /* 限制最大宽度（可选） */
+}
+/* 对比表格搜索框 */
+#comparisonSearch {
+    width: 100%;
+    max-width: 300px;
+    padding: 8px 12px;
+    background: var(--bg-base);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-sm);
+    color: var(--text-primary);
+    font-size: 13px;
+}
+
+#comparisonSearch:focus {
+    outline: none;
+    border-color: var(--primary);
+}
+
+@media (max-width: 768px) {
+    #comparisonSearch {
+        max-width: 100%;
+        font-size: 12px;
+        padding: 6px 10px;
+    }
+}
+/* ============================================
+   对比表格 - 固定表头样式
+============================================ */
+
+.comparison-table-container {
+    width: 100%;
+    overflow: hidden;
+    border-radius: var(--radius-lg);
+    background: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    position: relative;
+}
+
+/* 表格包装器 - 支持滚动和固定表头 */
+.comparison-table-container .table-wrapper {
+    overflow: auto;
+    max-height: 500px;
+    position: relative;
+}
+
+/* 表格基础样式 */
+.comparison-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    min-width: 600px;
+}
+
+/* 固定表头 */
+.comparison-table thead {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+}
+
+.comparison-table thead th {
+    background: var(--bg-elevated);
+    color: var(--text-secondary);
+    font-weight: 600;
+    font-size: 12px;
+    padding: 10px 12px;
+    text-align: left;
+    border-bottom: 2px solid var(--primary);
+    white-space: nowrap;
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* 确保表头在滚动时保持可见 */
+.comparison-table thead th::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: var(--primary);
+    opacity: 0.3;
+}
+
+/* 表格行样式 */
+.comparison-table tbody td {
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border-subtle);
+    white-space: nowrap;
+}
+
+.comparison-table tbody tr:hover {
+    background: rgba(255, 255, 255, 0.03);
+}
+
+/* 搜索框样式 */
+.comparison-table-container .table-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    background: var(--bg-surface);
+    border-bottom: 1px solid var(--border-subtle);
+    flex-wrap: wrap;
+    gap: 8px;
+    position: sticky;
+    top: 0;
+    z-index: 25;
+}
+
+.comparison-table-container .table-header .result-count {
+    font-size: 12px;
+    color: var(--text-muted);
+}
+
+#comparisonSearch {
+    flex: 1;
+    max-width: 300px;
+    min-width: 150px;
+    padding: 8px 12px;
+    background: var(--bg-base);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-sm);
+    color: var(--text-primary);
+    font-size: 13px;
+    transition: border-color var(--transition-fast);
+}
+
+#comparisonSearch:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(0, 229, 255, 0.1);
+}
+
+/* ============================================
+   响应式设计 - 对比表格
+============================================ */
+
+/* 中等屏幕 (1024px - 1280px) */
+@media (max-width: 1280px) {
+    .comparison-table {
+        font-size: 12px;
+        min-width: 500px;
+    }
+    
+    .comparison-table thead th,
+    .comparison-table tbody td {
+        padding: 8px 10px;
+    }
+}
+
+/* 平板屏幕 (768px - 1024px) */
+@media (max-width: 1024px) {
+    .comparison-table-container .table-wrapper {
+        max-height: 400px;
+    }
+    
+    .comparison-table {
+        font-size: 11px;
+        min-width: 450px;
+    }
+    
+    .comparison-table thead th,
+    .comparison-table tbody td {
+        padding: 6px 8px;
+    }
+    
+    .comparison-table thead th {
+        font-size: 11px;
+    }
+    
+    #comparisonSearch {
+        max-width: 200px;
+        font-size: 12px;
+        padding: 6px 10px;
+    }
+}
+
+/* 手机屏幕 (小于 768px) */
+@media (max-width: 768px) {
+    .comparison-table-container {
+        border-radius: var(--radius-md);
+    }
+    
+    .comparison-table-container .table-wrapper {
+        max-height: 350px;
+    }
+    
+    .comparison-table {
+        font-size: 10px;
+        min-width: 400px;
+    }
+    
+    .comparison-table thead th,
+    .comparison-table tbody td {
+        padding: 5px 6px;
+    }
+    
+    .comparison-table thead th {
+        font-size: 10px;
+    }
+    
+    .comparison-table-container .table-header {
+        padding: 8px 12px;
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    #comparisonSearch {
+        max-width: 100%;
+        font-size: 12px;
+        padding: 6px 10px;
+    }
+    
+    .comparison-table-container .table-header .result-count {
+        font-size: 11px;
+    }
+}
+/* ============================================
+   对比统计卡片 - Tooltip 浮层样式（完整优化版）
+============================================ */
+
+.comparison-stat-card.tooltip-card {
+    position: relative;
+    cursor: pointer;
+    z-index: 1;
+    overflow: visible !important;
+}
+
+/* 悬停时提升卡片层级，防止被相邻卡片遮挡 */
+.comparison-stat-card.tooltip-card:hover {
+    z-index: 100;
+}
+
+/* Tooltip 浮层 - 使用 fixed 定位确保在最上层 */
+.comparison-stat-card.tooltip-card .tooltip-content {
+    position: absolute;
+    /* 使用 fixed 定位，相对于视口 */
+    bottom: auto;
+    top: auto;
+    left: 50%;
+    transform: translateX(-50%) translateY(8px);
+    min-width: 220px;
+    max-width: 320px;
+    max-height: 260px;
+    overflow-y: auto;
+    background: var(--bg-elevated);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-3) var(--spacing-4);
+    border: 1px solid var(--border-subtle);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.25s ease, visibility 0.25s ease, transform 0.25s ease;
+    z-index: 99999 !important;  /* 最高层级 */
+    pointer-events: none;
+    /* 确保文字颜色正确 */
+    color: var(--text-primary);
+}
+
+/* 悬停时显示 tooltip */
+.comparison-stat-card.tooltip-card:hover .tooltip-content {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(0);
+}
+
+/* Tooltip 小三角指示器 */
+.comparison-stat-card.tooltip-card .tooltip-content::after {
+    content: '';
+    position: absolute;
+    bottom: -6px;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 6px solid transparent;
+    border-top-color: var(--bg-elevated);
+    pointer-events: none;
+}
+
+/* Tooltip 边框小三角（带边框效果） */
+.comparison-stat-card.tooltip-card .tooltip-content::before {
+    content: '';
+    position: absolute;
+    bottom: -7px;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 7px solid transparent;
+    border-top-color: var(--border-subtle);
+    pointer-events: none;
+}
+
+/* Tooltip 头部 */
+.comparison-stat-card.tooltip-card .tooltip-content .tooltip-header {
+    font-size: 12px;
+    font-weight: 600;
+    padding-bottom: 6px;
+    margin-bottom: 6px;
+    border-bottom: 1px solid var(--border-subtle);
+    color: var(--text-primary);
+}
+
+/* Tooltip 列表项 */
+.comparison-stat-card.tooltip-card .tooltip-content .tooltip-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 4px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    gap: 12px;
+}
+
+.comparison-stat-card.tooltip-card .tooltip-content .tooltip-item:last-child {
+    border-bottom: none;
+}
+
+.comparison-stat-card.tooltip-card .tooltip-content .tooltip-item-name {
+    font-size: 12px;
+    color: var(--text-primary);
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 140px;
+}
+
+.comparison-stat-card.tooltip-card .tooltip-content .tooltip-item-desc {
+    font-size: 11px;
+    color: var(--text-secondary);
+    font-family: var(--font-mono);
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+/* Tooltip 滚动条 */
+.comparison-stat-card.tooltip-card .tooltip-content::-webkit-scrollbar {
+    width: 3px;
+}
+
+.comparison-stat-card.tooltip-card .tooltip-content::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.comparison-stat-card.tooltip-card .tooltip-content::-webkit-scrollbar-thumb {
+    background: var(--text-muted);
+    border-radius: 2px;
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+    .comparison-stat-card.tooltip-card .tooltip-content {
+        min-width: 180px;
+        max-width: 260px;
+        max-height: 200px;
+        padding: var(--spacing-2) var(--spacing-3);
+    }
+    
+    .comparison-stat-card.tooltip-card .tooltip-content .tooltip-item-name {
+        max-width: 100px;
+        font-size: 11px;
+    }
+    
+    .comparison-stat-card.tooltip-card .tooltip-content .tooltip-item-desc {
+        font-size: 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    .comparison-stat-card.tooltip-card .tooltip-content {
+        min-width: 150px;
+        max-width: 200px;
+        max-height: 160px;
+        padding: var(--spacing-2);
+    }
+    
+    .comparison-stat-card.tooltip-card .tooltip-content .tooltip-item-name {
+        max-width: 70px;
+        font-size: 10px;
+    }
+    
+    .comparison-stat-card.tooltip-card .tooltip-content .tooltip-item-desc {
+        font-size: 9px;
+    }
 }

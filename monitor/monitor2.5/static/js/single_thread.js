@@ -298,9 +298,9 @@ class SingleThreadManager {
                 chart_type: this.currentChartType,
                 toolID: window.toolId
             };
-            console.warn("渲染之前的数据", requestData)
+
             const response = await axios.post('/api/chart/data', requestData);
-            console.warn("渲染之后的数据", response.data.data)
+
             if (response.data.success) {
                 let chartData = response.data.data;
                 if (typeof chartData === 'string') {
@@ -784,7 +784,7 @@ class SingleThreadManager {
             const response = await axios.post('/api/comparison', responseData);
 
             if (response.data.success) {
-                this.renderComparisonResults(response.data.data);
+                this.renderComparisonResults(response.data.data, dimension,date1,date2,errorMode);
                 const comparisonResults = document.getElementById('comparisonResults');
                 if (comparisonResults) comparisonResults.style.display = 'block';
                 
@@ -828,55 +828,286 @@ class SingleThreadManager {
     /**
      * 渲染对比结果
      */
-    renderComparisonResults(result) {
+    renderComparisonResults(result, dimension, date1, date2, errorMode) {
         const stats = result.statistics;
         const comparisons = result.comparisons;
+
+        // 获取前十 rule 列表的辅助函数
+        const getTopRules = (items, limit = 10) => {
+            if (!items || items.length === 0) return [];
+            return items.slice(0, limit);
+        };
         
+        // 生成 tooltip 内容
+        const generateTooltipContent = (items, label, unit, color) => {
+            if (!items || items.length === 0) {
+                return `<div class="tooltip-item"><div class="tooltip-item-name" style="color:${color || '#94A3B8'};">暂无数据</div></div>`;
+            }
+            return items.map(item => {
+                const name = Array.isArray(item) ? item[0] : (item.name || '未知');
+                const value = Array.isArray(item) ? item[1] : (item.value || 0);
+                return `
+                    <div class="tooltip-item">
+                        <div class="tooltip-item-name">${this.escapeHtml(name)}</div>
+                        <div class="tooltip-item-desc">${label}: ${value.toFixed(2)}${unit}</div>
+                    </div>
+                `;
+            }).join('');
+        };
+
+        const runtimeUnit = errorMode === 'percentage' ? '%' : 's';
+        const memoryUnit = errorMode === 'percentage' ? '%' : 'MB';
+        
+        // 获取前十数据
+        const runtimeIncreased = getTopRules(stats.runtime_increased);
+        const runtimeDecreased = getTopRules(stats.runtime_decreased);
+        const memoryIncreased = getTopRules(stats.memory_increased);
+        const memoryDecreased = getTopRules(stats.memory_decreased);
+
         const statsGrid = document.getElementById('comparisonStatsGrid');
         if (statsGrid) {
-            statsGrid.innerHTML = `
-                <div class="comparison-stat-card">
-                    <h4>Runtime 增加 Rule</h4>
-                    <div class="comparison-stat-value">${stats.runtime_increased.length}</div>
-                </div>
-                <div class="comparison-stat-card">
-                    <h4>Runtime 减少 Rule</h4>
-                    <div class="comparison-stat-value">${stats.runtime_decreased.length}</div>
-                </div>
-                <div class="comparison-stat-card">
-                    <h4>Memory 增加 Rule</h4>
-                    <div class="comparison-stat-value">${stats.memory_increased.length}</div>
-                </div>
-                <div class="comparison-stat-card">
-                    <h4>Memory 减少 Rule</h4>
-                    <div class="comparison-stat-value">${stats.memory_decreased.length}</div>
-                </div>
-                <div class="comparison-stat-card">
-                    <h4>平均 Runtime 变化率</h4>
-                    <div class="comparison-stat-value">${stats.avg_runtime_change.toFixed(2)}%</div>
-                </div>
-                <div class="comparison-stat-card">
-                    <h4>平均 Memory 变化率</h4>
-                    <div class="comparison-stat-value">${stats.avg_memory_change.toFixed(2)}%</div>
-                </div>
-            `;
+            let statsGridHtml = "";
+            if (dimension == 'all' || dimension == 'runtime') {
+                
+                statsGridHtml += `
+                    <div class="comparison-stat-card tooltip-card">
+                        <h4>Runtime 增加 Rule</h4>
+                        <div class="comparison-stat-value">${stats.runtime_increased.length}</div>
+                        <div class="tooltip-content">
+                            <div class="tooltip-header" style="color:#10B981;border-bottom:1px solid rgba(16,185,129,0.2);padding-bottom:6px;margin-bottom:6px;">
+                                ⬆️ 增加最多的 Rule (TOP ${Math.min(runtimeIncreased.length, 10)})
+                            </div>
+                            ${generateTooltipContent(runtimeIncreased, '增加', runtimeUnit, '#10B981')}
+                        </div>
+                    </div>
+                    <div class="comparison-stat-card tooltip-card">
+                        <h4>Runtime 减少 Rule</h4>
+                        <div class="comparison-stat-value">${stats.runtime_decreased.length || "0"}</div>
+                        <div class="tooltip-content">
+                            <div class="tooltip-header" style="color:#EF4444;border-bottom:1px solid rgba(239,68,68,0.2);padding-bottom:6px;margin-bottom:6px;">
+                                ⬇️ 减少最多的 Rule (TOP ${Math.min(runtimeDecreased.length, 10)})
+                            </div>
+                            ${generateTooltipContent(runtimeDecreased, '减少', runtimeUnit, '#EF4444')}
+                        </div>
+                    </div>
+                    <div class="comparison-stat-card">
+                        <h4>Runtime 增加最大</h4>
+                        <div class="comparison-stat-value">${stats.max_runtime_increased && stats.max_runtime_increased["name"] ? this.escapeHtml(stats.max_runtime_increased["name"]) : "NA"}</div>
+                    </div>
+                    <div class="comparison-stat-card">
+                        <h4>Runtime 减少最大</h4>
+                        <div class="comparison-stat-value">${stats.max_runtime_decreased && stats.max_runtime_decreased["name"] ? this.escapeHtml(stats.max_runtime_decreased["name"]) : "NA"}</div>
+                    </div>
+                    <div class="comparison-stat-card ">
+                        <h4>平均 Runtime 变化率</h4>
+                        <div class="comparison-stat-value">${stats.avg_runtime_change.toFixed(2) || "0"}%</div>
+                    </div>
+                `;
+            }
+            if (dimension == 'all' || dimension == 'memory') {
+                statsGridHtml += `
+                    <div class="comparison-stat-card tooltip-card">
+                        <h4>Memory 增加 Rule</h4>
+                        <div class="comparison-stat-value">${stats.memory_increased.length || "0"}</div>
+                        <div class="tooltip-content">
+                            <div class="tooltip-header" style="color:#10B981;border-bottom:1px solid rgba(16,185,129,0.2);padding-bottom:6px;margin-bottom:6px;">
+                                ⬆️ 增加最多的 Rule (TOP ${Math.min(memoryIncreased.length, 10)})
+                            </div>
+                            ${generateTooltipContent(memoryIncreased, '增加', memoryUnit, '#10B981')}
+                        </div>
+                    </div>
+                    <div class="comparison-stat-card tooltip-card">
+                        <h4>Memory 减少 Rule</h4>
+                        <div class="comparison-stat-value">${stats.memory_decreased.length || "0"}</div>
+                        <div class="tooltip-content">
+                            <div class="tooltip-header" style="color:#EF4444;border-bottom:1px solid rgba(239,68,68,0.2);padding-bottom:6px;margin-bottom:6px;">
+                                ⬇️ 减少最多的 Rule (TOP ${Math.min(memoryDecreased.length, 10)})
+                            </div>
+                            ${generateTooltipContent(memoryDecreased, '减少', memoryUnit, '#EF4444')}
+                        </div>
+                    </div>
+                    <div class="comparison-stat-card">
+                        <h4>Memory 增加最大</h4>
+                        <div class="comparison-stat-value">${stats.max_memory_increased && stats.max_memory_increased["name"] ? this.escapeHtml(stats.max_memory_increased["name"]) : "NA"}</div>
+                    </div>
+                    <div class="comparison-stat-card">
+                        <h4>Memory 减少最大</h4>
+                        <div class="comparison-stat-value">${stats.max_memory_decreased && stats.max_memory_decreased["name"] ? this.escapeHtml(stats.max_memory_decreased["name"]) : "NA"}</div>
+                    </div>
+                    <div class="comparison-stat-card">
+                        <h4>平均 Memory 变化率</h4>
+                        <div class="comparison-stat-value">${stats.avg_memory_change.toFixed(2) || "0"}%</div>
+                    </div>
+                `;
+            }
+            statsGrid.innerHTML = statsGridHtml;
         }
         
         const tableBody = document.getElementById('comparisonTableBody');
+        const tableContainer = document.querySelector('.comparison-table-container');
+        
         if (tableBody) {
-            tableBody.innerHTML = comparisons.map(comp => `
-                <tr class="${comp.is_out_of_tolerance ? 'out-of-tolerance' : ''}">
-                    <td>${this.escapeHtml(comp.rule)}</td>
-                    <td>R: ${comp.date1_value.runtime?.toFixed(2) || 'N/A'}<br>M: ${comp.date1_value.memory?.toFixed(2) || 'N/A'}</td>
-                    <td>R: ${comp.date2_value.runtime?.toFixed(2) || 'N/A'}<br>M: ${comp.date2_value.memory?.toFixed(2) || 'N/A'}</td>
-                    <td>R: ${comp.difference.runtime?.toFixed(2) || 'N/A'}<br>M: ${comp.difference.memory?.toFixed(2) || 'N/A'}</td>
-                    <td>R: ${comp.percentage.runtime?.toFixed(2) || 'N/A'}%<br>M: ${comp.percentage.memory?.toFixed(2) || 'N/A'}%</td>
-                    <td>${comp.is_out_of_tolerance ? '<span class="status-badge warning">超差</span>' : '<span class="status-badge">正常</span>'}</td>
-                </tr>
-            `).join('');
+            // 确保表格有正确的结构 - 使用 thead 和 tbody
+            const table = tableBody.closest('table');
+            if (table) {
+                // 确保有 thead
+                let thead = table.querySelector('thead');
+                if (!thead) {
+                    thead = document.createElement('thead');
+                    // 如果表格已经有 tr 在 tbody 外部，移到 thead
+                    const firstRow = table.querySelector('tr');
+                    if (firstRow && firstRow.parentElement === table) {
+                        table.removeChild(firstRow);
+                        thead.appendChild(firstRow);
+                    }
+                    table.insertBefore(thead, tableBody);
+                }
+                
+                // 确保 tbody 存在且正确
+                if (tableBody.parentElement !== table) {
+                    // 如果 tbody 不在 table 中，重新组织
+                    const newTbody = document.createElement('tbody');
+                    newTbody.id = 'comparisonTableBody';
+                    // 移动所有 tr 到新 tbody
+                    const allRows = table.querySelectorAll('tr');
+                    allRows.forEach(row => {
+                        if (row.parentElement === table || row.parentElement === tableBody) {
+                            newTbody.appendChild(row);
+                        }
+                    });
+                    table.appendChild(newTbody);
+                    // 更新引用
+                    document.getElementById('comparisonTableBody').id = '';
+                    newTbody.id = 'comparisonTableBody';
+                    // 更新 tableBody 引用
+                    const newTableBody = document.getElementById('comparisonTableBody');
+                    if (newTableBody) {
+                        tableBody = newTableBody;
+                    }
+                }
+            }
+            
+            // 构建表头 - 使用更简洁的列名
+            let headerHtml = '<tr>';
+            headerHtml += '<th data-label="Rule">Rule</th>';
+            let hasRuntime = (dimension == 'all' || dimension == 'runtime');
+            let hasMemory = (dimension == 'all' || dimension == 'memory');
+            
+            if (hasRuntime) {
+                const errorLabel = errorMode == 'absolute' ? '差值' : '变化率';
+                headerHtml += `
+                    <th data-label="Runtime(${date1})">R(${date1})</th>
+                    <th data-label="Runtime(${date2})">R(${date2})</th>
+                    <th data-label="R ${errorLabel}">R ${errorLabel}</th>
+                    <th data-label="R 状态">R 状态</th>
+                `;
+            }
+            if (hasMemory) {
+                const errorLabel = errorMode == 'absolute' ? '差值' : '变化率';
+                headerHtml += `
+                    <th data-label="Memory(${date1})">M(${date1})</th>
+                    <th data-label="Memory(${date2})">M(${date2})</th>
+                    <th data-label="M ${errorLabel}">M ${errorLabel}</th>
+                    <th data-label="M 状态">M 状态</th>
+                `;
+            }
+            headerHtml += '</tr>';
+            
+            // 更新 thead
+            const tableElement = tableBody.closest('table');
+            const theadElement = tableElement ? tableElement.querySelector('thead') : null;
+            if (theadElement) {
+                theadElement.innerHTML = headerHtml;
+            } else if (tableElement) {
+                const newThead = document.createElement('thead');
+                newThead.innerHTML = headerHtml;
+                tableElement.insertBefore(newThead, tableBody);
+            }
+            
+            // 构建表格行数据
+            let rowsHtml = '';
+            comparisons.forEach(comp => {
+                let rowHtml = `<tr>`;
+                rowHtml += `<td data-label="Rule">${this.escapeHtml(comp[0])}</td>`;
+                
+                if (hasRuntime) {
+                    rowHtml += `<td data-label="R(${date1})">${this.escapeHtml(comp[1])}</td>`;
+                    rowHtml += `<td data-label="R(${date2})">${this.escapeHtml(comp[2])}</td>`;
+                    rowHtml += `<td data-label="R ${errorMode == 'absolute' ? '差值' : '变化率'}">${this.escapeHtml(comp[3])}</td>`;
+                    rowHtml += `<td data-label="R 状态">${this.escapeHtml(comp[4])}</td>`;
+                }
+                
+                if (hasMemory) {
+                    const offset = hasRuntime ? 4 : 0;
+                    rowHtml += `<td data-label="M(${date1})">${this.escapeHtml(comp[1+offset])}</td>`;
+                    rowHtml += `<td data-label="M(${date2})">${this.escapeHtml(comp[2+offset])}</td>`;
+                    rowHtml += `<td data-label="M ${errorMode == 'absolute' ? '差值' : '变化率'}">${this.escapeHtml(comp[3+offset])}</td>`;
+                    rowHtml += `<td data-label="M 状态">${this.escapeHtml(comp[4+offset])}</td>`;
+                }
+                
+                rowHtml += `</tr>`;
+                rowsHtml += rowHtml;
+            });
+            
+            tableBody.innerHTML = rowsHtml;
+            
+            // 为表格容器添加响应式类
+            if (tableContainer) {
+                tableContainer.classList.add('responsive-table-container');
+            }
+            
+            // 初始化搜索功能（保持表头固定）
+            this.initComparisonSearch();
         }
     }
-    
+    /**
+     * 初始化对比表格搜索功能
+     */
+    initComparisonSearch() {
+        const searchInput = document.getElementById('comparisonSearch');
+        const tableBody = document.getElementById('comparisonTableBody');
+        
+        if (!searchInput || !tableBody) return;
+        
+        // 移除旧的事件监听器
+        const newSearch = searchInput.cloneNode(true);
+        searchInput.parentNode.replaceChild(newSearch, searchInput);
+        
+        newSearch.addEventListener('input', function() {
+            const term = this.value.toLowerCase().trim();
+            const rows = tableBody.querySelectorAll('tr');
+            let visibleCount = 0;
+            
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                if (term === '' || text.includes(term)) {
+                    row.style.display = '';
+                    visibleCount++;
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+            
+            // 显示/隐藏"无结果"提示
+            const noResult = document.getElementById('comparisonNoResult');
+            if (term && visibleCount === 0) {
+                if (!noResult) {
+                    const tr = document.createElement('tr');
+                    tr.id = 'comparisonNoResult';
+                    const td = document.createElement('td');
+                    td.colSpan = tableBody.querySelector('tr')?.cells.length || 1;
+                    td.textContent = '没有匹配的 Rule';
+                    td.style.textAlign = 'center';
+                    td.style.padding = '20px';
+                    td.style.color = '#94A3B8';
+                    tr.appendChild(td);
+                    tableBody.appendChild(tr);
+                }
+            } else if (noResult) {
+                noResult.remove();
+            }
+        });
+    }
     /**
      * 导出对比结果
      */

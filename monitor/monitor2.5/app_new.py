@@ -234,6 +234,7 @@ def api_get_comparison():
     memory_threshold = float(data.get('memory_threshold', 0))
     error_mode = data.get('error_mode', 'absolute')
     
+    logger.info(f"收到用户 {get_user_id()} 请求对比数据: {tool_id} {mode} {casename} {date1} {date2} {compare_mode} {dimension} {runtime_threshold} {memory_threshold} {error_mode}")
 
     compare_result = data_manager.compare_data(tool_id, mode, casename, date1, date2, compare_mode, dimension, runtime_threshold, memory_threshold, error_mode)
     

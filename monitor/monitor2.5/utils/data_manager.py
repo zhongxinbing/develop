@@ -174,7 +174,8 @@ class DataManager:
             mode_data = self.load_tool_data(mode_path)
             rules = mode_data[casename]["runtime"].keys() | mode_data[casename]["memory"].keys()
         else:
-            rules = compare_mode
+            print("55555555555",compare_mode)
+            rules = [compare_mode]
         # 对比数据
         rule_data_compare_data_runtime = {}
         rule_data_compare_data_memory = {}
@@ -189,8 +190,8 @@ class DataManager:
                     "diff_percent": runtime_diff_percent,
                 }
                 
-            if dimension == 'memory':
-                case_data_memory = self.load_tool_data(DATA_DIR / tool_id / casename / type /"memory" / f"{rule}.json")
+            if dimension == 'all' or dimension == 'memory':
+                case_data_memory = self.load_tool_data(DATA_DIR / tool_id / "original" / casename / type /"memory" / f"{rule}.json")
                 date1_data, date2_data, memory_diff, memory_diff_percent = self.calculation_error(case_data_memory, rule, date1, date2)
                 rule_data_compare_data_memory[rule] = {
                     "date1_data": date1_data,
@@ -198,7 +199,13 @@ class DataManager:
                     "diff": memory_diff,
                     "diff_percent": memory_diff_percent,
                 }
+
         return self.statistical_compare_result_data(rule_data_compare_data_runtime, rule_data_compare_data_memory, dimension, runtime_threshold, memory_threshold, error_mode)
+
+    def calculation_rate(self,op1,op2):
+        if op2 == 0:
+            return 0
+        return round(op1 / op2, 2)
 
     def calculation_error(self, data, rule: str, date1: str, date2: str):
 
@@ -210,6 +217,7 @@ class DataManager:
 
         diff = date2_data - date1_data
         diff_percent = round((diff / date1_data) * 100, 2)
+        diff_percent = round(self.calculation_rate(diff, date1_data) * 100, 2)
         return date1_data, date2_data, diff, diff_percent
 
     def statistical_compare_result_data(self, runtime_data, memory_data, dimension: str, runtime_threshold: float, memory_threshold: float, error_mode: str):
@@ -235,23 +243,24 @@ class DataManager:
             else:
                 result[rule]["memory"] = self.judge_compare_reuslt(memory_data, result, rule, "", memory_threshold)
 
-            compare_result = {}
+        compare_result = {}
+        comparisons = []
         if dimension == 'all':
             for rule, value in result.items():
                 compare_result[rule] = value["runtime"] + value["memory"]
+                comparisons.append([rule] + value["runtime"] + value["memory"])
         elif dimension == 'runtime':
             for rule, value in result.items():
                 compare_result[rule] = value["runtime"]
+                comparisons.append([rule] + value["runtime"])
         elif dimension == 'memory':
             for rule, value in result.items():
                 compare_result[rule] = value["memory"]
+                comparisons.append([rule] + value["memory"])
 
         statistics = self.statistics_compare_result_data(compare_result, dimension)
 
-        result["statistics"] = statistics
-        result["comparison"] = compare_result
-
-        return result
+        return {"statistics": statistics, "comparisons": comparisons}
 
     def judge_compare_reuslt(self, data: dict, compare_result: dict, rule: str, diff: str, threshold: float):
         if rule not in compare_result:
@@ -268,118 +277,95 @@ class DataManager:
         else:
             return [date1_data,date2_data,diff, "⬇️减少"]
 
+    # 统计对比结果
     def statistics_compare_result_data(self, compare_result_data: dict, dimension: str):
-        statistics = {
-            "runtime_increased": [], 
-            "runtime_decreased": [], 
-            "memory_increased": [], 
-            "memory_decreased": [],
+        statistics_tmp = {
+            "runtime_increased": {}, 
+            "runtime_decreased": {}, 
+            "memory_increased": {}, 
+            "memory_decreased": {},
             "avg_runtime_change": 0,
             "avg_memory_change": 0,
-            "max_runtime_increase": [],
-            "max_runtime_decrease": [],
-            "max_memory_increase": [],
-            "max_memory_decrease": [],
+            "max_runtime_increased": [],
+            "max_runtime_decreased": [],
+            "max_memory_increased": [],
+            "max_memory_decreased": [],
         }
-        runtime_increase_tmp = 0
-        runtime_decrease_tmp = 0
-        memory_increase_tmp = 0
-        memory_decrease_tmp = 0
+        runtime_increased_tmp = {"name": "", "value": 0}
+        runtime_decreased_tmp = {"name": "", "value": 0}   
+        memory_increased_tmp = {"name": "", "value": 0}    
+        memory_decreased_tmp = {"name": "", "value": 0}
+        # statistics_tmp = {}
         for rule,value in compare_result_data.items():
             if dimension == "all":
                 if value[3] == "⬆️增加":
-                    statistics["runtime_increased"][value[3]] = rule
-                    if value[3] in statistics["max_runtime_increase"]:
-                        statistics["runtime_increased"][value[3]].append(rule)
-                    else:
-                        statistics["runtime_increased"][value[3]] = rule
-                    if runtime_increase_tmp < value[3]:
-                        runtime_increase_tmp = value[3]
-                    
+                    statistics_tmp["runtime_increased"][rule] = value[2]
+                    if runtime_increased_tmp["value"] < float(value[2]):
+                        runtime_increased_tmp = {"name":rule, "value": float(value[2])}
                 elif value[3] == "⬇️减少":
-                    statistics["runtime_decreased"][value[3]] = rule
-                    if value[3] in statistics["max_runtime_decrease"]:
-                        statistics["runtime_decreased"][value[3]].append(rule)
-                    else:
-                        statistics["runtime_decreased"][value[3]] = rule
-                    if runtime_decrease_tmp > value[3]:
-                        runtime_decrease_tmp = value[3]
+                    statistics_tmp["runtime_decreased"][rule] = value[2]
+                    if runtime_decreased_tmp["value"] > float(value[2]):
+                        runtime_decreased_tmp = {"name":rule, "value": float(value[2])}
                     
                 # 内存对比
                 if value[7] == "⬆️增加":
-                    statistics["memory_increased"][value[7]] = rule
-                    if value[7] in statistics["max_memory_increase"]:
-                        statistics["memory_increased"][value[7]].append(rule)
-                    else:
-                        statistics["memory_increased"][value[7]] = rule
-                    if memory_increase_tmp < value[7]:
-                        memory_increase_tmp = value[7]
-                    
+                    statistics_tmp["memory_increased"][rule] = value[6]
+                    if memory_increased_tmp["value"] < float(value[6]):
+                        memory_increased_tmp = {"name":rule, "value": float(value[6])}
                 elif value[7] == "⬇️减少":
-                    statistics["memory_decreased"][value[7]] = rule
-                    if value[7] in statistics["max_memory_decrease"]:
-                        statistics["memory_decreased"][value[7]].append(rule)
-                    else:
-                        statistics["memory_decreased"][value[7]] = rule
-                    if memory_decrease_tmp > value[7]:
-                        memory_decrease_tmp = value[7]
+                    statistics_tmp["memory_decreased"][rule] = value[6]
+                    if memory_decreased_tmp["value"] > float(value[6]):
+                        memory_decreased_tmp = {"name":rule, "value": float(value[6])}
+                    
             elif dimension == "runtime":
                 if value[3] == "⬆️增加":
-                    statistics["runtime_increased"][value[3]] = rule
-                    if value[3] in statistics["max_runtime_increase"]:
-                        statistics["runtime_increased"][value[3]].append(rule)
-                    else:
-                        statistics["runtime_increased"][value[3]] = rule
-                    if runtime_increase_tmp < value[3]:
-                        runtime_increase_tmp = value[3]
-                    if runtime_decrease_tmp > value[3]:
-                        runtime_decrease_tmp = value[3]
-                    
+                    statistics_tmp["runtime_increased"][rule] = value[2]
+                    if runtime_increased_tmp["value"] < float(value[2]):
+                        runtime_increased_tmp = {"name":rule, "value": float(value[2])}
                 elif value[3] == "⬇️减少":
-                    statistics["runtime_decreased"][value[3]] = rule
-                    if value[3] in statistics["max_runtime_decrease"]:
-                        statistics["runtime_decreased"][value[3]].append(rule)
-                    else:
-                        statistics["runtime_decreased"][value[3]] = rule
-                    if runtime_decrease_tmp > value[3]:
-                        runtime_decrease_tmp = value[3]
+                    statistics_tmp["runtime_decreased"][rule] = value[2]
+                    if runtime_decreased_tmp["value"] > float(value[2]):
+                        runtime_decreased_tmp = {"name":rule, "value": float(value[2])}
+                    
             elif dimension == "memory":
                 if value[3] == "⬆️增加":
-                    statistics["memory_increased"][value[3]] = rule
-                    if value[3] in statistics["max_memory_increase"]:
-                        statistics["memory_increased"][value[3]].append(rule)   
-                    else:
-                        statistics["memory_increased"][value[3]] = rule
-                    if memory_increase_tmp < value[3]:
-                        memory_increase_tmp = value[3]
-                    if memory_decrease_tmp > value[3]:
-                        memory_decrease_tmp = value[3]
-                    
+                    statistics_tmp["memory_increased"][rule] = value[2]
+                    if memory_increased_tmp["value"] < float(value[2]):
+                        memory_increased_tmp = {"name":rule, "value": float(value[2])}
+                elif value[3] == "⬇️减少":
+                    statistics_tmp["memory_decreased"][rule] = value[2]
+                    if memory_decreased_tmp["value"] > float(value[2]):
+                        memory_decreased_tmp = {"name":rule, "value": float(value[2])}
+        statistics = {}       
         if dimension == "all":
-            statistics["runtime_increase"] = dict(sorted(statistics["runtime_increased"].items(), reverse=True))
-            statistics["runtime_decrease"] = dict(sorted(statistics["runtime_decreased"].items(), reverse=True))
-            statistics["max_runtime_increase"] = runtime_increase_tmp
-            statistics["max_runtime_decrease"] = runtime_decrease_tmp
-            statistics["avg_runtime_change"] = (runtime_increase_tmp - runtime_decrease_tmp) / (runtime_increase_tmp + runtime_decrease_tmp)
-            statistics["memory_increase"] = dict(sorted(statistics["memory_increased"].items(), reverse=True))
-            statistics["memory_decrease"] = dict(sorted(statistics["memory_decreased"].items(), reverse=True))
-            statistics["max_memory_increase"] = memory_increase_tmp
-            statistics["max_memory_decrease"] = memory_decrease_tmp
-            statistics["avg_memory_change"] = (memory_increase_tmp - memory_decrease_tmp) / (memory_increase_tmp + memory_decrease_tmp)
+            statistics["runtime_increased"] = list(sorted(statistics_tmp["runtime_increased"].items(),key=lambda item: item[1], reverse=True))
+            statistics["runtime_decreased"] = list(sorted(statistics_tmp["runtime_decreased"].items(),key=lambda item: item[1], reverse=True))
+            statistics["max_runtime_increased"] = runtime_increased_tmp
+            statistics["max_runtime_decreased"] = runtime_decreased_tmp
+            # statistics["avg_runtime_change"] = (runtime_increased_tmp["value"] - runtime_decreased_tmp["value"]) / (runtime_increased_tmp["value"] + runtime_decreased_tmp["value"])
+            statistics["avg_runtime_change"] = self.calculation_rate((runtime_increased_tmp["value"] - runtime_decreased_tmp["value"]), (runtime_increased_tmp["value"] + runtime_decreased_tmp["value"]))
+            statistics["memory_increased"] = list(sorted(statistics_tmp["memory_increased"].items(),key=lambda item: item[1], reverse=True))
+            statistics["memory_decreased"] = list(sorted(statistics_tmp["memory_decreased"].items(),key=lambda item: item[1], reverse=True))
+            statistics["max_memory_increased"] = memory_increased_tmp
+            statistics["max_memory_decreased"] = memory_decreased_tmp
+            # statistics["avg_memory_change"] = (memory_increased_tmp["value"] - memory_decreased_tmp["value"]) / (memory_increased_tmp["value"] + memory_decreased_tmp["value"])
+            statistics["avg_memory_change"] = self.calculation_rate((memory_increased_tmp["value"] - memory_decreased_tmp["value"]), (memory_increased_tmp["value"] + memory_decreased_tmp["value"]))
         elif dimension == "runtime":
-            statistics["runtime_increase"] = dict(sorted(statistics["runtime_increased"].items(), reverse=True))
-            statistics["runtime_decrease"] = dict(sorted(statistics["runtime_decreased"].items(), reverse=True))
-            statistics["max_runtime_increase"] = runtime_increase_tmp
-            statistics["max_runtime_decrease"] = runtime_decrease_tmp
-            statistics["avg_runtime_change"] = (runtime_increase_tmp - runtime_decrease_tmp) / (runtime_increase_tmp + runtime_decrease_tmp)
+            statistics["runtime_increased"] = list(sorted(statistics_tmp["runtime_increased"].items(),key=lambda item: item[1], reverse=True))
+            statistics["runtime_decreased"] = list(sorted(statistics_tmp["runtime_decreased"].items(),key=lambda item: item[1], reverse=True))
+            statistics["max_runtime_increased"] = runtime_increased_tmp
+            statistics["max_runtime_decreased"] = runtime_decreased_tmp
+            # statistics["avg_runtime_change"] = (runtime_increased_tmp["value"] - runtime_decreased_tmp["value"]) / (runtime_increased_tmp["value"] + runtime_decreased_tmp["value"])
+            statistics["avg_runtime_change"] = self.calculation_rate((runtime_increased_tmp["value"] - runtime_decreased_tmp["value"]), (runtime_increased_tmp["value"] + runtime_decreased_tmp["value"]))
         elif dimension == "memory":
-            statistics["memory_increase"] = dict(sorted(statistics["memory_increased"].items(), reverse=True))
-            statistics["memory_decrease"] = dict(sorted(statistics["memory_decreased"].items(), reverse=True))
-            statistics["max_memory_increase"] = memory_increase_tmp
-            statistics["max_memory_decrease"] = memory_decrease_tmp
-            statistics["avg_memory_change"] = (memory_increase_tmp - memory_decrease_tmp) / (memory_increase_tmp + memory_decrease_tmp)
+            statistics["memory_increased"] = list(sorted(statistics_tmp["memory_increased"].items(),key=lambda item: item[1], reverse=True))
+            statistics["memory_decreased"] = list(sorted(statistics_tmp["memory_decreased"].items(),key=lambda item: item[1], reverse=True))
+            statistics["max_memory_increased"] = memory_increased_tmp
+            statistics["max_memory_decreased"] = memory_decreased_tmp
+            # statistics["avg_memory_change"] = (memory_increased_tmp["value"] - memory_decreased_tmp["value"]) / (memory_increased_tmp["value"] + memory_decreased_tmp["value"])
+            statistics["avg_memory_change"] = self.calculation_rate((memory_increased_tmp["value"] - memory_decreased_tmp["value"]), (memory_increased_tmp["value"] + memory_decreased_tmp["value"]))
 
-
+        return statistics
 
     #     func = self._load_function(func_name, tool_config)
     #     if not func:

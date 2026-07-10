@@ -129,7 +129,7 @@ class SingleThreadParser:
         返回:
             如果日期Overall数据存在则返回True，否则返回False
         """
-        overall_data = []
+        overall_data = {}
         for date in dates:
             if date in daily_metrics:
                 overall = daily_metrics[date].get('Overall')

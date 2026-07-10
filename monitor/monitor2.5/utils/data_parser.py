@@ -3,7 +3,7 @@
 """
 from typing import Dict, List, Any, Optional
 
-from numpy import single
+# from numpy import single
 from utils.single_thread_parser import SingleThreadParser
 from utils.multi_thread_parser import MultiThreadParser
 from utils.common import log
