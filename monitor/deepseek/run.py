@@ -1,6 +1,7 @@
 from flask import Flask, send_from_directory
 from flask_cors import CORS
 import os
+import secrets
 import logging
 from logging.handlers import RotatingFileHandler
 
@@ -11,7 +12,7 @@ CORS(app)
 app.config['DATA_DIR'] = 'data'
 app.config['CACHE_DIR'] = 'cache'
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
-app.config['SECRET_KEY'] = 'your-secret-key-here'
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', secrets.token_hex(32))
 
 # 设置日志
 if not os.path.exists('logs'):

@@ -2,6 +2,7 @@
 配置文件 - 性能监控平台配置
 """
 import os
+import secrets
 from pathlib import Path
 
 # 基础目录
@@ -19,7 +20,7 @@ DEFAULT_CONFIG = {
 }
 
 # 会话配置
-SECRET_KEY = os.environ.get('SECRET_KEY', 'dev-secret-key-change-in-production')
+SECRET_KEY = os.environ.get('SECRET_KEY', secrets.token_hex(32))
 
 # 文件上传配置
 MAX_CONTENT_LENGTH = 16 * 1024 * 1024  # 16MB

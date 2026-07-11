@@ -2,6 +2,7 @@
 Flask主应用 - 性能监控平台后端
 """
 import json
+import os
 import uuid
 from pathlib import Path
 from datetime import datetime
@@ -245,6 +246,8 @@ if __name__ == '__main__':
     setup_logger(log_dir='logs', level='DEBUG')
     logger = get_logger(__name__)
     logger.info("启动性能监控平台后端服务")
-    app.run(debug=True, host='0.0.0.0', port=5020)
+    debug = os.environ.get('FLASK_DEBUG', 'false').lower() in ('true', '1')
+    host = os.environ.get('FLASK_HOST', '127.0.0.1')
+    app.run(debug=debug, host=host, port=5020)
 
  

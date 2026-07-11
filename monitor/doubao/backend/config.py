@@ -14,5 +14,5 @@ if not os.path.exists(DATA_ROOT):
     os.makedirs(DATA_ROOT)
 
 # 跨域、服务配置
-FLASK_HOST = "0.0.0.0"
+FLASK_HOST = os.environ.get('FLASK_HOST', '127.0.0.1')
 FLASK_PORT = 5000

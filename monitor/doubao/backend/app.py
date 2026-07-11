@@ -25,4 +25,6 @@ def chart_page():
     return app.send_static_file("chart.html")
 
 if __name__ == "__main__":
-    app.run(host=FLASK_HOST, port=FLASK_PORT, debug=True)
+    import os
+    debug = os.environ.get('FLASK_DEBUG', 'false').lower() in ('true', '1')
+    app.run(host=FLASK_HOST, port=FLASK_PORT, debug=debug)
