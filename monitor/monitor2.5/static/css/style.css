@@ -268,18 +268,6 @@ body {
     visibility: visible;
 }
 
-.tooltip-header {
-    padding: var(--spacing-3) var(--spacing-4);
-    background: var(--bg-surface);
-    border-bottom: 1px solid var(--border-subtle);
-    font-size: 13px;
-    font-weight: 500;
-}
-
-.tooltip-header i {
-    color: var(--primary);
-    margin-right: var(--spacing-2);
-}
 
 .tooltip-list {
     max-height: 250px;
@@ -297,13 +285,13 @@ body {
 }
 
 .tooltip-item-name {
-    font-size: 14px;
+    font-size: 10px;
     font-weight: 500;
     color: var(--text-primary);
 }
 
 .tooltip-item-desc {
-    font-size: 12px;
+    font-size: 10px;
     color: var(--text-muted);
     margin-top: var(--spacing-1);
 }
@@ -1176,7 +1164,7 @@ body {
     background: var(--bg-elevated);
     border-radius: var(--radius-md);
     padding: var(--spacing-2) var(--spacing-3);
-    font-size: 12px;
+    font-size: 10px;
     color: var(--text-secondary);
     white-space: nowrap;
     box-shadow: var(--shadow-lg);
@@ -1947,8 +1935,8 @@ body {
     transform: translateX(-50%) translateY(8px);
     min-width: 220px;
     max-width: 320px;
-    max-height: 260px;
-    overflow-y: auto;
+    /* max-height: 260px; 不会存在滚动条 */
+    /* overflow-y: auto; 不会存在滚动条 */
     background: var(--bg-elevated);
     border-radius: var(--radius-lg);
     padding: var(--spacing-3) var(--spacing-4);
@@ -1996,10 +1984,10 @@ body {
 
 /* Tooltip 头部 */
 .comparison-stat-card.tooltip-card .tooltip-content .tooltip-header {
-    font-size: 12px;
-    font-weight: 600;
-    padding-bottom: 6px;
-    margin-bottom: 6px;
+    font-size: 10px;
+    font-weight: 300;
+    padding-bottom: 3px;
+    margin-bottom: 3px;
     border-bottom: 1px solid var(--border-subtle);
     color: var(--text-primary);
 }

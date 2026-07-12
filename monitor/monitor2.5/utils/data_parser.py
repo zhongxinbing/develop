@@ -32,8 +32,9 @@ class DataParser:
             single_parser = SingleThreadParser()
             return single_parser.parse_single_data(tool_id, mode, all_data)
         elif mode == 'multi':
-            log.info(f"解析多线程数据 - {tool_id}")
-            return MultiThreadParser.parse_single_data(tool_id, mode, all_data)
+            self.logger.info(f"解析多线程数据 - {tool_id}")
+            multi_parser = MultiThreadParser()
+            return multi_parser.parse_multi_data(tool_id, mode, all_data)
 
 
 

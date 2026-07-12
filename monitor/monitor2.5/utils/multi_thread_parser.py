@@ -3,11 +3,39 @@
 """
 from typing import Dict, List, Any, Optional, Set
 from utils.common import get_thread_color, normalize_thread_key
+from utils.log import *
 
 
 class MultiThreadParser:
     """多线程数据解析器"""
     
+    def __init__(self):
+        setup_logger(log_dir='logs', level='DEBUG')
+        self.logger = get_logger(__name__)
+        self.logger.info("多线程数据解析器初始化")
+
+
+    def parse_multi_data(self, tool_id: str, mode: str, data: Dict[str, Any]):
+        """
+        解析多线程数据
+        
+        参数:
+            tool_id: 工具ID
+            mode: 解析模式（single/multi）
+            data: 所有数据字典，包含single/multi/extra数据      
+        """
+        print("-----------------------------------------------------------------------------------------------------------------------------------------------------")
+        self.logger.info(f"开始解析多线程数据，模式：{mode}，工具ID：{tool_id}")
+        # print(data.items())
+        for casename, daily_metrics in data.items():
+            print(casename)
+
+            # print(daily_metrics)
+            # dates = list(daily_metrics.keys())
+            # print(dates)
+        pass
+
+
     @staticmethod
     def get_available_threads(
         daily_metrics: Dict,
@@ -39,7 +67,7 @@ class MultiThreadParser:
                         threads_set.add(int(tk))
                     except (ValueError, TypeError):
                         threads_set.add(0)
-        
+        print(threads_set)
         return sorted(threads_set)
     
     @staticmethod
@@ -63,6 +91,7 @@ class MultiThreadParser:
         返回:
             图表数据格式
         """
+        print(99999999999999999999999999999999999999999999)
         result = {
             'dates': dates,
             'rules': {},

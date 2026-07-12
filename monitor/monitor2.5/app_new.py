@@ -13,6 +13,7 @@ from tool.elint.elint import load_json, save_json
 from utils.tool_manager import tool_manager
 from utils.data_manager import data_manager
 from utils.data_parser import data_parser
+from utils.data_parser import MultiThreadParser
 from utils.log import *
 
 
@@ -131,10 +132,16 @@ def api_load_tool_data(tool_id):
     # 加载所有数据
 
     single = data_manager.get_all_data(tool_id, user_id, "single")
-    logger.info(f"加载工具 {tool_id} 单线程数据 - {single}")
-    # multi = data_manager.get_all_data(tool_id, user_id, "multi")
+
+    multi = data_manager.get_all_data(tool_id, user_id, "multi")
+    print(multi)
+    # print("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
+    # multi = MultiThreadParser.parse_for_runtime_chart(
+    #             multi, "aes", ["E0001"], ["20260511","20260513","20260515","20260516","20260517"], [2, 4, 6, 8]
+    #         )
+    # data_manager.save_tool_data(DATA_DIR / tool_id / 'E0001.json', multi)
     # extra = data_manager.get_all_data(tool_id, user_id, "extra_display")
-    multi = None
+    # multi = None
     extra = None
 
     all_data = {}
@@ -151,10 +158,11 @@ def api_load_tool_data(tool_id):
         
     # if multi:
     #     # 需要更新数据
-    #     all_data['multi'] = multi
-    #     message += ' 多线程'
-    #     multi_casename_rule_dates = data_parser.parse_all_data(tool_id, multi, 'multi')
-    #     data_manager.save_tool_data(DATA_DIR / tool_id / 'multi.json', multi_casename_rule_dates)
+        all_data['multi'] = multi
+        message += ' 多线程'
+        data_manager.save_tool_data(DATA_DIR / tool_id / 'multi.json', multi)
+        multi_casename_rule_dates = data_parser.parse_all_data(tool_id, multi, 'multi')
+        # data_manager.save_tool_data(DATA_DIR / tool_id / 'multi.json', multi_casename_rule_dates)
     # else:
     #     all_data['multi'] = data_manager.load_tool_data(DATA_DIR / tool_id / 'multi.json')
         
@@ -191,7 +199,7 @@ def api_get_chart_data():
     dates = data.get('dates', [])
 
     logger.info(f"收到用户 {user_id} 请求图表数据: {mode} {chart_type} {rules[0]} ")
-    data_path = DATA_DIR / tool_id / "original" / casename / 'single' / chart_type / f'{rules[0]}.json'
+    data_path = DATA_DIR / tool_id / "original" / 'single' / casename  / chart_type / f'{rules[0]}.json'
     data = data_manager.load_tool_data(data_path)
 
     # 根据前端发送来的日期，筛选出对应的 values，并返回给前端

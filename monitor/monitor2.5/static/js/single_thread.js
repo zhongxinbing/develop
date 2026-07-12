@@ -874,20 +874,20 @@ class SingleThreadManager {
                         <h4>Runtime 增加 Rule</h4>
                         <div class="comparison-stat-value">${stats.runtime_increased.length}</div>
                         <div class="tooltip-content">
-                            <div class="tooltip-header" style="color:#10B981;border-bottom:1px solid rgba(16,185,129,0.2);padding-bottom:6px;margin-bottom:6px;">
+                            <div class="tooltip-header" style="color:#EF4444;border-bottom:1px solid rgba(16,185,129,0.2);padding-bottom:3px;margin-bottom:3px;">
                                 ⬆️ 增加最多的 Rule (TOP ${Math.min(runtimeIncreased.length, 10)})
                             </div>
-                            ${generateTooltipContent(runtimeIncreased, '增加', runtimeUnit, '#10B981')}
+                            ${generateTooltipContent(runtimeIncreased, '增加', runtimeUnit, '#EF4444')}
                         </div>
                     </div>
                     <div class="comparison-stat-card tooltip-card">
                         <h4>Runtime 减少 Rule</h4>
                         <div class="comparison-stat-value">${stats.runtime_decreased.length || "0"}</div>
                         <div class="tooltip-content">
-                            <div class="tooltip-header" style="color:#EF4444;border-bottom:1px solid rgba(239,68,68,0.2);padding-bottom:6px;margin-bottom:6px;">
+                            <div class="tooltip-header" style="color:#10B981;border-bottom:1px solid rgba(239,68,68,0.2);padding-bottom:3px;margin-bottom:3px;">
                                 ⬇️ 减少最多的 Rule (TOP ${Math.min(runtimeDecreased.length, 10)})
                             </div>
-                            ${generateTooltipContent(runtimeDecreased, '减少', runtimeUnit, '#EF4444')}
+                            ${generateTooltipContent(runtimeDecreased, '减少', runtimeUnit, '#10B981')}
                         </div>
                     </div>
                     <div class="comparison-stat-card">
@@ -910,20 +910,20 @@ class SingleThreadManager {
                         <h4>Memory 增加 Rule</h4>
                         <div class="comparison-stat-value">${stats.memory_increased.length || "0"}</div>
                         <div class="tooltip-content">
-                            <div class="tooltip-header" style="color:#10B981;border-bottom:1px solid rgba(16,185,129,0.2);padding-bottom:6px;margin-bottom:6px;">
+                            <div class="tooltip-header" style="color:#EF4444;border-bottom:1px solid rgba(16,185,129,0.2);padding-bottom:3px;margin-bottom:3px;">
                                 ⬆️ 增加最多的 Rule (TOP ${Math.min(memoryIncreased.length, 10)})
                             </div>
-                            ${generateTooltipContent(memoryIncreased, '增加', memoryUnit, '#10B981')}
+                            ${generateTooltipContent(memoryIncreased, '增加', memoryUnit, '#EF4444')}
                         </div>
                     </div>
                     <div class="comparison-stat-card tooltip-card">
                         <h4>Memory 减少 Rule</h4>
                         <div class="comparison-stat-value">${stats.memory_decreased.length || "0"}</div>
                         <div class="tooltip-content">
-                            <div class="tooltip-header" style="color:#EF4444;border-bottom:1px solid rgba(239,68,68,0.2);padding-bottom:6px;margin-bottom:6px;">
+                            <div class="tooltip-header" style="color:#10B981;border-bottom:1px solid rgba(239,68,68,0.2);padding-bottom:3px;margin-bottom:3px;">
                                 ⬇️ 减少最多的 Rule (TOP ${Math.min(memoryDecreased.length, 10)})
                             </div>
-                            ${generateTooltipContent(memoryDecreased, '减少', memoryUnit, '#EF4444')}
+                            ${generateTooltipContent(memoryDecreased, '减少', memoryUnit, '#10B981')}
                         </div>
                     </div>
                     <div class="comparison-stat-card">

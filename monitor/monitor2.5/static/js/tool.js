@@ -126,17 +126,17 @@ async function loadData() {
             }
             
             // 初始化多线程模块
-            // if (window.MultiThreadManager) {
-            //     multiThreadManager = new window.MultiThreadManager();
-            //     // 创建图表实例
-            //     const container = document.getElementById('mainChart');
-            //     if (container) {
-            //         multiThreadManager.chart = echarts.init(container);
-            //     }
-            //     await multiThreadManager.init(multiData, userData, extraData);
-            //     // 强制更新 overview
-            //     multiThreadManager.updateOverview();
-            // }
+            if (window.MultiThreadManager) {
+                multiThreadManager = new window.MultiThreadManager();
+                // 创建图表实例
+                const container = document.getElementById('mainChart');
+                if (container) {
+                    multiThreadManager.chart = echarts.init(container);
+                }
+                await multiThreadManager.init(multiData, userData, extraData);
+                // 强制更新 overview
+                multiThreadManager.updateOverview();
+            }
             
             // 根据当前模式显示对应的数据
             if (currentMode === 'single') {

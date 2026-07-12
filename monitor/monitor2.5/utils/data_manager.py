@@ -114,7 +114,8 @@ class DataManager:
         """
         加载工具数据从文件
         """
-        data_files_json_path = DATA_DIR / tool_id  / f"dataFiles_{type}.json"
+        self.logger.info(f"开始加载工具 {tool_id} {type} 数据")
+        data_files_json_path = DATA_DIR / tool_id  / f"dataFiles.json"
 
         self.logger.info(f"工具 {tool_id} 加载 {type} 数据")
         # 获取工具配置，这里获取的一定是最新的数据
@@ -131,9 +132,13 @@ class DataManager:
         else:
             # 从文件加载旧数据
             self.data_files = self.load_tool_data(data_files_json_path)
-            old_data_files_paths = self.data_files[type]
+            if type in self.data_files:
+                old_data_files_paths = self.data_files[type]
+                # 对比新增数据
+                add_data_files_paths = set(new_data_files_paths) - set(old_data_files_paths)
+            else:
+                add_data_files_paths = new_data_files_paths
             # 对比新增数据
-            add_data_files_paths = set(new_data_files_paths) - set(old_data_files_paths)
             if add_data_files_paths:
                 # 如果有新增数据，从新加载
                 data = func(add_data_files_paths, 1)
@@ -143,9 +148,9 @@ class DataManager:
                 # 如果没有新增数据，直接返回 None
                 self.logger.info(f"用户 {user_id} 没有新增 {type} 数据")
                 return None
-        print(self.data_files)
+
         # 保存新增数据到文件
-        self.save_tool_data(DATA_DIR / tool_id / f"dataFiles_{type}.json", self.data_files)
+        self.save_tool_data(data_files_json_path, self.data_files)
         return data
 
 
@@ -181,7 +186,7 @@ class DataManager:
         rule_data_compare_data_memory = {}
         for rule in rules:
             if dimension == 'all' or dimension == 'runtime':
-                case_data_runtime = self.load_tool_data(DATA_DIR / tool_id / "original" /casename / type /"runtime" / f"{rule}.json")
+                case_data_runtime = self.load_tool_data(DATA_DIR / tool_id / "original" / type / casename  /"runtime" / f"{rule}.json")
                 date1_data, date2_data, runtime_diff, runtime_diff_percent = self.calculation_error(case_data_runtime, rule, date1, date2)
                 rule_data_compare_data_runtime[rule] = {
                     "date1_data": date1_data,
@@ -191,7 +196,7 @@ class DataManager:
                 }
                 
             if dimension == 'all' or dimension == 'memory':
-                case_data_memory = self.load_tool_data(DATA_DIR / tool_id / "original" / casename / type /"memory" / f"{rule}.json")
+                case_data_memory = self.load_tool_data(DATA_DIR / tool_id / "original" / type / casename  /"memory" / f"{rule}.json")
                 date1_data, date2_data, memory_diff, memory_diff_percent = self.calculation_error(case_data_memory, rule, date1, date2)
                 rule_data_compare_data_memory[rule] = {
                     "date1_data": date1_data,

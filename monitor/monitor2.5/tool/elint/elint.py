@@ -552,6 +552,12 @@ def get_multi_data(jsonDataFile, path) -> Dict:
     
     return caseData
 
+
+def get_date_from_log(files, caseData):
+    for log_path in files:
+        caseData = get_perf_data_from_log(caseData, log_path)
+    return caseData
+
 def time_to_seconds(time_str):
     """将时间字符串转换为秒数"""
     hours = mins = secs = 0
@@ -583,7 +589,10 @@ def get_runtime (content):
         new = new + [(name, f"{cpu}", f"{elapse}", f"{peak}", "null")]
     return new
 
-from deepmerge import always_merger
+
+
+
+# 获取单线程数据, flag: 0 表示只获取文件路径，1 表示解析全量数据
 def get_single_data(files, flag):
     """
         single: 单线程的数据
@@ -596,7 +605,15 @@ def get_single_data(files, flag):
     else:
         all_data = get_date_from_txt_single(files, {})
         return all_data
-    
+
+# 获取多线程数据, flag: 0 表示只获取文件路径，1 表示解析全量数据
+def get_multi_date(files, flag):
+    if flag == 0:
+        return find(files, maxdepth=6, name_pattern=r"elint.log", file_type="f")
+    else:
+        all_data = get_date_from_log(files, {})
+        return all_data
+
 
 # def signal_adta(files):
 

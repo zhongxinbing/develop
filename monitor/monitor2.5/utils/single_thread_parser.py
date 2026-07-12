@@ -61,7 +61,7 @@ class SingleThreadParser:
         # 记录 rule 有那些日期
         rule_dates = {}
         for rule, data in runtime_or_memory_data.items():
-            rule_path = DATA_DIR / tool_id / "original" / casename / 'single' / type /f'{rule}.json'
+            rule_path = DATA_DIR / tool_id / "original" / 'single' / casename  / type /f'{rule}.json'
             if not rule_path.exists():
                 rule_path.parent.mkdir(parents=True, exist_ok=True)
             all_values = []
@@ -103,6 +103,10 @@ class SingleThreadParser:
             print("增量更新数据中")
             new_rule_data = {}
             old_rule_data = data_manager.load_tool_data(data_path)
+            if rule not in old_rule_data["rules"]:
+                new_rule_data = rule_data
+                return new_rule_data
+
             new_rule_data["dates"] = old_rule_data["dates"] + rule_data["dates"]
 
             new_rule_data.setdefault("rules", {}).setdefault(rule, {})["dates"] = old_rule_data["rules"][rule]["dates"] + rule_data["rules"][rule]["dates"]
@@ -111,7 +115,7 @@ class SingleThreadParser:
             new_rule_data.setdefault("rules", {}).setdefault(rule, {})["name"] = rule_data["rules"][rule]["name"]
             new_rule_data.setdefault("rules", {}).setdefault(rule, {})["is_single"] = rule_data["rules"][rule]["is_single"]
 
-            new_rule_data["crash_dates"] = old_rule_data["crash_dates"] + rule_data["crash_dates"]
+            new_rule_data["crash_dates"] = list(set(old_rule_data["crash_dates"]) | set(rule_data["crash_dates"]))
             new_rule_data["overall_data"] = old_rule_data["overall_data"]
             return new_rule_data
         else:
