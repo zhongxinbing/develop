@@ -90,7 +90,7 @@ class MultiThreadParser:
     def parse_rule_runtime_and_memory(self, rule: str, thread_metrics: Dict, date: str, parse_result: Dict, mode: str):
 
         for thread_key, thread_data in thread_metrics.get('thread_metrics', {}).items():
-            if date not in parse_result["crash_dates"]:
+            if date not in parse_result["dates"]:
                 parse_result["dates"].append(date)
 
             parse_result["rules"] = self.parse_gen_runtime_or_memory(parse_result["rules"], rule, thread_key, date, mode, thread_data)
@@ -151,6 +151,8 @@ class MultiThreadParser:
 
 
 
+
+
     @staticmethod
     def get_available_threads(self,
         daily_metrics: Dict,
@@ -176,7 +178,6 @@ class MultiThreadParser:
                 if rule not in metrics:
                     continue
                 rule_metrics = metrics.get(rule, {})
-                self.logger.warn(f"规则：{rule}，指标：{rule_metrics}")
                 thread_metrics = rule_metrics.get('thread_metrics', {})
                 for tk in thread_metrics.keys():
                     try:
@@ -207,7 +208,6 @@ class MultiThreadParser:
         返回:
             图表数据格式
         """
-        print(99999999999999999999999999999999999999999999)
         result = {
             'dates': dates,
             'rules': {},

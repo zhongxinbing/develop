@@ -8,6 +8,9 @@ from utils.single_thread_parser import SingleThreadParser
 from utils.multi_thread_parser import MultiThreadParser
 from utils.common import log
 from utils.log import *
+from config import DATA_DIR, BASE_DIR
+from utils.data_manager import data_manager
+
 
 class DataParser:
     """数据解析器 - 统一入口"""
@@ -37,7 +40,28 @@ class DataParser:
             return multi_parser.parse_multi_data(tool_id, mode, all_data)
 
 
+    ######################################################################################################################################################
+##
+##              线程数
+##
+######################################################################################################################################################
+    def parse_thread_data(self, request_data: Dict):
 
+        tool_id = request_data.get("toolID","")
+        casename = request_data.get("casename","")
+        rule = request_data.get("rule","")
+        mode = request_data.get("mode","runtime")
+        
+        case_rule_data_json_path = DATA_DIR / tool_id / "original" / "multi" / casename / mode / f"{rule}.json"
+        case_rule_data = data_manager.load_tool_data(case_rule_data_json_path)
+
+        result = {
+            "threads": [],
+            mode: []
+        }
+
+        result["threads"] = case_rule_data["all_threads"]
+        result[mode] = case_rule_data["dates"]
 
 
 

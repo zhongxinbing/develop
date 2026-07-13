@@ -182,10 +182,14 @@ class DataManager:
             crash_dates = []
             # 设置获取指定日期的数据
             for date in dates:
-                index = case_rule_data["rules"][rule]["dates"].index(date)
-                values.append(case_rule_data["rules"][rule]["values"][index])
-                if date in case_rule_data["crash_dates"] and date not in crash_dates:
+                if date not in case_rule_data["rules"][rule]["dates"]:
+                    values.append(None)
                     crash_dates.append(date)
+                else:
+                    index = case_rule_data["rules"][rule]["dates"].index(date)
+                    values.append(case_rule_data["rules"][rule]["values"][index])
+                    if date in case_rule_data["crash_dates"] and date not in crash_dates:
+                        crash_dates.append(date)
 
             chioce_data.setdefault("rules", {}).setdefault(rule, {})["values"] = values
             # 设置 rules 中的 type
@@ -198,8 +202,6 @@ class DataManager:
                 chioce_data.setdefault("rules", {}).setdefault(rule, {})["color"] = case_rule_data["rules"][rule]["color"]
                 chioce_data.setdefault("rules", {}).setdefault(rule, {})["rule_name"] = case_rule_data["rules"][rule]["rule_name"]
                 chioce_data.setdefault("rules", {}).setdefault(rule, {})["is_multi"] = case_rule_data["rules"][rule]["is_multi"]
-
-        print(case_rule_data.keys())
 
         chioce_data["crash_dates"] = crash_dates
         chioce_data["overall_data"] = case_rule_data["overall_data"]
@@ -233,7 +235,6 @@ class DataManager:
             mode_data = self.load_tool_data(mode_path)
             rules = mode_data[casename]["runtime"].keys() | mode_data[casename]["memory"].keys()
         else:
-            print("55555555555",compare_mode)
             rules = [compare_mode]
         # 对比数据
         rule_data_compare_data_runtime = {}

@@ -1,5 +1,7 @@
 {
-  "dates": [],
+  "dates": [
+    "20260511"
+  ],
   "rules": {
     "save_session(2)": {
       "dates": [

@@ -782,10 +782,12 @@ function initThreadChartPanel() {
  * 更新线程曲线图的规则列表
  */
 async function updateThreadRules() {
+    // 更新线程曲线图中的 Rule 选择框
+    console.log("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
     const threadCasenameSelect = document.getElementById('threadCasenameSelect');
     const threadRuleSelect = document.getElementById('threadRuleSelect');
     const threadRuleSearch = document.getElementById('threadRuleSearch');
-    
+
     const casename = threadCasenameSelect?.value;
     if (!casename) return;
     
@@ -793,15 +795,16 @@ async function updateThreadRules() {
     if (!currentManager || !currentManager.allData[casename]) return;
     
     const caseData = currentManager.allData[casename];
-    const dailyMetrics = caseData.daily_metrics || {};
+
+    // const dailyMetrics = caseData.daily_metrics || {};
     
-    const rulesSet = new Set();
-    Object.keys(dailyMetrics).forEach(date => {
-        const metrics = dailyMetrics[date];
-        Object.keys(metrics).forEach(rule => {
-            rulesSet.add(rule);
-        });
-    });
+    const rulesSet = new Set(Object.keys(caseData[currentChartType]));
+    // Object.keys(dailyMetrics).forEach(date => {
+    //     const metrics = dailyMetrics[date];
+    //     Object.keys(metrics).forEach(rule => {
+    //         rulesSet.add(rule);
+    //     });
+    // });
     
     let allThreadRules = Array.from(rulesSet).sort();
     if (allThreadRules.includes('Overall')) {
@@ -830,6 +833,7 @@ async function updateThreadRules() {
  */
 async function updateThreadDates() {
     const threadCasenameSelect = document.getElementById('threadCasenameSelect');
+    const threadRuleSelect = document.getElementById('threadRuleSelect');
     const threadDateSelect = document.getElementById('threadDateSelect');
     
     const casename = threadCasenameSelect?.value;
@@ -840,8 +844,10 @@ async function updateThreadDates() {
     
     const caseData = currentManager.allData[casename];
     const dailyMetrics = caseData.daily_metrics || {};
-    const dates = Object.keys(dailyMetrics).sort();
-    
+
+
+    const dates = Array.from(new Set(caseData[currentChartType][threadRuleSelect.value]["dates"]));
+
     const options = dates.map(date => 
         `<option value="${date}">${formatDate(date)}</option>`
     ).join('');
@@ -876,19 +882,12 @@ async function loadThreadChartData() {
         if (!currentManager) return;
         
         const response = await axios.post('/api/thread/chart/data', {
-            raw_data: currentManager.allData,
             casename: casename,
             rule: rule,
             date: date,
             toolID: window.toolId
         });
-        
-        console.warn("线程数数据:", {
-            raw_data: currentManager.allData,
-            casename: casename,
-            rule: rule,
-            date: date
-        })
+
         if (response.data.success) {
             drawThreadChart(response.data.data);
         }
@@ -1043,7 +1042,7 @@ async function updateThreadSelects() {
     
     const currentManager = multiThreadManager || singleThreadManager;
     if (!currentManager) return;
-    
+    // 更新线程曲线图中的 Casename 选择框
     const casenames = Object.keys(currentManager.allData);
     const options = casenames.map(name => 
         `<option value="${escapeHtml(name)}">${escapeHtml(name)}</option>`

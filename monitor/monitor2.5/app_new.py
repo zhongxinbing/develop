@@ -14,6 +14,7 @@ from utils.tool_manager import tool_manager
 from utils.data_manager import data_manager
 from utils.data_parser import data_parser
 from utils.data_parser import MultiThreadParser
+from utils.multi_thread_parser import MultiThreadParser
 from utils.log import *
 
 
@@ -178,7 +179,7 @@ def api_load_tool_data(tool_id):
 
     return jsonify({'success': True, 'data': all_data, 'message': message})
     # 解析数据，并放在 对应的目录中
-# 从前端获取图需要显示数据，解析后返回图表数据   ->>>>>  单线线程
+# 从前端获取图需要显示数据，解析后返回图表数据   ->>>>>  单线线程 多线程
 @app.route('/api/chart/data', methods=['POST'])
 def api_get_chart_data():
     """获取图表数据（支持Runtime和Memory）"""
@@ -188,7 +189,29 @@ def api_get_chart_data():
     chioce_data = data_manager.send_data_to_frontend_for_chart(data)
 
     return jsonify({'success': True, 'data': chioce_data})
+# 从前端获取图需要显示数据，解析后返回图表数据   ->>>>>  线程数
+@app.route('/api/thread/chart/data', methods=['POST'])
+def api_get_thread_chart_data():
+    """获取线程曲线图数据（X轴为线程数）"""
+    data = request.json
+    chart_data = data_parser.parse_thread_data(data)
+    # raw_data = data.get('raw_data', {})
+    # casename = data.get('casename', '')
+    # rule = data.get('rule', '')
+    # date = data.get('date', '')
+    # tool_id = data.get('toolID', [])
+    # user_id = get_user_id()
+    # json_path = Path(__file__).resolve().parent.joinpath("data", tool_id, user_id, "thread", casename, date, f'{rule}.json')
 
+    # # 如果已经存在有数据；就不需要重新全量解析  ===》 需要判断数据是否被更新了 to do
+    # if json_path.exists():
+    #     return jsonify({'success': True, 'data': load_json(json_path)})
+    # else:
+    #     Path(json_path.parent).mkdir(parents=True, exist_ok=True)
+
+    # chart_data = data_parser.parse_for_thread_chart(raw_data, casename, rule, date)
+    # save_json(json_path, chart_data)
+    return jsonify({'success': True, 'data': chart_data})
 
 # 数据对比
 @app.route('/api/comparison', methods=['POST'])
