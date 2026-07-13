@@ -1,0 +1,30 @@
+{
+  "dates": [],
+  "rules": {
+    "save_session(2)": {
+      "dates": [
+        "20260511"
+      ],
+      "values": [
+        173.812
+      ],
+      "type": "line",
+      "name": "save_session(2)",
+      "thread": 2,
+      "color": "#A855F7",
+      "rule_name": "save_session",
+      "is_multi": true
+    }
+  },
+  "crash_dates": [
+    "20260511",
+    "20260513",
+    "20260515",
+    "20260516",
+    "20260517"
+  ],
+  "overall_data": null,
+  "all_threads": [
+    2
+  ]
+}

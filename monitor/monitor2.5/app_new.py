@@ -132,39 +132,33 @@ def api_load_tool_data(tool_id):
     # 加载所有数据
 
     single = data_manager.get_all_data(tool_id, user_id, "single")
+    # data_manager.save_tool_data(DATA_DIR / tool_id / 'multi.json', multi)
 
-    multi = data_manager.get_all_data(tool_id, user_id, "multi")
-    print(multi)
-    # print("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
-    # multi = MultiThreadParser.parse_for_runtime_chart(
-    #             multi, "aes", ["E0001"], ["20260511","20260513","20260515","20260516","20260517"], [2, 4, 6, 8]
-    #         )
-    # data_manager.save_tool_data(DATA_DIR / tool_id / 'E0001.json', multi)
     # extra = data_manager.get_all_data(tool_id, user_id, "extra_display")
     # multi = None
-    extra = None
+    extra = {}
 
     all_data = {}
     message = ''
     if single:
         # 需要更新数据
-        all_data['single'] = single
         message += ' 单线程'
         single_casename_rule_dates = data_parser.parse_all_data(tool_id, single, 'single')
         all_data['single'] = single_casename_rule_dates
         data_manager.save_tool_data(DATA_DIR / tool_id / 'single.json', single_casename_rule_dates)
     else:
         all_data['single'] = data_manager.load_tool_data(DATA_DIR / tool_id / 'single.json')
-        
-    # if multi:
-    #     # 需要更新数据
-        all_data['multi'] = multi
+    print("===================================================================================================================================================")
+    multi = data_manager.get_all_data(tool_id, user_id, "multi")
+    if multi:
+        # 需要更新数据
         message += ' 多线程'
-        data_manager.save_tool_data(DATA_DIR / tool_id / 'multi.json', multi)
+        # 解析多线程数据
         multi_casename_rule_dates = data_parser.parse_all_data(tool_id, multi, 'multi')
-        # data_manager.save_tool_data(DATA_DIR / tool_id / 'multi.json', multi_casename_rule_dates)
-    # else:
-    #     all_data['multi'] = data_manager.load_tool_data(DATA_DIR / tool_id / 'multi.json')
+        all_data['multi'] = multi_casename_rule_dates
+        data_manager.save_tool_data(DATA_DIR / tool_id / 'multi.json', multi_casename_rule_dates)
+    else:
+        all_data['multi'] = data_manager.load_tool_data(DATA_DIR / tool_id / 'multi.json')
         
     # if extra:
     #     # 需要更新数据
@@ -190,38 +184,9 @@ def api_get_chart_data():
     """获取图表数据（支持Runtime和Memory）"""
     data = request.json
     user_id = get_user_id()
-
-    tool_id = data.get('toolID', '')
-    casename = data.get('casename', '')
-    mode = data.get('mode', 'single')
-    chart_type = data.get('chart_type', 'runtime')
-    rules = data.get('rules', [])
-    dates = data.get('dates', [])
-
-    logger.info(f"收到用户 {user_id} 请求图表数据: {mode} {chart_type} {rules[0]} ")
-    data_path = DATA_DIR / tool_id / "original" / 'single' / casename  / chart_type / f'{rules[0]}.json'
-    data = data_manager.load_tool_data(data_path)
-
-    # 根据前端发送来的日期，筛选出对应的 values，并返回给前端
-    chioce_data = {}
-    chioce_data["dates"] = list(set(dates))
-    chioce_data.setdefault("rules", {}).setdefault(rules[0], {})["dates"] = list(set(dates))
-    values = []
-    crash_date = []
-
-    for date in dates:
-        index = data["rules"][rules[0]]["dates"].index(date)
-        values.append(data["rules"][rules[0]]["values"][index])
-        if date in data["crash_dates"]:
-            crash_date.append(date)
-
-    chioce_data.setdefault("rules", {}).setdefault(rules[0], {})["values"] = values
-    chioce_data.setdefault("rules", {}).setdefault(rules[0], {})["type"] = data["rules"][rules[0]]["type"]
-    chioce_data.setdefault("rules", {}).setdefault(rules[0], {})["name"] = data["rules"][rules[0]]["name"]
-    chioce_data.setdefault("rules", {}).setdefault(rules[0], "")["is_single"] = data["rules"][rules[0]]["is_single"]
-    chioce_data.setdefault("rules", {}).setdefault(rules[0], [])["crash_dates"] = crash_date
-    chioce_data.setdefault("rules", {}).setdefault(rules[0], [])["overall_data"] = data["overall_data"]
     
+    chioce_data = data_manager.send_data_to_frontend_for_chart(data)
+
     return jsonify({'success': True, 'data': chioce_data})
 
 

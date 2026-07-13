@@ -97,7 +97,11 @@ class MultiThreadManager {
      * 初始化多线程模块
      */
     async init(rawData, userAddedData, extraData) {
-        console.log('MultiThreadManager.init 开始',extraData);
+        console.log('============================================================================');
+        console.log('============================================================================');
+        console.log('============================================================================');
+        console.log('============================================================================');
+        console.log('MultiThreadManager.init 开始',rawData);
         
         // 获取 DOM 元素
         this.casenameSelect = document.getElementById(`${this.idPrefix}CasenameSelect`);
@@ -126,48 +130,50 @@ class MultiThreadManager {
         this.errorModeSelect = document.getElementById(`${this.idPrefix}ErrorModeSelect`);
         
         // 清理和验证数据格式
-        let cleanRawData = {};
+        // let cleanRawData = {};
         
-        if (rawData && typeof rawData === 'object') {
-            for (const [key, value] of Object.entries(rawData)) {
-                // 跳过内部字段
-                if (key === 'dataFiles' || key === '__multi_processed_logs__' || key === 'single' || key === 'multi') {
-                    continue;
-                }
+        // if (rawData && typeof rawData === 'object') {
+        //     for (const [key, value] of Object.entries(rawData)) {
+        //         // 跳过内部字段
+        //         if (key === 'dataFiles' || key === '__multi_processed_logs__' || key === 'single' || key === 'multi') {
+        //             continue;
+        //         }
                 
-                // 验证多线程数据格式：必须有 daily_metrics 且内部有 thread_metrics
-                if (value && typeof value === 'object' && value.daily_metrics) {
-                    // 检查是否包含多线程特征数据
-                    let hasMultiThread = false;
-                    for (const dateMetrics of Object.values(value.daily_metrics)) {
-                        if (dateMetrics && typeof dateMetrics === 'object') {
-                            for (const ruleData of Object.values(dateMetrics)) {
-                                if (ruleData && ruleData.thread_metrics) {
-                                    hasMultiThread = true;
-                                    break;
-                                }
-                            }
-                        }
-                        if (hasMultiThread) break;
-                    }
+        //         // 验证多线程数据格式：必须有 daily_metrics 且内部有 thread_metrics
+        //         if (value && typeof value === 'object' && value.daily_metrics) {
+        //             // 检查是否包含多线程特征数据
+        //             let hasMultiThread = false;
+        //             for (const dateMetrics of Object.values(value.daily_metrics)) {
+        //                 if (dateMetrics && typeof dateMetrics === 'object') {
+        //                     for (const ruleData of Object.values(dateMetrics)) {
+        //                         if (ruleData && ruleData.thread_metrics) {
+        //                             hasMultiThread = true;
+        //                             break;
+        //                         }
+        //                     }
+        //                 }
+        //                 if (hasMultiThread) break;
+        //             }
                     
-                    if (hasMultiThread) {
-                        cleanRawData[key] = value;
-                    } else {
-                        console.log(`MultiThread: 项目 ${key} 没有多线程数据特征，跳过`);
-                    }
-                }
-            }
-        }
+        //             if (hasMultiThread) {
+        //                 cleanRawData[key] = value;
+        //             } else {
+        //                 console.log(`MultiThread: 项目 ${key} 没有多线程数据特征，跳过`);
+        //             }
+        //         }
+        //     }
+        // }
         
-        this.rawData = cleanRawData;
+        // this.rawData = cleanRawData;
+        this.rawData = rawData;
         this.userAddedData = userAddedData || {};
         this.allData = { ...this.rawData, ...this.userAddedData };
         this.extraData = extraData
         
         this.updateCasenameSelect();
         await this.updateRulesAndDates();
-        this.initThreadSelector();
+        
+        // this.initThreadSelector();
         this.initEventListeners();
         this.initDatePickerModal();
         this.initAddDataModal();
@@ -176,11 +182,6 @@ class MultiThreadManager {
             this.selectLatest50Days();
         }
         this.updateOverview();
-        console.log('MultiThreadManager.init 完成', { 
-            allDates: this.allDates.length, 
-            allRules: this.allRules.length,
-            availableThreads: this.availableThreads 
-        });
     }
 
     /**
@@ -191,19 +192,8 @@ class MultiThreadManager {
         
         // 只显示有多线程数据的项目
         const casenames = Object.keys(this.allData).filter(name => {
-            const data = this.allData[name];
-            if (!data || typeof data !== 'object' || !data.daily_metrics) return false;
-            
-            for (const dateMetrics of Object.values(data.daily_metrics)) {
-                if (dateMetrics && typeof dateMetrics === 'object') {
-                    for (const ruleData of Object.values(dateMetrics)) {
-                        if (ruleData && ruleData.thread_metrics) {
-                            return true;
-                        }
-                    }
-                }
-            }
-            return false;
+            const rule_dates = this.allData[name];
+            return rule_dates;
         });
         
         const options = casenames.map(name => 
@@ -228,35 +218,38 @@ class MultiThreadManager {
             console.log('updateRulesAndDates: 无有效的 casename', this.selectedCasename);
             return;
         }
-        
-        const caseData = this.allData[this.selectedCasename];
-        const dailyMetrics = caseData.daily_metrics || {};
-        
-        const rulesSet = new Set();
-        const datesSet = new Set();
-        const threadsSet = new Set();
-        
-        Object.keys(dailyMetrics).forEach(date => {
-            datesSet.add(date);
-            const metrics = dailyMetrics[date];
-            Object.keys(metrics).forEach(rule => {
-                rulesSet.add(rule);
-                const ruleData = metrics[rule];
-                if (ruleData && ruleData.thread_metrics) {
-                    Object.keys(ruleData.thread_metrics).forEach(tk => {
-                        try {
-                            threadsSet.add(parseInt(tk));
-                        } catch (e) {
-                            threadsSet.add(0);
-                        }
-                    });
-                }
-            });
-        });
-        
+        console.log('updateRulesAndDates: 开始', this.selectedCasename);
+        // 从数据中获取规则和日期
+        const caseData = this.allData[this.selectedCasename] || {};
+
+        // 提取所有规则
+        const rulesSet = new Set(Object.keys(caseData[this.currentChartType]));
         this.allRules = Array.from(rulesSet).sort();
-        this.allDates = Array.from(datesSet).sort();
-        this.availableThreads = Array.from(threadsSet).sort((a, b) => a - b);
+        // 提取所有日期
+        // const datesSet = new Set();
+        // const threadsSet = new Set();
+        
+        // Object.keys(dailyMetrics).forEach(date => {
+        //     datesSet.add(date);
+        //     const metrics = dailyMetrics[date];
+        //     Object.keys(metrics).forEach(rule => {
+        //         rulesSet.add(rule);
+        //         const ruleData = metrics[rule];
+        //         if (ruleData && ruleData.thread_metrics) {
+        //             Object.keys(ruleData.thread_metrics).forEach(tk => {
+        //                 try {
+        //                     threadsSet.add(parseInt(tk));
+        //                 } catch (e) {
+        //                     threadsSet.add(0);
+        //                 }
+        //             });
+        //         }
+        //     });
+        // });
+        
+        
+        // this.allDates = Array.from(datesSet).sort();
+        // this.availableThreads = Array.from(threadsSet).sort((a, b) => a - b);
         
         // 确保 Overall 在第一位
         if (this.allRules.includes('Overall')) {
@@ -264,15 +257,16 @@ class MultiThreadManager {
         }
         
         // 如果没有可用线程，使用默认值
-        if (this.availableThreads.length === 0) {
-            this.availableThreads = [2, 4];
-        }
+        // if (this.availableThreads.length === 0) {
+        //     this.availableThreads = [2, 4];
+        // }
         
         // 默认选择所有线程（但限制最多显示5个）
-        this.selectedThreads = [...this.availableThreads].slice(0, 5);
+        // this.selectedThreads = [...this.availableThreads];
         
         this.updateRuleSelect();
-        this.renderThreadOptions();
+        // 更新线程选择框
+        // this.renderThreadOptions();
         this.updateDateSelects();
         this.updateOverview();
     }
@@ -303,6 +297,9 @@ class MultiThreadManager {
      * 更新日期选择框
      */
     updateDateSelects() {
+        const datesSet = new Set(this.allData[this.selectedCasename][this.currentChartType][this.ruleSelect.value]["dates"]);
+        this.allDates = Array.from(datesSet).sort();
+        
         if (this.date1Select) {
             const options = this.allDates.map(date => 
                 `<option value="${date}">${this.formatDate(date)}</option>`
@@ -319,6 +316,10 @@ class MultiThreadManager {
                 this.date2Select.value = this.allDates[this.allDates.length - 1];
             }
         }
+        // 获取 case 下 rule 下的 所有线程数
+        const threadsSet = new Set(this.allData[this.selectedCasename][this.currentChartType][this.ruleSelect.value]["all_threads"]);
+        this.selectedThreads = Array.from(threadsSet).sort((a, b) => a - b);
+
     }
 
     /**
@@ -328,7 +329,7 @@ class MultiThreadManager {
         const totalCases = Object.keys(this.allData).length;
         const totalRules = this.allRules.length;
         const totalDays = this.allDates.length;
-        
+
         const totalCasesEl = document.getElementById('totalCases');
         const totalRulesEl = document.getElementById('totalRules');
         const totalDaysEl = document.getElementById('totalDays');
@@ -492,7 +493,7 @@ class MultiThreadManager {
         if (this.selectedDates.length === 0) {
             this.selectedDates = this.allDates.slice(-50);
         }
-        
+
         if (this.selectedThreads.length === 0 && this.availableThreads.length > 0) {
             this.selectedThreads = [this.availableThreads[0]];
         }
@@ -506,17 +507,17 @@ class MultiThreadManager {
         });
         
         try {
+            
             const requestData = {
-                raw_data: this.allData,
+                toolID: window.toolId,
                 casename: this.selectedCasename,
                 rules: this.selectedRules,
                 dates: this.selectedDates,
                 mode: 'multi',
                 chart_type: this.currentChartType,
                 selected_threads: this.selectedThreads,
-                toolID: window.toolId
-            };
-            
+            }
+
             const response = await axios.post('/api/chart/data', requestData);
             
             if (response.data.success) {
@@ -524,7 +525,7 @@ class MultiThreadManager {
                 if (typeof chartData === 'string') {
                     chartData = JSON.parse(chartData);
                 }
-                // console.warn(chartData)
+
                 this.chart.hideLoading();
                 
                 if (Object.keys(chartData.rules || {}).length === 0) {
@@ -1087,21 +1088,21 @@ class MultiThreadManager {
         const dateSearch = document.getElementById('dateSearch');
         
         if (!openBtn || !modal) return;
-        
+        // 点击打开日期选择弹窗
         openBtn.addEventListener('click', () => {
             this.updateDatePickerModal();
             modal.classList.add('active');
             document.body.style.overflow = 'hidden';
         });
-        
+        // 点击关闭日期选择弹窗
         const closeModal = () => {
             modal.classList.remove('active');
             document.body.style.overflow = '';
         };
-        
+        // 点击关闭日期选择弹窗
         if (closeBtn) closeBtn.addEventListener('click', closeModal);
         if (cancelBtn) cancelBtn.addEventListener('click', closeModal);
-        
+        // 点击确认选择日期
         if (confirmBtn) {
             confirmBtn.addEventListener('click', () => {
                 const checkboxes = document.querySelectorAll('.date-checkbox:checked');
@@ -1110,14 +1111,14 @@ class MultiThreadManager {
                 this.renderChart();
             });
         }
-        
+        // 点击全选/取消全选日期
         if (selectAllCheckbox) {
             selectAllCheckbox.addEventListener('change', (e) => {
                 const checkboxes = document.querySelectorAll('.date-checkbox');
                 checkboxes.forEach(cb => cb.checked = e.target.checked);
             });
         }
-        
+        // 点击搜索日期
         if (dateSearch) {
             dateSearch.addEventListener('input', (e) => {
                 const searchTerm = e.target.value.toLowerCase();
@@ -1167,7 +1168,7 @@ class MultiThreadManager {
         const dataPathsTextarea = document.getElementById('dataPaths');
         
         if (!openBtn || !modal) return;
-        
+        // 点击打开添加数据弹窗
         openBtn.addEventListener('click', () => {
             modal.classList.add('active');
             document.body.style.overflow = 'hidden';

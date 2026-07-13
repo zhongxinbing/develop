@@ -5,6 +5,7 @@ from importlib.metadata import files
 import importlib.util
 from json import tool
 from os import path
+from random import choice
 import sys
 import shutil
 from pathlib import Path
@@ -114,7 +115,6 @@ class DataManager:
         """
         加载工具数据从文件
         """
-        self.logger.info(f"开始加载工具 {tool_id} {type} 数据")
         data_files_json_path = DATA_DIR / tool_id  / f"dataFiles.json"
 
         self.logger.info(f"工具 {tool_id} 加载 {type} 数据")
@@ -152,6 +152,60 @@ class DataManager:
         # 保存新增数据到文件
         self.save_tool_data(data_files_json_path, self.data_files)
         return data
+
+    # 发送数据到前端,渲染图表
+    def send_data_to_frontend_for_chart(self,frond_data:Dict):
+        tool_id = frond_data.get('toolID', '')
+        casename = frond_data.get('casename', '')
+        mode = frond_data.get('mode', 'single')
+        chart_type = frond_data.get('chart_type', 'runtime')
+        rules = frond_data.get('rules', [])
+        dates = frond_data.get('dates', [])
+        selected_threads = frond_data.get('selected_threads', [])
+        data_path = DATA_DIR / tool_id / "original" / mode / casename  / chart_type / f'{rules[0]}.json'
+        case_rule_data = self.load_tool_data(data_path)
+
+        # 根据前端发送来的日期，筛选出对应的 values，并返回给前端
+        chioce_data = {}
+        # 设置第一层的 dates
+        chioce_data["dates"] = dates
+
+        for thread in selected_threads:
+            if thread == -1:
+                rule = rules[0]
+            else:
+                rule = f"{rules[0]}({thread})"
+
+            # 设置 rules 中的dates
+            chioce_data.setdefault("rules", {}).setdefault(rule, {})["dates"] = dates
+            values = []
+            crash_dates = []
+            # 设置获取指定日期的数据
+            for date in dates:
+                index = case_rule_data["rules"][rule]["dates"].index(date)
+                values.append(case_rule_data["rules"][rule]["values"][index])
+                if date in case_rule_data["crash_dates"] and date not in crash_dates:
+                    crash_dates.append(date)
+
+            chioce_data.setdefault("rules", {}).setdefault(rule, {})["values"] = values
+            # 设置 rules 中的 type
+            chioce_data.setdefault("rules", {}).setdefault(rule, {})["type"] = case_rule_data["rules"][rule]["type"]
+            chioce_data.setdefault("rules", {}).setdefault(rule, {})["name"] = case_rule_data["rules"][rule]["name"]
+            if mode == "single":
+                chioce_data.setdefault("rules", {}).setdefault(rule, {})["is_single"] = case_rule_data["rules"][rule]["is_single"]
+            else:
+                chioce_data.setdefault("rules", {}).setdefault(rule, {})["thread"] = case_rule_data["rules"][rule]["thread"]
+                chioce_data.setdefault("rules", {}).setdefault(rule, {})["color"] = case_rule_data["rules"][rule]["color"]
+                chioce_data.setdefault("rules", {}).setdefault(rule, {})["rule_name"] = case_rule_data["rules"][rule]["rule_name"]
+                chioce_data.setdefault("rules", {}).setdefault(rule, {})["is_multi"] = case_rule_data["rules"][rule]["is_multi"]
+
+        print(case_rule_data.keys())
+
+        chioce_data["crash_dates"] = crash_dates
+        chioce_data["overall_data"] = case_rule_data["overall_data"]
+        if mode == "multi":
+            chioce_data["selected_threads"] = case_rule_data["all_threads"]
+        return chioce_data
 
 
 ##################################################################################################################################################################

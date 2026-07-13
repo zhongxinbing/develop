@@ -473,7 +473,8 @@ def get_perf_data_from_log(caseData, log_path):
         if re.match(r'.*/single/*', log_path):
             thread = 1
         else:
-            thread = re.findall(r'thread_(\d+)', log_path)[0]
+            thread_match = re.findall(r'thread_(\d+)', log_path)[0]
+            thread = int(thread_match[0]) if thread_match else 0
     else:
         thread = int(thread[0])
 

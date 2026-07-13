@@ -128,7 +128,7 @@ class SingleThreadManager {
             const rule = this.allData[name];
             return rule ;
         });
-        console.log('SingleThreadManager.updateCasenameSelect casenames:', casenames);
+
         const options = casenames.map(name => 
             `<option value="${this.escapeHtml(name)}">${this.escapeHtml(name)}</option>`
         ).join('');
@@ -296,7 +296,8 @@ class SingleThreadManager {
                 dates: this.selectedDates,
                 mode: 'single',
                 chart_type: this.currentChartType,
-                toolID: window.toolId
+                toolID: window.toolId,
+                selected_threads: [-1],
             };
 
             const response = await axios.post('/api/chart/data', requestData);
