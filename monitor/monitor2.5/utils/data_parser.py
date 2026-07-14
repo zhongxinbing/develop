@@ -2,6 +2,7 @@
 数据解析器 - 统一入口，根据模式调用对应的解析器
 """
 from typing import Dict, List, Any, Optional
+from unittest import result
 
 # from numpy import single
 from utils.single_thread_parser import SingleThreadParser
@@ -45,28 +46,33 @@ class DataParser:
 ##              线程数
 ##
 ######################################################################################################################################################
-    def parse_thread_data(self, request_data: Dict):
+    def parse_thread_data(self, tool_id: str, multi_all_data: Dict):
+        result_threads = []
+        for casename, case_data in multi_all_data.items():
+            daily_metrics = case_data["daily_metrics"]
+            if casename not in result_threads:
+                result_threads[casename] = {}
+            
+            for date, date_data in daily_metrics.items():
+                if date not in result_threads[casename]:
+                    result_threads[casename][date] = {}
+                for rule, rule_data in date_data.items():
+                    result_threads[casename][date][rule] = {'threads': [],'runtimes': [], 'memories': []}
+                    thread_metrics = rule_data.get('thread_metrics', {})
+                    # 排序线程数
+                    threads = sorted(thread_metrics.keys())
+                    for thread in threads:
+                        runtime = thread_metrics[thread].get('runtime', 0)
+                        memory = thread_metrics[thread].get('memory', 0)
+                        result_threads[casename][date][rule]['threads'].append(thread)
+                        result_threads[casename][date][rule]['runtimes'].append(runtime)
+                        result_threads[casename][date][rule]['memories'].append(memory)
 
-        tool_id = request_data.get("toolID","")
-        casename = request_data.get("casename","")
-        rule = request_data.get("rule","")
-        mode = request_data.get("mode","runtime")
-        
-        case_rule_data_json_path = DATA_DIR / tool_id / "original" / "multi" / casename / mode / f"{rule}.json"
-        case_rule_data = data_manager.load_tool_data(case_rule_data_json_path)
-
-        result = {
-            "threads": [],
-            mode: []
-        }
-
-        result["threads"] = case_rule_data["all_threads"]
-        result[mode] = case_rule_data["dates"]
-
-
-
-
-
+        for casename, case_data in result_threads.items():
+            for date, date_date in case_data.items():
+                for rule, rule_data in date_date.items():
+                    thread_path_json_path = DATA_DIR / tool_id / "original" / "thread" /casename/ date / f"{rule}.json"
+                    data_manager.save_tool_data(thread_path_json_path, rule_data)
 
 
     @staticmethod

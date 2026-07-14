@@ -545,6 +545,7 @@ async function switchToThreadMode() {
     if (chartContainer) chartContainer.style.display = 'block';
     
     // 加载线程曲线图数据
+    await updateThreadSelects();
     await loadThreadChartData();
     await updateThreadSelects();
 }
@@ -752,15 +753,15 @@ function initThreadChartPanel() {
             loadThreadChartData();
         });
     }
-    
+    // 为线程曲线图内的 Rule 选择框绑定切换事件
     if (threadRuleSelect) {
         threadRuleSelect.addEventListener('change', loadThreadChartData);
     }
-    
+    // 为线程曲线图内的 Date 选择框绑定切换事件
     if (threadDateSelect) {
         threadDateSelect.addEventListener('change', loadThreadChartData);
     }
-    
+    // 为线程曲线图内的 Rule 搜索框绑定输入事件
     if (threadRuleSearch) {
         threadRuleSearch.addEventListener('input', updateThreadRules);
     }
@@ -779,7 +780,7 @@ function initThreadChartPanel() {
 }
 
 /**
- * 更新线程曲线图的规则列表
+ * 更新线程曲线图的 rule 列表
  */
 async function updateThreadRules() {
     // 更新线程曲线图中的 Rule 选择框
@@ -795,16 +796,8 @@ async function updateThreadRules() {
     if (!currentManager || !currentManager.allData[casename]) return;
     
     const caseData = currentManager.allData[casename];
-
-    // const dailyMetrics = caseData.daily_metrics || {};
     
     const rulesSet = new Set(Object.keys(caseData[currentChartType]));
-    // Object.keys(dailyMetrics).forEach(date => {
-    //     const metrics = dailyMetrics[date];
-    //     Object.keys(metrics).forEach(rule => {
-    //         rulesSet.add(rule);
-    //     });
-    // });
     
     let allThreadRules = Array.from(rulesSet).sort();
     if (allThreadRules.includes('Overall')) {
@@ -820,16 +813,16 @@ async function updateThreadRules() {
         `<option value="${escapeHtml(rule)}">${escapeHtml(rule)}</option>`
     ).join('');
     
-    if (threadRuleSelect) {
+    // if (threadRuleSelect) {
         threadRuleSelect.innerHTML = options;
         if (options && !threadRuleSelect.value && allThreadRules.length > 0) {
             threadRuleSelect.value = allThreadRules[0];
         }
-    }
+    // }
 }
 
 /**
- * 更新线程曲线图的日期列表
+ * 更新线程曲线图的 date 列表
  */
 async function updateThreadDates() {
     const threadCasenameSelect = document.getElementById('threadCasenameSelect');
@@ -843,10 +836,8 @@ async function updateThreadDates() {
     if (!currentManager || !currentManager.allData[casename]) return;
     
     const caseData = currentManager.allData[casename];
-    const dailyMetrics = caseData.daily_metrics || {};
 
-
-    const dates = Array.from(new Set(caseData[currentChartType][threadRuleSelect.value]["dates"]));
+    const dates = Array.from(new Set(caseData[currentChartType][threadRuleSelect.value]["dates"])).sort((a, b) => b.localeCompare(a));
 
     const options = dates.map(date => 
         `<option value="${date}">${formatDate(date)}</option>`
@@ -858,16 +849,17 @@ async function updateThreadDates() {
             threadDateSelect.value = dates[dates.length - 1];
         }
     }
+    console.log(threadDateSelect.value);
 }
 
 /**
- * 加载线程曲线图数据
+ * 从后端获取 线程曲线图数据
  */
 async function loadThreadChartData() {
     const threadCasenameSelect = document.getElementById('threadCasenameSelect');
     const threadRuleSelect = document.getElementById('threadRuleSelect');
     const threadDateSelect = document.getElementById('threadDateSelect');
-    
+
     const casename = threadCasenameSelect?.value;
     const rule = threadRuleSelect?.value;
     const date = threadDateSelect?.value;
@@ -881,14 +873,18 @@ async function loadThreadChartData() {
         const currentManager = multiThreadManager || singleThreadManager;
         if (!currentManager) return;
         
-        const response = await axios.post('/api/thread/chart/data', {
+        const responseData = {
             casename: casename,
             rule: rule,
             date: date,
-            toolID: window.toolId
-        });
+            toolID: window.toolId,
+            mode: currentChartType
+        }
+
+        const response = await axios.post('/api/thread/chart/data', responseData);
 
         if (response.data.success) {
+            console.log('线程曲线图数据加载成功:', response.data.data);
             drawThreadChart(response.data.data);
         }
     } catch (error) {
@@ -897,9 +893,6 @@ async function loadThreadChartData() {
     }
 }
 
-/**
- * 绘制线程曲线图
- */
 /**
  * 绘制线程曲线图
  */
@@ -913,14 +906,15 @@ function drawThreadChart(chartData) {
     
     threadChart = echarts.init(container);
     
-    const { threads, runtimes, memories } = chartData;
+    const { threads, runtime, memory } = chartData;
     
+
     // 修复：正确获取线程曲线图中激活的菜单项
     const activeThreadMenuItem = document.querySelector('#threadSidebar .menu-item.active');
     const isRuntime = activeThreadMenuItem && activeThreadMenuItem.dataset.threadChart === 'runtime';
     
     const yAxisName = isRuntime ? 'Runtime (s)' : 'Memory (MB)';
-    const seriesData = isRuntime ? runtimes : memories;
+    const seriesData = isRuntime ? runtime : memory;
     const seriesName = isRuntime ? 'Runtime' : 'Memory';
     
     // 检查数据是否有效
@@ -1034,7 +1028,7 @@ function drawThreadChart(chartData) {
 }
 
 /**
- * 更新线程曲线图的选择框
+ * 更新线程曲线图的 casename 选择框
  */
 async function updateThreadSelects() {
     const threadCasenameSelect = document.getElementById('threadCasenameSelect');

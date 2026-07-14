@@ -226,43 +226,11 @@ class MultiThreadManager {
         const rulesSet = new Set(Object.keys(caseData[this.currentChartType]));
         this.allRules = Array.from(rulesSet).sort();
         // 提取所有日期
-        // const datesSet = new Set();
-        // const threadsSet = new Set();
-        
-        // Object.keys(dailyMetrics).forEach(date => {
-        //     datesSet.add(date);
-        //     const metrics = dailyMetrics[date];
-        //     Object.keys(metrics).forEach(rule => {
-        //         rulesSet.add(rule);
-        //         const ruleData = metrics[rule];
-        //         if (ruleData && ruleData.thread_metrics) {
-        //             Object.keys(ruleData.thread_metrics).forEach(tk => {
-        //                 try {
-        //                     threadsSet.add(parseInt(tk));
-        //                 } catch (e) {
-        //                     threadsSet.add(0);
-        //                 }
-        //             });
-        //         }
-        //     });
-        // });
-        
-        
-        // this.allDates = Array.from(datesSet).sort();
-        // this.availableThreads = Array.from(threadsSet).sort((a, b) => a - b);
         
         // 确保 Overall 在第一位
         if (this.allRules.includes('Overall')) {
             this.allRules = ['Overall', ...this.allRules.filter(r => r !== 'Overall')];
         }
-        
-        // 如果没有可用线程，使用默认值
-        // if (this.availableThreads.length === 0) {
-        //     this.availableThreads = [2, 4];
-        // }
-        
-        // 默认选择所有线程（但限制最多显示5个）
-        // this.selectedThreads = [...this.availableThreads];
         
         this.updateRuleSelect();
         // 更新线程选择框

@@ -427,6 +427,33 @@ class DataManager:
 
         return statistics
 
+###################################################################################################################################################################
+
+    def load_thread_chart(self, request_data: Dict):
+        casename = request_data.get('casename', '')
+        rule = request_data.get('rule', '')
+        date = request_data.get('date', '')
+        tool_id = request_data.get('toolID', '')
+        mode = request_data.get('mode', 'all')
+
+        case_rule_data_json_path = DATA_DIR / tool_id / "original" / "thread" / casename / date / f"{rule}.json"
+        if not case_rule_data_json_path.exists():
+            self.logger.error(f"线程数据文件不存在: {case_rule_data_json_path}")
+            return {}
+        
+        case_rule_data = self.load_tool_data(case_rule_data_json_path)
+
+        return case_rule_data
+        
+
+
+
+
+
+
+
+
+
     #     func = self._load_function(func_name, tool_config)
     #     if not func:
     #         return {}

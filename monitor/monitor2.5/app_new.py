@@ -194,7 +194,11 @@ def api_get_chart_data():
 def api_get_thread_chart_data():
     """获取线程曲线图数据（X轴为线程数）"""
     data = request.json
-    chart_data = data_parser.parse_thread_data(data)
+    chart_data = data_manager.load_thread_chart(data)
+
+    if not chart_data:
+        return jsonify({'success': False, 'error': '线程数据为空'})
+
     # raw_data = data.get('raw_data', {})
     # casename = data.get('casename', '')
     # rule = data.get('rule', '')

@@ -2,16 +2,16 @@
   "tools": {
     "elint": {
       "tool_name": "elint",
-      "description": "工具静态检查。最基础的“规矩”检查，包括代码风格、命名规范、可综合性等。能发现诸如信号位宽不匹配、组合逻辑中意外生成锁存器（Latch）、未使用的信号等基础问题",
-      "single_thread_path": "E:\\git\\develop\\monitor\\test\\signal",
+      "description": "",
+      "single_thread_path": "C:\\Users\\xbzhong\\Desktop\\lint\\script\\monitor\\develop\\monitor\\test\\signal",
       "single_thread_func": "get_single_data",
-      "multi_thread_path": "E:\\git\\develop\\monitor\\test\\multi",
-      "multi_thread_func": "get_multi_date",
+      "multi_thread_path": "C:\\Users\\xbzhong\\Desktop\\lint\\script\\monitor\\develop\\monitor\\test\\multi",
+      "multi_thread_func": "get_multi_data",
       "extra_display_path": "",
       "extra_display_func": "",
       "custom_curve_func": "",
-      "created_at": "2026-06-26T22:30:34.848812",
-      "updated_at": "2026-07-13T21:39:16.869636"
+      "created_at": "2026-07-14T11:54:24.757119",
+      "updated_at": "2026-07-14T11:54:24.757127"
     }
   }
 }

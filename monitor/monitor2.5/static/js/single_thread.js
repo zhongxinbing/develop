@@ -95,11 +95,7 @@ class SingleThreadManager {
         if (this.allDates.length > 0) {
             this.selectLatest50Days();
         }
-        // 初始化对比面板元素
-        console.log('SingleThreadManager.init 完成', { 
-            allDates: this.allDates.length, 
-            allRules: this.allRules.length 
-        });
+
     }
 
     /**
