@@ -6,22 +6,18 @@ import importlib.util
 from json import tool
 from os import path
 from random import choice
-import sys
-import shutil
+
 from pathlib import Path
 from typing import Dict, Any, Optional, Callable, List
 from datetime import datetime
 from threading import Lock
 
-from matplotlib.pylab import multi_dot
-
 from config import DATA_DIR, BASE_DIR
 from utils.tool_manager import tool_manager
-from debug.debug import green,red,blue
 from utils.find_files import find
+from utils.data_parser import data_parser
 from utils.log import *
-import json
-
+from utils.common import *
 
 class DataManager:
     """数据管理器，负责调用用户配置的函数获取数据"""
@@ -91,24 +87,6 @@ class DataManager:
         except Exception as e:
             self.logger.error(f"加载函数失败 {function_name}: {e}")
             return None
-    
-    # 保存工具数据到文件
-    def save_tool_data(self, filename:str, data:Dict):
-        """
-        保存工具数据到文件
-        """
-        with open(filename, "w") as f:
-            json.dump(data, f, ensure_ascii=False, indent=2)
-        self.logger.info(f"保存工具数据到文件: {filename}")
-
-    def load_tool_data(self, filename:str) -> Dict:
-        """
-        从文件加载工具数据
-        """
-        with open(filename, "r", encoding="utf-8") as f:
-            data = json.load(f)
-        self.logger.info(f"从文件加载工具数据: {filename}")
-        return data
 
     # 加载工具数据从文件
     def get_all_data(self, tool_id: str, user_id: str, type):
@@ -131,7 +109,7 @@ class DataManager:
             self.logger.info(f"用户 {user_id} 第一次加载 {type} 数据，返回所有数据")
         else:
             # 从文件加载旧数据
-            self.data_files = self.load_tool_data(data_files_json_path)
+            self.data_files = load_tool_data(data_files_json_path)
             if type in self.data_files:
                 old_data_files_paths = self.data_files[type]
                 # 对比新增数据
@@ -150,7 +128,7 @@ class DataManager:
                 return None
 
         # 保存新增数据到文件
-        self.save_tool_data(data_files_json_path, self.data_files)
+        save_tool_data(data_files_json_path, self.data_files)
         return data
 
     # 发送数据到前端,渲染图表
@@ -163,7 +141,7 @@ class DataManager:
         dates = frond_data.get('dates', [])
         selected_threads = frond_data.get('selected_threads', [])
         data_path = DATA_DIR / tool_id / "original" / mode / casename  / chart_type / f'{rules[0]}.json'
-        case_rule_data = self.load_tool_data(data_path)
+        case_rule_data = load_tool_data(data_path)
 
         # 根据前端发送来的日期，筛选出对应的 values，并返回给前端
         chioce_data = {}
@@ -232,7 +210,7 @@ class DataManager:
         # 对比所有 rule
         if compare_mode == "all":
             mode_path = DATA_DIR / tool_id / f"{type}.json"
-            mode_data = self.load_tool_data(mode_path)
+            mode_data = load_tool_data(mode_path)
             rules = mode_data[casename]["runtime"].keys() | mode_data[casename]["memory"].keys()
         else:
             rules = [compare_mode]
@@ -241,7 +219,7 @@ class DataManager:
         rule_data_compare_data_memory = {}
         for rule in rules:
             if dimension == 'all' or dimension == 'runtime':
-                case_data_runtime = self.load_tool_data(DATA_DIR / tool_id / "original" / type / casename  /"runtime" / f"{rule}.json")
+                case_data_runtime = load_tool_data(DATA_DIR / tool_id / "original" / type / casename  /"runtime" / f"{rule}.json")
                 date1_data, date2_data, runtime_diff, runtime_diff_percent = self.calculation_error(case_data_runtime, rule, date1, date2)
                 rule_data_compare_data_runtime[rule] = {
                     "date1_data": date1_data,
@@ -251,7 +229,7 @@ class DataManager:
                 }
                 
             if dimension == 'all' or dimension == 'memory':
-                case_data_memory = self.load_tool_data(DATA_DIR / tool_id / "original" / type / casename  /"memory" / f"{rule}.json")
+                case_data_memory = load_tool_data(DATA_DIR / tool_id / "original" / type / casename  /"memory" / f"{rule}.json")
                 date1_data, date2_data, memory_diff, memory_diff_percent = self.calculation_error(case_data_memory, rule, date1, date2)
                 rule_data_compare_data_memory[rule] = {
                     "date1_data": date1_data,
@@ -429,6 +407,81 @@ class DataManager:
 
 ###################################################################################################################################################################
 
+    def load_single_chart(self, tool_id:str, user_id:str):
+        print("===============================================================================================================================")
+        self.logger.info(f"加载工具{tool_id}单线程数据")
+        single = self.get_all_data(tool_id, user_id, "single")
+        if single:
+            # 需要更新数据
+            message = ' 单线程'
+            single_casename_rule_dates = data_parser.parse_all_data(tool_id, single, 'single')
+            single_data = single_casename_rule_dates
+            save_tool_data(DATA_DIR / tool_id / 'single.json', single_casename_rule_dates)
+        else:
+            message = ''
+            single_data = load_tool_data(DATA_DIR / tool_id / 'single.json')
+
+        return single_data, message
+
+    def load_multi_chart(self, tool_id:str, user_id:str):
+        print("===============================================================================================================================")
+        self.logger.info(f"加载工具{tool_id}多线程数据")
+        multi = self.get_all_data(tool_id, user_id, "multi")
+        if multi:
+            # 需要更新数据
+            message = ' 多线程'
+            # 解析多线程数据
+            multi_casename_rule_dates = data_parser.parse_all_data(tool_id, multi, 'multi')
+            multi_data = multi_casename_rule_dates
+            save_tool_data(DATA_DIR / tool_id / 'multi.json', multi_casename_rule_dates)
+        else:
+            message = ''
+            multi_data = load_tool_data(DATA_DIR / tool_id / 'multi.json')
+        return multi_data, message
+
+    def load_extra_chart(self, tool_id:str, user_id:str):
+        print("===============================================================================================================================")
+        self.logger.info(f"加载工具{tool_id}其他数据")
+        extra = self.get_all_data(tool_id, user_id, "extra_display")
+        if extra:
+            # 需要更新数据
+            extra_data = extra
+            message = ' 其他'
+            extra_casename_rule_dates = data_parser.parse_all_data(tool_id, extra, 'extra_display')
+            save_tool_data(DATA_DIR / tool_id / 'extra.json', extra_casename_rule_dates)
+        else:
+            message = ''
+            extra_data= load_tool_data(DATA_DIR / tool_id / 'extra.json')
+        return extra_data, message
+
+        
+    def load_single_or_multi_chart(self, tool_id:str, user_id:str):
+        all_data = {}
+        tool_config = tool_manager._load_config()["tools"][tool_id]
+        if tool_config['single_thread_path']:
+            all_data['single'], single_message = self.load_single_chart(tool_id, user_id)
+        else:
+            single_message = f"工具{tool_id}单线程数据不存在，请更新配置!!!"
+        
+        if tool_config['multi_thread_path']:
+            all_data['multi'], multi_message = self.load_multi_chart(tool_id, user_id)
+        else:
+            multi_message = ''
+        
+        if tool_config['extra_display_path']:
+            all_data['extra'], extra_message = self.load_extra_chart(tool_id, user_id)
+        else:
+            extra_message = ''
+
+        message = f"{single_message}"+ f"{multi_message}"+ f"{extra_message}"
+        if message == '':
+            message = '数据不需要更新'
+        else:
+            message = '更新' + message
+
+        return all_data, message
+
+
     def load_thread_chart(self, request_data: Dict):
         casename = request_data.get('casename', '')
         rule = request_data.get('rule', '')
@@ -441,320 +494,9 @@ class DataManager:
             self.logger.error(f"线程数据文件不存在: {case_rule_data_json_path}")
             return {}
         
-        case_rule_data = self.load_tool_data(case_rule_data_json_path)
+        case_rule_data = load_tool_data(case_rule_data_json_path)
 
         return case_rule_data
         
-
-
-
-
-
-
-
-
-
-    #     func = self._load_function(func_name, tool_config)
-    #     if not func:
-    #         return {}
-        
-    #     # 构建用户隔离的 JSON 路径
-    #     # 新路径格式: data/{tool_name}/{user_id}/{tool_name}_single.json
-    #     user_data_dir = DATA_DIR / tool_name / user_id / "single"
-    #     user_data_dir.mkdir(parents=True, exist_ok=True)
-        
-    #     try:
-    #         # 调用用户配置的函数，传入用户隔离的 JSON 路径和原始数据路径
-    #         result= func({}, data_path)
-    #         # 验证数据结构
-    #         if self._validate_single_thread_data(dict(result)):
-    #             return result
-    #         else:
-    #             self.logger.error(f"单线程数据格式无效: {type(result)}, 需要是 dict")
-    #             return {}
-    #     except Exception as e:
-    #         self.logger.error(f"获取单线程数据失败: {e}")
-    #         return {}
-    
-#     def get_multi_thread_data(self, user_id: str, tool_config: Dict) -> Dict:
-#         """
-#         获取多线程数据
-        
-#         参数:
-#             user_id: 用户ID，用于隔离数据
-#             tool_config: 工具配置
-#         """
-#         func_name = tool_config.get('multi_thread_func')
-#         data_path = tool_config.get('multi_thread_path')
-#         tool_name = tool_config.get('tool_name')
-#         green(f"获取工具 {tool_name} 多线程的数据中")
-
-#         if not func_name or not data_path:
-#             return {}
-
-#         func = self._load_function(func_name, tool_config)
-#         if not func:
-#             return {}
-        
-#         # 构建用户隔离的 JSON 路径
-#         # 新路径格式: data/{tool_name}/{user_id}/{tool_name}_multi.json
-#         user_data_dir = DATA_DIR / tool_name / user_id
-#         user_data_dir.mkdir(parents=True, exist_ok=True)
-#         json_path = user_data_dir / f'{tool_name}_multi.json'
-
-#         try:
-#             result = func(str(json_path), data_path)
-
-#             if self._validate_multi_thread_data(dict(result)):
-#                 return result
-#             else:
-#                 return {}
-#         except Exception as e:
-#             print(f"获取多线程数据失败: {e}")
-#             return {}
-    
-#     def get_custom_curve_data(self, user_id: str, tool_config: Dict, extra_path: str = None) -> Dict:
-#         """
-#         获取自定义曲线数据
-        
-#         参数:
-#             user_id: 用户ID，用于隔离数据
-#             tool_config: 工具配置
-#             extra_path: 额外数据路径
-#         """
-#         func_name = tool_config.get('custom_curve_func')
-#         data_path = extra_path or tool_config.get('extra_display_path')
-        
-#         if not func_name or not data_path:
-#             return {}
-        
-#         func = self._load_function(func_name, tool_config)
-#         if not func:
-#             return {}
-        
-#         try:
-#             result = func(data_path)
-#             if self._validate_multi_thread_data(result):
-#                 return result
-#             return {}
-#         except Exception as e:
-#             print(f"获取自定义曲线数据失败: {e}")
-#             return {}
-    
-#     def get_extra_data(self, user_id: str, tool_config: Dict, extra_path: str = None) -> Dict:
-#         """
-#         获取自定义曲线数据
-        
-#         参数:
-#             user_id: 用户ID，用于隔离数据
-#             tool_config: 工具配置
-#             extra_path: 额外数据路径
-#         """
-#         func_name = tool_config.get('extra_display_func')
-#         data_path = extra_path or tool_config.get('extra_display_path')
-        
-#         if not func_name or not data_path:
-#             return {}
-        
-#         func = self._load_function(func_name, tool_config)
-#         if not func:
-#             return {}
-        
-#         try:
-#             result = func(data_path)
-#             if result:
-#                 return result
-#             return {}
-#         except Exception as e:
-#             print(f"获取自定义曲线数据失败: {e}")
-#             return {}
-
-#     def _validate_single_thread_data(self, data: Dict) -> bool:
-#         """验证单线程数据格式"""
-#         if not isinstance(data, dict):
-#             return False
-
-#         # 跳过内部字段
-#         skip_fields = ['dataFiles', '__multi_processed_logs__']
-        
-#         for key, value in data.items():
-#             if key in skip_fields:
-#                 continue
-                
-#             if not isinstance(value, dict):
-#                 return False
-#             if 'daily_metrics' not in value:
-#                 # 可能是直接的数据结构，尝试继续
-#                 continue
-            
-#             for date, metrics in value['daily_metrics'].items():
-#                 if not isinstance(metrics, dict):
-#                     return False
-#                 for rule, rule_data in metrics.items():
-#                     if not isinstance(rule_data, dict):
-#                         return False
-#                     # 检查是否有 runtime 和 memory，或者有 thread_metrics
-#                     if 'runtime' not in rule_data and 'memory' not in rule_data:
-#                         if 'thread_metrics' not in rule_data:
-#                             return False
-        
-#         return True
-    
-#     def _validate_multi_thread_data(self, data: Dict) -> bool:
-#         """验证多线程数据格式"""
-#         if not isinstance(data, dict):
-#             return False
-#         skip_fields = ['dataFiles', '__multi_processed_logs__']
-
-#         for casename, case_data in data.items():
-#             if casename in skip_fields:
-#                 continue
-#             if not isinstance(case_data, dict):
-#                 return False
-#             if 'daily_metrics' not in case_data:
-#                 return False
-            
-#             for date, metrics in case_data['daily_metrics'].items():
-#                 if not isinstance(metrics, dict):
-#                     return False
-#                 for rule, rule_data in metrics.items():
-#                     if not isinstance(rule_data, dict):
-#                         return False
-#                     if 'thread_metrics' not in rule_data:
-#                         return False
-#                     if not isinstance(rule_data['thread_metrics'], dict):
-#                         return False
-        
-#         return True
-    
-#     def get_user_added_data(self, paths: List[str]) -> Dict:
-#         """获取用户添加的数据"""
-#         result = {}
-        
-#         for path in paths:
-#             path = path.strip()
-#             if not path:
-#                 continue
-            
-#             try:
-#                 path_obj = Path(path)
-#                 if path_obj.exists():
-#                     import json
-#                     with open(path_obj, 'r', encoding='utf-8') as f:
-#                         data = json.load(f)
-#                         result.update(data)
-#             except Exception as e:
-#                 print(f"加载用户数据失败 {path}: {e}")
-        
-#         return result
-
-#     def _get_init_data(self, user_id, tool_id):
-#         """
-#             当数据部不存在时获取初始数据
-#         """
-#         tool_config = tool_manager.get_tool(tool_id)
-#         upload = {'single':1,'multi':1,'extra':1}
-#         all_data = {}
-#         # 获取单线程的数据
-#         single_data = self.get_single_thread_data(user_id, tool_config)
-#         if single_data:
-#             tool_manager.save_single_thread_data(user_id, tool_id, single_data)
-#             if 'dataFiles' in single_data:
-#                 del single_data['dataFiles']
-#             if '__multi_processed_logs__' in single_data:
-#                 del single_data['__multi_processed_logs__']
-#             all_data['single'] = single_data
-#         else:
-#             upload['single'] = 0
-
-#         # 获取多线程的数据
-#         multi_data = self.get_multi_thread_data(user_id, tool_config)
-#         if multi_data:
-#             tool_manager.save_multi_thread_data(user_id, tool_id, multi_data)
-#             if 'dataFiles' in multi_data:
-#                 del multi_data['dataFiles']
-#             if '__multi_processed_logs__' in multi_data:
-#                 del multi_data['__multi_processed_logs__']
-#             all_data['multi'] = multi_data
-#         else:
-#             upload['multi'] = 0
-
-#         # 获取额外的其他数据
-#         extra_data = self.get_extra_data(user_id, tool_config)
-#         if extra_data:
-#             tool_manager.save_extra_data(user_id, tool_id, extra_data)
-#             all_data['extra'] = extra_data
-#         else:
-#             upload['extra'] = 0
-
-#         return (all_data, upload)
-
-#     def upload_data(self, data, user_id, tool_id, type):
-#         tool_config = tool_manager.get_tool(tool_id)
-#         path = tool_config.get(f"{type}_thread_path")
-#         green(f"检查 {type} 是否需要更新")
-
-#         if not path:
-#             red(f"工具{tool_id}未设置获取多线程数据的路径")
-#             return 0
-
-#         if type == "single":
-#             # 检查 single 是否需要更新
-#             latest_files = find(path, maxdepth=3, name_pattern=r"^\d{8}_[^/]+\.txt$", file_type="f")
-#             incremental_files = set(latest_files) - set(data.get("dataFiles"))
-#             if incremental_files:
-#                 # 提取信息,并且要保存 to do
-#                 green("需要更新")
-#                 func = self._load_function(tool_config.get(f"{type}_thread_func"), tool_config)
-#                 new_data = func(data, incremental_files)
-#                 return new_data
-#             else:
-#                 green("没有数据需要更新")
-#                 return 0
-#         else:
-#             latest_files = find(path)
-#             incremental_files = set(latest_files) - set(data["dataFiles"])
-#             if incremental_files:
-#                 # 提取信息 to do
-#                 pass
-#             else:
-#                 return 0
-
-#     def data_is_upload(self, all_data, user_id, tool_id):
-#         green(f"用户 {user_id} 请求查看数据是否需要更新")
-#         upload = {'single':1,'multi':1,'extra':1}
-        
-#         # 查看单线程
-#         single_data = self.upload_data(all_data['single'], user_id, tool_id, "single")
-#         if single_data:
-#             # 整合数据，以及保存新数据
-#             tool_manager.save_single_thread_data(user_id, tool_id, single_data)
-#             all_data['single'] = single_data
-#         else:
-#             upload['single'] = 0
-        
-#         # 查看多线程
-#         multi_data = self.upload_data(all_data['multi'], user_id, tool_id, "multi")
-#         if multi_data != 0:
-#             # 整合数据，以及保存新数据
-#             pass
-#         else:
-#             upload['multi'] = 0
-#         return (all_data, upload)
-
-#     # def judg_data_is_unlpad(self, old_files:List, new_files:List):
-#     #     add_files = set(new_files) - set(old_files)
-#     #     if add_files:
-#     #         return new_files
-#     #     return 0
-        
-#     # def get_data(self, user_id, tool_id):
-#     #     """
-#     #         获取已经存在的数据，并且更新到最新的数据
-#     #     """
-
-
-
-
 # # 全局实例
 data_manager = DataManager()

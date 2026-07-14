@@ -499,62 +499,7 @@ def get_perf_data_from_log(caseData, log_path):
     return caseData
 
 
-def get_multi_data(jsonDataFile, path) -> Dict:
-    """
-    获取多线程性能数据
-    
-    参数:
-        path: 多线程原始数据目录路径
-        caseData: 已有的项目数据字典（可选，用于增量更新）
-    
-    返回:
-        Tuple[Dict, List[str]]: (更新后的 caseData, 日志文件列表)
-    """
-    start = time.time()
-    print(f"开始获取多线程数据，路径: {path}")
-    caseData = {}
-    if jsonDataFile and Path(jsonDataFile).exists(): 
-        try:
-            caseData = load_json(jsonDataFile)
-        except Exception as e:
-            log(f"读取JSON文件失败: {e}")
-            caseData = {}
-    
-    # 查找所有 elint.log 文件
-    logs = find(path, maxdepth=6, name_pattern=r"elint.log", file_type="f")
-    
-    # 过滤掉 single 目录下的日志（如果有）
-    # filtered_logs = [log_path for log_path in logs if not re.search(r'.*/single/.*', str(log_path))]
-    filtered_logs = logs
-    # 记录已处理的日志列表
-    processed_key = "__multi_processed_logs__"
-    existing_logs = set(caseData.get(processed_key, []))
-    new_logs = [log_path for log_path in filtered_logs if str(log_path) not in existing_logs]
-    
-    if not new_logs:
-        log(f"没有新的多线程日志文件，跳过处理")
-        if processed_key in caseData:
-            caseData[processed_key] = filtered_logs
-        return caseData
-    
-    log(f"发现 {len(new_logs)} 个新的多线程日志文件")
-    
-    # 处理新日志
-    for log_path in new_logs:
-        log(f"处理多线程日志: {log_path}")
-        caseData = get_perf_data_from_log(caseData, log_path)
-        
-
-    # 更新已处理日志列表
-    caseData[processed_key] = filtered_logs
-    
-    end = time.time()
-    log(f"多线程数据获取完成，耗时: {end - start:.4f} 秒")
-    
-    return caseData
-
-
-def get_date_from_log(files, caseData):
+def get_data_from_log(files, caseData):
     for log_path in files:
         caseData = get_perf_data_from_log(caseData, log_path)
     return caseData
@@ -601,18 +546,18 @@ def get_single_data(files, flag):
     """
 
     if flag == 0:
-        print(11111111111111111111111111111111111111)
+
         return find(files, maxdepth=3, name_pattern=r"^\d{8}_[^/]+\.txt$", file_type="f")
     else:
         all_data = get_date_from_txt_single(files, {})
         return all_data
 
 # 获取多线程数据, flag: 0 表示只获取文件路径，1 表示解析全量数据
-def get_multi_date(files, flag):
+def get_multi_data(files, flag):
     if flag == 0:
         return find(files, maxdepth=6, name_pattern=r"elint.log", file_type="f")
     else:
-        all_data = get_date_from_log(files, {})
+        all_data = get_data_from_log(files, {})
         return all_data
 
 

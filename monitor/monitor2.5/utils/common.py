@@ -1,9 +1,10 @@
 """
 公共工具模块 - 提供共享函数和工具类
 """
-import re
+import json
 from datetime import datetime
 from typing import Dict, List, Any, Optional, Tuple
+from utils.log import *
 
 # 线程颜色映射（公共）
 THREAD_COLORS = {
@@ -16,7 +17,6 @@ THREAD_COLORS = {
 def log(msg: str) -> None:
     """带时间戳的日志输出"""
     print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}: {msg}")
-
 
 def format_date(date_str: str) -> str:
     """格式化日期显示"""
@@ -67,3 +67,28 @@ def normalize_thread_key(thread: Any) -> str:
         return str(int(thread))
     except (ValueError, TypeError):
         return '0'
+
+def save_tool_data(path: str, data: Dict[str, Any]) -> None:
+    """保存工具数据"""
+    setup_logger(log_dir='logs', level='DEBUG')
+    logger = get_logger(__name__)
+    try:
+        with open(path, 'w') as f:
+            json.dump(data, f, indent=4)
+        logger.info(f"成功保存工具数据到 {path}")
+    except Exception as e:
+        logger.error(f"保存工具数据失败: {e}")
+        return False
+
+def load_tool_data(path: str) -> Dict[str, Any]:
+    """加载工具数据"""
+    setup_logger(log_dir='logs', level='DEBUG')
+    logger = get_logger(__name__)
+    try:
+        with open(path, 'r') as f:
+            data = json.load(f)
+        logger.info(f"成功加载工具数据从 {path}")
+        return data
+    except Exception as e:
+        logger.error(f"加载工具数据失败: {e}")
+        return None
