@@ -3506,3 +3506,6 @@
 2026-07-14 09:51:27 - ERROR - utils.multi_thread_parser - multi_thread_parser.py:129 - 解析线程数据，规则：read_design，线程：4，日期：['20260511', '20260513', '20260515', '20260516', '20260517']
 2026-07-14 09:51:27 - ERROR - utils.multi_thread_parser - multi_thread_parser.py:129 - 解析线程数据，规则：read_design，线程：2，日期：['20260511', '20260513', '20260515', '20260516']
 2026-07-14 09:51:27 - ERROR - utils.multi_thread_parser - multi_thread_parser.py:129 - 解析线程数据，规则：read_design，线程：4，日期：['20260511', '20260513', '20260515', '20260516', '20260517']
+2026-07-14 13:42:22 - ERROR - utils.data_manager - data_manager.py:140 - 调用用户函数获取路径失败: _path_normpath: path should be string, bytes or os.PathLike, not int
+2026-07-14 13:42:30 - ERROR - utils.data_manager - data_manager.py:140 - 调用用户函数获取路径失败: _path_normpath: path should be string, bytes or os.PathLike, not int
+2026-07-14 13:42:38 - ERROR - utils.data_manager - data_manager.py:140 - 调用用户函数获取路径失败: _path_normpath: path should be string, bytes or os.PathLike, not int

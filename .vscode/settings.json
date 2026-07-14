@@ -1,4 +1,5 @@
 {
+<<<<<<< Updated upstream
     "python-envs.pythonProjects": [
         {
             "path": "monitor/monitor2.1/app.py",
@@ -7,4 +8,38 @@
         }
     ],
     "editor.wordWrap": "on"
+=======
+    // ========== 通义灵码 全局基础 ==========
+    "lingma.enable": true,
+    "lingma.language.preferLanguage": "zh-CN",
+    "lingma.remote.enable": true,
+    "lingma.telemetry.enable": false,
+
+    // ========== 代码自动补全 ==========
+    "lingma.completion.enable": true,
+    "lingma.completion.triggerMode": "auto",
+    "lingma.completion.showDocumentation": true,
+    "lingma.completion.autoAcceptOnTab": true,
+
+    // ========== 行内对话 / 悬浮操作 ==========
+    "lingma.inlineChat.enable": true,
+    "lingma.inlineChat.quickChatEnable": true,
+    "lingma.hover.enable": false,
+
+    // ========== 代码注释 / 生成能力 ==========
+    "lingma.comment.generate.enable": true,
+    "lingma.test.generate.enable": true,
+    "lingma.codeInsight.enable": true,
+    "lingma.codeOptimize.autoOptimizeOnSave": false,
+
+    // ========== 快捷键与界面 ==========
+    "lingma.sidebar.autoShow": false,
+    "lingma.editor.codeLens.enable": true,
+
+    // ========== 基础环境适配 ==========
+    "git.enabled": true,
+    "git.path": "C:\\Program Files\\Git\\bin\\git.exe",
+    "editor.inlineSuggest.enabled": true,
+    "editor.snippetSuggestions": "top"
+>>>>>>> Stashed changes
 }
