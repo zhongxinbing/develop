@@ -46442,3 +46442,82 @@ TypeError: DataManager._submit_background_parse() missing 1 required positional 
 2026-07-15 17:16:26 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [15/Jul/2026 17:16:26] "POST /api/thread/chart/data HTTP/1.1" 200 -
 2026-07-15 17:16:26 - INFO - utils.common - common.py:95 - 成功加载工具数据从 C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\data\elint\original\thread\aes\20260517\Overall.json
 2026-07-15 17:16:26 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [15/Jul/2026 17:16:26] "POST /api/thread/chart/data HTTP/1.1" 200 -
+2026-07-15 17:17:26 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'c:\\Users\\xbzhong\\Desktop\\lint\\script\\monitor\\develop\\monitor\\monitor2.5\\tests\\test_data_manager.py', reloading
+2026-07-15 17:17:26 - INFO - werkzeug - _internal.py:97 -  * Restarting with watchdog (windowsapi)
+2026-07-15 17:17:27 - INFO - utils.data_parser - data_parser.py:22 - 数据管理器初始化
+2026-07-15 17:17:27 - INFO - utils.tool_manager - tool_manager.py:54 - 加载工具配置文件: C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\data\tools.json
+2026-07-15 17:17:27 - INFO - utils.tool_manager - tool_manager.py:45 - 工具管理器初始化完成
+2026-07-15 17:17:27 - INFO - utils.data_manager - data_manager.py:44 - 数据管理器初始化
+2026-07-15 17:17:27 - INFO - __main__ - app.py:177 - 启动性能监控平台后端服务
+2026-07-15 17:17:27 - WARN - werkzeug - _internal.py:97 -  * Debugger is active!
+2026-07-15 17:17:27 - INFO - werkzeug - _internal.py:97 -  * Debugger PIN: 144-814-780
+2026-07-15 17:17:34 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [15/Jul/2026 17:17:34] "GET / HTTP/1.1" 200 -
+2026-07-15 17:17:34 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [15/Jul/2026 17:17:34] "[36mGET /static/js/axios.min.js HTTP/1.1[0m" 304 -
+2026-07-15 17:17:34 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [15/Jul/2026 17:17:34] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2026-07-15 17:17:34 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [15/Jul/2026 17:17:34] "[36mGET /static/js/main.js HTTP/1.1[0m" 304 -
+2026-07-15 17:17:34 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [15/Jul/2026 17:17:34] "[33mGET /static/js/axios.min.js.map HTTP/1.1[0m" 404 -
+2026-07-15 17:17:34 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [15/Jul/2026 17:17:34] "GET /api/tools HTTP/1.1" 200 -
+2026-07-15 17:17:35 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [15/Jul/2026 17:17:35] "GET /config HTTP/1.1" 200 -
+2026-07-15 17:17:35 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [15/Jul/2026 17:17:35] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2026-07-15 17:17:35 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [15/Jul/2026 17:17:35] "[36mGET /static/js/axios.min.js HTTP/1.1[0m" 304 -
+2026-07-15 17:17:35 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [15/Jul/2026 17:17:35] "[36mGET /static/js/config.js HTTP/1.1[0m" 304 -
+2026-07-15 17:17:35 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [15/Jul/2026 17:17:35] "GET /api/tools HTTP/1.1" 200 -
+2026-07-15 17:17:35 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [15/Jul/2026 17:17:35] "[33mGET /static/js/axios.min.js.map HTTP/1.1[0m" 404 -
+2026-07-15 17:17:51 - DEBUG - utils.tool_manager - tool_manager.py:93 - 尝试更新工具: elint 配置: {'tool_name': 'elint', 'description': '', 'single_thread_path': 'C:\\Users\\xbzhong\\Desktop\\lint\\script\\monitor\\develop\\monitor\\test\\signal', 'single_thread_func': 'get_single_data', 'multi_thread_path': 'C:\\Users\\xbzhong\\Desktop\\lint\\script\\monitor\\develop\\monitor\\test\\multi', 'multi_thread_func': 'get_multi_data', 'extra_display_path': 'C:\\Users\\xbzhong\\Desktop\\lint\\script\\monitor\\develop\\monitor\\test', 'extra_display_func': 'get_perf', 'custom_curve_func': ''}
+2026-07-15 17:17:51 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [15/Jul/2026 17:17:51] "PUT /api/tools/elint HTTP/1.1" 200 -
+2026-07-15 17:17:51 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [15/Jul/2026 17:17:51] "GET /tool/elint HTTP/1.1" 200 -
+2026-07-15 17:17:51 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [15/Jul/2026 17:17:51] "[36mGET /static/js/echarts.min.js HTTP/1.1[0m" 304 -
+2026-07-15 17:17:51 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [15/Jul/2026 17:17:51] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2026-07-15 17:17:51 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [15/Jul/2026 17:17:51] "[36mGET /static/js/axios.min.js HTTP/1.1[0m" 304 -
+2026-07-15 17:17:51 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [15/Jul/2026 17:17:51] "[36mGET /static/js/single_thread.js HTTP/1.1[0m" 304 -
+2026-07-15 17:17:51 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [15/Jul/2026 17:17:51] "[36mGET /static/js/multi_thread.js HTTP/1.1[0m" 304 -
+2026-07-15 17:17:51 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [15/Jul/2026 17:17:51] "[36mGET /static/js/tool.js HTTP/1.1[0m" 304 -
+2026-07-15 17:17:51 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [15/Jul/2026 17:17:51] "GET /api/tools HTTP/1.1" 200 -
+2026-07-15 17:17:51 - INFO - utils.data_manager - data_manager.py:54 - 用户数据目录: C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\data\elint\a6bacc8b-63d2-400b-9163-68455855fc01 已存在
+2026-07-15 17:17:51 - INFO - utils.data_manager - data_manager.py:456 - 加载工具elint单线程数据
+2026-07-15 17:17:51 - INFO - utils.data_manager - data_manager.py:106 - 工具 elint 加载 single 数据
+2026-07-15 17:17:51 - INFO - utils.common - common.py:95 - 成功加载工具数据从 C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\data\elint\dataFiles.json
+2026-07-15 17:17:51 - INFO - utils.data_manager - data_manager.py:136 - 用户 a6bacc8b-63d2-400b-9163-68455855fc01 没有新增 single 数据
+2026-07-15 17:17:51 - INFO - utils.common - common.py:85 - 成功保存工具数据到 C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\data\elint\dataFiles.json
+2026-07-15 17:17:51 - INFO - utils.common - common.py:95 - 成功加载工具数据从 C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\data\elint\single.json
+2026-07-15 17:17:51 - INFO - utils.data_manager - data_manager.py:475 - 加载工具elint多线程数据
+2026-07-15 17:17:51 - INFO - utils.data_manager - data_manager.py:106 - 工具 elint 加载 multi 数据
+2026-07-15 17:17:51 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [15/Jul/2026 17:17:51] "[33mGET /static/js/axios.min.js.map HTTP/1.1[0m" 404 -
+2026-07-15 17:17:51 - INFO - utils.common - common.py:95 - 成功加载工具数据从 C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\data\elint\dataFiles.json
+2026-07-15 17:17:51 - INFO - utils.data_manager - data_manager.py:136 - 用户 a6bacc8b-63d2-400b-9163-68455855fc01 没有新增 multi 数据
+2026-07-15 17:17:51 - INFO - utils.common - common.py:85 - 成功保存工具数据到 C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\data\elint\dataFiles.json
+2026-07-15 17:17:51 - INFO - utils.common - common.py:95 - 成功加载工具数据从 C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\data\elint\multi.json
+2026-07-15 17:17:51 - INFO - utils.data_manager - data_manager.py:492 - 加载工具elint其他数据
+2026-07-15 17:17:51 - INFO - utils.data_manager - data_manager.py:106 - 工具 elint 加载 extra_display 数据
+2026-07-15 17:17:51 - ERROR - utils.data_manager - data_manager.py:89 - 加载函数失败 None: attribute name must be string, not 'NoneType'
+2026-07-15 17:17:51 - ERROR - utils.data_manager - data_manager.py:114 - 无法加载 extra_display 数据处理函数: elint
+2026-07-15 17:17:51 - WARN - utils.common - common.py:98 - 加载工具数据失败, 文件不存在: C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\data\elint\extra.json
+2026-07-15 17:17:51 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [15/Jul/2026 17:17:51] "POST /api/tools/elint/data HTTP/1.1" 200 -
+2026-07-15 17:17:51 - INFO - utils.common - common.py:95 - 成功加载工具数据从 C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\data\elint\original\single\aes\runtime\Overall.json
+2026-07-15 17:17:51 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [15/Jul/2026 17:17:51] "POST /api/chart/data HTTP/1.1" 200 -
+2026-07-15 17:17:51 - INFO - utils.common - common.py:95 - 成功加载工具数据从 C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\data\elint\original\multi\aes\runtime\Overall.json
+2026-07-15 17:17:51 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [15/Jul/2026 17:17:51] "POST /api/chart/data HTTP/1.1" 200 -
+2026-07-15 17:17:51 - INFO - utils.common - common.py:95 - 成功加载工具数据从 C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\data\elint\original\single\aes\runtime\Overall.json
+2026-07-15 17:17:51 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [15/Jul/2026 17:17:51] "POST /api/chart/data HTTP/1.1" 200 -
+2026-07-15 17:17:53 - INFO - utils.common - common.py:95 - 成功加载工具数据从 C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\data\elint\original\multi\aes\runtime\Overall.json
+2026-07-15 17:17:53 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [15/Jul/2026 17:17:53] "POST /api/chart/data HTTP/1.1" 200 -
+2026-07-15 17:17:54 - INFO - utils.common - common.py:95 - 成功加载工具数据从 C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\data\elint\original\single\aes\runtime\Overall.json
+2026-07-15 17:17:54 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [15/Jul/2026 17:17:54] "POST /api/chart/data HTTP/1.1" 200 -
+2026-07-15 17:18:23 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'c:\\Users\\xbzhong\\Desktop\\lint\\script\\monitor\\develop\\monitor\\monitor2.5\\utils\\tool_manager.py', reloading
+2026-07-15 17:18:23 - INFO - werkzeug - _internal.py:97 -  * Restarting with watchdog (windowsapi)
+2026-07-15 17:18:24 - INFO - utils.data_parser - data_parser.py:22 - 数据管理器初始化
+2026-07-15 17:18:24 - INFO - utils.tool_manager - tool_manager.py:54 - 加载工具配置文件: C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\data\tools.json
+2026-07-15 17:18:24 - INFO - utils.tool_manager - tool_manager.py:45 - 工具管理器初始化完成
+2026-07-15 17:18:24 - INFO - utils.data_manager - data_manager.py:44 - 数据管理器初始化
+2026-07-15 17:18:24 - INFO - __main__ - app.py:177 - 启动性能监控平台后端服务
+2026-07-15 17:18:24 - WARN - werkzeug - _internal.py:97 -  * Debugger is active!
+2026-07-15 17:18:24 - INFO - werkzeug - _internal.py:97 -  * Debugger PIN: 144-814-780
+2026-07-15 17:18:27 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'c:\\Users\\xbzhong\\Desktop\\lint\\script\\monitor\\develop\\monitor\\monitor2.5\\utils\\data_parser.py', reloading
+2026-07-15 17:18:28 - INFO - werkzeug - _internal.py:97 -  * Restarting with watchdog (windowsapi)
+2026-07-15 17:18:28 - INFO - utils.data_parser - data_parser.py:22 - 数据管理器初始化
+2026-07-15 17:18:28 - INFO - utils.tool_manager - tool_manager.py:54 - 加载工具配置文件: C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\data\tools.json
+2026-07-15 17:18:28 - INFO - utils.tool_manager - tool_manager.py:45 - 工具管理器初始化完成
+2026-07-15 17:18:28 - INFO - utils.data_manager - data_manager.py:44 - 数据管理器初始化
+2026-07-15 17:18:28 - INFO - __main__ - app.py:177 - 启动性能监控平台后端服务
+2026-07-15 17:18:28 - WARN - werkzeug - _internal.py:97 -  * Debugger is active!
+2026-07-15 17:18:28 - INFO - werkzeug - _internal.py:97 -  * Debugger PIN: 144-814-780

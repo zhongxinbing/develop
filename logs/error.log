@@ -3800,3 +3800,5 @@ Traceback (most recent call last):
     self._submit_background_parse(tool_id, 'single', single)
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^
 TypeError: DataManager._submit_background_parse() missing 1 required positional argument: 'old_raw_data'
+2026-07-15 17:17:51 - ERROR - utils.data_manager - data_manager.py:89 - 加载函数失败 None: attribute name must be string, not 'NoneType'
+2026-07-15 17:17:51 - ERROR - utils.data_manager - data_manager.py:114 - 无法加载 extra_display 数据处理函数: elint
