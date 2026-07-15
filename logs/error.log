@@ -3777,3 +3777,26 @@
 2026-07-14 15:43:58 - ERROR - utils.multi_thread_parser - multi_thread_parser.py:129 - 解析线程数据，规则：read_design，线程：4，日期：['20260511', '20260513', '20260515', '20260516', '20260517']
 2026-07-14 15:43:58 - ERROR - utils.multi_thread_parser - multi_thread_parser.py:129 - 解析线程数据，规则：read_design，线程：2，日期：['20260511', '20260513', '20260515', '20260516']
 2026-07-14 15:43:58 - ERROR - utils.multi_thread_parser - multi_thread_parser.py:129 - 解析线程数据，规则：read_design，线程：4，日期：['20260511', '20260513', '20260515', '20260516', '20260517']
+2026-07-15 16:25:20 - ERROR - utils.data_manager - data_manager.py:465 - 提交后台解析任务失败: single
+Traceback (most recent call last):
+  File "c:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\utils\data_manager.py", line 463, in load_single_chart
+    self._submit_background_parse(tool_id, 'single', single, cached)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: DataManager._submit_background_parse() takes 4 positional arguments but 5 were given
+2026-07-15 16:25:38 - ERROR - utils.data_manager - data_manager.py:483 - 提交后台解析任务失败: multi
+Traceback (most recent call last):
+  File "c:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\utils\data_manager.py", line 481, in load_multi_chart
+    self._submit_background_parse(tool_id, 'multi', multi)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\utils\data_manager.py", line 168, in _submit_background_parse
+    future = self._executor.submit(_job)
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3568.0_x64__qbz5n2kfra8p0\Lib\concurrent\futures\thread.py", line 173, in submit
+    raise RuntimeError('cannot schedule new futures after '
+                       'interpreter shutdown')
+RuntimeError: cannot schedule new futures after interpreter shutdown
+2026-07-15 16:45:11 - ERROR - utils.data_manager - data_manager.py:466 - 提交后台解析任务失败: single
+Traceback (most recent call last):
+  File "c:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\utils\data_manager.py", line 464, in load_single_chart
+    self._submit_background_parse(tool_id, 'single', single)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: DataManager._submit_background_parse() missing 1 required positional argument: 'old_raw_data'

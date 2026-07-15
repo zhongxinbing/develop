@@ -70,10 +70,11 @@ def normalize_thread_key(thread: Any) -> str:
     except (ValueError, TypeError):
         return '0'
 
+logger = get_logger(__name__)
+
+
 def save_tool_data(path: str, data: Dict[str, Any]) -> None:
     """保存工具数据"""
-    setup_logger(log_dir='logs', level='DEBUG')
-    logger = get_logger(__name__)
     try:
         path = Path(path)
         path.parent.mkdir(parents=True, exist_ok=True)
@@ -88,8 +89,6 @@ def save_tool_data(path: str, data: Dict[str, Any]) -> None:
 
 def load_tool_data(path: str) -> Dict[str, Any]:
     """加载工具数据"""
-    setup_logger(log_dir='logs', level='DEBUG')
-    logger = get_logger(__name__)
     try:
         with open(path, 'r', encoding='utf-8') as f:
             data = json.load(f)
@@ -101,3 +100,19 @@ def load_tool_data(path: str) -> Dict[str, Any]:
     except Exception as e:
         logger.exception(f"加载工具数据失败: {e}")
         return {}
+    
+def deep_merge(dict1, dict2):
+    """递归合并两个字典"""
+    result = dict1.copy()
+    for key, value in dict2.items():
+        if key in result:
+            if isinstance(result[key], dict) and isinstance(value, dict):
+                result[key] = deep_merge(result[key], value)
+            elif isinstance(result[key], list) and isinstance(value, list):
+                # 合并列表并去重（保持顺序）
+                result[key] = list(dict.fromkeys(result[key] + value))
+            else:
+                result[key] = value
+        else:
+            result[key] = value
+    return result

@@ -1,24 +1,22 @@
 """
 Flask主应用 - 性能监控平台后端
 """
-import json
 import uuid
 from pathlib import Path
-from datetime import datetime
-from flask import Flask, render_template, request, jsonify, session
-# from sympy import true
 
-from config import SECRET_KEY,DATA_DIR
-from tool.elint.elint import load_json, save_json
-from utils.tool_manager import tool_manager
+from flask import Flask, jsonify, render_template, request, session
+
+from config import SECRET_KEY
 from utils.data_manager import data_manager
-from utils.data_parser import MultiThreadParser
-from utils.multi_thread_parser import MultiThreadParser
-from utils.log import *
+from utils.log import get_logger, setup_logger
+from utils.tool_manager import tool_manager
 
 
 app = Flask(__name__)
 app.secret_key = SECRET_KEY
+setup_logger(log_dir='logs', level='DEBUG')
+logger = get_logger(__name__)
+
 
 def get_user_id() -> str:
     """获取或创建用户ID（用于数据隔离）"""

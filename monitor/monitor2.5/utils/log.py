@@ -112,11 +112,9 @@ class LoggerManager:
             log_dir: 日志文件存储目录
             default_level: 默认日志等级 (DEBUG/INFO/WARNING/ERROR)
         """
-        # 创建日志目录
-        self.log_dir = Path(log_dir)
-        self.log_dir.mkdir(parents=True, exist_ok=True)
-        
-        # 设置默认等级
+        target_path = Path(log_dir)
+        target_path.mkdir(parents=True, exist_ok=True)
+
         level_map = {
             'DEBUG': logging.DEBUG,
             'INFO': logging.INFO,
@@ -124,28 +122,29 @@ class LoggerManager:
             'ERROR': logging.ERROR,
             'CRITICAL': logging.CRITICAL,
         }
-        self.default_level = level_map.get(default_level.upper(), logging.DEBUG)
-        
-        # 配置根日志记录器
+        target_level = level_map.get(default_level.upper(), logging.DEBUG)
+
         root_logger = logging.getLogger()
+        if self.log_dir == target_path and self.default_level == target_level and root_logger.handlers:
+            return self.get_logger('root')
+
+        self.log_dir = target_path
+        self.default_level = target_level
         root_logger.setLevel(self.default_level)
-        
-        # 清除已有的处理器，避免重复
-        root_logger.handlers.clear()
-        
-        # 添加控制台处理器（彩色）
+
+        for handler in list(root_logger.handlers):
+            root_logger.removeHandler(handler)
+            handler.close()
+
         console_handler = self._create_console_handler()
         root_logger.addHandler(console_handler)
-        
-        # 添加文件处理器（包含所有日志）
+
         file_handler = self._create_file_handler('app.log')
         root_logger.addHandler(file_handler)
-        
-        # 添加错误日志文件处理器（只记录 ERROR 及以上）
+
         error_file_handler = self._create_file_handler('error.log', level=logging.ERROR)
         root_logger.addHandler(error_file_handler)
-        
-        # 返回自身的日志记录器
+
         return self.get_logger('root')
     
     def _create_console_handler(self):
