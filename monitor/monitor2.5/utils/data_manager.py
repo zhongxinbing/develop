@@ -11,6 +11,7 @@ from pathlib import Path
 from typing import Dict, Any, Optional, Callable, List
 from datetime import datetime
 from threading import Lock
+import concurrent.futures
 
 from config import DATA_DIR, BASE_DIR
 from utils.tool_manager import tool_manager
@@ -37,6 +38,10 @@ class DataManager:
         # 缓存用户配置的函数，避免重复加载
         self._function_cache = {}
         self.data_files = {}
+        # 线程池用于后台解析，避免在 HTTP 请求中阻塞
+        self._executor = concurrent.futures.ThreadPoolExecutor(max_workers=2)
+        # 记录正在进行的解析任务，key 使用 "{tool_id}:{type}"
+        self._parsing_tasks: Dict[str, concurrent.futures.Future] = {}
         setup_logger(log_dir='logs', level='DEBUG')
         self.logger = get_logger(__name__)
         self.logger.info("数据管理器初始化")
@@ -130,6 +135,31 @@ class DataManager:
         # 保存新增数据到文件
         save_tool_data(data_files_json_path, self.data_files)
         return data
+
+    def _submit_background_parse(self, tool_id: str, data_type: str, raw_data):
+        """提交后台解析任务，避免重复提交"""
+        key = f"{tool_id}:{data_type}"
+        # 如果已有正在进行的任务并未完成，直接返回
+        future = self._parsing_tasks.get(key)
+        if future and not future.done():
+            self.logger.info(f"解析任务已在后台执行: {key}")
+            return future
+
+        def _job():
+            try:
+                self.logger.info(f"后台解析开始: {key}")
+                parsed = data_parser.parse_all_data(tool_id, raw_data, data_type)
+                target = DATA_DIR / tool_id / f"{data_type}.json"
+                save_tool_data(target, parsed)
+                self.logger.info(f"后台解析完成并保存: {target}")
+                return parsed
+            except Exception as e:
+                self.logger.exception(f"后台解析失败 {key}: {e}")
+                return None
+
+        future = self._executor.submit(_job)
+        self._parsing_tasks[key] = future
+        return future
 
     # 发送数据到前端,渲染图表
     def send_data_to_frontend_for_chart(self,frond_data:Dict):
@@ -412,14 +442,18 @@ class DataManager:
         self.logger.info(f"加载工具{tool_id}单线程数据")
         single = self.get_all_data(tool_id, user_id, "single")
         if single:
-            # 需要更新数据
+            # 需要更新数据，先返回缓存并在后台解析更新
             message = ' 单线程'
-            single_casename_rule_dates = data_parser.parse_all_data(tool_id, single, 'single')
-            single_data = single_casename_rule_dates
-            save_tool_data(DATA_DIR / tool_id / 'single.json', single_casename_rule_dates)
+            cached = load_tool_data(DATA_DIR / tool_id / 'single.json') or {}
+            # 提交后台解析任务
+            try:
+                self._submit_background_parse(tool_id, 'single', single)
+            except Exception:
+                self.logger.exception("提交后台解析任务失败: single")
+            single_data = cached
         else:
             message = ''
-            single_data = load_tool_data(DATA_DIR / tool_id / 'single.json')
+            single_data = load_tool_data(DATA_DIR / tool_id / 'single.json') or {}
 
         return single_data, message
 
@@ -428,15 +462,17 @@ class DataManager:
         self.logger.info(f"加载工具{tool_id}多线程数据")
         multi = self.get_all_data(tool_id, user_id, "multi")
         if multi:
-            # 需要更新数据
+            # 需要更新数据，先返回缓存并在后台解析更新
             message = ' 多线程'
-            # 解析多线程数据
-            multi_casename_rule_dates = data_parser.parse_all_data(tool_id, multi, 'multi')
-            multi_data = multi_casename_rule_dates
-            save_tool_data(DATA_DIR / tool_id / 'multi.json', multi_casename_rule_dates)
+            cached = load_tool_data(DATA_DIR / tool_id / 'multi.json') or {}
+            try:
+                self._submit_background_parse(tool_id, 'multi', multi)
+            except Exception:
+                self.logger.exception("提交后台解析任务失败: multi")
+            multi_data = cached
         else:
             message = ''
-            multi_data = load_tool_data(DATA_DIR / tool_id / 'multi.json')
+            multi_data = load_tool_data(DATA_DIR / tool_id / 'multi.json') or {}
         return multi_data, message
 
     def load_extra_chart(self, tool_id:str, user_id:str):
@@ -444,14 +480,17 @@ class DataManager:
         self.logger.info(f"加载工具{tool_id}其他数据")
         extra = self.get_all_data(tool_id, user_id, "extra_display")
         if extra:
-            # 需要更新数据
-            extra_data = extra
+            # 需要更新数据，先返回缓存并在后台解析更新
             message = ' 其他'
-            extra_casename_rule_dates = data_parser.parse_all_data(tool_id, extra, 'extra_display')
-            save_tool_data(DATA_DIR / tool_id / 'extra.json', extra_casename_rule_dates)
+            cached = load_tool_data(DATA_DIR / tool_id / 'extra.json') or {}
+            try:
+                self._submit_background_parse(tool_id, 'extra_display', extra)
+            except Exception:
+                self.logger.exception("提交后台解析任务失败: extra_display")
+            extra_data = cached
         else:
             message = ''
-            extra_data= load_tool_data(DATA_DIR / tool_id / 'extra.json')
+            extra_data= load_tool_data(DATA_DIR / tool_id / 'extra.json') or {}
         return extra_data, message
 
         

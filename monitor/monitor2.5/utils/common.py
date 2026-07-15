@@ -5,6 +5,8 @@ import json
 from datetime import datetime
 from typing import Dict, List, Any, Optional, Tuple
 from utils.log import *
+import os
+from pathlib import Path
 
 # 线程颜色映射（公共）
 THREAD_COLORS = {
@@ -73,11 +75,15 @@ def save_tool_data(path: str, data: Dict[str, Any]) -> None:
     setup_logger(log_dir='logs', level='DEBUG')
     logger = get_logger(__name__)
     try:
-        with open(path, 'w') as f:
-            json.dump(data, f, indent=4)
+        path = Path(path)
+        path.parent.mkdir(parents=True, exist_ok=True)
+        tmp = path.with_suffix(path.suffix + '.tmp')
+        with open(tmp, 'w', encoding='utf-8') as f:
+            json.dump(data, f, indent=4, ensure_ascii=False)
+        os.replace(str(tmp), str(path))
         logger.info(f"成功保存工具数据到 {path}")
     except Exception as e:
-        logger.error(f"保存工具数据失败: {e}")
+        logger.exception(f"保存工具数据失败: {e}")
         return False
 
 def load_tool_data(path: str) -> Dict[str, Any]:
@@ -85,10 +91,13 @@ def load_tool_data(path: str) -> Dict[str, Any]:
     setup_logger(log_dir='logs', level='DEBUG')
     logger = get_logger(__name__)
     try:
-        with open(path, 'r') as f:
+        with open(path, 'r', encoding='utf-8') as f:
             data = json.load(f)
         logger.info(f"成功加载工具数据从 {path}")
         return data
+    except FileNotFoundError:
+        logger.warning(f"加载工具数据失败, 文件不存在: {path}")
+        return {}
     except Exception as e:
-        logger.error(f"加载工具数据失败: {e}")
-        return None
+        logger.exception(f"加载工具数据失败: {e}")
+        return {}
