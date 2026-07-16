@@ -90,8 +90,8 @@ function createToolConfigCard(toolId, tool) {
     // 设置卡片样式
     card.className = 'tool-config-card';
     
-    const hasSingle = tool.single_thread_path;
-    const hasMulti = tool.multi_thread_path;
+    const hasSingle = tool.single_path;
+    const hasMulti = tool.multi_path;
     const hasExtra = tool.extra_display_path;
     // 从工具配置中获取配置内容，设置卡片内容
     card.innerHTML = `
@@ -99,8 +99,8 @@ function createToolConfigCard(toolId, tool) {
             <h4>${escapeHtml(tool.tool_name || toolId)}</h4>
             <p>${escapeHtml(tool.description || '暂无描述')}</p>
             <div class="tool-config-meta">
-                ${hasSingle ? `<span><i class="fas fa-chart-simple"></i> 单线程: ${truncatePath(tool.single_thread_path)}</span>` : ''}
-                ${hasMulti ? `<span><i class="fas fa-diagram-project"></i> 多线程: ${truncatePath(tool.multi_thread_path)}</span>` : ''}
+                ${hasSingle ? `<span><i class="fas fa-chart-simple"></i> 单线程: ${truncatePath(tool.single_path)}</span>` : ''}
+                ${hasMulti ? `<span><i class="fas fa-diagram-project"></i> 多线程: ${truncatePath(tool.multi_path)}</span>` : ''}
                 ${hasExtra ? `<span><i class="fas fa-chart-line"></i> 额外显示</span>` : ''}
             </div>
         </div>
@@ -146,10 +146,10 @@ function openEditModal(toolId, tool) {
     // 填充表单
     document.getElementById('toolName').value = tool.tool_name || toolId;
     document.getElementById('toolDesc').value = tool.description || '';
-    document.getElementById('singlePath').value = tool.single_thread_path || '';
-    document.getElementById('singleFunc').value = tool.single_thread_func || '';
-    document.getElementById('multiPath').value = tool.multi_thread_path || '';
-    document.getElementById('multiFunc').value = tool.multi_thread_func || '';
+    document.getElementById('singlePath').value = tool.single_path || '';
+    document.getElementById('singleFunc').value = tool.single_func || '';
+    document.getElementById('multiPath').value = tool.multi_path || '';
+    document.getElementById('multiFunc').value = tool.multi_func || '';
     document.getElementById('extraPath').value = tool.extra_display_path || '';
     document.getElementById('extraFunc').value = tool.extra_display_func || '';
     document.getElementById('customFunc').value = tool.custom_curve_func || '';
@@ -201,10 +201,10 @@ async function saveTool() {
     const toolData = {
         tool_name: toolName,
         description: document.getElementById('toolDesc').value.trim(),
-        single_thread_path: document.getElementById('singlePath').value.trim(),
-        single_thread_func: document.getElementById('singleFunc').value.trim(),
-        multi_thread_path: document.getElementById('multiPath').value.trim(),
-        multi_thread_func: document.getElementById('multiFunc').value.trim(),
+        single_path: document.getElementById('singlePath').value.trim(),
+        single_func: document.getElementById('singleFunc').value.trim(),
+        multi_path: document.getElementById('multiPath').value.trim(),
+        multi_func: document.getElementById('multiFunc').value.trim(),
         extra_display_path: document.getElementById('extraPath').value.trim(),
         extra_display_func: document.getElementById('extraFunc').value.trim(),
         custom_curve_func: document.getElementById('customFunc').value.trim()
@@ -212,19 +212,19 @@ async function saveTool() {
 
     console.log('收集到的工具数据:', toolData);
     // 验证：单线成必须配置
-    if (!toolData.single_thread_path) {
+    if (!toolData.single_path) {
         showError('单线成数据路径不能为空，请填写单线程接口路径');
         return;
     }
 
     // 验证：如果配置了单线程路径但没有配置函数
-    if (toolData.single_thread_path && !toolData.single_thread_func) {
+    if (toolData.single_path && !toolData.single_func) {
         showError('配置了单线程数据路径，请填写单线程接口函数');
         return;
     }
 
     // 验证：如果配置了多线程路径但没有配置函数
-    if (toolData.multi_thread_path && !toolData.multi_thread_func) {
+    if (toolData.multi_path && !toolData.multi_func) {
         showError('配置了多线程数据路径，请填写多线程接口函数');
         return;
     }
@@ -274,21 +274,21 @@ async function saveAndJump() {
     const toolData = {
         tool_name: toolName,
         description: document.getElementById('toolDesc').value.trim(),
-        single_thread_path: document.getElementById('singlePath').value.trim(),
-        single_thread_func: document.getElementById('singleFunc').value.trim(),
-        multi_thread_path: document.getElementById('multiPath').value.trim(),
-        multi_thread_func: document.getElementById('multiFunc').value.trim(),
+        single_path: document.getElementById('singlePath').value.trim(),
+        single_func: document.getElementById('singleFunc').value.trim(),
+        multi_path: document.getElementById('multiPath').value.trim(),
+        multi_func: document.getElementById('multiFunc').value.trim(),
         extra_display_path: document.getElementById('extraPath').value.trim(),
         extra_display_func: document.getElementById('extraFunc').value.trim(),
         custom_curve_func: document.getElementById('customFunc').value.trim()
     };
     
     // 验证
-    if (toolData.single_thread_path && !toolData.single_thread_func) {
+    if (toolData.single_path && !toolData.single_func) {
         showError('配置了单线程数据路径，请填写单线程接口函数');
         return;
     }
-    if (toolData.multi_thread_path && !toolData.multi_thread_func) {
+    if (toolData.multi_path && !toolData.multi_func) {
         showError('配置了多线程数据路径，请填写多线程接口函数');
         return;
     }

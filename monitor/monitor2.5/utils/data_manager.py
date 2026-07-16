@@ -103,18 +103,18 @@ class DataManager:
 
         data_files_json_path = DATA_DIR / tool_id / "dataFiles.json"
 
-        self.logger.info(f"工具 {tool_id} 加载 {type} 数据")
+        self.logger.info(f"用户 {user_id} 加载工具 {tool_id} 的 {type} 数据到前端")
         tool_config = tool_manager.get_tool(tool_id) or {}
         if not tool_config:
             self.logger.error(f"工具配置不存在: {tool_id}")
             return {}
 
-        func = self._load_function(tool_config.get(f'{type}_thread_func'), tool_config)
+        func = self._load_function(tool_config.get(f'{type}_func'), tool_config)
         if not func:
-            self.logger.error(f"无法加载 {type} 数据处理函数: {tool_id}")
+            self.logger.error(f"无法加载工具 {type} 的 {type} 数据处理函数，请检查配置")
             return {}
 
-        data_root = tool_config.get(f'{type}_thread_path')
+        data_root = tool_config.get(f'{type}_path')
         if not data_root:
             return {}
 
@@ -150,7 +150,7 @@ class DataManager:
         # 如果已有正在进行的任务并未完成，直接返回
         future = self._parsing_tasks.get(key)
         if future and not future.done():
-            self.logger.info(f"解析任务已在后台执行: {key}99999999999999999999999999999999999999999999999999999999999999")
+            self.logger.info(f"解析任务已在后台执行: {key}")
             return future.result()
 
         def _job():
@@ -455,6 +455,7 @@ class DataManager:
     def load_single_chart(self, tool_id:str, user_id:str):
         self.logger.info(f"加载工具{tool_id}单线程数据")
         single = self.get_all_data(tool_id, user_id, "single")
+
         if single:
             # 需要更新数据，先返回缓存并在后台解析更新
             message = ' 单线程'
@@ -490,32 +491,25 @@ class DataManager:
 
     def load_extra_chart(self, tool_id:str, user_id:str):
         self.logger.info(f"加载工具{tool_id}其他数据")
-        extra = self.get_all_data(tool_id, user_id, "extra_display")
-        if extra:
-            # 需要更新数据，先返回缓存并在后台解析更新
-            message = ' 其他'
-            cached = load_tool_data(DATA_DIR / tool_id / 'extra.json') or {}
-            try:
-                cached = self._submit_background_parse(tool_id, 'extra_display', extra, cached)
-            except Exception:
-                self.logger.exception("提交后台解析任务失败: extra_display")
-            extra_data = cached
-        else:
-            message = ''
-            extra_data= load_tool_data(DATA_DIR / tool_id / 'extra.json') or {}
-        return extra_data, message
+        tool_config = tool_manager.get_tool(tool_id) or {}
+        extra_display_path = tool_config.get('extra_display_path') or ''
 
+        func = self._load_function(tool_config.get('extra_display_func'),tool_config)
+
+        extra = func(extra_display_path)
+        message = ''
+        return extra, message
         
     def load_single_or_multi_chart(self, tool_id:str, user_id:str):
         self.create_user_data_dir(user_id,tool_id)
         all_data = {}
         tool_config = tool_manager.get_tool(tool_id) or {}
-        if tool_config.get('single_thread_path'):
+        if tool_config.get('single_path'):
             all_data['single'], single_message = self.load_single_chart(tool_id, user_id)
         else:
             single_message = f"工具{tool_id}单线程数据不存在，请更新配置!!!"
         
-        if tool_config.get('multi_thread_path'):
+        if tool_config.get('multi_path'):
             all_data['multi'], multi_message = self.load_multi_chart(tool_id, user_id)
         else:
             multi_message = ''

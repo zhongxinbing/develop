@@ -48,11 +48,11 @@ def api_add_tool():
     data = request.json
     logger.debug(f"添加工具请求数据: {data}")
     # 验证路径是否存在
-    if data.get('single_thread_path') is None or not Path(data.get('single_thread_path')).exists():
+    if data.get('single_path') is None or not Path(data.get('single_path')).exists():
         return jsonify({'success': False, 'error': '单线程路径不能为空或者不存在'})
     else:
         # 验证多线程路径是否存在
-        if not Path(data.get('multi_thread_path')).exists():
+        if not Path(data.get('multi_path')).exists():
             return jsonify({'success': False, 'error': '多线程路径不存在'})
     # 验证额外显示路径是否存在
     if data.get('extra_display_path') and not Path(data.get('extra_display_path')).exists():
@@ -61,10 +61,10 @@ def api_add_tool():
     tool_config = {
         'tool_name': data.get('tool_name'),
         'description': data.get('description', ''),
-        'single_thread_path': data.get('single_thread_path', ''),
-        'single_thread_func': data.get('single_thread_func', ''),
-        'multi_thread_path': data.get('multi_thread_path', ''),
-        'multi_thread_func': data.get('multi_thread_func', ''),
+        'single_path': data.get('single_path', ''),
+        'single_func': data.get('single_func', ''),
+        'multi_path': data.get('multi_path', ''),
+        'multi_func': data.get('multi_func', ''),
         'extra_display_path': data.get('extra_display_path', ''),
         'extra_display_func': data.get('extra_display_func', ''),
         'custom_curve_func': data.get('custom_curve_func', '')
@@ -103,10 +103,10 @@ def api_update_tool(tool_id):
     tool_config = {
         'tool_name': data.get('tool_name', tool_id),
         'description': data.get('description', ''),
-        'single_thread_path': data.get('single_thread_path', ''),
-        'single_thread_func': data.get('single_thread_func', ''),
-        'multi_thread_path': data.get('multi_thread_path', ''),
-        'multi_thread_func': data.get('multi_thread_func', ''),
+        'single_path': data.get('single_path', ''),
+        'single_func': data.get('single_func', ''),
+        'multi_path': data.get('multi_path', ''),
+        'multi_func': data.get('multi_func', ''),
         'extra_display_path': data.get('extra_display_path', ''),
         'extra_display_func': data.get('extra_display_func', ''),
         'custom_curve_func': data.get('custom_curve_func', '')

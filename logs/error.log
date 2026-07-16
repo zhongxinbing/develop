@@ -3802,3 +3802,37 @@ Traceback (most recent call last):
 TypeError: DataManager._submit_background_parse() missing 1 required positional argument: 'old_raw_data'
 2026-07-15 17:17:51 - ERROR - utils.data_manager - data_manager.py:89 - 加载函数失败 None: attribute name must be string, not 'NoneType'
 2026-07-15 17:17:51 - ERROR - utils.data_manager - data_manager.py:114 - 无法加载 extra_display 数据处理函数: elint
+2026-07-16 08:53:36 - ERROR - utils.data_manager - data_manager.py:89 - 加载函数失败 None: attribute name must be string, not 'NoneType'
+2026-07-16 08:53:36 - ERROR - utils.data_manager - data_manager.py:114 - 无法加载 extra_display 数据处理函数: elint
+2026-07-16 11:26:48 - ERROR - utils.data_manager - data_manager.py:166 - 后台解析失败 elint:extra_display: 'NoneType' object has no attribute 'items'
+Traceback (most recent call last):
+  File "c:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\utils\data_manager.py", line 161, in _job
+    parsed = deep_merge(old_raw_data, parsed)
+  File "c:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\utils\common.py", line 107, in deep_merge
+    for key, value in dict2.items():
+                      ^^^^^^^^^^^
+AttributeError: 'NoneType' object has no attribute 'items'
+2026-07-16 12:51:28 - ERROR - utils.data_manager - data_manager.py:166 - 后台解析失败 elint:extra_display: 'NoneType' object has no attribute 'items'
+Traceback (most recent call last):
+  File "c:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\utils\data_manager.py", line 161, in _job
+    parsed = deep_merge(old_raw_data, parsed)
+  File "c:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\utils\common.py", line 107, in deep_merge
+    for key, value in dict2.items():
+                      ^^^^^^^^^^^
+AttributeError: 'NoneType' object has no attribute 'items'
+2026-07-16 12:56:20 - ERROR - utils.data_manager - data_manager.py:166 - 后台解析失败 elint:extra_display: 'NoneType' object has no attribute 'items'
+Traceback (most recent call last):
+  File "c:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\utils\data_manager.py", line 161, in _job
+    parsed = deep_merge(old_raw_data, parsed)
+  File "c:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\utils\common.py", line 107, in deep_merge
+    for key, value in dict2.items():
+                      ^^^^^^^^^^^
+AttributeError: 'NoneType' object has no attribute 'items'
+2026-07-16 12:57:11 - ERROR - utils.data_manager - data_manager.py:166 - 后台解析失败 elint:extra_display: 'NoneType' object has no attribute 'items'
+Traceback (most recent call last):
+  File "c:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\utils\data_manager.py", line 161, in _job
+    parsed = deep_merge(old_raw_data, parsed)
+  File "c:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\utils\common.py", line 107, in deep_merge
+    for key, value in dict2.items():
+                      ^^^^^^^^^^^
+AttributeError: 'NoneType' object has no attribute 'items'

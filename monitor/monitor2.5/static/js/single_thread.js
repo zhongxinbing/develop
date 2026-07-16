@@ -49,7 +49,7 @@ class SingleThreadManager {
      * 初始化单线程模块
      */
     async init(rawData, userAddedData, extraData) {
-        console.log('SingleThreadManager.init 开始',rawData);
+        console.log('SingleThreadManager.init 开始',extraData);
         
         // 获取 DOM 元素
         this.casenameSelect = document.getElementById(`${this.idPrefix}CasenameSelect`);
@@ -469,7 +469,7 @@ class SingleThreadManager {
                             }
                         } else {
                             if (this.extraData.mem[date]) {
-                                html += `<div>MR更新: ${this.extraData.mem[date]}</div>`
+                                html += `<div class="mr-update">MR更新: ${this.extraData.mem[date]}</div>`
                             }
                         }
                     }

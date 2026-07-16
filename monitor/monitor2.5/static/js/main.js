@@ -67,8 +67,8 @@ function createToolCard(toolId, tool) {
     card.className = 'tool-card';
     card.onclick = () => navigateToTool(toolId);
     
-    const hasSingle = tool.single_thread_path;
-    const hasMulti = tool.multi_thread_path;
+    const hasSingle = tool.single_path;
+    const hasMulti = tool.multi_path;
     
     card.innerHTML = `
         <div class="tool-card-icon">
