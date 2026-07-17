@@ -49031,3 +49031,47 @@ AttributeError: 'NoneType' object has no attribute 'items'
 2026-07-16 13:22:12 - INFO - __main__ - app.py:177 - 启动性能监控平台后端服务
 2026-07-16 13:22:12 - WARN - werkzeug - _internal.py:97 -  * Debugger is active!
 2026-07-16 13:22:12 - INFO - werkzeug - _internal.py:97 -  * Debugger PIN: 103-576-207
+2026-07-17 08:56:57 - INFO - utils.common - common.py:95 - 成功加载工具数据从 C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\data\elint\original\multi\aes\runtime\Overall.json
+2026-07-17 08:56:57 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [17/Jul/2026 08:56:57] "POST /api/chart/data HTTP/1.1" 200 -
+2026-07-17 08:56:58 - INFO - utils.common - common.py:95 - 成功加载工具数据从 C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\data\elint\original\thread\aes\20260517\Overall.json
+2026-07-17 08:56:58 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [17/Jul/2026 08:56:58] "POST /api/thread/chart/data HTTP/1.1" 200 -
+2026-07-17 08:56:58 - INFO - utils.common - common.py:95 - 成功加载工具数据从 C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\data\elint\original\thread\aes\20260517\Overall.json
+2026-07-17 08:56:58 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [17/Jul/2026 08:56:58] "POST /api/thread/chart/data HTTP/1.1" 200 -
+2026-07-17 08:56:58 - INFO - utils.common - common.py:95 - 成功加载工具数据从 C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\data\elint\original\thread\aes\20260517\Overall.json
+2026-07-17 08:56:58 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [17/Jul/2026 08:56:58] "POST /api/thread/chart/data HTTP/1.1" 200 -
+2026-07-17 08:57:00 - INFO - utils.common - common.py:95 - 成功加载工具数据从 C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\data\elint\original\thread\aes\20260517\E0001.json
+2026-07-17 08:57:00 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [17/Jul/2026 08:57:00] "POST /api/thread/chart/data HTTP/1.1" 200 -
+2026-07-17 08:57:01 - INFO - utils.common - common.py:95 - 成功加载工具数据从 C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\data\elint\original\single\aes\runtime\Overall.json
+2026-07-17 08:57:01 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [17/Jul/2026 08:57:01] "POST /api/chart/data HTTP/1.1" 200 -
+2026-07-17 08:57:02 - INFO - utils.common - common.py:95 - 成功加载工具数据从 C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\data\elint\original\thread\aes\20260517\Overall.json
+2026-07-17 08:57:02 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [17/Jul/2026 08:57:02] "POST /api/thread/chart/data HTTP/1.1" 200 -
+2026-07-17 08:57:02 - INFO - utils.common - common.py:95 - 成功加载工具数据从 C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\data\elint\original\thread\aes\20260517\Overall.json
+2026-07-17 08:57:02 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [17/Jul/2026 08:57:02] "POST /api/thread/chart/data HTTP/1.1" 200 -
+2026-07-17 08:57:02 - INFO - utils.common - common.py:95 - 成功加载工具数据从 C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\data\elint\original\thread\aes\20260517\Overall.json
+2026-07-17 08:57:02 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [17/Jul/2026 08:57:02] "POST /api/thread/chart/data HTTP/1.1" 200 -
+2026-07-17 08:57:05 - INFO - utils.common - common.py:95 - 成功加载工具数据从 C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\data\elint\original\single\aes\runtime\Overall.json
+2026-07-17 08:57:05 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [17/Jul/2026 08:57:05] "POST /api/chart/data HTTP/1.1" 200 -
+2026-07-17 08:57:06 - INFO - utils.common - common.py:95 - 成功加载工具数据从 C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\data\elint\original\single\aes\runtime\E0003.json
+2026-07-17 08:57:06 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [17/Jul/2026 08:57:06] "POST /api/chart/data HTTP/1.1" 200 -
+2026-07-17 08:57:07 - INFO - utils.common - common.py:95 - 成功加载工具数据从 C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\data\elint\original\thread\aes\20260517\Overall.json
+2026-07-17 08:57:07 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [17/Jul/2026 08:57:07] "POST /api/thread/chart/data HTTP/1.1" 200 -
+2026-07-17 08:57:07 - INFO - utils.common - common.py:95 - 成功加载工具数据从 C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\data\elint\original\thread\aes\20260517\Overall.json
+2026-07-17 08:57:07 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [17/Jul/2026 08:57:07] "POST /api/thread/chart/data HTTP/1.1" 200 -
+2026-07-17 08:57:07 - INFO - utils.common - common.py:95 - 成功加载工具数据从 C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\data\elint\original\thread\aes\20260517\Overall.json
+2026-07-17 08:57:07 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [17/Jul/2026 08:57:07] "POST /api/thread/chart/data HTTP/1.1" 200 -
+2026-07-17 08:57:11 - INFO - utils.common - common.py:95 - 成功加载工具数据从 C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\data\elint\original\thread\aes\20260517\E0003.json
+2026-07-17 08:57:11 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [17/Jul/2026 08:57:11] "POST /api/thread/chart/data HTTP/1.1" 200 -
+2026-07-17 08:57:12 - INFO - utils.common - common.py:95 - 成功加载工具数据从 C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\data\elint\original\multi\aes\runtime\Overall.json
+2026-07-17 08:57:12 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [17/Jul/2026 08:57:12] "POST /api/chart/data HTTP/1.1" 200 -
+2026-07-17 08:57:14 - INFO - utils.common - common.py:95 - 成功加载工具数据从 C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\data\elint\original\multi\aes\runtime\E0002.json
+2026-07-17 08:57:14 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [17/Jul/2026 08:57:14] "POST /api/chart/data HTTP/1.1" 200 -
+2026-07-17 08:57:15 - INFO - utils.common - common.py:95 - 成功加载工具数据从 C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\data\elint\original\thread\aes\20260517\Overall.json
+2026-07-17 08:57:15 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [17/Jul/2026 08:57:15] "POST /api/thread/chart/data HTTP/1.1" 200 -
+2026-07-17 08:57:15 - INFO - utils.common - common.py:95 - 成功加载工具数据从 C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\data\elint\original\thread\aes\20260517\Overall.json
+2026-07-17 08:57:15 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [17/Jul/2026 08:57:15] "POST /api/thread/chart/data HTTP/1.1" 200 -
+2026-07-17 08:57:15 - INFO - utils.common - common.py:95 - 成功加载工具数据从 C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\data\elint\original\thread\aes\20260517\Overall.json
+2026-07-17 08:57:15 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [17/Jul/2026 08:57:15] "POST /api/thread/chart/data HTTP/1.1" 200 -
+2026-07-17 08:57:17 - INFO - utils.common - common.py:95 - 成功加载工具数据从 C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\data\elint\original\thread\aes\20260517\E0004.json
+2026-07-17 08:57:17 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [17/Jul/2026 08:57:17] "POST /api/thread/chart/data HTTP/1.1" 200 -
+2026-07-17 08:57:18 - INFO - utils.common - common.py:95 - 成功加载工具数据从 C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\data\elint\original\thread\aes\20260517\E0002.json
+2026-07-17 08:57:18 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [17/Jul/2026 08:57:18] "POST /api/thread/chart/data HTTP/1.1" 200 -
