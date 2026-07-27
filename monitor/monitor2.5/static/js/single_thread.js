@@ -83,7 +83,7 @@ class SingleThreadManager {
         this.initChartContainer();
         // 初始化Casename选择框
         this.updateCasenameSelect();
-        // 初始化 rule 选择框
+        // 初始化 rule 和 日期 选择框
         await this.updateRulesAndDates();
         // 初始化事件监听器
         this.initEventListeners();
