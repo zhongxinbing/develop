@@ -82,7 +82,9 @@ class MultiThreadParser:
         for date in dates:
             threads_result[date] = {}
             metrics_rules = daily_metrics.get(date, {})
-            if "Overall" in metrics_rules and date not in crash_dates:
+            print(date,metrics_rules.get("Overall", {}))
+            print()
+            if "Overall" not in metrics_rules and date not in crash_dates:
                 crash_dates.append(date)
 
             for rule, thread_metrics in metrics_rules.items():

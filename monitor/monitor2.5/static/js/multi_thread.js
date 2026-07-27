@@ -609,6 +609,7 @@ class MultiThreadManager {
         // console.warn(series)
         // 标记崩溃日期（红色背景区域）
         const markAreas = [];
+        console.warn(crashDatesSet)
         if (crashDatesSet.size > 0) {
             let startIndex = -1;
             for (let i = 0; i < dates.length; i++) {

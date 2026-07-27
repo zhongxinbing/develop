@@ -3836,3 +3836,17 @@ Traceback (most recent call last):
     for key, value in dict2.items():
                       ^^^^^^^^^^^
 AttributeError: 'NoneType' object has no attribute 'items'
+2026-07-27 18:01:53 - ERROR - utils.data_manager - data_manager.py:166 - 后台解析失败 elint:multi: '20260511'
+Traceback (most recent call last):
+  File "c:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\utils\data_manager.py", line 159, in _job
+    parsed = data_parser.parse_all_data(tool_id, raw_data, data_type)
+  File "c:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\utils\data_parser.py", line 41, in parse_all_data
+    return multi_parser.parse_multi_data(tool_id, mode, all_data)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\utils\multi_thread_parser.py", line 40, in parse_multi_data
+    case_pasre_data, threads_result = self.parse_case_data(case_data)
+                                      ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^
+  File "c:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\utils\multi_thread_parser.py", line 85, in parse_case_data
+    print(date,metrics_rules[date])
+               ~~~~~~~~~~~~~^^^^^^
+KeyError: '20260511'
