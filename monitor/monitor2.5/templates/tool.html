@@ -23,9 +23,9 @@
                 <h2 id="toolName">加载中...</h2>
                 <span class="tool-desc" id="toolDesc"></span>
             </div>
-            <!-- <button class="refresh-btn" id="refreshBtn" title="刷新数据">
+            <button class="refresh-btn" id="refreshBtn" title="刷新数据">
                 <span>↩刷新</span>
-            </button> -->
+            </button>
         </header>
 
         <!-- 二级导航 -->
@@ -274,28 +274,29 @@
                 </div>
             </aside>
 
-            <!-- 线程曲线图侧边栏（独立） -->
+            <!-- ==================== 线程曲线图侧边栏 ==================== -->
             <aside class="sidebar" id="threadSidebar" style="display: none;">
                 <div class="sidebar-content">
                     <div class="sidebar-menu">
                         <button class="menu-item active" data-thread-chart="runtime">
-                            <span>Runtime</span>
+                            <span>⏱️ Runtime</span>
                         </button>
                         <button class="menu-item" data-thread-chart="memory">
-                            <span>Memory</span>
+                            <span>🧠 Memory</span>
                         </button>
                     </div>
 
                     <div class="filters-panel" id="threadFiltersPanel">
                         <div class="filter-group">
-                            <label> Casename</label>
+                            <label>🏷 Casename</label>
                             <select id="threadCasenameSelect" class="filter-select"></select>
                         </div>
 
                         <div class="filter-group">
-                            <label> Rule</label>
+                            <label>📜 Rule</label>
                             <div class="searchable-select">
                                 <div class="select-search">
+                                    🔍 
                                     <input type="text" id="threadRuleSearch" placeholder="搜索 rule...">
                                 </div>
                                 <select id="threadRuleSelect" class="filter-select" size="5"></select>
@@ -303,13 +304,13 @@
                         </div>
 
                         <div class="filter-group">
-                            <label> 选择日期</label>
+                            <label>📅 选择日期</label>
                             <select id="threadDateSelect" class="filter-select"></select>
                         </div>
 
                         <div class="filter-actions">
                             <button class="btn-primary" id="refreshThreadChartBtn">
-                                更新图表
+                                <span>更新图表</span>
                             </button>
                         </div>
                     </div>
@@ -458,6 +459,7 @@
     </script>
     <script src="{{ url_for('static', filename='js/single_thread.js') }}"></script>
     <script src="{{ url_for('static', filename='js/multi_thread.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/thread_chart.js') }}"></script>
     <script src="{{ url_for('static', filename='js/tool.js') }}"></script>
 </body>
 </html>
