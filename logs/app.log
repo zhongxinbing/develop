@@ -50809,3 +50809,161 @@ KeyError: '20260511'
 2026-07-28 13:43:47 - INFO - __main__ - app.py:177 - 启动性能监控平台后端服务
 2026-07-28 13:43:47 - WARN - werkzeug - _internal.py:97 -  * Debugger is active!
 2026-07-28 13:43:47 - INFO - werkzeug - _internal.py:97 -  * Debugger PIN: 103-576-207
+2026-07-28 14:17:33 - INFO - utils.common - common.py:95 - 成功加载工具数据从 C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\data\elint\original\multi\aes\runtime\Overall.json
+2026-07-28 14:17:33 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [28/Jul/2026 14:17:33] "POST /api/chart/data HTTP/1.1" 200 -
+2026-07-28 14:21:19 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [28/Jul/2026 14:21:19] "GET /tool/elint HTTP/1.1" 200 -
+2026-07-28 14:21:20 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [28/Jul/2026 14:21:20] "[36mGET /static/js/single_thread.js HTTP/1.1[0m" 304 -
+2026-07-28 14:21:20 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [28/Jul/2026 14:21:20] "[36mGET /static/js/tool.js HTTP/1.1[0m" 304 -
+2026-07-28 14:21:20 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [28/Jul/2026 14:21:20] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2026-07-28 14:21:20 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [28/Jul/2026 14:21:20] "[36mGET /static/js/multi_thread.js HTTP/1.1[0m" 304 -
+2026-07-28 14:21:20 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [28/Jul/2026 14:21:20] "[36mGET /static/js/thread_chart.js HTTP/1.1[0m" 304 -
+2026-07-28 14:21:20 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [28/Jul/2026 14:21:20] "[36mGET /static/js/axios.min.js HTTP/1.1[0m" 304 -
+2026-07-28 14:21:21 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [28/Jul/2026 14:21:21] "[36mGET /static/js/echarts.min.js HTTP/1.1[0m" 304 -
+2026-07-28 14:21:21 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [28/Jul/2026 14:21:21] "[33mGET /static/js/axios.min.js.map HTTP/1.1[0m" 404 -
+2026-07-28 14:21:21 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [28/Jul/2026 14:21:21] "GET /api/tools HTTP/1.1" 200 -
+2026-07-28 14:21:21 - INFO - utils.data_manager - data_manager.py:54 - 用户数据目录: C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\data\elint\397a1b8a-a6a3-4f22-8b49-85c81d3adc68 已存在
+2026-07-28 14:21:21 - INFO - utils.data_manager - data_manager.py:456 - 加载工具elint单线程数据
+2026-07-28 14:21:21 - INFO - utils.data_manager - data_manager.py:106 - 用户 397a1b8a-a6a3-4f22-8b49-85c81d3adc68 加载工具 elint 的 single 数据到前端
+2026-07-28 14:21:21 - INFO - utils.common - common.py:95 - 成功加载工具数据从 C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\data\elint\dataFiles.json
+2026-07-28 14:21:21 - INFO - utils.data_manager - data_manager.py:136 - 用户 397a1b8a-a6a3-4f22-8b49-85c81d3adc68 没有新增 single 数据
+2026-07-28 14:21:21 - INFO - utils.common - common.py:85 - 成功保存工具数据到 C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\data\elint\dataFiles.json
+2026-07-28 14:21:21 - INFO - utils.common - common.py:95 - 成功加载工具数据从 C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\data\elint\single.json
+2026-07-28 14:21:21 - INFO - utils.data_manager - data_manager.py:476 - 加载工具elint多线程数据
+2026-07-28 14:21:21 - INFO - utils.data_manager - data_manager.py:106 - 用户 397a1b8a-a6a3-4f22-8b49-85c81d3adc68 加载工具 elint 的 multi 数据到前端
+2026-07-28 14:21:21 - INFO - utils.common - common.py:95 - 成功加载工具数据从 C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\data\elint\dataFiles.json
+2026-07-28 14:21:21 - INFO - utils.data_manager - data_manager.py:136 - 用户 397a1b8a-a6a3-4f22-8b49-85c81d3adc68 没有新增 multi 数据
+2026-07-28 14:21:21 - INFO - utils.common - common.py:85 - 成功保存工具数据到 C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\data\elint\dataFiles.json
+2026-07-28 14:21:21 - INFO - utils.common - common.py:95 - 成功加载工具数据从 C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\data\elint\multi.json
+2026-07-28 14:21:21 - INFO - utils.data_manager - data_manager.py:493 - 加载工具elint其他数据
+2026-07-28 14:21:21 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [28/Jul/2026 14:21:21] "POST /api/tools/elint/data HTTP/1.1" 200 -
+2026-07-28 14:21:21 - INFO - utils.common - common.py:95 - 成功加载工具数据从 C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\data\elint\original\multi\aes\runtime\Overall.json
+2026-07-28 14:21:21 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [28/Jul/2026 14:21:21] "POST /api/chart/data HTTP/1.1" 200 -
+2026-07-28 14:21:21 - INFO - utils.common - common.py:95 - 成功加载工具数据从 C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\data\elint\original\single\aes\runtime\Overall.json
+2026-07-28 14:21:21 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [28/Jul/2026 14:21:21] "POST /api/chart/data HTTP/1.1" 200 -
+2026-07-28 14:21:21 - INFO - utils.common - common.py:95 - 成功加载工具数据从 C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\data\elint\original\thread\aes\20260517\Overall.json
+2026-07-28 14:21:21 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [28/Jul/2026 14:21:21] "POST /api/thread/chart/data HTTP/1.1" 200 -
+2026-07-28 14:21:21 - INFO - utils.common - common.py:95 - 成功加载工具数据从 C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\data\elint\original\single\aes\runtime\Overall.json
+2026-07-28 14:21:21 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [28/Jul/2026 14:21:21] "POST /api/chart/data HTTP/1.1" 200 -
+2026-07-28 14:21:35 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [28/Jul/2026 14:21:35] "GET /tool/elint HTTP/1.1" 200 -
+2026-07-28 14:21:35 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [28/Jul/2026 14:21:35] "[36mGET /static/js/echarts.min.js HTTP/1.1[0m" 304 -
+2026-07-28 14:21:35 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [28/Jul/2026 14:21:35] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2026-07-28 14:21:35 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [28/Jul/2026 14:21:35] "[36mGET /static/js/axios.min.js HTTP/1.1[0m" 304 -
+2026-07-28 14:21:35 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [28/Jul/2026 14:21:35] "[36mGET /static/js/single_thread.js HTTP/1.1[0m" 304 -
+2026-07-28 14:21:35 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [28/Jul/2026 14:21:35] "[36mGET /static/js/multi_thread.js HTTP/1.1[0m" 304 -
+2026-07-28 14:21:35 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [28/Jul/2026 14:21:35] "[36mGET /static/js/thread_chart.js HTTP/1.1[0m" 304 -
+2026-07-28 14:21:35 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [28/Jul/2026 14:21:35] "[36mGET /static/js/tool.js HTTP/1.1[0m" 304 -
+2026-07-28 14:21:35 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [28/Jul/2026 14:21:35] "[33mGET /static/js/axios.min.js.map HTTP/1.1[0m" 404 -
+2026-07-28 14:21:35 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [28/Jul/2026 14:21:35] "GET /api/tools HTTP/1.1" 200 -
+2026-07-28 14:21:35 - INFO - utils.data_manager - data_manager.py:54 - 用户数据目录: C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\data\elint\397a1b8a-a6a3-4f22-8b49-85c81d3adc68 已存在
+2026-07-28 14:21:35 - INFO - utils.data_manager - data_manager.py:456 - 加载工具elint单线程数据
+2026-07-28 14:21:35 - INFO - utils.data_manager - data_manager.py:106 - 用户 397a1b8a-a6a3-4f22-8b49-85c81d3adc68 加载工具 elint 的 single 数据到前端
+2026-07-28 14:21:35 - INFO - utils.common - common.py:95 - 成功加载工具数据从 C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\data\elint\dataFiles.json
+2026-07-28 14:21:35 - INFO - utils.data_manager - data_manager.py:136 - 用户 397a1b8a-a6a3-4f22-8b49-85c81d3adc68 没有新增 single 数据
+2026-07-28 14:21:35 - INFO - utils.common - common.py:85 - 成功保存工具数据到 C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\data\elint\dataFiles.json
+2026-07-28 14:21:35 - INFO - utils.common - common.py:95 - 成功加载工具数据从 C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\data\elint\single.json
+2026-07-28 14:21:35 - INFO - utils.data_manager - data_manager.py:476 - 加载工具elint多线程数据
+2026-07-28 14:21:35 - INFO - utils.data_manager - data_manager.py:106 - 用户 397a1b8a-a6a3-4f22-8b49-85c81d3adc68 加载工具 elint 的 multi 数据到前端
+2026-07-28 14:21:35 - INFO - utils.common - common.py:95 - 成功加载工具数据从 C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\data\elint\dataFiles.json
+2026-07-28 14:21:35 - INFO - utils.data_manager - data_manager.py:136 - 用户 397a1b8a-a6a3-4f22-8b49-85c81d3adc68 没有新增 multi 数据
+2026-07-28 14:21:35 - INFO - utils.common - common.py:85 - 成功保存工具数据到 C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\data\elint\dataFiles.json
+2026-07-28 14:21:35 - INFO - utils.common - common.py:95 - 成功加载工具数据从 C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\data\elint\multi.json
+2026-07-28 14:21:35 - INFO - utils.data_manager - data_manager.py:493 - 加载工具elint其他数据
+2026-07-28 14:21:35 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [28/Jul/2026 14:21:35] "POST /api/tools/elint/data HTTP/1.1" 200 -
+2026-07-28 14:21:35 - INFO - utils.common - common.py:95 - 成功加载工具数据从 C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\data\elint\original\single\aes\runtime\Overall.json
+2026-07-28 14:21:35 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [28/Jul/2026 14:21:35] "POST /api/chart/data HTTP/1.1" 200 -
+2026-07-28 14:21:35 - INFO - utils.common - common.py:95 - 成功加载工具数据从 C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\data\elint\original\multi\aes\runtime\Overall.json
+2026-07-28 14:21:35 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [28/Jul/2026 14:21:35] "POST /api/chart/data HTTP/1.1" 200 -
+2026-07-28 14:21:35 - INFO - utils.common - common.py:95 - 成功加载工具数据从 C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\data\elint\original\thread\aes\20260517\Overall.json
+2026-07-28 14:21:35 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [28/Jul/2026 14:21:35] "POST /api/thread/chart/data HTTP/1.1" 200 -
+2026-07-28 14:21:35 - INFO - utils.common - common.py:95 - 成功加载工具数据从 C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\data\elint\original\single\aes\runtime\Overall.json
+2026-07-28 14:21:35 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [28/Jul/2026 14:21:35] "POST /api/chart/data HTTP/1.1" 200 -
+2026-07-28 14:27:48 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [28/Jul/2026 14:27:48] "GET /tool/elint HTTP/1.1" 200 -
+2026-07-28 14:27:48 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [28/Jul/2026 14:27:48] "[36mGET /static/js/echarts.min.js HTTP/1.1[0m" 304 -
+2026-07-28 14:27:48 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [28/Jul/2026 14:27:48] "[36mGET /static/js/axios.min.js HTTP/1.1[0m" 304 -
+2026-07-28 14:27:48 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [28/Jul/2026 14:27:48] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2026-07-28 14:27:48 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [28/Jul/2026 14:27:48] "[36mGET /static/js/single_thread.js HTTP/1.1[0m" 304 -
+2026-07-28 14:27:48 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [28/Jul/2026 14:27:48] "[36mGET /static/js/multi_thread.js HTTP/1.1[0m" 304 -
+2026-07-28 14:27:48 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [28/Jul/2026 14:27:48] "[36mGET /static/js/thread_chart.js HTTP/1.1[0m" 304 -
+2026-07-28 14:27:48 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [28/Jul/2026 14:27:48] "[36mGET /static/js/tool.js HTTP/1.1[0m" 304 -
+2026-07-28 14:27:48 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [28/Jul/2026 14:27:48] "[33mGET /static/js/axios.min.js.map HTTP/1.1[0m" 404 -
+2026-07-28 14:27:48 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [28/Jul/2026 14:27:48] "GET /api/tools HTTP/1.1" 200 -
+2026-07-28 14:27:48 - INFO - utils.data_manager - data_manager.py:54 - 用户数据目录: C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\data\elint\397a1b8a-a6a3-4f22-8b49-85c81d3adc68 已存在
+2026-07-28 14:27:48 - INFO - utils.data_manager - data_manager.py:456 - 加载工具elint单线程数据
+2026-07-28 14:27:48 - INFO - utils.data_manager - data_manager.py:106 - 用户 397a1b8a-a6a3-4f22-8b49-85c81d3adc68 加载工具 elint 的 single 数据到前端
+2026-07-28 14:27:48 - INFO - utils.common - common.py:95 - 成功加载工具数据从 C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\data\elint\dataFiles.json
+2026-07-28 14:27:48 - INFO - utils.data_manager - data_manager.py:136 - 用户 397a1b8a-a6a3-4f22-8b49-85c81d3adc68 没有新增 single 数据
+2026-07-28 14:27:48 - INFO - utils.common - common.py:85 - 成功保存工具数据到 C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\data\elint\dataFiles.json
+2026-07-28 14:27:48 - INFO - utils.common - common.py:95 - 成功加载工具数据从 C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\data\elint\single.json
+2026-07-28 14:27:48 - INFO - utils.data_manager - data_manager.py:476 - 加载工具elint多线程数据
+2026-07-28 14:27:48 - INFO - utils.data_manager - data_manager.py:106 - 用户 397a1b8a-a6a3-4f22-8b49-85c81d3adc68 加载工具 elint 的 multi 数据到前端
+2026-07-28 14:27:48 - INFO - utils.common - common.py:95 - 成功加载工具数据从 C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\data\elint\dataFiles.json
+2026-07-28 14:27:48 - INFO - utils.data_manager - data_manager.py:136 - 用户 397a1b8a-a6a3-4f22-8b49-85c81d3adc68 没有新增 multi 数据
+2026-07-28 14:27:48 - INFO - utils.common - common.py:85 - 成功保存工具数据到 C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\data\elint\dataFiles.json
+2026-07-28 14:27:48 - INFO - utils.common - common.py:95 - 成功加载工具数据从 C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\data\elint\multi.json
+2026-07-28 14:27:48 - INFO - utils.data_manager - data_manager.py:493 - 加载工具elint其他数据
+2026-07-28 14:27:48 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [28/Jul/2026 14:27:48] "POST /api/tools/elint/data HTTP/1.1" 200 -
+2026-07-28 14:27:48 - INFO - utils.common - common.py:95 - 成功加载工具数据从 C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\data\elint\original\single\aes\runtime\Overall.json
+2026-07-28 14:27:48 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [28/Jul/2026 14:27:48] "POST /api/chart/data HTTP/1.1" 200 -
+2026-07-28 14:27:48 - INFO - utils.common - common.py:95 - 成功加载工具数据从 C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\data\elint\original\multi\aes\runtime\Overall.json
+2026-07-28 14:27:48 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [28/Jul/2026 14:27:48] "POST /api/chart/data HTTP/1.1" 200 -
+2026-07-28 14:27:48 - INFO - utils.common - common.py:95 - 成功加载工具数据从 C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\data\elint\original\thread\aes\20260517\Overall.json
+2026-07-28 14:27:48 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [28/Jul/2026 14:27:48] "POST /api/thread/chart/data HTTP/1.1" 200 -
+2026-07-28 14:27:48 - INFO - utils.common - common.py:95 - 成功加载工具数据从 C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\data\elint\original\single\aes\runtime\Overall.json
+2026-07-28 14:27:48 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [28/Jul/2026 14:27:48] "POST /api/chart/data HTTP/1.1" 200 -
+2026-07-28 14:27:54 - INFO - utils.common - common.py:95 - 成功加载工具数据从 C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\data\elint\original\single\aes\runtime\Overall.json
+2026-07-28 14:27:54 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [28/Jul/2026 14:27:54] "POST /api/chart/data HTTP/1.1" 200 -
+2026-07-28 14:27:54 - INFO - utils.common - common.py:95 - 成功加载工具数据从 C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\data\elint\original\single\aes\runtime\Overall.json
+2026-07-28 14:27:54 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [28/Jul/2026 14:27:54] "POST /api/chart/data HTTP/1.1" 200 -
+2026-07-28 14:27:56 - INFO - utils.common - common.py:95 - 成功加载工具数据从 C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\data\elint\original\single\aes\memory\Overall.json
+2026-07-28 14:27:56 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [28/Jul/2026 14:27:56] "POST /api/chart/data HTTP/1.1" 200 -
+2026-07-28 14:27:56 - INFO - utils.common - common.py:95 - 成功加载工具数据从 C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\data\elint\original\single\aes\memory\Overall.json
+2026-07-28 14:27:56 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [28/Jul/2026 14:27:56] "POST /api/chart/data HTTP/1.1" 200 -
+2026-07-28 14:27:57 - INFO - utils.common - common.py:95 - 成功加载工具数据从 C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\data\elint\original\single\aes\memory\Overall.json
+2026-07-28 14:27:57 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [28/Jul/2026 14:27:57] "POST /api/chart/data HTTP/1.1" 200 -
+2026-07-28 14:27:58 - INFO - utils.common - common.py:95 - 成功加载工具数据从 C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\data\elint\original\single\aes\memory\Overall.json
+2026-07-28 14:27:58 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [28/Jul/2026 14:27:58] "POST /api/chart/data HTTP/1.1" 200 -
+2026-07-28 14:27:59 - INFO - utils.common - common.py:95 - 成功加载工具数据从 C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\data\elint\original\single\aes\runtime\Overall.json
+2026-07-28 14:27:59 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [28/Jul/2026 14:27:59] "POST /api/chart/data HTTP/1.1" 200 -
+2026-07-28 14:28:00 - INFO - utils.common - common.py:95 - 成功加载工具数据从 C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\data\elint\original\multi\aes\runtime\Overall.json
+2026-07-28 14:28:00 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [28/Jul/2026 14:28:00] "POST /api/chart/data HTTP/1.1" 200 -
+2026-07-28 14:28:01 - INFO - utils.common - common.py:95 - 成功加载工具数据从 C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\data\elint\original\multi\aes\runtime\Overall.json
+2026-07-28 14:28:01 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [28/Jul/2026 14:28:01] "POST /api/chart/data HTTP/1.1" 200 -
+2026-07-28 14:28:03 - INFO - utils.common - common.py:95 - 成功加载工具数据从 C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\data\elint\original\thread\aes\20260517\Overall.json
+2026-07-28 14:28:03 - INFO - utils.common - common.py:95 - 成功加载工具数据从 C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\data\elint\original\thread\aes\20260517\Overall.json
+2026-07-28 14:28:03 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [28/Jul/2026 14:28:03] "POST /api/thread/chart/data HTTP/1.1" 200 -
+2026-07-28 14:28:03 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [28/Jul/2026 14:28:03] "POST /api/thread/chart/data HTTP/1.1" 200 -
+2026-07-28 14:28:05 - INFO - utils.common - common.py:95 - 成功加载工具数据从 C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\data\elint\original\single\aes\runtime\Overall.json
+2026-07-28 14:28:05 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [28/Jul/2026 14:28:05] "POST /api/chart/data HTTP/1.1" 200 -
+2026-07-28 15:17:32 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [28/Jul/2026 15:17:32] "GET /tool/elint HTTP/1.1" 200 -
+2026-07-28 15:17:32 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [28/Jul/2026 15:17:32] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2026-07-28 15:17:32 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [28/Jul/2026 15:17:32] "[36mGET /static/js/echarts.min.js HTTP/1.1[0m" 304 -
+2026-07-28 15:17:32 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [28/Jul/2026 15:17:32] "[36mGET /static/js/axios.min.js HTTP/1.1[0m" 304 -
+2026-07-28 15:17:32 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [28/Jul/2026 15:17:32] "[36mGET /static/js/single_thread.js HTTP/1.1[0m" 304 -
+2026-07-28 15:17:32 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [28/Jul/2026 15:17:32] "[36mGET /static/js/multi_thread.js HTTP/1.1[0m" 304 -
+2026-07-28 15:17:32 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [28/Jul/2026 15:17:32] "[36mGET /static/js/thread_chart.js HTTP/1.1[0m" 304 -
+2026-07-28 15:17:32 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [28/Jul/2026 15:17:32] "[36mGET /static/js/tool.js HTTP/1.1[0m" 304 -
+2026-07-28 15:17:32 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [28/Jul/2026 15:17:32] "[33mGET /static/js/axios.min.js.map HTTP/1.1[0m" 404 -
+2026-07-28 15:17:32 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [28/Jul/2026 15:17:32] "GET /api/tools HTTP/1.1" 200 -
+2026-07-28 15:17:32 - INFO - utils.data_manager - data_manager.py:54 - 用户数据目录: C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\data\elint\397a1b8a-a6a3-4f22-8b49-85c81d3adc68 已存在
+2026-07-28 15:17:32 - INFO - utils.data_manager - data_manager.py:456 - 加载工具elint单线程数据
+2026-07-28 15:17:32 - INFO - utils.data_manager - data_manager.py:106 - 用户 397a1b8a-a6a3-4f22-8b49-85c81d3adc68 加载工具 elint 的 single 数据到前端
+2026-07-28 15:17:32 - INFO - utils.common - common.py:95 - 成功加载工具数据从 C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\data\elint\dataFiles.json
+2026-07-28 15:17:32 - INFO - utils.data_manager - data_manager.py:136 - 用户 397a1b8a-a6a3-4f22-8b49-85c81d3adc68 没有新增 single 数据
+2026-07-28 15:17:32 - INFO - utils.common - common.py:85 - 成功保存工具数据到 C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\data\elint\dataFiles.json
+2026-07-28 15:17:32 - INFO - utils.common - common.py:95 - 成功加载工具数据从 C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\data\elint\single.json
+2026-07-28 15:17:32 - INFO - utils.data_manager - data_manager.py:476 - 加载工具elint多线程数据
+2026-07-28 15:17:32 - INFO - utils.data_manager - data_manager.py:106 - 用户 397a1b8a-a6a3-4f22-8b49-85c81d3adc68 加载工具 elint 的 multi 数据到前端
+2026-07-28 15:17:32 - INFO - utils.common - common.py:95 - 成功加载工具数据从 C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\data\elint\dataFiles.json
+2026-07-28 15:17:32 - INFO - utils.data_manager - data_manager.py:136 - 用户 397a1b8a-a6a3-4f22-8b49-85c81d3adc68 没有新增 multi 数据
+2026-07-28 15:17:32 - INFO - utils.common - common.py:85 - 成功保存工具数据到 C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\data\elint\dataFiles.json
+2026-07-28 15:17:32 - INFO - utils.common - common.py:95 - 成功加载工具数据从 C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\data\elint\multi.json
+2026-07-28 15:17:32 - INFO - utils.data_manager - data_manager.py:493 - 加载工具elint其他数据
+2026-07-28 15:17:32 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [28/Jul/2026 15:17:32] "POST /api/tools/elint/data HTTP/1.1" 200 -
+2026-07-28 15:17:32 - INFO - utils.common - common.py:95 - 成功加载工具数据从 C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\data\elint\original\single\aes\runtime\Overall.json
+2026-07-28 15:17:32 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [28/Jul/2026 15:17:32] "POST /api/chart/data HTTP/1.1" 200 -
+2026-07-28 15:17:32 - INFO - utils.common - common.py:95 - 成功加载工具数据从 C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\data\elint\original\multi\aes\runtime\Overall.json
+2026-07-28 15:17:32 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [28/Jul/2026 15:17:32] "POST /api/chart/data HTTP/1.1" 200 -
+2026-07-28 15:17:32 - INFO - utils.common - common.py:95 - 成功加载工具数据从 C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\data\elint\original\thread\aes\20260517\Overall.json
+2026-07-28 15:17:32 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [28/Jul/2026 15:17:32] "POST /api/thread/chart/data HTTP/1.1" 200 -
+2026-07-28 15:17:32 - INFO - utils.common - common.py:95 - 成功加载工具数据从 C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\monitor2.5\data\elint\original\single\aes\runtime\Overall.json
+2026-07-28 15:17:32 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [28/Jul/2026 15:17:32] "POST /api/chart/data HTTP/1.1" 200 -
