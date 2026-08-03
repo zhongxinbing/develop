@@ -523,7 +523,8 @@ class MultiThreadManager {
             if (!this.chart) return;
         }
         const { dates, rules, crash_dates, all_threads, selected_threads } = chartData;
-        const isRuntime = this.currentChartType === 'runtime';
+        const normalizedType = (this.currentChartType || 'runtime').toLowerCase();
+        const isRuntime = normalizedType === 'runtime' || normalizedType === 'cputime' || normalizedType === 'easpletime' || normalizedType === 'easepletime' || normalizedType === 'elapsedtime' || normalizedType === 'realtime';
         const yAxisName = isRuntime ? 'Runtime (s)' : 'Memory (MB)';
         
         const crashDatesSet = new Set(crash_dates || []);
@@ -764,7 +765,8 @@ class MultiThreadManager {
      */
     updateStatistics(chartData) {
         const { dates, overall_data } = chartData;
-        const isRuntime = this.currentChartType === 'runtime';
+        const normalizedType = (this.currentChartType || 'runtime').toLowerCase();
+        const isRuntime = normalizedType === 'runtime' || normalizedType === 'cputime' || normalizedType === 'easpletime' || normalizedType === 'easepletime' || normalizedType === 'elapsedtime' || normalizedType === 'realtime';
         
         if (!overall_data || !overall_data.values) {
             this.resetStatistics();

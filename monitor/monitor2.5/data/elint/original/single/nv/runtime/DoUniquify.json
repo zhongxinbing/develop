@@ -1,0 +1,28 @@
+{
+    "dates": [
+        "20260510",
+        "20260511",
+        "20260512"
+    ],
+    "rules": {
+        "DoUniquify": {
+            "dates": [
+                "20260510",
+                "20260511",
+                "20260512"
+            ],
+            "values": [
+                0.01,
+                0.01,
+                0.01
+            ],
+            "type": "line",
+            "name": "DoUniquify",
+            "is_single": true
+        }
+    },
+    "crash_dates": {
+        "20260510": null
+    },
+    "overall_data": null
+}

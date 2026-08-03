@@ -1,8 +1,27 @@
- E0001 done: CpuTime(11s); RealTime(10s); PeakMem(30M); IncMem(2M)
- E0002 done: CpuTime(10.1s); RealTime(4s); PeakMem(500M); IncMem(0M)
- E0003 done: CpuTime(20.1s); RealTime(50s); PeakMem(602M); IncMem(1M)
- E0004 done: CpuTime(30.1s); RealTime(62s); PeakMem(50M); IncMem(3M)
- check_lint done: CpuTime(1000.1s); RealTime(20s); PeakMem(10M); IncMem(7M)
- Overall done: CpuTime(10.1s); RealTime(10s); PeakMem(111M); IncMem(6M)
- read_design done: CpuTime(95374.1s); RealTime(100s); PeakMem(15M); IncMem(156M)
+
+2026-08-02 06:00:31: [threadId:1446123][AnalysisBuildIn][idx:1]Checking lint rule E0000 starting ...(Stack total: 8192 KB | Used: 15 KB (0.193417%) | Free: 8176 KB)                                                                    
+2026-08-02 06:00:31: [threadId:1446123][AnalysisBuildIn][idx:1]Checking lint rule E0000 done: CpuTime(12.00s); RealTime(12.10s); PeakMem(195.25M); IncMem(0.00M); RealTimeIncMem(-0.00M)
+2026-08-02 06:00:32: [threadId:1446123][LintRule][idx:167]Checking lint rule E0007 starting ...(Stack total: 8192 KB | Used: 17 KB (0.214589%) | Free: 8174 KB)                                                                         
+2026-08-02 06:00:32: [threadId:1446123][LintRule][idx:167]Checking lint rule E0007 done: CpuTime(15.00s); RealTime(15.00s); PeakMem(198.00M); IncMem(0.00M); RealTimeIncMem(30.00M)
+2026-08-02 06:00:32: [threadId:1446123][LintRule][idx:168]Checking lint rule E0326 starting ...(Stack total: 8192 KB | Used: 17 KB (0.214589%) | Free: 8174 KB)
+2026-08-02 06:00:32: [threadId:1446123][LintRule][idx:168]Checking lint rule E0326 done: CpuTime(24.000s); RealTime(25.00s); PeakMem(198.00M); IncMem(0.00M); RealTimeIncMem(50.00M)
+2026-08-02 06:00:32: [threadId:1446123][LintRule][idx:172]Checking lint rule E0096 starting ...(Stack total: 8192 KB | Used: 17 KB (0.214589%) | Free: 8174 KB)
+2026-08-02 06:00:32: [threadId:1446123][LintRule][idx:172]Checking lint rule E0096 done: CpuTime(20.00s); RealTime(20.00s); PeakMem(198.00M); IncMem(0.00M); RealTimeIncMem(-100.00M)                                                        
+
+Logic Cores : 50   
 Current Threads : 4
+Exiting from Tcl: 
+elint end time: Sun Aug 02 06:00:36 2026
+2026-08-02 06:00:36: Info: (ReportUsageStatistics):
+
++--------------+-----------------------+-----------------------+------------------+-------------+------------+------------+
+| Command      | Elapse Time (H:M:S)   | CPU Time (H:M:S)      | Peak Memory (MB) | ERROR Count | WARN Count | INFO Count |
++--------------+-----------------------+-----------------------+------------------+-------------+------------+------------+
+| read_design  | 2 mins : 37.218 secs  | 2 mins : 23.160 secs  | 20637.375        | 12          | 4          | 1          |
++--------------+-----------------------+-----------------------+------------------+-------------+------------+------------+
+| check_lint   | 16 mins : 2.211 secs  | 15 mins : 53.650 secs | 40042.465        | 72826       | 268778     | 76282      |
++--------------+-----------------------+-----------------------+------------------+-------------+------------+------------+
+| save_session | 2 mins : 53.812 secs  | 2 mins : 51.200 secs  | 40201.164        | 0           | 0          | 0          |
++--------------+-----------------------+-----------------------+------------------+-------------+------------+------------+
+| Overall      | 48 mins : 53.054 secs | 58 mins : 16.620 secs | 40472.180        | 72838       | 268782     | 76283      |
++--------------+-----------------------+-----------------------+------------------+-------------+------------+------------+

@@ -1,12 +1,18 @@
- E0001 done: CpuTime(20.1s); RealTime(40s); PeakMem(100M); IncMem(10M)
- E0002 done: CpuTime(25.1s); RealTime(30s); PeakMem(101M); IncMem(11M)
- E0003 done: CpuTime(26.1s); RealTime(20s); PeakMem(152M); IncMem(12M)
- E0004 done: CpuTime(27.1s); RealTime(10s); PeakMem(123M); IncMem(13M)
 
- check_lint done: CpuTime(1000.1s); RealTime(20s); PeakMem(10M); IncMem(7M)
- Overall done: CpuTime(10.1s); RealTime(10s); PeakMem(111M); IncMem(6M)
- read_design done: CpuTime(95374.1s); RealTime(100s); PeakMem(15M); IncMem(156M)
+2026-08-02 06:00:31: [threadId:1446123][AnalysisBuildIn][idx:1]Checking lint rule E0000 starting ...(Stack total: 8192 KB | Used: 15 KB (0.193417%) | Free: 8176 KB)                                                                    
+2026-08-02 06:00:31: [threadId:1446123][AnalysisBuildIn][idx:1]Checking lint rule E0000 done: CpuTime(12.00s); RealTime(12.10s); PeakMem(195.25M); IncMem(0.00M); RealTimeIncMem(-0.00M)
+2026-08-02 06:00:32: [threadId:1446123][LintRule][idx:167]Checking lint rule E0007 starting ...(Stack total: 8192 KB | Used: 17 KB (0.214589%) | Free: 8174 KB)                                                                         
+2026-08-02 06:00:32: [threadId:1446123][LintRule][idx:167]Checking lint rule E0007 done: CpuTime(15.00s); RealTime(15.00s); PeakMem(198.00M); IncMem(0.00M); RealTimeIncMem(30.00M)
+2026-08-02 06:00:32: [threadId:1446123][LintRule][idx:168]Checking lint rule E0326 starting ...(Stack total: 8192 KB | Used: 17 KB (0.214589%) | Free: 8174 KB)
+2026-08-02 06:00:32: [threadId:1446123][LintRule][idx:168]Checking lint rule E0326 done: CpuTime(24.000s); RealTime(25.00s); PeakMem(198.00M); IncMem(0.00M); RealTimeIncMem(50.00M)
+2026-08-02 06:00:32: [threadId:1446123][LintRule][idx:172]Checking lint rule E0096 starting ...(Stack total: 8192 KB | Used: 17 KB (0.214589%) | Free: 8174 KB)
+2026-08-02 06:00:32: [threadId:1446123][LintRule][idx:172]Checking lint rule E0096 done: CpuTime(20.00s); RealTime(20.00s); PeakMem(198.00M); IncMem(0.00M); RealTimeIncMem(-100.00M)                                                        
+
+Logic Cores : 50   
 Current Threads : 2
+Exiting from Tcl: 
+elint end time: Sun Aug 02 06:00:36 2026
+2026-08-02 06:00:36: Info: (ReportUsageStatistics):
 
 +--------------+-----------------------+-----------------------+------------------+-------------+------------+------------+
 | Command      | Elapse Time (H:M:S)   | CPU Time (H:M:S)      | Peak Memory (MB) | ERROR Count | WARN Count | INFO Count |

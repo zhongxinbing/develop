@@ -8,14 +8,13 @@ import time
 import json
 import csv
 
-# from tool.elint.find import *
+
 from pathlib import Path
 from datetime import datetime, timedelta
 import subprocess
 from typing import Dict, List, Any, Optional, Tuple
-from debug.debug import *
 from utils.find_files import *
-
+from utils.log import *
 
 def save_json(json_path, data):
     """
@@ -64,14 +63,26 @@ def load_json(path):
 ##    
 ###################################################################################################################################################
 
-def gen_dict_data(caseData, data, thread):
+def gen_dict_data(caseData, data, thread, type):
     """生成字典数据"""
     rule_data = {}
     for item in data:
         rulename = item[0]
         cputime = float(item[1])
-        peakmem = float(item[2])
-        incMem = float(item[3])
+        if type == 1:
+            peakmem = float(item[2])
+        elif type == 2:
+            realtime = float(item[2])
+            peakmem = float(item[3])
+            if item[4] == "NA":
+                incmen = "NA"
+            else:
+                incmen = float(item[4])
+            if item[5] == "NA":
+                realtimeincmen = item[5]
+            else:
+                realtimeincmen = float(item[5])
+        
         rule_data[rulename] = {
             "runtime": cputime,
             "memory": peakmem
@@ -80,7 +91,7 @@ def gen_dict_data(caseData, data, thread):
     return rule_data
 
 
-def get_date_from_txt_single(txts, caseData):
+def get_data_from_txt_single(txts, caseData):
     """从txt文件获取日期数据"""
     for txt in txts:
         txtname = Path(txt).name
@@ -102,10 +113,15 @@ def get_date_from_txt_single(txts, caseData):
             caseData[casename]["daily_metrics"][date] = {}
         try:
             with open(txt, 'r', encoding='utf-8') as f:
-                data = re.findall(r"dict set \d{8} ([^\s]+) {([0-9.,]+) ([0-9.,]+) ([0-9.,]+)}", f.read())
+                content = f.read()
+                data = re.findall(r"dict set \d{8} ([^\s]+) {([0-9.,]+) ([0-9.,]+) ([0-9.,]+)}", content)
+                typeStr = 1
+                if not data:
+                    data = re.findall(r"dict set \d{8} ([^\s]+) {([-0-9.,]+) ([-0-9.,]+) ([-0-9.,]+) ([-0-9.,NA]+) ([-0-9.,NA]+)}", content)
+                    typeStr = 2
                 # 一个 case 一天的信息,并获取
                 caseData[casename]["daily_metrics"][date] = gen_dict_data(
-                    caseData[casename]["daily_metrics"][date], data, 0
+                    caseData[casename]["daily_metrics"][date], data, 0, typeStr
                 )
                 if date not in caseData[casename]["available_dates"]:
                     caseData[casename]["available_dates"].append(date)
@@ -125,7 +141,7 @@ def get_elint_performance(original_path, jsonDataFile) -> Tuple[Dict, List[str]]
     start = time.time()
     dataFiles = find(original_path, maxdepth=3, name_pattern=r"^\d{8}_[^/]+\.txt$", file_type="f")
     caseData = {}
-    caseData = get_date_from_txt_single(dataFiles, caseData)
+    caseData = get_data_from_txt_single(dataFiles, caseData)
     caseData["dataFiles"] = sorted(dataFiles)
     # if jsonDataFile:
     #     save_json(jsonDataFile, caseData)
@@ -161,7 +177,7 @@ def get_incremental_data(
     log(f"发现 {len(new_files)} 个新文件，进行增量更新")
     
     # 只解析新增的文件
-    new_data = get_date_from_txt_single(new_files, {})
+    new_data = get_data_from_txt_single(new_files, {})
     
     # 合并数据
     for casename, case_info in new_data.items():
@@ -221,7 +237,7 @@ def get_elint_data(jsonDataFile, original_path) -> Dict:
 
             # 计算新增的文件
             addDataFiles = list(set(currentDataFiles) - set(lastDataFiles))
-
+            print(addDataFiles)
             if addDataFiles:
                 # 有新增文件，进行增量更新
                 newCaseData, merged_files = get_incremental_data(
@@ -281,15 +297,16 @@ def get_perf(mrPath):
         dict: 性能数据字典
     """
     try:
-        perf = {}
+
         mem_data = read_csv(Path(mrPath) / "lint_mem.csv")
         cpu_data = read_csv(Path(mrPath) / "lint_cpu.csv")
         print(f"解析数据 MR 数据中: cpu:{len(cpu_data)} mem: {len(mem_data)}")
-
+        
         perf = {
             "mem": mem_data,
             "cpu": cpu_data
         }
+
         return perf
     except Exception as e:
         log(f"执行异常: {e}")
@@ -297,6 +314,7 @@ def get_perf(mrPath):
             "mem": {},
             "cpu": {}
         }
+
 
 
 def get_user_data(case_path):
@@ -317,7 +335,6 @@ def get_user_data(case_path):
         log(f"加载用户数据失败 {case_path}: {e}")
         result = {}
     return result
-
 
 def get_user_data_batch(case_paths: list):
     """
@@ -422,6 +439,10 @@ def get_data_json(rule_data, data, thread):
 
     return rule_data
 
+def get_data_from_log(files, caseData):
+    for log_path in files:
+        caseData = get_perf_data_from_log(caseData, log_path)
+    return caseData
 
 def get_perf_data_from_log(caseData, log_path):
     """
@@ -437,7 +458,7 @@ def get_perf_data_from_log(caseData, log_path):
     # 提取 casename 和 date
     # 路径格式示例: /path/to/elint.log 或 /path/to/project/elint.log
     path_str = str(log_path)
-    
+
     # 尝试从路径中提取 casename
     parts = Path(path_str).parts
     if len(parts) >= 2:
@@ -464,16 +485,15 @@ def get_perf_data_from_log(caseData, log_path):
 
     with open(log_path, "r", errors='ignore') as f:
         content = f.read()
-        rulePerf = re.findall(r' ([^\s]+) done: CpuTime\(([0-9.,]+)s\); RealTime\(([0-9.,]+)s\); PeakMem\(([0-9.,]+)M\); IncMem\(([0-9.,]+)M\)', content)
+        rulePerf = re.findall(r' ([^\s\]]+) done: CpuTime\(([0-9.,]+)s\); RealTime\(([0-9.,]+)s\); PeakMem\(([0-9.,]+)M\); IncMem\(([0-9.,]+)M\)', content)
         rulePerf = rulePerf + get_runtime(content)
     
     thread = re.findall(r'Current Threads : (\d+)', content)
     if len(thread) == 0:
-        if re.match(r'.*/single/*', log_path):
+        if re.match(r'.*/single/*', log_path) or re.match(r'.*/signal/*', log_path):
             thread = 1
         else:
-            thread_match = re.findall(r'thread_(\d+)', log_path)[0]
-            thread = int(thread_match[0]) if thread_match else 0
+            thread = re.findall(r'thread_(\d+)', log_path)[0]
     else:
         thread = int(thread[0])
 
@@ -495,12 +515,6 @@ def get_perf_data_from_log(caseData, log_path):
         caseData[casename]["daily_metrics"][date], rulePerf, thread
     )
 
-    return caseData
-
-
-def get_data_from_log(files, caseData):
-    for log_path in files:
-        caseData = get_perf_data_from_log(caseData, log_path)
     return caseData
 
 def time_to_seconds(time_str):
@@ -534,10 +548,6 @@ def get_runtime (content):
         new = new + [(name, f"{cpu}", f"{elapse}", f"{peak}", "null")]
     return new
 
-
-
-
-# 获取单线程数据, flag: 0 表示只获取文件路径，1 表示解析全量数据
 def get_single_data(files, flag):
     """
         single: 单线程的数据
@@ -545,10 +555,9 @@ def get_single_data(files, flag):
     """
 
     if flag == 0:
-
         return find(files, maxdepth=3, name_pattern=r"^\d{8}_[^/]+\.txt$", file_type="f")
     else:
-        all_data = get_date_from_txt_single(files, {})
+        all_data = get_data_from_txt_single(files, {})
         return all_data
 
 # 获取多线程数据, flag: 0 表示只获取文件路径，1 表示解析全量数据
@@ -558,9 +567,3 @@ def get_multi_data(files, flag):
     else:
         all_data = get_data_from_log(files, {})
         return all_data
-
-
-# def signal_adta(files):
-
-#     # 检查是否需更新数据
-

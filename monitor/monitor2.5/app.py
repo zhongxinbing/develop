@@ -131,7 +131,7 @@ def api_load_tool_data(tool_id):
 def api_get_chart_data():
     """获取图表数据（支持Runtime和Memory）"""
     data = request.json
-    
+    logger.error(f"收到用户 {get_user_id()} 请求图表数据: {data}")
     chioce_data = data_manager.send_data_to_frontend_for_chart(data)
 
     return jsonify({'success': True, 'data': chioce_data})

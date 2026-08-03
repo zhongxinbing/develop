@@ -984,6 +984,7 @@ body {
 .menu-item {
     display: flex;
     align-items: center;
+    justify-content: space-between;
     gap: var(--spacing-3);
     width: 100%;
     padding: var(--spacing-3) var(--spacing-4);
@@ -995,6 +996,18 @@ body {
     cursor: pointer;
     transition: all var(--transition-fast);
     text-align: left;
+    position: relative;
+}
+
+.menu-item::after {
+    content: '▾';
+    font-size: 12px;
+    opacity: 0.8;
+    transition: transform var(--transition-fast);
+}
+
+.menu-item.collapsed::after {
+    content: '▸';
 }
 
 .menu-item i {
@@ -1011,6 +1024,48 @@ body {
     background: rgba(0, 229, 255, 0.1);
     color: var(--primary);
     border-left: 3px solid var(--primary);
+}
+
+.sub-menu {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin: 0 0 8px 18px;
+    padding-left: 12px;
+    border-left: 1px solid var(--border-subtle);
+    transition: all var(--transition-fast);
+}
+
+.sub-menu.collapsed {
+    display: none;
+}
+
+.sub-menu-item {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    padding: 10px 12px;
+    background: transparent;
+    border: none;
+    border-radius: var(--radius-sm);
+    color: var(--text-secondary);
+    text-align: left;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    position: relative;
+}
+
+.sub-menu-item:hover {
+    background: rgba(255, 255, 255, 0.04);
+    color: var(--text-primary);
+}
+
+.sub-menu-item.active {
+    background: rgba(0, 229, 255, 0.08);
+    color: var(--primary);
+    border-left: 2px solid var(--primary);
+    padding-left: 10px;
 }
 
 /* 筛选面板 */

@@ -13,11 +13,88 @@ let userAddedData = {};
 let currentMode = 'single';
 let currentChartType = 'runtime';
 let threadChart = null;
+const CHART_GROUP_MAP = {
+    runtime: 'runtime',
+    cputime: 'runtime',
+    easpletime: 'runtime',
+    easepletime: 'runtime',
+    elapsedtime: 'runtime',
+    realtime: 'runtime',
+    memory: 'memory',
+    peakmem: 'memory',
+    incmem: 'memory',
+    realtimeincmem: 'memory',
+    'real-time-inc-mem': 'memory',
+    'real_time_inc_mem': 'memory'
+};
 
 // 模块实例
 let singleThreadManager = null;
 let multiThreadManager = null;
 let threadChartManager = null;
+
+function resolveChartGroup(chartType) {
+    const key = String(chartType || 'runtime').toLowerCase();
+    return CHART_GROUP_MAP[key] || key || 'runtime';
+}
+
+function getDefaultSubChart(group) {
+    return group === 'memory' ? 'peakmem' : 'cputime';
+}
+
+function getActiveChartFromSidebar(sidebarId) {
+    const activeSubMenuItem = document.querySelector(`#${sidebarId} .sub-menu-item.active`);
+    if (activeSubMenuItem && activeSubMenuItem.dataset.chart) {
+        return activeSubMenuItem.dataset.chart;
+    }
+    const activeMenuItem = document.querySelector(`#${sidebarId} .menu-item.active`);
+    const menuChart = activeMenuItem ? activeMenuItem.dataset.chart : 'runtime';
+    if (menuChart === 'runtime' || menuChart === 'memory') {
+        return getDefaultSubChart(resolveChartGroup(menuChart));
+    }
+    return menuChart || 'runtime';
+}
+
+function syncGroupNavigation(sidebarId, expandedGroup) {
+    const sidebar = document.getElementById(sidebarId);
+    if (!sidebar) return;
+
+    const menuItems = sidebar.querySelectorAll('.menu-item');
+    const subMenus = sidebar.querySelectorAll('.sub-menu');
+
+    menuItems.forEach(menu => {
+        const isRuntimeMemory = menu.dataset.chart === 'runtime' || menu.dataset.chart === 'memory';
+        const isThreadRuntimeMemory = menu.dataset.threadChart === 'runtime' || menu.dataset.threadChart === 'memory';
+        const shouldExpand = (menu.dataset.chart === expandedGroup) || (menu.dataset.threadChart === expandedGroup);
+        menu.classList.toggle('active', shouldExpand);
+        menu.classList.toggle('collapsed', !shouldExpand && (isRuntimeMemory || isThreadRuntimeMemory));
+    });
+
+    subMenus.forEach(subMenu => {
+        const parent = subMenu.previousElementSibling;
+        const isExpanded = parent && (
+            (parent.dataset.chart && parent.dataset.chart === expandedGroup) ||
+            (parent.dataset.threadChart && parent.dataset.threadChart === expandedGroup)
+        );
+        subMenu.classList.toggle('collapsed', !isExpanded);
+    });
+}
+
+function initializeDefaultSidebarState() {
+    syncGroupNavigation('singleSidebar', 'runtime');
+    syncGroupNavigation('multiSidebar', 'runtime');
+    syncGroupNavigation('threadSidebar', 'runtime');
+
+    document.querySelectorAll('#singleSidebar .sub-menu-item').forEach(item => {
+        item.classList.toggle('active', item.dataset.chart === 'cputime');
+    });
+    document.querySelectorAll('#multiSidebar .sub-menu-item').forEach(item => {
+        item.classList.toggle('active', item.dataset.chart === 'cputime');
+    });
+    document.querySelectorAll('#threadSidebar .sub-menu-item').forEach(item => {
+        item.classList.toggle('active', item.dataset.threadChart === 'cputime');
+    });
+}
 
 // DOM 元素
 const toolNameEl = document.getElementById('toolName');
@@ -32,6 +109,7 @@ const modeNavItems = document.querySelectorAll('.mode-nav-item');
 async function init() {
     console.log('页面初始化开始');
     await loadToolConfig();
+    initializeDefaultSidebarState();
     await loadData();
     initEventListeners();
     console.log('页面初始化完成');
@@ -187,8 +265,7 @@ async function switchToSingleMode() {
     if (threadSelectorContainer) threadSelectorContainer.style.display = 'none';
     
     // 获取当前活动菜单类型
-    const activeMenuItem = document.querySelector('#singleSidebar .menu-item.active');
-    const currentChartType = activeMenuItem ? activeMenuItem.dataset.chart : 'runtime';
+    const currentChartType = getActiveChartFromSidebar('singleSidebar');
     
     const filtersPanel = document.getElementById('singleFiltersPanel');
     const comparisonPanel = document.getElementById('singleComparisonPanel');
@@ -263,8 +340,7 @@ async function switchToMultiMode() {
     if (threadSelectorContainer) threadSelectorContainer.style.display = 'block';
     
     // 获取当前活动菜单类型
-    const activeMenuItem = document.querySelector('#multiSidebar .menu-item.active');
-    const currentChartType = activeMenuItem ? activeMenuItem.dataset.chart : 'runtime';
+    const currentChartType = getActiveChartFromSidebar('multiSidebar');
     
     const filtersPanel = document.getElementById('multiFiltersPanel');
     const comparisonPanel = document.getElementById('multiComparisonPanel');
@@ -349,11 +425,17 @@ async function switchToThreadMode() {
     if (chartContainer) chartContainer.style.display = 'block';
     
     // 获取当前活动菜单类型
+    const activeSubMenuItem = document.querySelector('#threadSidebar .sub-menu-item.active');
     const activeMenuItem = document.querySelector('#threadSidebar .menu-item.active');
-    if (activeMenuItem) {
-        const chartType = activeMenuItem.dataset.threadChart || 'runtime';
+    if (activeSubMenuItem && activeSubMenuItem.dataset.threadChart) {
+        const chartType = activeSubMenuItem.dataset.threadChart || 'runtime';
         if (threadChartManager) {
             threadChartManager.setChartType(chartType);
+        }
+    } else if (activeMenuItem) {
+        const chartType = activeMenuItem.dataset.threadChart || 'runtime';
+        if (threadChartManager) {
+            threadChartManager.setChartType(chartType === 'runtime' ? 'cputime' : chartType === 'memory' ? 'peakmem' : chartType);
         }
     }
     
@@ -464,43 +546,75 @@ function initEventListeners() {
     const singleMenuItems = document.querySelectorAll('#singleSidebar .menu-item');
     singleMenuItems.forEach(item => {
         item.addEventListener('click', () => {
-            const singleMenuItemsAll = document.querySelectorAll('#singleSidebar .menu-item');
-            singleMenuItemsAll.forEach(menu => menu.classList.remove('active'));
-            item.classList.add('active');
-            
             const chartType = item.dataset.chart;
-            currentChartType = chartType;
-            
+            const subMenu = item.nextElementSibling;
+
+            if (chartType === 'runtime' || chartType === 'memory') {
+                const defaultSubChart = getDefaultSubChart(resolveChartGroup(chartType));
+                document.querySelectorAll('#singleSidebar .sub-menu-item').forEach(subItem => {
+                    subItem.classList.toggle('active', subItem.dataset.chart === defaultSubChart);
+                });
+                syncGroupNavigation('singleSidebar', chartType);
+                currentChartType = defaultSubChart;
+                if (subMenu) {
+                    subMenu.classList.remove('collapsed');
+                }
+            } else {
+                document.querySelectorAll('#singleSidebar .sub-menu-item').forEach(subItem => {
+                    subItem.classList.remove('active');
+                });
+                syncGroupNavigation('singleSidebar', chartType);
+                currentChartType = chartType;
+            }
+
             if (chartType === 'comparison') {
                 if (singleFiltersPanel) singleFiltersPanel.style.display = 'none';
                 if (singleComparisonPanel) singleComparisonPanel.style.display = 'block';
-                
+
                 const statsGrid = document.getElementById('statsGrid');
                 const overviewCard = document.querySelector('.overview-card');
                 const chartContainer = document.querySelector('.chart-container');
                 if (statsGrid) statsGrid.style.display = 'none';
                 if (overviewCard) overviewCard.style.display = 'none';
                 if (chartContainer) chartContainer.style.display = 'none';
-                
+
                 const comparisonResults = document.getElementById('comparisonResults');
                 if (comparisonResults) comparisonResults.style.display = 'none';
             } else {
                 if (singleFiltersPanel) singleFiltersPanel.style.display = 'block';
                 if (singleComparisonPanel) singleComparisonPanel.style.display = 'none';
-                
+
                 const statsGrid = document.getElementById('statsGrid');
                 const overviewCard = document.querySelector('.overview-card');
                 const chartContainer = document.querySelector('.chart-container');
                 if (statsGrid) statsGrid.style.display = 'grid';
                 if (overviewCard) overviewCard.style.display = 'block';
                 if (chartContainer) chartContainer.style.display = 'block';
-                
+
                 const comparisonResults = document.getElementById('comparisonResults');
                 if (comparisonResults) comparisonResults.style.display = 'none';
-                
+
                 if (singleThreadManager) {
-                    singleThreadManager.setChartType(chartType);
+                    singleThreadManager.setChartType(currentChartType);
                 }
+            }
+        });
+    });
+
+    const singleSubMenuItems = document.querySelectorAll('#singleSidebar .sub-menu-item');
+    singleSubMenuItems.forEach(item => {
+        item.addEventListener('click', () => {
+            const targetChart = item.dataset.chart;
+            const group = resolveChartGroup(targetChart);
+            document.querySelectorAll('#singleSidebar .menu-item').forEach(menuItem => {
+                menuItem.classList.toggle('active', menuItem.dataset.chart === group);
+            });
+            document.querySelectorAll('#singleSidebar .sub-menu-item').forEach(subItem => {
+                subItem.classList.toggle('active', subItem.dataset.chart === targetChart);
+            });
+            currentChartType = targetChart;
+            if (singleThreadManager) {
+                singleThreadManager.setChartType(targetChart);
             }
         });
     });
@@ -509,43 +623,75 @@ function initEventListeners() {
     const multiMenuItems = document.querySelectorAll('#multiSidebar .menu-item');
     multiMenuItems.forEach(item => {
         item.addEventListener('click', () => {
-            const multiMenuItemsAll = document.querySelectorAll('#multiSidebar .menu-item');
-            multiMenuItemsAll.forEach(menu => menu.classList.remove('active'));
-            item.classList.add('active');
-            
             const chartType = item.dataset.chart;
-            currentChartType = chartType;
-            
+            const subMenu = item.nextElementSibling;
+
+            if (chartType === 'runtime' || chartType === 'memory') {
+                const defaultSubChart = getDefaultSubChart(resolveChartGroup(chartType));
+                document.querySelectorAll('#multiSidebar .sub-menu-item').forEach(subItem => {
+                    subItem.classList.toggle('active', subItem.dataset.chart === defaultSubChart);
+                });
+                syncGroupNavigation('multiSidebar', chartType);
+                currentChartType = defaultSubChart;
+                if (subMenu) {
+                    subMenu.classList.remove('collapsed');
+                }
+            } else {
+                document.querySelectorAll('#multiSidebar .sub-menu-item').forEach(subItem => {
+                    subItem.classList.remove('active');
+                });
+                syncGroupNavigation('multiSidebar', chartType);
+                currentChartType = chartType;
+            }
+
             if (chartType === 'comparison') {
                 if (multiFiltersPanel) multiFiltersPanel.style.display = 'none';
                 if (multiComparisonPanel) multiComparisonPanel.style.display = 'block';
-                
+
                 const statsGrid = document.getElementById('statsGrid');
                 const overviewCard = document.querySelector('.overview-card');
                 const chartContainer = document.querySelector('.chart-container');
                 if (statsGrid) statsGrid.style.display = 'none';
                 if (overviewCard) overviewCard.style.display = 'none';
                 if (chartContainer) chartContainer.style.display = 'none';
-                
+
                 const comparisonResults = document.getElementById('comparisonResults');
                 if (comparisonResults) comparisonResults.style.display = 'none';
             } else {
                 if (multiFiltersPanel) multiFiltersPanel.style.display = 'block';
                 if (multiComparisonPanel) multiComparisonPanel.style.display = 'none';
-                
+
                 const statsGrid = document.getElementById('statsGrid');
                 const overviewCard = document.querySelector('.overview-card');
                 const chartContainer = document.querySelector('.chart-container');
                 if (statsGrid) statsGrid.style.display = 'grid';
                 if (overviewCard) overviewCard.style.display = 'block';
                 if (chartContainer) chartContainer.style.display = 'block';
-                
+
                 const comparisonResults = document.getElementById('comparisonResults');
                 if (comparisonResults) comparisonResults.style.display = 'none';
-                
+
                 if (multiThreadManager) {
-                    multiThreadManager.setChartType(chartType);
+                    multiThreadManager.setChartType(currentChartType);
                 }
+            }
+        });
+    });
+
+    const multiSubMenuItems = document.querySelectorAll('#multiSidebar .sub-menu-item');
+    multiSubMenuItems.forEach(item => {
+        item.addEventListener('click', () => {
+            const targetChart = item.dataset.chart;
+            const group = resolveChartGroup(targetChart);
+            document.querySelectorAll('#multiSidebar .menu-item').forEach(menuItem => {
+                menuItem.classList.toggle('active', menuItem.dataset.chart === group);
+            });
+            document.querySelectorAll('#multiSidebar .sub-menu-item').forEach(subItem => {
+                subItem.classList.toggle('active', subItem.dataset.chart === targetChart);
+            });
+            currentChartType = targetChart;
+            if (multiThreadManager) {
+                multiThreadManager.setChartType(targetChart);
             }
         });
     });
@@ -554,11 +700,29 @@ function initEventListeners() {
     const threadMenuItems = document.querySelectorAll('#threadSidebar .menu-item');
     threadMenuItems.forEach(item => {
         item.addEventListener('click', () => {
-            const threadMenuItemsAll = document.querySelectorAll('#threadSidebar .menu-item');
-            threadMenuItemsAll.forEach(menu => menu.classList.remove('active'));
-            item.classList.add('active');
-            
             const chartType = item.dataset.threadChart || 'runtime';
+            const defaultSubChart = chartType === 'runtime' ? 'cputime' : chartType === 'memory' ? 'peakmem' : chartType;
+            document.querySelectorAll('#threadSidebar .sub-menu-item').forEach(subItem => {
+                subItem.classList.toggle('active', subItem.dataset.threadChart === defaultSubChart);
+            });
+            syncGroupNavigation('threadSidebar', chartType);
+            if (threadChartManager) {
+                threadChartManager.setChartType(defaultSubChart);
+            }
+        });
+    });
+
+    const threadSubMenuItems = document.querySelectorAll('#threadSidebar .sub-menu-item');
+    threadSubMenuItems.forEach(item => {
+        item.addEventListener('click', () => {
+            const chartType = item.dataset.threadChart || 'runtime';
+            const group = resolveChartGroup(chartType);
+            document.querySelectorAll('#threadSidebar .menu-item').forEach(menuItem => {
+                menuItem.classList.toggle('active', menuItem.dataset.threadChart === group);
+            });
+            document.querySelectorAll('#threadSidebar .sub-menu-item').forEach(subItem => {
+                subItem.classList.toggle('active', subItem.dataset.threadChart === chartType);
+            });
             if (threadChartManager) {
                 threadChartManager.setChartType(chartType);
             }

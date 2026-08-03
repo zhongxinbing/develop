@@ -171,6 +171,25 @@ class DataManager:
 
         return future.result()
 
+    @staticmethod
+    def resolve_chart_group(chart_type: str) -> str:
+        """将 cputime / easepletime / peakmem / incmem 归并到 runtime / memory 基础分组。"""
+        key = (chart_type or 'runtime').strip().lower()
+        runtime_aliases = {
+            'runtime', 'cputime', 'cpu', 'cputime', 'elapsedtime', 'easpletime', 'easepletime',
+            'elapsetime', 'elaspetime', 'realtime', 'real_time', 'real-time'
+        }
+        memory_aliases = {
+            'memory', 'peakmem', 'peak_mem', 'peak-memory', 'incmem', 'inc_mem', 'incmemory', 'incrementmem',
+            'realtimeincmem', 'real_time_inc_mem', 'real-time-inc-mem', 'real_time_inc_mem',
+            'realtimeincmems'
+        }
+        if key in runtime_aliases:
+            return 'runtime'
+        if key in memory_aliases:
+            return 'memory'
+        return key
+
     # 发送数据到前端,渲染图表
     def send_data_to_frontend_for_chart(self, frond_data: Dict):
         tool_id = frond_data.get('toolID', '')
@@ -184,7 +203,13 @@ class DataManager:
         if not rules:
             return {"dates": dates, "rules": {}, "crash_dates": [], "overall_data": {}, "selected_threads": []}
 
-        data_path = DATA_DIR / tool_id / "original" / mode / casename / chart_type / f'{rules[0]}.json'
+        normalized_chart_type = self.resolve_chart_group(chart_type)
+        data_path = DATA_DIR / tool_id / "original" / mode / casename / normalized_chart_type / f'{rules[0]}.json'
+        if not data_path.exists():
+            fallback_chart_type = 'runtime' if normalized_chart_type == 'memory' else 'memory'
+            fallback_path = DATA_DIR / tool_id / "original" / mode / casename / fallback_chart_type / f'{rules[0]}.json'
+            if fallback_path.exists():
+                data_path = fallback_path
         case_rule_data = load_tool_data(data_path) or {}
         rules_data = case_rule_data.get("rules", {})
         crash_dates = set()

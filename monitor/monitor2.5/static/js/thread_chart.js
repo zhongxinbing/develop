@@ -271,7 +271,8 @@ class ThreadChartManager {
         }
         
         const { threads, runtime, memory } = chartData;
-        const isRuntime = this.currentChartType === 'runtime';
+        const normalizedType = (this.currentChartType || 'runtime').toLowerCase();
+        const isRuntime = normalizedType === 'runtime' || normalizedType === 'cputime' || normalizedType === 'easpletime' || normalizedType === 'easepletime' || normalizedType === 'elapsedtime' || normalizedType === 'realtime';
         const yAxisName = isRuntime ? 'Runtime (s)' : 'Memory (MB)';
         const seriesData = isRuntime ? runtime : memory;
         const seriesName = isRuntime ? 'Runtime' : 'Memory';

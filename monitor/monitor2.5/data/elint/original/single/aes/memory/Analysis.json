@@ -1,0 +1,28 @@
+{
+    "dates": [
+        "20260510",
+        "20260511",
+        "20260512"
+    ],
+    "rules": {
+        "Analysis": {
+            "dates": [
+                "20260510",
+                "20260511",
+                "20260512"
+            ],
+            "values": [
+                176.0,
+                176.0,
+                176.0
+            ],
+            "type": "line",
+            "name": "Analysis",
+            "is_single": true
+        }
+    },
+    "crash_dates": {
+        "20260510": null
+    },
+    "overall_data": null
+}

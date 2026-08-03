@@ -1,0 +1,49 @@
+{
+    "dates": [
+        "20260511",
+        "20260513",
+        "20260515"
+    ],
+    "rules": {
+        "save_session(2)": {
+            "dates": [
+                "20260511",
+                "20260513",
+                "20260515"
+            ],
+            "values": [
+                40201.164,
+                40201.164,
+                40201.164
+            ],
+            "type": "line",
+            "name": "save_session(2)",
+            "thread": 2,
+            "color": "#A855F7",
+            "rule_name": "save_session",
+            "is_multi": true
+        },
+        "save_session(4)": {
+            "dates": [
+                "20260511",
+                "20260515"
+            ],
+            "values": [
+                40201.164,
+                40201.164
+            ],
+            "type": "line",
+            "name": "save_session(4)",
+            "thread": 4,
+            "color": "#10B981",
+            "rule_name": "save_session",
+            "is_multi": true
+        }
+    },
+    "crash_dates": [],
+    "overall_data": null,
+    "all_threads": [
+        2,
+        4
+    ]
+}
