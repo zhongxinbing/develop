@@ -26,6 +26,7 @@ class MultiThreadParser:
             mode: 解析模式（single/multi）
             data: 所有数据字典，包含single/multi/extra数据      
         """
+        logger.info(f"工具{data}的多线程数据加载完成")
         self.logger.info(f"开始解析多线程数据，模式：{mode}，工具ID：{tool_id}")
         casename_rule_dates = {}
         for casename, case_data in data.items():
