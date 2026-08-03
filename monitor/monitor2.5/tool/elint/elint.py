@@ -422,14 +422,16 @@ def get_data_json(rule_data, data, thread):
         if len(item) == 0:
             continue
         rule = item[0]
-
-        if int(thread) > 0:
-            runtime = float(item[2].replace(',', ''))
-        else:
-            runtime = float(item[1].replace(',', ''))
-        memory = float(item[3].replace(',', ''))
+        print(item)
         if rule == "sched(local)]":
             continue
+        rules=["Overall", "read_design", "check_lint", "save_session"]
+
+        cputime = float(item[1].replace(',', ''))
+        realtime = float(item[2].replace(',', ''))
+        peakmem = float(item[3].replace(',', ''))
+        incmem = -1 if rule in rules else float(item[4].replace(',', ''))
+        realtimeincmem = -1 if rule in rules else float(item[5].replace(',', ''))
         
         if re.fullmatch(r'^\[.*', rule):
             rule = re.findall(r'\[.*\]\[(.*)\]', rule)[0]
@@ -437,17 +439,21 @@ def get_data_json(rule_data, data, thread):
             rule_data[rule] = {
                 "thread_metrics": {
                     thread: {
-                        "runtime": runtime,
-                        "memory": memory,
-                        # "cores": thread
+                        "cputime": cputime,
+                        "peakmem": peakmem,
+                        "incmem": incmem,
+                        "realtime": realtime,
+                        "realtimeincmem": realtimeincmem
                     }
                 }
             }
         else:
             rule_data[rule]["thread_metrics"][thread] = {
-                "runtime": runtime,
-                "memory": memory,
-                # "cores": thread
+                "cputime": cputime,
+                "peakmem": peakmem,
+                "incmem": incmem,
+                "realtime": realtime,
+                "realtimeincmem": realtimeincmem
             }
 
     return rule_data
@@ -498,7 +504,7 @@ def get_perf_data_from_log(caseData, log_path):
 
     with open(log_path, "r", errors='ignore') as f:
         content = f.read()
-        rulePerf = re.findall(r' ([^\s\]]+) done: CpuTime\(([0-9.,]+)s\); RealTime\(([0-9.,]+)s\); PeakMem\(([0-9.,]+)M\); IncMem\(([0-9.,]+)M\)', content)
+        rulePerf = re.findall(r' ([^\s\]]+) done: CpuTime\(([0-9.,]+)s\); RealTime\(([0-9.,]+)s\); PeakMem\(([0-9.,]+)M\); IncMem\(([0-9.,]+)M\); RealTimeIncMem\(([-0-9.,]+)M\)', content)
         rulePerf = rulePerf + get_runtime(content)
     
     thread = re.findall(r'Current Threads : (\d+)', content)

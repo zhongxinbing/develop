@@ -3,7 +3,7 @@
 """
 from typing import Dict, List, Any, Optional
 from unittest import result
-
+import json
 # from numpy import single
 from utils.single_thread_parser import SingleThreadParser
 from utils.multi_thread_parser import MultiThreadParser
@@ -38,6 +38,7 @@ class DataParser:
         elif mode == 'multi':
             self.logger.info(f"解析多线程数据 - {tool_id}")
             multi_parser = MultiThreadParser()
+            print(json.dumps(all_data, ensure_ascii=False, indent=4))
             return multi_parser.parse_multi_data(tool_id, mode, all_data)
 
 # 全局实例

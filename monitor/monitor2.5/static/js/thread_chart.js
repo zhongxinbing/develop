@@ -5,7 +5,7 @@
 class ThreadChartManager {
     constructor() {
         this.chart = null;
-        this.currentChartType = 'runtime';
+        this.currentChartType = 'cputime';
         this.selectedCasename = '';
         this.selectedRule = '';
         this.selectedDate = '';
@@ -36,7 +36,7 @@ class ThreadChartManager {
      * 初始化线程曲线图模块
      */
     async init(rawData, userAddedData, multiData) {
-        console.log('ThreadChartManager.init 开始');
+        console.log('线程曲线图模块 开始', rawData);
         
         // 获取 DOM 元素
         this.casenameSelect = document.getElementById(`${this.idPrefix}CasenameSelect`);
@@ -99,7 +99,7 @@ class ThreadChartManager {
             if (!caseData || typeof caseData !== 'object') return false;
             
             // 检查是否包含 runtime 或 memory 数据且有线程信息
-            for (const type of ['runtime', 'memory']) {
+            for (const type of ['cputime', 'peakmem', 'incmem', 'realtimeincmem', 'realtime']) {
                 if (caseData[type] && typeof caseData[type] === 'object') {
                     const rules = Object.keys(caseData[type]);
                     for (const rule of rules) {
@@ -269,12 +269,14 @@ class ThreadChartManager {
             this.initChartContainer();
             if (!this.chart) return;
         }
-        
-        const { threads, runtime, memory } = chartData;
-        const normalizedType = (this.currentChartType || 'runtime').toLowerCase();
-        const isRuntime = normalizedType === 'runtime' || normalizedType === 'cputime' || normalizedType === 'easpletime' || normalizedType === 'easepletime' || normalizedType === 'elapsedtime' || normalizedType === 'realtime';
+
+        const { threads, cputime, peakmem, realtime, incmem, realtimeincmem } = chartData;
+        const normalizedType = (this.currentChartType || 'cputime').toLowerCase();
+        const isRuntime = normalizedType === 'runtime' || normalizedType === 'cputime' || normalizedType === 'realtime';
         const yAxisName = isRuntime ? 'Runtime (s)' : 'Memory (MB)';
-        const seriesData = isRuntime ? runtime : memory;
+        // const seriesData = isRuntime ? runtime : memory;
+
+        const seriesData = chartData[normalizedType];
         const seriesName = isRuntime ? 'Runtime' : 'Memory';
         const color = isRuntime ? '#00E5FF' : '#A855F7';
         
@@ -524,14 +526,18 @@ class ThreadChartManager {
      */
     showNoDataMessage() {
         if (this.chart && !this.chart.isDisposed()) {
+            this.chart.clear();
             this.chart.setOption({
-                title: {
-                    show: true,
-                    text: '暂无数据',
+                graphic: [{
+                    type: 'text',
                     left: 'center',
                     top: 'center',
-                    textStyle: { color: '#94A3B8', fontSize: 14 }
-                }
+                    style: {
+                        text: '暂无数据',
+                        fill: '#94A3B8',
+                        fontSize: 14
+                    }
+                }]
             });
         }
     }

@@ -59,7 +59,6 @@ class SingleThreadParser:
                 'realtimeincmen': rule_dates_realtimeincmen
             }
 
-        logger.warning(f"解析单线程数据完成，casename_rule_dates: {casename_rule_dates}")
         return casename_rule_dates
     # 记录解析到的规则数据
     def record_paser_rules(self, tool_id: str, casename: str, runtime_or_memory_data: Dict, crash_dates: List[str], type: str):

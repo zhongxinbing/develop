@@ -196,7 +196,7 @@ class DataManager:
         rules = frond_data.get('rules', [])
         dates = frond_data.get('dates', [])
         selected_threads = frond_data.get('selected_threads', [])
-
+        
         if not rules:
             return {"dates": dates, "rules": {}, "crash_dates": [], "overall_data": {}, "selected_threads": []}
         

@@ -1,0 +1,26 @@
+{
+    "threads": [
+        2,
+        4
+    ],
+    "cputime": [
+        15.0,
+        15.0
+    ],
+    "peakmem": [
+        198.0,
+        198.0
+    ],
+    "realtime": [
+        15.0,
+        15.0
+    ],
+    "incmen": [
+        null,
+        null
+    ],
+    "realtimeincmen": [
+        null,
+        null
+    ]
+}
