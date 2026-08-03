@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>功能页 - EDA QOR</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="app-container">
+        <header class="header">
+            <button class="back-btn" id="backBtn">
+                <div class="logo-icon">📈 </div>
+                <div class="logo-text">
+                    <h1>EDA QOR</h1>
+                    <span>性能监控平台</span>
+                </div>
+            </button>
+        </header>
+
+        <div class="tool-view-nav">
+            <a class="tool-view-item active" href="/tool/{{ tool_id }}/feature">功能</a>
+            <a class="tool-view-item" href="/tool/{{ tool_id }}/performance">性能</a>
+        </div>
+
+        <main class="main-content" style="justify-content: flex-start; align-items: stretch; padding-top: 24px;">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; width: min(900px, 90vw);">
+                <a class="tool-view-card" href="/tool/{{ tool_id }}/performance?view=single&chart=cputime">
+                    <div class="tool-card-icon">🧪</div>
+                    <h3>regression</h3>
+                    <p>查看回归测试结果，快速定位功能是否稳定回归。</p>
+                    <div style="margin-top: auto; color: var(--text-muted); font-size: 12px;">可查看天数：7天</div>
+                </a>
+
+                <a class="tool-view-card" href="/tool/{{ tool_id }}/performance?view=multi&chart=cputime">
+                    <div class="tool-card-icon">📊</div>
+                    <h3>qor case 功能结果</h3>
+                    <p>查看 QOR case 的功能表现，辅助评估设计指标变化。</p>
+                    <div style="margin-top: auto; color: var(--text-muted); font-size: 12px;">可查看天数：7天</div>
+                </a>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        document.getElementById('backBtn').addEventListener('click', function () {
+            window.location.href = '/';
+        });
+    </script>
+</body>
+</html>

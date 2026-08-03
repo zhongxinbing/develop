@@ -4,7 +4,7 @@
 class SingleThreadManager {
     constructor() {
         this.chart = null;
-        this.currentChartType = 'runtime';
+        this.currentChartType = 'cputime';
         this.selectedCasename = '';
         this.selectedRules = ['Overall'];
         this.selectedDates = [];
@@ -173,6 +173,7 @@ class SingleThreadManager {
             console.log('updateRulesAndDates: 无有效的 rule 数据', this.selectedCasename);
             return;
         }
+        
         const rulesSet = new Set(Object.keys(ruleData[this.currentChartType]));
         
         this.allRules = Array.from(rulesSet).sort();
@@ -305,7 +306,7 @@ class SingleThreadManager {
                 }
                 
                 this.chart.hideLoading();
-                
+                console.log('renderChart: 获取图表数据成功', chartData);
                 if (Object.keys(chartData.rules || {}).length === 0) {
                     this.showNoDataMessage();
                 } else {
@@ -332,7 +333,7 @@ class SingleThreadManager {
             if (!this.chart) return;
         }
         const { dates, rules, crash_dates } = chartData;
-        const normalizedType = (this.currentChartType || 'runtime').toLowerCase();
+        const normalizedType = (this.currentChartType || 'cputime').toLowerCase();
 
         const isRuntime = normalizedType === 'runtime' || normalizedType === 'cputime' || normalizedType === 'realtime';
         const yAxisName = isRuntime ? 'Runtime (s)' : 'Memory (MB)';
@@ -573,7 +574,7 @@ class SingleThreadManager {
      */
     updateStatistics(chartData) {
         const { dates, overall_data } = chartData;
-        const normalizedType = (this.currentChartType || 'runtime').toLowerCase();
+        const normalizedType = (this.currentChartType || 'cputime').toLowerCase();
         const isRuntime = normalizedType === 'runtime' || normalizedType === 'cputime' || normalizedType === 'realtime';
         
         if (!overall_data || !overall_data.values) {
@@ -868,7 +869,7 @@ class SingleThreadManager {
         const statsGrid = document.getElementById('comparisonStatsGrid');
         if (statsGrid) {
             let statsGridHtml = "";
-            if (dimension == 'all' || dimension == 'runtime') {
+            if (dimension == 'all' || dimension == 'cputime') {
                 
                 statsGridHtml += `
                     <div class="comparison-stat-card tooltip-card">
@@ -1293,14 +1294,18 @@ class SingleThreadManager {
      */
     showNoDataMessage() {
         if (this.chart && !this.chart.isDisposed()) {
+            this.chart.clear();
             this.chart.setOption({
-                title: {
-                    show: true,
-                    text: '暂无数据',
+                graphic: [{
+                    type: 'text',
                     left: 'center',
                     top: 'center',
-                    textStyle: { color: '#94A3B8', fontSize: 14 }
-                }
+                    style: {
+                        text: '暂无数据',
+                        fill: '#94A3B8',
+                        fontSize: 14
+                    }
+                }]
             });
         }
     }

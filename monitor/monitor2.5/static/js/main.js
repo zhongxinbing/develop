@@ -124,10 +124,8 @@ function updateTooltip() {
  * 跳转到工具页面
  */
 function navigateToTool(toolId) {
-    // 使用 window.location.href 跳转到工具页面
+    // 先进入工具入口页，再由入口页选择“功能”或“性能”
     window.location.href = `/tool/${encodeURIComponent(toolId)}`;
-    // 使用 window.open 打开新窗口
-    // window.open(`/tool/${encodeURIComponent(toolId)}`, '_blank');
 }
 
 /**

@@ -30,30 +30,52 @@ class MultiThreadParser:
         casename_rule_dates = {}
         for casename, case_data in data.items():
 
-            case_data_runtime_json_path = DATA_DIR / tool_id / "original" / mode / casename / "runtime" 
-            case_data_memory_json_path = DATA_DIR / tool_id / "original" / mode / casename / "memory" 
-            if not case_data_runtime_json_path.exists():
-                case_data_runtime_json_path.mkdir(parents=True, exist_ok=True)
-            if not case_data_memory_json_path.exists():
-                case_data_memory_json_path.mkdir(parents=True, exist_ok=True)
+            case_data_cputime_json_path = DATA_DIR / tool_id / "original" / mode / casename / "cputime" 
+            case_data_peakmem_json_path = DATA_DIR / tool_id / "original" / mode / casename / "peakmem" 
+            case_data_realtime_json_path = DATA_DIR / tool_id / "original" / mode / casename / "realtime" 
+            case_data_incmen_json_path = DATA_DIR / tool_id / "original" / mode / casename / "incmen" 
+            case_data_realtimeincmen_json_path = DATA_DIR / tool_id / "original" / mode / casename / "realtimeincmen" 
+
+            if not case_data_cputime_json_path.exists():
+                case_data_cputime_json_path.mkdir(parents=True, exist_ok=True)
+            if not case_data_peakmem_json_path.exists():
+                case_data_peakmem_json_path.mkdir(parents=True, exist_ok=True)
 
             case_pasre_data, threads_result = self.parse_case_data(case_data)
-            rule_dates_runtime = {}
-            rule_dates_memory = {}
+            rule_dates_cputime = {}
+            rule_dates_peakmem = {}
+            rule_dates_realtime = {}
+            rule_dates_incmen = {}
+            rule_dates_realtimeincmen = {}
             for rule, rule_data in case_pasre_data.items():
-                self.increment_rule_data(rule_data["runtime"], case_data_runtime_json_path / f"{rule}.json")
-                self.increment_rule_data(rule_data["memory"], case_data_memory_json_path / f"{rule}.json")
+                self.increment_rule_data(rule_data["cputime"], case_data_cputime_json_path / f"{rule}.json")
+                self.increment_rule_data(rule_data["peakmem"], case_data_peakmem_json_path / f"{rule}.json")
+                self.increment_rule_data(rule_data["realtime"], case_data_realtime_json_path / f"{rule}.json")
+                self.increment_rule_data(rule_data["incmen"], case_data_incmen_json_path / f"{rule}.json")
+                self.increment_rule_data(rule_data["realtimeincmen"], case_data_realtimeincmen_json_path / f"{rule}.json")
 
-                rule_dates_runtime[rule] = {
-                    "dates": rule_data["runtime"].get("dates", []),
-                    "all_threads": rule_data["runtime"].get("all_threads", []),
+                rule_dates_cputime[rule] = {
+                    "dates": rule_data["cputime"].get("dates", []),
+                    "all_threads": rule_data["cputime"].get("all_threads", []),
                 }
-                rule_dates_memory[rule] = {
-                    "dates": rule_data["memory"].get("dates", []),
-                    "all_threads": rule_data["memory"].get("all_threads", []),
+                rule_dates_peakmem[rule] = {
+                    "dates": rule_data["peakmem"].get("dates", []),
+                    "all_threads": rule_data["peakmem"].get("all_threads", []),
+                }
+                rule_dates_realtime[rule] = {
+                    "dates": rule_data["realtime"].get("dates", []),
+                    "all_threads": rule_data["realtime"].get("all_threads", []),
+                }
+                rule_dates_incmen[rule] = {
+                    "dates": rule_data["incmen"].get("dates", []),
+                    "all_threads": rule_data["incmen"].get("all_threads", []),
+                }
+                rule_dates_realtimeincmen[rule] = {
+                    "dates": rule_data["realtimeincmen"].get("dates", []),
+                    "all_threads": rule_data["realtimeincmen"].get("all_threads", []),
                 }
 
-            casename_rule_dates[casename] = {"runtime": rule_dates_runtime, "memory": rule_dates_memory}
+            casename_rule_dates[casename] = {"cputime": rule_dates_cputime, "peakmem": rule_dates_peakmem, "realtime": rule_dates_realtime, "incmen": rule_dates_incmen, "realtimeincmen": rule_dates_realtimeincmen}
             for date, rule_data in threads_result.items():
                 for rule, thread_metrics in rule_data.items():
                     threads_json_path = DATA_DIR / tool_id / "original" / "thread" / casename / date / f"{rule}.json"
@@ -62,12 +84,13 @@ class MultiThreadParser:
                     threads = sorted(thread_metrics["threads"])
                     threads_result_sorted = {
                         "threads": threads,
-                        "runtime": [thread_metrics["runtime"][thread_metrics["threads"].index(thread)] for thread in threads],
-                        "memory": [thread_metrics["memory"][thread_metrics["threads"].index(thread)] for thread in threads],
+                        "cputime": [thread_metrics["cputime"][thread_metrics["threads"].index(thread)] for thread in threads],
+                        "peakmem": [thread_metrics["peakmem"][thread_metrics["threads"].index(thread)] for thread in threads],
+                        "realtime": [thread_metrics["realtime"][thread_metrics["threads"].index(thread)] for thread in threads],
+                        "incmen": [thread_metrics["incmen"][thread_metrics["threads"].index(thread)] for thread in threads],
+                        "realtimeincmen": [thread_metrics["realtimeincmen"][thread_metrics["threads"].index(thread)] for thread in threads],
                     }
                     save_tool_data(threads_json_path, threads_result_sorted)
-
-
 
         return casename_rule_dates
         # 根据前端需要返回数据结构
@@ -88,20 +111,35 @@ class MultiThreadParser:
 
             for rule, thread_metrics in metrics_rules.items():
                 if rule not in threads_result[date]:
-                    threads_result[date][rule] = {'threads': [], 'runtime': [], 'memory': []}
+                    threads_result[date][rule] = {'threads': [], 'cputime': [], 'peakmem': [], 'realtime': [], 'incmen': [], 'realtimeincmen': []}
                 if rule not in parse_result:
                     parse_result[rule] = {
-                        "runtime": {"dates": [], "rules": {}, "crash_dates": [], "overall_data": None, "all_threads": []},
-                        "memory": {"dates": [], "rules": {}, "crash_dates": [], "overall_data": None, "all_threads": []},
+                        "cputime": {"dates": [], "rules": {}, "crash_dates": [], "overall_data": None, "all_threads": []},
+                        "peakmem": {"dates": [], "rules": {}, "crash_dates": [], "overall_data": None, "all_threads": []},
+                        "realtime": {"dates": [], "rules": {}, "crash_dates": [], "overall_data": None, "all_threads": []},
+                        "incmen": {"dates": [], "rules": {}, "crash_dates": [], "overall_data": None, "all_threads": []},
+                        "realtimeincmen": {"dates": [], "rules": {}, "crash_dates": [], "overall_data": None, "all_threads": []},
                     }
 
-                parse_result[rule]["runtime"]["crash_dates"] = crash_dates
-                parse_result[rule]["runtime"], threads_result[date][rule] = self.parse_rule_runtime_and_memory(
-                    rule, thread_metrics, date, parse_result[rule]["runtime"], "runtime", threads_result[date][rule]
+                parse_result[rule]["cputime"]["crash_dates"] = crash_dates
+                parse_result[rule]["cputime"], threads_result[date][rule] = self.parse_rule_runtime_and_memory(
+                    rule, thread_metrics, date, parse_result[rule]["cputime"], "cputime", threads_result[date][rule]
                 )
-                parse_result[rule]["memory"]["crash_dates"] = crash_dates
-                parse_result[rule]["memory"], threads_result[date][rule] = self.parse_rule_runtime_and_memory(
-                    rule, thread_metrics, date, parse_result[rule]["memory"], "memory", threads_result[date][rule]
+                parse_result[rule]["peakmem"]["crash_dates"] = crash_dates
+                parse_result[rule]["peakmem"], threads_result[date][rule] = self.parse_rule_runtime_and_memory(
+                    rule, thread_metrics, date, parse_result[rule]["peakmem"], "peakmem", threads_result[date][rule]
+                )
+                parse_result[rule]["realtime"]["crash_dates"] = crash_dates
+                parse_result[rule]["realtime"], threads_result[date][rule] = self.parse_rule_runtime_and_memory(
+                    rule, thread_metrics, date, parse_result[rule]["realtime"], "realtime", threads_result[date][rule]
+                )
+                parse_result[rule]["incmen"]["crash_dates"] = crash_dates
+                parse_result[rule]["incmen"], threads_result[date][rule] = self.parse_rule_runtime_and_memory(
+                    rule, thread_metrics, date, parse_result[rule]["incmen"], "incmen", threads_result[date][rule]
+                )
+                parse_result[rule]["realtimeincmen"]["crash_dates"] = crash_dates
+                parse_result[rule]["realtimeincmen"], threads_result[date][rule] = self.parse_rule_runtime_and_memory(
+                    rule, thread_metrics, date, parse_result[rule]["realtimeincmen"], "realtimeincmen", threads_result[date][rule]
                 )
 
         return parse_result, threads_result
@@ -120,8 +158,11 @@ class MultiThreadParser:
                 parse_result["all_threads"].append(thread_num)
             if thread_num not in threads_result['threads']:
                 threads_result['threads'].append(thread_num)
-                threads_result['runtime'].append(thread_data.get('runtime'))
-                threads_result['memory'].append(thread_data.get('memory'))
+                threads_result['cputime'].append(thread_data.get('cputime'))
+                threads_result['peakmem'].append(thread_data.get('peakmem'))
+                threads_result['realtime'].append(thread_data.get('realtime'))
+                threads_result['incmen'].append(thread_data.get('incmen'))
+                threads_result['realtimeincmen'].append(thread_data.get('realtimeincmen'))
 
         return parse_result, threads_result
 

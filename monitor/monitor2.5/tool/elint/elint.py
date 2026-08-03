@@ -65,6 +65,8 @@ def load_json(path):
 
 def gen_dict_data(caseData, data, thread, type):
     """生成字典数据"""
+
+    rules=["Overall", "read_design", "check_lint", "save_session"]
     rule_data = {}
     for item in data:
         rulename = item[0]
@@ -82,11 +84,22 @@ def gen_dict_data(caseData, data, thread, type):
                 realtimeincmen = item[5]
             else:
                 realtimeincmen = float(item[5])
-        
-        rule_data[rulename] = {
-            "runtime": cputime,
-            "memory": peakmem
-        }
+        if rulename in rules:
+            rule_data[rulename] = {
+                    "cputime": cputime,
+                    "peakmem": peakmem,
+                    "realtime": -1 if type == 1 else realtime,
+                    "incmen": -1 if type == 1 else incmen,
+                    "realtimeincmen": -1 if type == 1 else realtimeincmen
+                }
+        else:    
+            rule_data[rulename] = {
+                "cputime": cputime,
+                "peakmem": peakmem,
+                "realtime": -1 if type == 1 else realtime,
+                "incmen": -1 if type == 1 else incmen,
+                "realtimeincmen": -1 if type == 1 else realtimeincmen
+            }
     
     return rule_data
 

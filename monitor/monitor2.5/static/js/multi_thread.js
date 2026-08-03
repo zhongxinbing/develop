@@ -4,7 +4,7 @@
 class MultiThreadManager {
     constructor() {
         this.chart = null;
-        this.currentChartType = 'runtime';
+        this.currentChartType = 'cputime'; // 默认显示 CPU 时间，可根据需要切换为 'peakmem' 或其他类型
         this.selectedCasename = '';
         this.selectedRules = ['Overall'];
         this.selectedDates = [];
@@ -442,6 +442,7 @@ class MultiThreadManager {
     async renderChart() {
         if (!this.selectedCasename) {
             console.log('renderChart: 未选择 casename');
+            this.showNoDataMessage('请先选择一个项目');
             return;
         }
         
@@ -1199,16 +1200,20 @@ class MultiThreadManager {
     /**
      * 显示无数据提示
      */
-    showNoDataMessage() {
+    showNoDataMessage(str = '暂无数据') {
         if (this.chart && !this.chart.isDisposed()) {
+            this.chart.clear();
             this.chart.setOption({
-                title: {
-                    show: true,
-                    text: '暂无数据',
+                graphic: [{
+                    type: 'text',
                     left: 'center',
                     top: 'center',
-                    textStyle: { color: '#94A3B8', fontSize: 14 }
-                }
+                    style: {
+                        text: str,
+                        fill: '#94A3B8',
+                        fontSize: 14
+                    }
+                }]
             });
         }
     }

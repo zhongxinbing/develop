@@ -2,10 +2,19 @@
     "threads": [
         2
     ],
-    "runtime": [
-        962.211
+    "cputime": [
+        null
     ],
-    "memory": [
-        40042.465
+    "peakmem": [
+        null
+    ],
+    "realtime": [
+        null
+    ],
+    "incmen": [
+        null
+    ],
+    "realtimeincmen": [
+        null
     ]
 }

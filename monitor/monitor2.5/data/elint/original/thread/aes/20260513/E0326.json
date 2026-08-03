@@ -3,12 +3,24 @@
         2,
         4
     ],
-    "runtime": [
-        25.0,
-        0.0
+    "cputime": [
+        null,
+        null
     ],
-    "memory": [
-        198.0,
-        198.0
+    "peakmem": [
+        null,
+        null
+    ],
+    "realtime": [
+        null,
+        null
+    ],
+    "incmen": [
+        null,
+        null
+    ],
+    "realtimeincmen": [
+        null,
+        null
     ]
 }

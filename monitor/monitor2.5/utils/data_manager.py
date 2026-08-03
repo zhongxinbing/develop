@@ -176,13 +176,10 @@ class DataManager:
         """将 cputime / easepletime / peakmem / incmem 归并到 runtime / memory 基础分组。"""
         key = (chart_type or 'runtime').strip().lower()
         runtime_aliases = {
-            'runtime', 'cputime', 'cpu', 'cputime', 'elapsedtime', 'easpletime', 'easepletime',
-            'elapsetime', 'elaspetime', 'realtime', 'real_time', 'real-time'
+            'runtime', 'cputime', 'realtime'
         }
         memory_aliases = {
-            'memory', 'peakmem', 'peak_mem', 'peak-memory', 'incmem', 'inc_mem', 'incmemory', 'incrementmem',
-            'realtimeincmem', 'real_time_inc_mem', 'real-time-inc-mem', 'real_time_inc_mem',
-            'realtimeincmems'
+            'memory', 'peakmem', 'incmem', 'realtimeincmem', 
         }
         if key in runtime_aliases:
             return 'runtime'
@@ -195,19 +192,17 @@ class DataManager:
         tool_id = frond_data.get('toolID', '')
         casename = frond_data.get('casename', '')
         mode = frond_data.get('mode', 'single')
-        chart_type = frond_data.get('chart_type', 'runtime')
+        chart_type = frond_data.get('chart_type', 'cputime')
         rules = frond_data.get('rules', [])
         dates = frond_data.get('dates', [])
         selected_threads = frond_data.get('selected_threads', [])
 
         if not rules:
             return {"dates": dates, "rules": {}, "crash_dates": [], "overall_data": {}, "selected_threads": []}
-
-        normalized_chart_type = self.resolve_chart_group(chart_type)
-        data_path = DATA_DIR / tool_id / "original" / mode / casename / normalized_chart_type / f'{rules[0]}.json'
+        
+        data_path = DATA_DIR / tool_id / "original" / mode / casename / chart_type / f'{rules[0]}.json'
         if not data_path.exists():
-            fallback_chart_type = 'runtime' if normalized_chart_type == 'memory' else 'memory'
-            fallback_path = DATA_DIR / tool_id / "original" / mode / casename / fallback_chart_type / f'{rules[0]}.json'
+            fallback_path = DATA_DIR / tool_id / "original" / mode / casename / chart_type / f'{rules[0]}.json'
             if fallback_path.exists():
                 data_path = fallback_path
         case_rule_data = load_tool_data(data_path) or {}
@@ -253,6 +248,7 @@ class DataManager:
         chioce_data["crash_dates"] = list(crash_dates)
         if mode == "multi":
             chioce_data["selected_threads"] = case_rule_data.get("all_threads", [])
+
         return chioce_data
 
 

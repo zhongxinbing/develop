@@ -914,6 +914,87 @@ body {
     font-size: 14px;
 }
 
+.tool-view-nav {
+    display: flex;
+    justify-content: center;
+    gap: var(--spacing-2);
+    padding: var(--spacing-4) var(--spacing-4) 0;
+    background: var(--bg-base);
+    border-bottom: 1px solid var(--border-subtle);
+}
+
+.tool-view-item {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 120px;
+    padding: var(--spacing-2) var(--spacing-5);
+    border-radius: 999px;
+    background: transparent;
+    border: 1px solid var(--border-default);
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all var(--transition-fast);
+}
+
+.tool-view-item:hover {
+    border-color: var(--primary);
+    color: var(--text-primary);
+}
+
+.tool-view-item.active {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: var(--bg-deep);
+}
+
+.tool-view-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 10px;
+    min-height: 180px;
+    padding: 20px 18px;
+    border-radius: var(--radius-xl);
+    border: 1px solid var(--border-default);
+    background: linear-gradient(135deg, rgba(19, 25, 39, 0.9), rgba(30, 41, 59, 0.9));
+    color: var(--text-primary);
+    text-decoration: none;
+    box-shadow: var(--shadow-md);
+    transition: transform var(--transition-fast), border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.tool-view-card:hover {
+    transform: translateY(-2px);
+    border-color: var(--primary);
+    box-shadow: var(--glow-primary);
+}
+
+.tool-view-card .tool-card-icon {
+    width: 42px;
+    height: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    background: rgba(0, 229, 255, 0.08);
+    color: var(--primary);
+    font-size: 22px;
+}
+
+.tool-view-card h3 {
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.tool-view-card p {
+    color: var(--text-secondary);
+    font-size: 13px;
+    line-height: 1.6;
+}
+
 /* 二级导航 */
 .mode-nav {
     display: flex;

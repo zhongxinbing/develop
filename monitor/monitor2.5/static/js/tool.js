@@ -2,8 +2,9 @@
  * 工具页面逻辑 - 主控制器
  */
 
-// 从 URL 获取工具 ID
-const toolId = window.location.pathname.split('/').pop();
+// 从 URL 获取工具 ID，兼容 /tool/<tool_id> /tool/<tool_id>/feature /tool/<tool_id>/performance
+const pathParts = window.location.pathname.split('/').filter(Boolean);
+const toolId = pathParts[0] === 'tool' && pathParts.length >= 2 ? pathParts[1] : pathParts[pathParts.length - 1];
 window.toolId = toolId;
 
 // 全局状态
@@ -11,21 +12,14 @@ let toolConfig = null;
 let rawData = {};
 let userAddedData = {};
 let currentMode = 'single';
-let currentChartType = 'runtime';
+let currentChartType = 'cputime';
 let threadChart = null;
 const CHART_GROUP_MAP = {
-    runtime: 'runtime',
     cputime: 'runtime',
-    easpletime: 'runtime',
-    easepletime: 'runtime',
-    elapsedtime: 'runtime',
     realtime: 'runtime',
-    memory: 'memory',
     peakmem: 'memory',
     incmem: 'memory',
-    realtimeincmem: 'memory',
-    'real-time-inc-mem': 'memory',
-    'real_time_inc_mem': 'memory'
+    realtimeincmem: 'memory'
 };
 
 // 模块实例
@@ -43,16 +37,40 @@ function getDefaultSubChart(group) {
 }
 
 function getActiveChartFromSidebar(sidebarId) {
-    const activeSubMenuItem = document.querySelector(`#${sidebarId} .sub-menu-item.active`);
-    if (activeSubMenuItem && activeSubMenuItem.dataset.chart) {
-        return activeSubMenuItem.dataset.chart;
+    const sidebar = document.getElementById(sidebarId);
+    if (!sidebar) return 'cputime';
+
+    const activeSubMenuItem = sidebar.querySelector('.sub-menu-item.active');
+    if (activeSubMenuItem) {
+        return activeSubMenuItem.dataset.chart || activeSubMenuItem.dataset.threadChart || 'cputime';
     }
-    const activeMenuItem = document.querySelector(`#${sidebarId} .menu-item.active`);
-    const menuChart = activeMenuItem ? activeMenuItem.dataset.chart : 'runtime';
+
+    const activeMenuItem = sidebar.querySelector('.menu-item.active');
+    const menuChart = activeMenuItem ? (activeMenuItem.dataset.chart || activeMenuItem.dataset.threadChart) : 'runtime';
     if (menuChart === 'runtime' || menuChart === 'memory') {
         return getDefaultSubChart(resolveChartGroup(menuChart));
     }
-    return menuChart || 'runtime';
+    return menuChart || 'cputime';
+}
+
+function syncSidebarSelection(sidebarId, selectedChartType) {
+    const sidebar = document.getElementById(sidebarId);
+    if (!sidebar) return;
+
+    const group = resolveChartGroup(selectedChartType);
+    sidebar.querySelectorAll('.menu-item').forEach(menuItem => {
+        const menuKey = menuItem.dataset.chart || menuItem.dataset.threadChart;
+        const isActive = menuKey === group;
+        menuItem.classList.toggle('active', isActive);
+    });
+
+    sidebar.querySelectorAll('.sub-menu-item').forEach(subItem => {
+        const subKey = subItem.dataset.chart || subItem.dataset.threadChart;
+        const isActive = subKey === selectedChartType;
+        subItem.classList.toggle('active', isActive);
+    });
+
+    syncGroupNavigation(sidebarId, group);
 }
 
 function syncGroupNavigation(sidebarId, expandedGroup) {
@@ -604,14 +622,8 @@ function initEventListeners() {
     const singleSubMenuItems = document.querySelectorAll('#singleSidebar .sub-menu-item');
     singleSubMenuItems.forEach(item => {
         item.addEventListener('click', () => {
-            const targetChart = item.dataset.chart;
-            const group = resolveChartGroup(targetChart);
-            document.querySelectorAll('#singleSidebar .menu-item').forEach(menuItem => {
-                menuItem.classList.toggle('active', menuItem.dataset.chart === group);
-            });
-            document.querySelectorAll('#singleSidebar .sub-menu-item').forEach(subItem => {
-                subItem.classList.toggle('active', subItem.dataset.chart === targetChart);
-            });
+            const targetChart = item.dataset.chart || 'cputime';
+            syncSidebarSelection('singleSidebar', targetChart);
             currentChartType = targetChart;
             if (singleThreadManager) {
                 singleThreadManager.setChartType(targetChart);
@@ -681,14 +693,8 @@ function initEventListeners() {
     const multiSubMenuItems = document.querySelectorAll('#multiSidebar .sub-menu-item');
     multiSubMenuItems.forEach(item => {
         item.addEventListener('click', () => {
-            const targetChart = item.dataset.chart;
-            const group = resolveChartGroup(targetChart);
-            document.querySelectorAll('#multiSidebar .menu-item').forEach(menuItem => {
-                menuItem.classList.toggle('active', menuItem.dataset.chart === group);
-            });
-            document.querySelectorAll('#multiSidebar .sub-menu-item').forEach(subItem => {
-                subItem.classList.toggle('active', subItem.dataset.chart === targetChart);
-            });
+            const targetChart = item.dataset.chart || 'cputime';
+            syncSidebarSelection('multiSidebar', targetChart);
             currentChartType = targetChart;
             if (multiThreadManager) {
                 multiThreadManager.setChartType(targetChart);
@@ -715,14 +721,8 @@ function initEventListeners() {
     const threadSubMenuItems = document.querySelectorAll('#threadSidebar .sub-menu-item');
     threadSubMenuItems.forEach(item => {
         item.addEventListener('click', () => {
-            const chartType = item.dataset.threadChart || 'runtime';
-            const group = resolveChartGroup(chartType);
-            document.querySelectorAll('#threadSidebar .menu-item').forEach(menuItem => {
-                menuItem.classList.toggle('active', menuItem.dataset.threadChart === group);
-            });
-            document.querySelectorAll('#threadSidebar .sub-menu-item').forEach(subItem => {
-                subItem.classList.toggle('active', subItem.dataset.threadChart === chartType);
-            });
+            const chartType = item.dataset.threadChart || 'cputime';
+            syncSidebarSelection('threadSidebar', chartType);
             if (threadChartManager) {
                 threadChartManager.setChartType(chartType);
             }

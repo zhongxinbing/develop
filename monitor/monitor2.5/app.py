@@ -2,6 +2,7 @@
 Flask主应用 - 性能监控平台后端
 """
 import uuid
+import json
 from pathlib import Path
 
 from flask import Flask, jsonify, render_template, request, session
@@ -35,10 +36,20 @@ def config_page():
     """配置页面"""
     return render_template('config.html')
 
-@app.route('/tool/<tool_id>')
+@app.route('/tool/<tool_id>/feature')
+def tool_feature(tool_id):
+    """功能页"""
+    return render_template('tool_feature.html', tool_id=tool_id)
+
+@app.route('/tool/<tool_id>/performance')
 def tool_page(tool_id):
-    """工具页面"""
+    """性能页（原工具页面）"""
     return render_template('tool.html', tool_id=tool_id)
+
+@app.route('/tool/<tool_id>')
+def tool_overview(tool_id):
+    """工具入口页：选择功能或性能"""
+    return render_template('tool_overview.html', tool_id=tool_id)
 ################################################################### 配置信息 ###################################################################
 # 从前端表单中获取新配置的数据并保存
 @app.route('/api/tools', methods=['POST'])
@@ -124,6 +135,7 @@ def api_load_tool_data(tool_id):
     """加载工具数据（使用分层存储）"""
     user_id = get_user_id()
     all_data, message = data_manager.load_single_or_multi_chart(tool_id, user_id)
+
     return jsonify({'success': True, 'data': all_data, 'message': message})
     
 # 从前端获取图需要显示数据，解析后返回图表数据   ->>>>>  单线线程 多线程
@@ -131,7 +143,7 @@ def api_load_tool_data(tool_id):
 def api_get_chart_data():
     """获取图表数据（支持Runtime和Memory）"""
     data = request.json
-    logger.error(f"收到用户 {get_user_id()} 请求图表数据: {data}")
+
     chioce_data = data_manager.send_data_to_frontend_for_chart(data)
 
     return jsonify({'success': True, 'data': chioce_data})

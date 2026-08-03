@@ -31,21 +31,35 @@ class SingleThreadParser:
             dates = sorted(list(daily_metrics.keys()))
             crash_dates = self.judge_date_is_overall(dates, daily_metrics)
 
-            rule_data_runtime = {}
-            rule_data_memory = {}
+            rule_dates_cputime = {}
+            rule_dates_peakmem = {}
+            rule_dates_realtime = {}
+            rule_dates_incmen = {}
+            rule_dates_realtimeincmen = {}
             for date in dates:
                 rule_results = daily_metrics[date]
                 for rule, result in rule_results.items():
                     # 记录有那些 日期
+                    rule_dates_cputime.setdefault(rule, {})[date] = result.get('cputime', {})
+                    rule_dates_peakmem.setdefault(rule, {})[date] = result.get('peakmem', {})
+                    rule_dates_realtime.setdefault(rule, {})[date] = result.get('realtime', {})
+                    rule_dates_incmen.setdefault(rule, {})[date] = result.get('incmen', {})
+                    rule_dates_realtimeincmen.setdefault(rule, {})[date] = result.get('realtimeincmen', {})
 
-                    rule_data_runtime.setdefault(rule, {})[date] = result.get('runtime', {})
-                    rule_data_memory.setdefault(rule, {})[date] = result.get('memory', {})
-            rule_dates_runtime = self.record_paser_rules(tool_id, casename, rule_data_runtime, crash_dates, 'runtime')
-            rule_dates_memory = self.record_paser_rules(tool_id, casename, rule_data_memory, crash_dates, 'memory')
+            rule_dates_cputime = self.record_paser_rules(tool_id, casename, rule_dates_cputime, crash_dates, 'cputime')
+            rule_dates_peakmem = self.record_paser_rules(tool_id, casename, rule_dates_peakmem, crash_dates, 'peakmem')
+            rule_dates_realtime = self.record_paser_rules(tool_id, casename, rule_dates_realtime, crash_dates, 'realtime')
+            rule_dates_incmen = self.record_paser_rules(tool_id, casename, rule_dates_incmen, crash_dates, 'incmen')
+            rule_dates_realtimeincmen = self.record_paser_rules(tool_id, casename, rule_dates_realtimeincmen, crash_dates, 'realtimeincmen')
             casename_rule_dates[casename] = {
-                'runtime': rule_dates_runtime,
-                'memory': rule_dates_memory
+                'cputime': rule_dates_cputime,
+                'peakmem': rule_dates_peakmem,
+                'realtime': rule_dates_realtime,
+                'incmen': rule_dates_incmen,
+                'realtimeincmen': rule_dates_realtimeincmen
             }
+
+        logger.warning(f"解析单线程数据完成，casename_rule_dates: {casename_rule_dates}")
         return casename_rule_dates
     # 记录解析到的规则数据
     def record_paser_rules(self, tool_id: str, casename: str, runtime_or_memory_data: Dict, crash_dates: List[str], type: str):
@@ -53,11 +67,12 @@ class SingleThreadParser:
         记录解析到的规则数据
         
         参数:
-            rule_data_runtime: 运行时数据
-            rule_data_memory: 内存数据
+            rule_dates_cputime: 运行时数据
+            rule_dates_peakmem: 内存数据
         """
         # 记录 rule 有那些日期
         rule_dates = {}
+        logger.info(f"开始记录解析到的规则数据，tool_id: {tool_id}, casename: {casename}, type: {type}")
         for rule, data in runtime_or_memory_data.items():
             rule_path = DATA_DIR / tool_id / "original" / 'single' / casename  / type /f'{rule}.json'
             if not rule_path.exists():
