@@ -735,14 +735,21 @@ function initEventListeners() {
  */
 function showLoading(show) {
     const refreshBtn = document.getElementById('refreshBtn');
-    if (refreshBtn) {
-        if (show) {
-            refreshBtn.disabled = true;
-            refreshBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i><span>加载中...</span>';
-        } else {
-            refreshBtn.disabled = false;
-            refreshBtn.innerHTML = '↩<span>刷新</span>';
-        }
+    const chartOverlay = document.getElementById('chartLoadingOverlay');
+
+    // if (refreshBtn) {
+    //     if (show) {
+    //         refreshBtn.disabled = true;
+    //         refreshBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i><span>加载中...</span>';
+    //     } else {
+    //         refreshBtn.disabled = false;
+    //         refreshBtn.innerHTML = '↩<span>刷新</span>';
+    //     }
+    // }
+
+    if (chartOverlay) {
+        chartOverlay.classList.toggle('visible', Boolean(show));
+        chartOverlay.setAttribute('aria-busy', show ? 'true' : 'false');
     }
 }
 
