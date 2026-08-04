@@ -146,8 +146,9 @@ def api_get_chart_data():
     data = request.json
     # time.sleep(30) 
     chioce_data = data_manager.send_data_to_frontend_for_chart(data)
-
+    # logger.error(f"获取图表数据: {chioce_data}")
     return jsonify({'success': True, 'data': chioce_data})
+
 # 从前端获取图需要显示数据，解析后返回图表数据   ->>>>>  线程数
 @app.route('/api/thread/chart/data', methods=['POST'])
 def api_get_thread_chart_data():
@@ -163,9 +164,9 @@ def api_get_thread_chart_data():
 # 数据对比
 @app.route('/api/comparison', methods=['POST'])
 def api_get_comparison():
-    """获取对比数据"""
+    """获取对比数据（版本对比 & 线程对比）"""
     data = request.json
-    
+
     tool_id = data.get('tool_id', '')
     mode = data.get('mode', 'single')
     casename = data.get('casename', '')
@@ -176,11 +177,21 @@ def api_get_comparison():
     runtime_threshold = float(data.get('runtime_threshold', 0))
     memory_threshold = float(data.get('memory_threshold', 0))
     error_mode = data.get('error_mode', 'absolute')
-    
-    logger.info(f"收到用户 {get_user_id()} 请求对比数据: {tool_id} {mode} {casename} {date1} {date2} {compare_mode} {dimension} {runtime_threshold} {memory_threshold} {error_mode}")
+    threads = data.get('threads', [])
+    compare_type = data.get('compare_type', 'version')
 
-    compare_result = data_manager.compare_data(tool_id, mode, casename, date1, date2, compare_mode, dimension, runtime_threshold, memory_threshold, error_mode)
-    
+    logger.info(f"收到对比请求: {tool_id} {mode} {casename} {date1} {date2} "
+                f"compare_mode={compare_mode} dimension={dimension} "
+                f"runtime_threshold={runtime_threshold} memory_threshold={memory_threshold} "
+                f"error_mode={error_mode} threads={threads} compare_type={compare_type}")
+
+    compare_result = data_manager.compare_data(
+        tool_id, mode, casename, date1, date2,
+        compare_mode, dimension, runtime_threshold,
+        memory_threshold, error_mode, threads,
+        compare_type=compare_type
+    )
+
     return jsonify({'success': True, 'data': compare_result})
 
 

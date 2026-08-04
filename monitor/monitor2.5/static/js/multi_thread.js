@@ -1,10 +1,11 @@
 /**
  * 多线程模块 - 处理多线程数据展示和图表渲染
+ * 已移除所有对比相关代码
  */
 class MultiThreadManager {
     constructor() {
         this.chart = null;
-        this.currentChartType = 'cputime'; // 默认显示 CPU 时间，可根据需要切换为 'peakmem' 或其他类型
+        this.currentChartType = 'cputime';
         this.selectedCasename = '';
         this.selectedRules = ['Overall'];
         this.selectedDates = [];
@@ -15,268 +16,120 @@ class MultiThreadManager {
         this.rawData = {};
         this.userAddedData = {};
         this.allData = {};
-        
-        // ID前缀：使用 'multi' 前缀区分
+
         this.idPrefix = 'multi';
-        
-        // DOM 元素（延迟初始化，在 init 中获取）
+
+        // DOM 元素（仅保留筛选控件和线程选择器）
         this.casenameSelect = null;
         this.ruleSelect = null;
         this.ruleSearch = null;
         this.datePickerBtn = null;
         this.latest50Btn = null;
         this.addDataBtn = null;
-        
-        // 线程选择器元素
         this.threadSelectorContainer = null;
         this.threadOptions = null;
         this.selectedThreadsDisplay = null;
         this.threadSearchInput = null;
-        
-        // 对比面板元素
-        this.compCasenameSelect = null;
-        this.confirmCompareBtn = null;
-        this.exportCompareBtn = null;
-        this.date1Select = null;
-        this.date2Select = null;
-        this.compareModeSelect = null;
-        this.dimensionSelect = null;
-        this.runtimeThreshold = null;
-        this.memoryThreshold = null;
-        this.errorModeSelect = null;
-        
-        // 绑定方法
+
         this.renderChart = this.renderChart.bind(this);
         this.updateRulesAndDates = this.updateRulesAndDates.bind(this);
-        this.performComparison = this.performComparison.bind(this);
-        this.exportComparison = this.exportComparison.bind(this);
         this.toggleDropdown = this.toggleDropdown.bind(this);
         this.selectAllThreads = this.selectAllThreads.bind(this);
         this.clearAllThreads = this.clearAllThreads.bind(this);
     }
 
-    /**
-     * 同步对比面板的 casename 选项
-     */
-    syncComparisonCasenameSelect() {
-        if (!this.compCasenameSelect) return;
-        
-        // 只显示有多线程数据的项目
-        const casenames = Object.keys(this.allData).filter(name => {
-            const data = this.allData[name];
-            if (!data || typeof data !== 'object' || !data.daily_metrics) return false;
-            
-            // 检查是否包含 thread_metrics
-            for (const dateMetrics of Object.values(data.daily_metrics)) {
-                if (dateMetrics && typeof dateMetrics === 'object') {
-                    for (const ruleData of Object.values(dateMetrics)) {
-                        if (ruleData && ruleData.thread_metrics) {
-                            return true;
-                        }
-                    }
-                }
-            }
-            return false;
-        });
-        
-        const currentValue = this.compCasenameSelect.value;
-        const options = casenames.map(name => 
-            `<option value="${this.escapeHtml(name)}">${this.escapeHtml(name)}</option>`
-        ).join('');
-        
-        this.compCasenameSelect.innerHTML = options;
-        
-        if (currentValue && casenames.includes(currentValue)) {
-            this.compCasenameSelect.value = currentValue;
-        } else if (casenames.length > 0 && this.selectedCasename) {
-            this.compCasenameSelect.value = this.selectedCasename;
-        }
-    }
-
-    /**
-     * 初始化多线程模块
-     */
     async init(rawData, userAddedData, extraData) {
-        console.log('============================================================================');
-        console.log('============================================================================');
-        console.log('============================================================================');
-        console.log('============================================================================');
-        console.log('MultiThreadManager.init 开始',rawData);
-        
-        // 获取 DOM 元素
+        console.log('MultiThreadManager.init 开始', rawData);
+
         this.casenameSelect = document.getElementById(`${this.idPrefix}CasenameSelect`);
         this.ruleSelect = document.getElementById(`${this.idPrefix}RuleSelect`);
         this.ruleSearch = document.getElementById(`${this.idPrefix}RuleSearch`);
         this.datePickerBtn = document.getElementById(`${this.idPrefix}DatePickerBtn`);
         this.latest50Btn = document.getElementById(`${this.idPrefix}Latest50Btn`);
         this.addDataBtn = document.getElementById(`${this.idPrefix}AddDataBtn`);
-        
-        // 线程选择器元素
+
         this.threadSelectorContainer = document.getElementById(`${this.idPrefix}ThreadSelectorContainer`);
         this.threadOptions = document.getElementById(`${this.idPrefix}ThreadOptions`);
         this.selectedThreadsDisplay = document.getElementById(`${this.idPrefix}SelectedThreadsDisplay`);
         this.threadSearchInput = document.getElementById(`${this.idPrefix}ThreadSearchInput`);
-        
-        // 对比面板元素
-        this.compCasenameSelect = document.getElementById(`${this.idPrefix}CompCasenameSelect`);
-        this.confirmCompareBtn = document.getElementById(`${this.idPrefix}ConfirmCompareBtn`);
-        this.exportCompareBtn = document.getElementById(`${this.idPrefix}ExportCompareBtn`);
-        this.date1Select = document.getElementById(`${this.idPrefix}Date1Select`);
-        this.date2Select = document.getElementById(`${this.idPrefix}Date2Select`);
-        this.compareModeSelect = document.getElementById(`${this.idPrefix}CompareModeSelect`);
-        this.dimensionSelect = document.getElementById(`${this.idPrefix}DimensionSelect`);
-        this.runtimeThreshold = document.getElementById(`${this.idPrefix}RuntimeThreshold`);
-        this.memoryThreshold = document.getElementById(`${this.idPrefix}MemoryThreshold`);
-        this.errorModeSelect = document.getElementById(`${this.idPrefix}ErrorModeSelect`);
-        
-        // 清理和验证数据格式
-        // let cleanRawData = {};
-        
-        // if (rawData && typeof rawData === 'object') {
-        //     for (const [key, value] of Object.entries(rawData)) {
-        //         // 跳过内部字段
-        //         if (key === 'dataFiles' || key === '__multi_processed_logs__' || key === 'single' || key === 'multi') {
-        //             continue;
-        //         }
-                
-        //         // 验证多线程数据格式：必须有 daily_metrics 且内部有 thread_metrics
-        //         if (value && typeof value === 'object' && value.daily_metrics) {
-        //             // 检查是否包含多线程特征数据
-        //             let hasMultiThread = false;
-        //             for (const dateMetrics of Object.values(value.daily_metrics)) {
-        //                 if (dateMetrics && typeof dateMetrics === 'object') {
-        //                     for (const ruleData of Object.values(dateMetrics)) {
-        //                         if (ruleData && ruleData.thread_metrics) {
-        //                             hasMultiThread = true;
-        //                             break;
-        //                         }
-        //                     }
-        //                 }
-        //                 if (hasMultiThread) break;
-        //             }
-                    
-        //             if (hasMultiThread) {
-        //                 cleanRawData[key] = value;
-        //             } else {
-        //                 console.log(`MultiThread: 项目 ${key} 没有多线程数据特征，跳过`);
-        //             }
-        //         }
-        //     }
-        // }
-        
-        // this.rawData = cleanRawData;
+
         this.rawData = rawData;
         this.userAddedData = userAddedData || {};
         this.allData = { ...this.rawData, ...this.userAddedData };
-        this.extraData = extraData
-        
+        this.extraData = extraData;
+
         this.updateCasenameSelect();
         await this.updateRulesAndDates();
-        
-        // this.initThreadSelector();
         this.initEventListeners();
         this.initDatePickerModal();
         this.initAddDataModal();
-        
+
         if (this.allDates.length > 0) {
             this.selectLatest50Days();
         }
         this.updateOverview();
     }
 
-    /**
-     * 更新Casename选择框
-     */
     updateCasenameSelect() {
         if (!this.casenameSelect) return;
-        
-        // 只显示有多线程数据的项目
         const casenames = Object.keys(this.allData).filter(name => {
             const rule_dates = this.allData[name];
             return rule_dates;
         });
-        
-        const options = casenames.map(name => 
+        const options = casenames.map(name =>
             `<option value="${this.escapeHtml(name)}">${this.escapeHtml(name)}</option>`
         ).join('');
-        
         this.casenameSelect.innerHTML = options;
         if (casenames.length > 0 && !this.selectedCasename) {
             this.selectedCasename = casenames[0];
             this.casenameSelect.value = this.selectedCasename;
         }
-        
-        // 同步对比面板的 casename 选项
-        this.syncComparisonCasenameSelect();
     }
 
-    /**
-     * 更新Rules和Dates
-     */
     async updateRulesAndDates() {
         if (!this.selectedCasename || !this.allData[this.selectedCasename]) {
             console.log('updateRulesAndDates: 无有效的 casename', this.selectedCasename);
             return;
         }
-        console.log('updateRulesAndDates: 开始', this.selectedCasename);
-        // 从数据中获取规则和日期
         const caseData = this.allData[this.selectedCasename] || {};
-
-        // 提取所有规则
         const rulesSet = new Set(Object.keys(caseData[this.currentChartType]));
         this.allRules = Array.from(rulesSet).sort();
-        // 提取所有日期
-        
-        // 确保 Overall 在第一位
         if (this.allRules.includes('Overall')) {
             this.allRules = ['Overall', ...this.allRules.filter(r => r !== 'Overall')];
         }
-        
         this.updateRuleSelect();
-        // 更新线程选择框
-        // this.renderThreadOptions();
         this.updateDateSelects();
         this.updateOverview();
     }
 
-    /**
-     * 更新规则选择框
-     */
     updateRuleSelect() {
         if (!this.ruleSelect) return;
-        
         const searchTerm = this.ruleSearch ? this.ruleSearch.value.toLowerCase() : '';
-        const filteredRules = searchTerm 
+        const filteredRules = searchTerm
             ? this.allRules.filter(rule => rule.toLowerCase().includes(searchTerm))
             : this.allRules;
-        
-        const options = filteredRules.map(rule => 
+        const options = filteredRules.map(rule =>
             `<option value="${this.escapeHtml(rule)}" ${this.selectedRules.includes(rule) ? 'selected' : ''}>
                 ${this.escapeHtml(rule)}
             </option>`
         ).join('');
-        
         this.ruleSelect.innerHTML = options;
         this.ruleSelect.multiple = true;
         this.ruleSelect.size = 5;
     }
 
-    /**
-     * 更新日期选择框
-     */
     updateDateSelects() {
         const datesSet = new Set(this.allData[this.selectedCasename][this.currentChartType][this.ruleSelect.value]["dates"]);
         this.allDates = Array.from(datesSet).sort();
-        
+
         if (this.date1Select) {
-            const options = this.allDates.map(date => 
+            const options = this.allDates.map(date =>
                 `<option value="${date}">${this.formatDate(date)}</option>`
             ).join('');
             this.date1Select.innerHTML = options;
         }
-        
         if (this.date2Select) {
-            const options = this.allDates.map(date => 
+            const options = this.allDates.map(date =>
                 `<option value="${date}">${this.formatDate(date)}</option>`
             ).join('');
             this.date2Select.innerHTML = options;
@@ -284,15 +137,13 @@ class MultiThreadManager {
                 this.date2Select.value = this.allDates[this.allDates.length - 1];
             }
         }
-        // 获取 case 下 rule 下的 所有线程数
+
         const threadsSet = new Set(this.allData[this.selectedCasename][this.currentChartType][this.ruleSelect.value]["all_threads"]);
         this.selectedThreads = Array.from(threadsSet).sort((a, b) => a - b);
-
+        this.availableThreads = this.selectedThreads.slice();
+        this.renderThreadOptions();
     }
 
-    /**
-     * 更新项目概况
-     */
     updateOverview() {
         const totalCases = Object.keys(this.allData).length;
         const totalRules = this.allRules.length;
@@ -301,38 +152,29 @@ class MultiThreadManager {
         const totalCasesEl = document.getElementById('totalCases');
         const totalRulesEl = document.getElementById('totalRules');
         const totalDaysEl = document.getElementById('totalDays');
-        
+
         if (totalCasesEl) totalCasesEl.textContent = totalCases;
         if (totalRulesEl) totalRulesEl.textContent = totalRules;
         if (totalDaysEl) totalDaysEl.textContent = totalDays;
     }
 
-    /**
-     * 渲染线程选项
-     */
     renderThreadOptions() {
         if (!this.threadOptions) return;
-        
         if (this.availableThreads.length === 0) {
             this.threadOptions.innerHTML = '<div style="padding: 12px; text-align: center; color: #94A3B8;">暂无线程数据</div>';
             return;
         }
-        
-        this.threadOptions.innerHTML = this.availableThreads.map(thread => `
-            <label class="multi-select-option" style="display: flex; align-items: center; gap: 8px; padding: 8px 12px; cursor: pointer;">
-                <input type="checkbox" value="${thread}" 
+        this.threadOptions.innerHTML = this.availableThreads.map(thread =>
+            `<label class="multi-select-option" style="display: flex; align-items: center; gap: 8px; padding: 8px 12px; cursor: pointer;">
+                <input type="checkbox" value="${thread}"
                     ${this.selectedThreads.includes(thread) ? 'checked' : ''}
                     onchange="window.multiThreadManager && window.multiThreadManager.toggleThreadSelection(${thread}, this.checked)">
                 <span>${thread} 线程</span>
-            </label>
-        `).join('');
-        
+            </label>`
+        ).join('');
         this.updateSelectedThreadsDisplay();
     }
 
-    /**
-     * 切换线程选择
-     */
     toggleThreadSelection(thread, isSelected) {
         if (isSelected) {
             if (!this.selectedThreads.includes(thread)) {
@@ -346,12 +188,8 @@ class MultiThreadManager {
         this.renderChart();
     }
 
-    /**
-     * 更新线程显示
-     */
     updateSelectedThreadsDisplay() {
         if (!this.selectedThreadsDisplay) return;
-        
         if (this.selectedThreads.length === 0) {
             this.selectedThreadsDisplay.textContent = '未选择';
         } else if (this.selectedThreads.length <= 3) {
@@ -361,32 +199,22 @@ class MultiThreadManager {
         }
     }
 
-    /**
-     * 全选所有线程
-     */
     selectAllThreads() {
         this.selectedThreads = [...this.availableThreads];
         this.renderThreadOptions();
         this.renderChart();
     }
 
-    /**
-     * 清空所有线程
-     */
     clearAllThreads() {
         this.selectedThreads = [];
         this.renderThreadOptions();
         this.renderChart();
     }
 
-    /**
-     * 初始化线程选择器
-     */
     initThreadSelector() {
         if (this.threadSelectorContainer) {
             this.threadSelectorContainer.style.display = 'block';
         }
-        
         if (this.threadSearchInput) {
             this.threadSearchInput.addEventListener('input', (e) => {
                 this.filterThreadOptions(e.target.value);
@@ -394,13 +222,9 @@ class MultiThreadManager {
         }
     }
 
-    /**
-     * 过滤线程选项
-     */
     filterThreadOptions(searchTerm) {
         const options = document.querySelectorAll('.multi-select-option');
         const term = searchTerm.toLowerCase();
-        
         options.forEach(option => {
             const text = option.querySelector('span')?.textContent.toLowerCase() || '';
             if (term === '' || text.includes(term)) {
@@ -411,18 +235,12 @@ class MultiThreadManager {
         });
     }
 
-    /**
-     * 选择最近50天
-     */
     selectLatest50Days() {
         this.selectedDates = this.allDates.slice(-50);
         this.updateDatePickerModal();
         this.renderChart();
     }
 
-    /**
-     * 初始化图表容器
-     */
     initChartContainer() {
         const container = document.getElementById('mainChart');
         if (container) {
@@ -436,47 +254,34 @@ class MultiThreadManager {
         }
     }
 
-    /**
-     * 渲染图表 - 与单线程保持一致
-     */
     async renderChart() {
         if (!this.selectedCasename) {
             console.log('renderChart: 未选择 casename');
             this.showNoDataMessage('请先选择一个项目');
             return;
         }
-        
-        // 确保图表容器已初始化
         if (!this.chart || this.chart.isDisposed()) {
             this.initChartContainer();
-            if (!this.chart) {
-                console.error('renderChart: 图表实例不存在');
-                return;
-            }
+            if (!this.chart) return;
         }
-        
         if (this.selectedRules.length === 0) {
             this.selectedRules = ['Overall'];
         }
-        
         if (this.selectedDates.length === 0) {
             this.selectedDates = this.allDates.slice(-50);
         }
-
         if (this.selectedThreads.length === 0 && this.availableThreads.length > 0) {
             this.selectedThreads = [this.availableThreads[0]];
         }
-        
-        // 显示加载状态
+
         this.chart.showLoading({
             text: '加载中...',
             color: '#00E5FF',
             textColor: '#94A3B8',
             maskColor: 'rgba(11, 15, 26, 0.6)'
         });
-        
+
         try {
-            
             const requestData = {
                 toolID: window.toolId,
                 casename: this.selectedCasename,
@@ -485,18 +290,16 @@ class MultiThreadManager {
                 mode: 'multi',
                 chart_type: this.currentChartType,
                 selected_threads: this.selectedThreads,
-            }
-
+            };
+            console.error('renderChart: 开始', requestData);
             const response = await axios.post('/api/chart/data', requestData);
-            
+
             if (response.data.success) {
                 let chartData = response.data.data;
                 if (typeof chartData === 'string') {
                     chartData = JSON.parse(chartData);
                 }
-
                 this.chart.hideLoading();
-                
                 if (Object.keys(chartData.rules || {}).length === 0) {
                     this.showNoDataMessage();
                 } else {
@@ -515,9 +318,6 @@ class MultiThreadManager {
         }
     }
 
-    /**
-     * 绘制图表 - 与单线程保持一致的样式
-     */
     drawChart(chartData) {
         if (!this.chart || this.chart.isDisposed()) {
             this.initChartContainer();
@@ -525,12 +325,12 @@ class MultiThreadManager {
         }
         const { dates, rules, crash_dates, all_threads, selected_threads } = chartData;
         const normalizedType = (this.currentChartType || 'runtime').toLowerCase();
-        const isRuntime = normalizedType === 'runtime' || normalizedType === 'cputime' || normalizedType === 'easpletime' || normalizedType === 'easepletime' || normalizedType === 'elapsedtime' || normalizedType === 'realtime';
+        const isRuntime = normalizedType === 'runtime' || normalizedType === 'cputime' || normalizedType === 'realtime';
         const yAxisName = isRuntime ? 'Runtime (s)' : 'Memory (MB)';
-        
+
         const crashDatesSet = new Set(crash_dates || []);
         const formattedDates = dates.map(d => this.formatDate(d));
-        
+
         const getItemStyle = (date) => {
             if (this.extraData && this.extraData.cpu && this.extraData.cpu[date] && isRuntime) {
                 return { color: '#F59E0B', borderColor: '#D97706', borderWidth: 6 };
@@ -541,31 +341,23 @@ class MultiThreadManager {
             return null;
         };
 
-        // 线程颜色映射
         const threadColors = {
             0: '#00E5FF', 2: '#A855F7', 4: '#10B981',
             6: '#8d816b', 8: '#EF4444', 16: '#4102d3',
             32: '#EC4899', 64: '#14B8A6', 128: '#F97316'
         };
-        
-        // 获取当前显示的线程（用于统计）
+
         const visibleThreads = selected_threads || all_threads || [];
-        
         const series = [];
-        // 存储所有有效数据用于计算平均值
         let allValidValues = [];
+
         for (const [seriesName, ruleData] of Object.entries(rules)) {
-            // console.warn(ruleData)
             const values = ruleData.values || [];
             const thread = ruleData.thread || 0;
             const color = threadColors[thread] || '#A855F7';
-            const name = ruleData.rule_name
-            
-            // 收集有效值
             const validValues = values.filter(v => v !== null && v !== undefined);
             allValidValues = allValidValues.concat(validValues);
 
-            // 为每个数据点添加样式
             const dataWithStyle = values.map((val, idx) => {
                 const date = dates[idx];
                 const itemStyle = getItemStyle(date);
@@ -574,7 +366,7 @@ class MultiThreadManager {
                 }
                 return val;
             });
-            // console.warn(seriesName)
+
             series.push({
                 name: seriesName,
                 type: 'line',
@@ -588,7 +380,7 @@ class MultiThreadManager {
                 emphasis: { focus: 'series' }
             });
         }
-        // 计算平均值并添加虚线
+
         if (allValidValues.length > 0) {
             const avgValue = allValidValues.reduce((a, b) => a + b, 0) / allValidValues.length;
             const avgColor = isRuntime ? '#F59E0B' : '#EC4899';
@@ -598,27 +390,19 @@ class MultiThreadManager {
                 data: Array(dates.length).fill(avgValue),
                 smooth: false,
                 symbol: 'none',
-                lineStyle: { 
-                    width: 2, 
-                    color: avgColor,
-                    type: 'dashed'
-                },
+                lineStyle: { width: 2, color: avgColor, type: 'dashed' },
                 itemStyle: { color: avgColor },
                 emphasis: { focus: 'none' },
                 z: 1
             });
         }
-        // console.warn(series)
-        // 标记崩溃日期（红色背景区域）
+
         const markAreas = [];
-        console.warn(crashDatesSet)
         if (crashDatesSet.size > 0) {
             let startIndex = -1;
             for (let i = 0; i < dates.length; i++) {
                 if (crashDatesSet.has(dates[i])) {
-                    if (startIndex === -1) {
-                        startIndex = i;
-                    }
+                    if (startIndex === -1) startIndex = i;
                 } else {
                     if (startIndex !== -1) {
                         markAreas.push([{ xAxis: startIndex }, { xAxis: i - 1 }]);
@@ -734,8 +518,7 @@ class MultiThreadManager {
                 emphasis: { iconStyle: { borderColor: '#00E5FF' } }
             }
         };
-        
-        // 添加崩溃区域标记
+
         if (markAreas.length > 0 && series.length > 0) {
             option.series[0].markArea = {
                 silent: true,
@@ -747,10 +530,9 @@ class MultiThreadManager {
                 data: markAreas
             };
         }
-        
+
         this.chart.setOption(option, true);
-        
-        // 监听窗口大小变化
+
         if (!this._resizeHandler) {
             this._resizeHandler = () => {
                 if (this.chart && !this.chart.isDisposed()) {
@@ -761,30 +543,25 @@ class MultiThreadManager {
         }
     }
 
-    /**
-     * 更新统计信息 - 与单线程保持一致
-     */
     updateStatistics(chartData) {
         const { dates, overall_data } = chartData;
         const normalizedType = (this.currentChartType || 'runtime').toLowerCase();
-        const isRuntime = normalizedType === 'runtime' || normalizedType === 'cputime' || normalizedType === 'easpletime' || normalizedType === 'easepletime' || normalizedType === 'elapsedtime' || normalizedType === 'realtime';
-        
+        const isRuntime = normalizedType === 'runtime' || normalizedType === 'cputime' || normalizedType === 'realtime';
+
         if (!overall_data || !overall_data.values) {
             this.resetStatistics();
             return;
         }
-        
         const values = overall_data.values.filter(v => v !== null && v !== undefined);
         if (values.length === 0) {
             this.resetStatistics();
             return;
         }
-        
         const total = values.reduce((a, b) => a + b, 0);
         const avg = total / values.length;
         const max = Math.max(...values);
         const min = Math.min(...values);
-        
+
         const dateRangeEl = document.getElementById('dateRange');
         const totalValueEl = document.getElementById('totalValue');
         const avgValueEl = document.getElementById('avgValue');
@@ -792,49 +569,38 @@ class MultiThreadManager {
         const minValueEl = document.getElementById('minValue');
         const totalLabel = document.getElementById('totalLabel');
         const avgLabel = document.getElementById('avgLabel');
-        
+
         if (dateRangeEl) {
-            dateRangeEl.textContent = dates.length > 0 
-                ? `${this.formatDate(dates[0])} ~ ${this.formatDate(dates[dates.length-1])}` 
+            dateRangeEl.textContent = dates.length > 0
+                ? `${this.formatDate(dates[0])} ~ ${this.formatDate(dates[dates.length-1])}`
                 : '-';
         }
         if (totalValueEl) totalValueEl.textContent = total.toFixed(2);
         if (avgValueEl) avgValueEl.textContent = avg.toFixed(2);
         if (maxValueEl) maxValueEl.textContent = max.toFixed(2);
         if (minValueEl) minValueEl.textContent = min.toFixed(2);
-        
+
         if (totalLabel) totalLabel.textContent = isRuntime ? '总 Runtime (秒)' : '总 Memory (MB)';
         if (avgLabel) avgLabel.textContent = isRuntime ? '平均 Runtime (秒)' : '平均 Memory (MB)';
     }
 
-    /**
-     * 重置统计信息
-     */
     resetStatistics() {
-        const elements = ['dateRange', 'totalValue', 'avgValue', 'maxValue', 'minValue'];
-        elements.forEach(id => {
+        ['dateRange', 'totalValue', 'avgValue', 'maxValue', 'minValue'].forEach(id => {
             const el = document.getElementById(id);
             if (el) el.textContent = '-';
         });
     }
 
-    /**
-     * 切换图表类型
-     */
     setChartType(type) {
         this.currentChartType = type;
         this.renderChart();
     }
 
-    /**
-     * 使用指定数据刷新
-     */
     async refreshWithData(rawData, userAddedData) {
         this.rawData = rawData || {};
         this.userAddedData = userAddedData || {};
         this.allData = { ...this.rawData, ...this.userAddedData };
         this.selectedRules = ['Overall'];
-        
         this.updateCasenameSelect();
         await this.updateRulesAndDates();
         this.selectedDates = this.allDates.slice(-50);
@@ -842,9 +608,6 @@ class MultiThreadManager {
         this.updateOverview();
     }
 
-    /**
-     * 刷新数据
-     */
     async refresh() {
         this.userAddedData = {};
         this.allData = { ...this.rawData };
@@ -856,9 +619,6 @@ class MultiThreadManager {
         this.updateOverview();
     }
 
-    /**
-     * 初始化事件监听
-     */
     initEventListeners() {
         if (this.casenameSelect) {
             this.casenameSelect.addEventListener('change', async (e) => {
@@ -870,181 +630,24 @@ class MultiThreadManager {
                 this.updateOverview();
             });
         }
-        
         if (this.ruleSearch) {
             this.ruleSearch.addEventListener('input', () => {
                 this.updateRuleSelect();
             });
         }
-        
         if (this.ruleSelect) {
             this.ruleSelect.addEventListener('change', (e) => {
                 this.selectedRules = Array.from(this.ruleSelect.selectedOptions).map(opt => opt.value);
                 this.renderChart();
             });
         }
-        
         if (this.latest50Btn) {
             this.latest50Btn.addEventListener('click', () => {
                 this.selectLatest50Days();
             });
         }
-        
-        // 对比按钮
-        if (this.confirmCompareBtn) {
-            this.confirmCompareBtn.addEventListener('click', this.performComparison);
-        }
-        
-        if (this.exportCompareBtn) {
-            this.exportCompareBtn.addEventListener('click', this.exportComparison);
-        }
-        
-        if (this.compCasenameSelect) {
-            this.compCasenameSelect.addEventListener('change', (e) => {
-                if (this.casenameSelect) {
-                    this.casenameSelect.value = e.target.value;
-                    this.selectedCasename = e.target.value;
-                    this.updateRulesAndDates();
-                }
-            });
-        }
-    }
-
-    /**
-     * 执行数据对比
-     */
-    async performComparison() {
-        const date1 = this.date1Select ? this.date1Select.value : '';
-        const date2 = this.date2Select ? this.date2Select.value : '';
-        const compareMode = this.compareModeSelect ? this.compareModeSelect.value : 'all';
-        const dimension = this.dimensionSelect ? this.dimensionSelect.value : 'all';
-        const runtimeThresholdVal = parseFloat(this.runtimeThreshold?.value || 0);
-        const memoryThresholdVal = parseFloat(this.memoryThreshold?.value || 0);
-        const errorMode = this.errorModeSelect ? this.errorModeSelect.value : 'absolute';
-        
-        let rulesToCompare = [];
-        if (compareMode === 'all') {
-            rulesToCompare = this.allRules;
-        } else {
-            rulesToCompare = [compareMode];
-        }
-        
-        if (!date1 || !date2) {
-            this.showToast('请选择两个日期进行对比', 'error');
-            return;
-        }
-        
-        try {
-            const response = await axios.post('/api/comparison', {
-                raw_data: this.allData,
-                casename: this.selectedCasename,
-                date1: date1,
-                date2: date2,
-                rules: rulesToCompare,
-                compare_mode: compareMode,
-                dimension: dimension,
-                runtime_threshold: runtimeThresholdVal,
-                memory_threshold: memoryThresholdVal,
-                error_mode: errorMode
-            });
-            
-            if (response.data.success) {
-                this.renderComparisonResults(response.data.data);
-                const comparisonResults = document.getElementById('comparisonResults');
-                if (comparisonResults) comparisonResults.style.display = 'block';
-                
-                const chartContainer = document.querySelector('.chart-container');
-                if (chartContainer) chartContainer.style.display = 'none';
-                
-                const statsGrid = document.getElementById('statsGrid');
-                if (statsGrid) statsGrid.style.display = 'none';
-                
-                const overviewCard = document.querySelector('.overview-card');
-                if (overviewCard) overviewCard.style.display = 'none';
-            }
-        } catch (error) {
-            console.error('执行对比失败:', error);
-            this.showToast('执行对比失败', 'error');
-        }
-    }
-
-    /**
-     * 渲染对比结果
-     */
-    renderComparisonResults(result) {
-        const stats = result.statistics;
-        const comparisons = result.comparisons;
-        
-        const statsGrid = document.getElementById('comparisonStatsGrid');
-        if (statsGrid) {
-            statsGrid.innerHTML = `
-                <div class="comparison-stat-card">
-                    <h4>Runtime 增加 Rule</h4>
-                    <div class="comparison-stat-value">${stats.runtime_increased.length}</div>
-                </div>
-                <div class="comparison-stat-card">
-                    <h4>Runtime 减少 Rule</h4>
-                    <div class="comparison-stat-value">${stats.runtime_decreased.length}</div>
-                </div>
-                <div class="comparison-stat-card">
-                    <h4>Memory 增加 Rule</h4>
-                    <div class="comparison-stat-value">${stats.memory_increased.length}</div>
-                </div>
-                <div class="comparison-stat-card">
-                    <h4>Memory 减少 Rule</h4>
-                    <div class="comparison-stat-value">${stats.memory_decreased.length}</div>
-                </div>
-                <div class="comparison-stat-card">
-                    <h4>平均 Runtime 变化率</h4>
-                    <div class="comparison-stat-value">${stats.avg_runtime_change.toFixed(2)}%</div>
-                </div>
-                <div class="comparison-stat-card">
-                    <h4>平均 Memory 变化率</h4>
-                    <div class="comparison-stat-value">${stats.avg_memory_change.toFixed(2)}%</div>
-                </div>
-            `;
-        }
-        
-        const tableBody = document.getElementById('comparisonTableBody');
-        if (tableBody) {
-            tableBody.innerHTML = comparisons.map(comp => `
-                <tr class="${comp.is_out_of_tolerance ? 'out-of-tolerance' : ''}">
-                    <td>${this.escapeHtml(comp.rule)}</td>
-                    <td>R: ${comp.date1_value.runtime?.toFixed(2) || 'N/A'}<br>M: ${comp.date1_value.memory?.toFixed(2) || 'N/A'}</td>
-                    <td>R: ${comp.date2_value.runtime?.toFixed(2) || 'N/A'}<br>M: ${comp.date2_value.memory?.toFixed(2) || 'N/A'}</td>
-                    <td>R: ${comp.difference.runtime?.toFixed(2) || 'N/A'}<br>M: ${comp.difference.memory?.toFixed(2) || 'N/A'}</td>
-                    <td>R: ${comp.percentage.runtime?.toFixed(2) || 'N/A'}%<br>M: ${comp.percentage.memory?.toFixed(2) || 'N/A'}%</td>
-                    <td>${comp.is_out_of_tolerance ? '<span class="status-badge warning">超差</span>' : '<span class="status-badge">正常</span>'}</td>
-                </tr>
-            `).join('');
-        }
-    }
-
-    /**
-     * 导出对比结果
-     */
-    exportComparison() {
-        const tableBody = document.getElementById('comparisonTableBody');
-        if (!tableBody) return;
-        
-        const rows = Array.from(tableBody.querySelectorAll('tr'));
-        const csvData = rows.map(row => {
-            const cells = Array.from(row.querySelectorAll('td'));
-            return cells.map(cell => cell.textContent.trim().replace(/\n/g, ';')).join(',');
-        });
-        
-        const headers = ['Rule', '日期1值', '日期2值', '绝对差值', '百分比变化', '状态'];
-        const csvContent = [headers, ...csvData].map(row => row.join(',')).join('\n');
-        
-        const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' });
-        const link = document.createElement('a');
-        const url = URL.createObjectURL(blob);
-        link.href = url;
-        link.setAttribute('download', `comparison_${new Date().toISOString().slice(0,19)}.csv`);
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        URL.revokeObjectURL(url);
+        // 线程选择器初始化（如有）
+        this.initThreadSelector();
     }
 
     /**
@@ -1106,7 +709,6 @@ class MultiThreadManager {
             });
         }
     }
-
     /**
      * 更新日期选择弹窗内容
      */
@@ -1197,9 +799,6 @@ class MultiThreadManager {
         }
     }
 
-    /**
-     * 显示无数据提示
-     */
     showNoDataMessage(str = '暂无数据') {
         if (this.chart && !this.chart.isDisposed()) {
             this.chart.clear();
@@ -1218,9 +817,6 @@ class MultiThreadManager {
         }
     }
 
-    /**
-     * 显示错误消息
-     */
     showErrorMessage(message) {
         if (this.chart && !this.chart.isDisposed()) {
             this.chart.setOption({
@@ -1235,9 +831,31 @@ class MultiThreadManager {
         }
     }
 
-    /**
-     * 显示Toast提示
-     */
+    toggleDropdown() {
+        const dropdown = document.getElementById(`${this.idPrefix}ThreadDropdown`);
+        if (dropdown) {
+            dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
+        }
+    }
+
+    formatDate(dateStr) {
+        if (!dateStr) return '';
+        if (dateStr.includes('_user')) {
+            return dateStr.replace('_user', ' (用户)');
+        }
+        if (dateStr.length === 8 && /^\d+$/.test(dateStr)) {
+            return `${dateStr.slice(0,4)}-${dateStr.slice(4,6)}-${dateStr.slice(6,8)}`;
+        }
+        return dateStr;
+    }
+
+    escapeHtml(text) {
+        if (!text) return '';
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
     showToast(message, type = 'info') {
         const toast = document.createElement('div');
         toast.textContent = message;
@@ -1258,43 +876,6 @@ class MultiThreadManager {
         setTimeout(() => toast.remove(), 3000);
     }
 
-    /**
-     * 切换下拉菜单（供全局调用）
-     */
-    toggleDropdown() {
-        const dropdown = document.getElementById(`${this.idPrefix}ThreadDropdown`);
-        if (dropdown) {
-            dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
-        }
-    }
-
-    /**
-     * 格式化日期
-     */
-    formatDate(dateStr) {
-        if (!dateStr) return '';
-        if (dateStr.includes('_user')) {
-            return dateStr.replace('_user', ' (用户)');
-        }
-        if (dateStr.length === 8 && /^\d+$/.test(dateStr)) {
-            return `${dateStr.slice(0,4)}-${dateStr.slice(4,6)}-${dateStr.slice(6,8)}`;
-        }
-        return dateStr;
-    }
-
-    /**
-     * HTML转义
-     */
-    escapeHtml(text) {
-        if (!text) return '';
-        const div = document.createElement('div');
-        div.textContent = text;
-        return div.innerHTML;
-    }
-
-    /**
-     * 析构方法
-     */
     dispose() {
         if (this._resizeHandler) {
             window.removeEventListener('resize', this._resizeHandler);
@@ -1307,5 +888,4 @@ class MultiThreadManager {
     }
 }
 
-// 全局实例
 window.MultiThreadManager = MultiThreadManager;

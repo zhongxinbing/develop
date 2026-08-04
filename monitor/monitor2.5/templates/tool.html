@@ -28,17 +28,12 @@
             </button>
         </header>
 
-        <!-- 二级导航 -->
+        <!-- 二级导航（新增“数据对比”） -->
         <div class="mode-nav">
-            <button class="mode-nav-item active" data-mode="single">
-                <span>🧵单线程</span>
-            </button>
-            <button class="mode-nav-item" data-mode="multi">
-                <span>🌀多线程</span>
-            </button>
-            <button class="mode-nav-item" data-mode="thread">
-                <span>⚡线程曲线图</span>
-            </button>
+            <button class="mode-nav-item active" data-mode="single">🧵单线程</button>
+            <button class="mode-nav-item" data-mode="multi">🌀多线程</button>
+            <button class="mode-nav-item" data-mode="thread">⚡线程曲线图</button>
+            <button class="mode-nav-item" data-mode="comparison">📊数据对比</button>
         </div>
 
         <!-- 主内容区域 -->
@@ -46,133 +41,37 @@
             <!-- ==================== 单线程侧边栏 ==================== -->
             <aside class="sidebar" id="singleSidebar">
                 <div class="sidebar-content">
-
                     <div class="sidebar-menu">
-                        <button class="menu-item active" data-chart="runtime">
-                            <span>⏱️ Runtime</span>
-                        </button>
+                        <button class="menu-item active" data-chart="runtime">⏱️ Runtime</button>
                         <div class="sub-menu">
-                            <button class="sub-menu-item active" data-chart="cputime">
-                                <span>CPU Time</span>
-                            </button>
-                            <button class="sub-menu-item" data-chart="realtime">
-                                <span>Real Time</span>
-                            </button>
+                            <button class="sub-menu-item active" data-chart="cputime">CPU Time</button>
+                            <button class="sub-menu-item" data-chart="realtime">Real Time</button>
                         </div>
-                        <button class="menu-item" data-chart="memory">
-                            <span>🧠 Memory</span>
-                        </button>
+                        <button class="menu-item" data-chart="memory">🧠 Memory</button>
                         <div class="sub-menu">
-                            <button class="sub-menu-item" data-chart="peakmem">
-                                <span>峰值内存</span>
-                            </button>
-                            <button class="sub-menu-item" data-chart="incmem">
-                                <span>增量内存</span>
-                            </button>
-                            <button class="sub-menu-item" data-chart="realtimeincmem">
-                                <span>实时增量内存</span>
-                            </button>
+                            <button class="sub-menu-item" data-chart="peakmem">峰值内存</button>
+                            <button class="sub-menu-item" data-chart="incmem">增量内存</button>
+                            <button class="sub-menu-item" data-chart="realtimeincmem">实时增量内存</button>
                         </div>
-                        <button class="menu-item" data-chart="comparison">
-                            <span>📊  数据对比</span>
-                        </button>
                     </div>
-
-                    <!-- 单线程筛选控件区 -->
                     <div class="filters-panel" id="singleFiltersPanel">
                         <div class="filter-group">
                             <label>🏷  Casename</label>
                             <select id="singleCasenameSelect" class="filter-select"></select>
                         </div>
-
                         <div class="filter-group">
                             <label>📜 Rule</label>
                             <div class="searchable-select">
                                 <div class="select-search">
-                                    🔍 
-                                    <input type="text" id="singleRuleSearch" placeholder="搜索 rule...">
+                                    🔍 <input type="text" id="singleRuleSearch" placeholder="搜索 rule...">
                                 </div>
                                 <select id="singleRuleSelect" class="filter-select" multiple size="5"></select>
                             </div>
                         </div>
-
                         <div class="filter-actions">
-                            <button class="btn-icon" id="singleDatePickerBtn" title="选择日期">
-                                <span>选择日期</span>
-                            </button>
-                            <button class="btn-icon" id="singleLatest50Btn" title="最新50天">
-                                <span>最新50天</span>
-                            </button>
-                            <button class="btn-icon btn-success" id="singleAddDataBtn" title="添加数据">
-                                <span> 添加数据</span>
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- 单线程数据对比控件 -->
-                    <div class="comparison-panel" id="singleComparisonPanel" style="display: none;">
-                        <div class="filter-group">
-                            <label>🏷   Casename</label>
-                            <select id="singleCompCasenameSelect" class="filter-select"></select>
-                        </div>
-
-                        <div class="filter-group">
-                            <div class="filter-group">
-                                <label>🔍 rule</label>
-                                <input type="text" id="singleCompRuleSearch" placeholder="搜索 rule..." class="filter-input">
-                            </div>
-                            <label>⚖️ 对比模式</label>
-                            <select id="singleCompareModeSelect" class="filter-select">
-                                <option value="all">对比全部 rule</option>
-                            </select>
-                        </div>
-
-
-                        <div class="filter-group">
-                            <label>📅 日期1</label>
-                            <select id="singleDate1Select" class="filter-select"></select>
-                        </div>
-
-                        <div class="filter-group">
-                            <label>📅 日期2</label>
-                            <select id="singleDate2Select" class="filter-select"></select>
-                        </div>
-
-                        <div class="filter-group">
-                            <label>% 误差模式</label>
-                            <select id="singleErrorModeSelect" class="filter-select">
-                                <option value="absolute">绝对值</option>
-                                <option value="percentage">百分比</option>
-                            </select>
-                        </div>
-
-                        <div class="filter-group">
-                            <label>📊 对比维度</label>
-                            <select id="singleDimensionSelect" class="filter-select">
-                                <option value="all">全部</option>
-                                <option value="runtime">Runtime</option>
-                                <option value="memory">Memory</option>
-                            </select>
-                        </div>
-
-                        <div class="filter-row">
-                            <div class="filter-group half">
-                                <label>Runtime 误差范围</label>
-                                <input type="number" id="singleRuntimeThreshold" class="filter-input" value="0" step="0.1">
-                            </div>
-                            <div class="filter-group half">
-                                <label>Memory 误差范围</label>
-                                <input type="number" id="singleMemoryThreshold" class="filter-input" value="0" step="0.1">
-                            </div>
-                        </div>
-
-                        <div class="filter-actions">
-                            <button class="btn-primary" id="singleConfirmCompareBtn">
-                                <span>确认对比</span>
-                            </button>
-                            <button class="btn-secondary" id="singleExportCompareBtn">
-                                <span>导出结果</span>
-                            </button>
+                            <button class="btn-icon" id="singleDatePickerBtn" title="选择日期">选择日期</button>
+                            <button class="btn-icon" id="singleLatest50Btn" title="最新50天">最新50天</button>
+                            <button class="btn-icon btn-success" id="singleAddDataBtn" title="添加数据">添加数据</button>
                         </div>
                     </div>
                 </div>
@@ -182,132 +81,36 @@
             <aside class="sidebar" id="multiSidebar" style="display: none;">
                 <div class="sidebar-content">
                     <div class="sidebar-menu">
-                        <button class="menu-item active" data-chart="runtime">
-                            <span>⏱️ Runtime</span>
-                        </button>
+                        <button class="menu-item active" data-chart="runtime">⏱️ Runtime</button>
                         <div class="sub-menu">
-                            <button class="sub-menu-item active" data-chart="cputime">
-                                <span>CPU Time</span>
-                            </button>
-                            <button class="sub-menu-item" data-chart="realtime">
-                                <span>Real Time</span>
-                            </button>
+                            <button class="sub-menu-item active" data-chart="cputime">CPU Time</button>
+                            <button class="sub-menu-item" data-chart="realtime">Real Time</button>
                         </div>
-                        <button class="menu-item" data-chart="memory">
-                            <span>🧠 Memory</span>
-                        </button>
+                        <button class="menu-item" data-chart="memory">🧠 Memory</button>
                         <div class="sub-menu">
-                            <button class="sub-menu-item" data-chart="peakmem">
-                                <span>峰值内存</span>
-                            </button>
-                            <button class="sub-menu-item" data-chart="incmem">
-                                <span>增量内存</span>
-                            </button>
-                            <button class="sub-menu-item" data-chart="realtimeincmem">
-                                <span>实时增量内存</span>
-                            </button>
+                            <button class="sub-menu-item" data-chart="peakmem">峰值内存</button>
+                            <button class="sub-menu-item" data-chart="incmem">增量内存</button>
+                            <button class="sub-menu-item" data-chart="realtimeincmem">实时增量内存</button>
                         </div>
-                        <button class="menu-item" data-chart="comparison">
-                            <span>📊 数据对比</span>
-                        </button>
                     </div>
-
-                    <!-- 多线程筛选控件区 -->
                     <div class="filters-panel" id="multiFiltersPanel">
-
                         <div class="filter-group">
                             <label>🏷   Casename</label>
                             <select id="multiCasenameSelect" class="filter-select"></select>
                         </div>
-
                         <div class="filter-group">
                             <label>📜  Rule</label>
                             <div class="searchable-select">
                                 <div class="select-search">
-                                    🔍 
-                                    <input type="text" id="multiRuleSearch" placeholder="搜索 rule...">
+                                    🔍 <input type="text" id="multiRuleSearch" placeholder="搜索 rule...">
                                 </div>
                                 <select id="multiRuleSelect" class="filter-select" multiple size="5"></select>
                             </div>
                         </div>
-
                         <div class="filter-actions">
-                            <button class="btn-icon" id="multiDatePickerBtn" title="选择日期">
-                                <span>选择日期</span>
-                            </button>
-                            <button class="btn-icon" id="multiLatest50Btn" title="最新50天">
-                                <span>最新50天</span>
-                            </button>
-                            <button class="btn-icon btn-success" id="multiAddDataBtn" title="添加数据">
-                                <span>添加数据</span>
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- 多线程数据对比控件 -->
-                    <div class="comparison-panel" id="multiComparisonPanel" style="display: none;">
-                        <div class="filter-group">
-                            <label>🏷   Casename</label>
-                            <select id="multiCompCasenameSelect" class="filter-select"></select>
-                        </div>
-
-                        <div class="filter-group">
-                            <div class="filter-group">
-                                <label>🔍 搜索 rule</label>
-                                <input type="text" id="multiCompRuleSearch" placeholder="搜索 rule..." class="filter-input">
-                            </div>
-                            <label>对比模式</label>
-                            <select id="multiCompareModeSelect" class="filter-select">
-                                <option value="all">对比全部 rule</option>
-                            </select>
-                        </div>
-
-
-                        <div class="filter-group">
-                            <label> 日期1</label>
-                            <select id="multiDate1Select" class="filter-select"></select>
-                        </div>
-
-                        <div class="filter-group">
-                            <label>日期2</label>
-                            <select id="multiDate2Select" class="filter-select"></select>
-                        </div>
-
-                        <div class="filter-group">
-                            <label>误差模式</label>
-                            <select id="multiErrorModeSelect" class="filter-select">
-                                <option value="absolute">绝对值</option>
-                                <option value="percentage">百分比</option>
-                            </select>
-                        </div>
-
-                        <div class="filter-group">
-                            <label>对比维度</label>
-                            <select id="multiDimensionSelect" class="filter-select">
-                                <option value="all">全部</option>
-                                <option value="runtime">Runtime</option>
-                                <option value="memory">Memory</option>
-                            </select>
-                        </div>
-
-                        <div class="filter-row">
-                            <div class="filter-group half">
-                                <label>Runtime 误差范围</label>
-                                <input type="number" id="multiRuntimeThreshold" class="filter-input" value="0" step="0.1">
-                            </div>
-                            <div class="filter-group half">
-                                <label>Memory 误差范围</label>
-                                <input type="number" id="multiMemoryThreshold" class="filter-input" value="0" step="0.1">
-                            </div>
-                        </div>
-
-                        <div class="filter-actions">
-                            <button class="btn-primary" id="multiConfirmCompareBtn">
-                                 确认对比
-                            </button>
-                            <button class="btn-secondary" id="multiExportCompareBtn">
-                                 导出结果
-                            </button>
+                            <button class="btn-icon" id="multiDatePickerBtn" title="选择日期">选择日期</button>
+                            <button class="btn-icon" id="multiLatest50Btn" title="最新50天">最新50天</button>
+                            <button class="btn-icon btn-success" id="multiAddDataBtn" title="添加数据">添加数据</button>
                         </div>
                     </div>
                 </div>
@@ -317,59 +120,38 @@
             <aside class="sidebar" id="threadSidebar" style="display: none;">
                 <div class="sidebar-content">
                     <div class="sidebar-menu">
-                        <button class="menu-item active" data-thread-chart="runtime">
-                            <span>⏱️ Runtime</span>
-                        </button>
+                        <button class="menu-item active" data-thread-chart="runtime">⏱️ Runtime</button>
                         <div class="sub-menu">
-                            <button class="sub-menu-item active" data-thread-chart="cputime">
-                                <span>CPU Time</span>
-                            </button>
-                            <button class="sub-menu-item" data-thread-chart="realtime">
-                                <span>Real Time</span>
-                            </button>
+                            <button class="sub-menu-item active" data-thread-chart="cputime">CPU Time</button>
+                            <button class="sub-menu-item" data-thread-chart="realtime">Real Time</button>
                         </div>
-                        <button class="menu-item" data-thread-chart="memory">
-                            <span>🧠 Memory</span>
-                        </button>
+                        <button class="menu-item" data-thread-chart="memory">🧠 Memory</button>
                         <div class="sub-menu">
-                            <button class="sub-menu-item" data-thread-chart="peakmem">
-                                <span>峰值内存</span>
-                            </button>
-                            <button class="sub-menu-item" data-thread-chart="incmem">
-                                <span>增量内存</span>
-                            </button>
-                            <button class="sub-menu-item" data-thread-chart="realtimeincmem">
-                                <span>实时增量内存</span>
-                            </button>
+                            <button class="sub-menu-item" data-thread-chart="peakmem">峰值内存</button>
+                            <button class="sub-menu-item" data-thread-chart="incmem">增量内存</button>
+                            <button class="sub-menu-item" data-thread-chart="realtimeincmem">实时增量内存</button>
                         </div>
                     </div>
-
                     <div class="filters-panel" id="threadFiltersPanel">
                         <div class="filter-group">
                             <label>🏷 Casename</label>
                             <select id="threadCasenameSelect" class="filter-select"></select>
                         </div>
-
                         <div class="filter-group">
                             <label>📜 Rule</label>
                             <div class="searchable-select">
                                 <div class="select-search">
-                                    🔍 
-                                    <input type="text" id="threadRuleSearch" placeholder="搜索 rule...">
+                                    🔍 <input type="text" id="threadRuleSearch" placeholder="搜索 rule...">
                                 </div>
                                 <select id="threadRuleSelect" class="filter-select" size="5"></select>
                             </div>
                         </div>
-
                         <div class="filter-group">
                             <label>📅 选择日期</label>
                             <select id="threadDateSelect" class="filter-select"></select>
                         </div>
-
                         <div class="filter-actions">
-                            <button class="btn-primary" id="refreshThreadChartBtn">
-                                <span>更新图表</span>
-                            </button>
+                            <button class="btn-primary" id="refreshThreadChartBtn">更新图表</button>
                         </div>
                     </div>
                 </div>
@@ -377,71 +159,181 @@
 
             <!-- 中央内容区 -->
             <main class="content-area" id="contentArea">
-                <div class="chart-container" id="chartContainer">
-                    <div id="mainChart" style="width: 100%; height: 400px;"></div>
-                    <div id="chartLoadingOverlay" class="chart-loading-overlay" aria-live="polite" aria-busy="true">
-                        <div class="chart-loading-content">
-                            <div class="chart-loading-spinner"></div>
-                            <div class="chart-loading-text">加载中...</div>
+                <!-- ===== 对比容器（默认隐藏，由 tool.js 控制显示） ===== -->
+                <div id="comparisonContainer" style="display: none; width: 100%;">
+                    <!-- 子选项卡 -->
+                    <div class="comparison-tabs" style="display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 1px solid var(--border-subtle); padding-bottom: 10px;">
+                        <button class="comparison-tab active" data-submode="version" style="padding: 8px 20px; background: var(--primary); color: var(--bg-deep); border: none; border-radius: 20px; cursor: pointer; font-weight: 600;">版本对比</button>
+                        <button class="comparison-tab" data-submode="thread" style="padding: 8px 20px; background: transparent; color: var(--text-secondary); border: none; border-radius: 20px; cursor: pointer;">线程对比</button>
+                    </div>
+
+                    <!-- 版本对比面板 -->
+                    <div id="versionComparisonPanel">
+                        <div class="comparison-form" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; background: var(--bg-surface); padding: 20px; border-radius: var(--radius-lg); margin-bottom: 20px;">
+                            <div class="filter-group">
+                                <label>🏷 Casename</label>
+                                <select id="compCasenameSelect" class="filter-select"></select>
+                            </div>
+                            <div class="filter-group">
+                                <label>📅 日期1</label>
+                                <select id="compDate1Select" class="filter-select"></select>
+                            </div>
+                            <div class="filter-group">
+                                <label>📅 日期2</label>
+                                <select id="compDate2Select" class="filter-select"></select>
+                            </div>
+                            <div class="filter-group">
+                                <label>📊 对比维度</label>
+                                <select id="compDimensionSelect" class="filter-select">
+                                    <option value="all">全部</option>
+                                    <option value="runtime">Runtime</option>
+                                    <option value="memory">Memory</option>
+                                </select>
+                            </div>
+                            <div class="filter-group">
+                                <label>% 误差模式</label>
+                                <select id="compErrorModeSelect" class="filter-select">
+                                    <option value="absolute">绝对值</option>
+                                    <option value="percentage">百分比</option>
+                                </select>
+                            </div>
+                            <div class="filter-group">
+                                <label>🔍 搜索 Rule</label>
+                                <input type="text" id="compRuleSearch" placeholder="搜索 rule..." class="filter-input">
+                            </div>
+                            <div class="filter-group" style="grid-column: span 2;">
+                                <label>📜 选择 Rule（多选）</label>
+                                <select id="compRuleSelect" class="filter-select" multiple size="4"></select>
+                            </div>
+                            <div class="filter-group" style="grid-column: span 2;">
+                                <label>🧵 选择线程（多选，仅多线程有效）</label>
+                                <select id="compThreadSelect" class="filter-select" multiple size="3"></select>
+                            </div>
+                            <div class="filter-row" style="grid-column: span 2; display: flex; gap: 16px;">
+                                <div class="filter-group half">
+                                    <label>Runtime 误差范围</label>
+                                    <input type="number" id="compRuntimeThreshold" class="filter-input" value="0" step="0.1">
+                                </div>
+                                <div class="filter-group half">
+                                    <label>Memory 误差范围</label>
+                                    <input type="number" id="compMemoryThreshold" class="filter-input" value="0" step="0.1">
+                                </div>
+                            </div>
+                            <div class="filter-actions" style="grid-column: span 2; display: flex; gap: 12px; justify-content: flex-end;">
+                                <button class="btn-primary" id="compConfirmBtn">确认对比</button>
+                                <button class="btn-secondary" id="compExportBtn">导出结果</button>
+                            </div>
+                        </div>
+                        <!-- 结果展示 -->
+                        <div id="versionComparisonResults">
+                            <div class="comparison-stats-grid" id="versionStatsGrid"></div>
+                            <div class="comparison-table-container">
+                                <div class="table-header">
+                                    <input type="text" id="versionComparisonSearch" placeholder="搜索 rule..." class="filter-input">
+                                </div>
+                                <div class="table-wrapper">
+                                    <table class="comparison-table">
+                                        <thead id="versionTableHead"></thead>
+                                        <tbody id="versionTableBody"></tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 线程对比面板 -->
+                    <div id="threadComparisonPanel" style="display: none;">
+                        <div class="comparison-form" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; background: var(--bg-surface); padding: 20px; border-radius: var(--radius-lg); margin-bottom: 20px;">
+                            <div class="filter-group">
+                                <label>🏷 Casename</label>
+                                <select id="threadCompCasenameSelect" class="filter-select"></select>
+                            </div>
+                            <div class="filter-group">
+                                <label>📅 日期1</label>
+                                <select id="threadCompDate1Select" class="filter-select"></select>
+                            </div>
+                            <div class="filter-group">
+                                <label>📅 日期2</label>
+                                <select id="threadCompDate2Select" class="filter-select"></select>
+                            </div>
+                            <div class="filter-group">
+                                <label>📊 对比维度</label>
+                                <select id="threadCompDimensionSelect" class="filter-select">
+                                    <option value="runtime">Runtime</option>
+                                    <option value="memory">Memory</option>
+                                </select>
+                            </div>
+                            <div class="filter-group">
+                                <label>🔍 搜索 Rule</label>
+                                <input type="text" id="threadCompRuleSearch" placeholder="搜索 rule..." class="filter-input">
+                            </div>
+                            <div class="filter-group" style="grid-column: span 2;">
+                                <label>📜 选择 Rule（多选）</label>
+                                <select id="threadCompRuleSelect" class="filter-select" multiple size="4"></select>
+                            </div>
+                            <div class="filter-actions" style="grid-column: span 2; display: flex; gap: 12px; justify-content: flex-end;">
+                                <button class="btn-primary" id="threadCompConfirmBtn">确认对比</button>
+                            </div>
+                        </div>
+                        <!-- 结果展示（折线图） -->
+                        <div id="threadComparisonResults" style="height: 500px; background: var(--bg-surface); border-radius: var(--radius-lg); padding: 20px;">
+                            <div id="threadChart" style="width: 100%; height: 100%;"></div>
                         </div>
                     </div>
                 </div>
 
-                <div class="stats-grid" id="statsGrid">
-                    <div class="stat-card">
-                        <div class="stat-value" id="dateRange">-</div>
-                        <div class="stat-label">日期范围</div>
+                <!-- ===== 原有内容（非对比模式） ===== -->
+                <div id="normalContent">
+                    <div class="chart-container" id="chartContainer">
+                        <div id="mainChart" style="width: 100%; height: 400px;"></div>
+                        <div id="chartLoadingOverlay" class="chart-loading-overlay" aria-live="polite" aria-busy="true">
+                            <div class="chart-loading-content">
+                                <div class="chart-loading-spinner"></div>
+                                <div class="chart-loading-text">加载中...</div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="stat-card">
-                        <div class="stat-value" id="totalValue">-</div>
-                        <div class="stat-label" id="totalLabel">Total Runtime</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-value" id="avgValue">-</div>
-                        <div class="stat-label" id="avgLabel">Average</div>
-                    </div>
-                    <div class="stat-card tooltip-card">
-                        <div class="stat-value" id="maxValue">-</div>
-                        <div class="stat-label">Maximum </div>
-                        <div class="tooltip-content" id="maxTooltipContent"></div>
-                    </div>
-                    <div class="stat-card tooltip-card">
-                        <div class="stat-value" id="minValue">-</div>
-                        <div class="stat-label">Minimum </div>
-                        <div class="tooltip-content" id="minTooltipContent"></div>
-                    </div>
-                </div>
 
-                <div class="overview-card">
-                    <h4> 项目概况</h4>
-                    <div class="overview-stats" id="overviewStats">
-                        <div class="overview-item">
-                            <span class="overview-value" id="totalCases">-</span>
-                            <span class="overview-label">总 case 数</span>
+                    <div class="stats-grid" id="statsGrid">
+                        <div class="stat-card">
+                            <div class="stat-value" id="dateRange">-</div>
+                            <div class="stat-label">日期范围</div>
                         </div>
-                        <div class="overview-item">
-                            <span class="overview-value" id="totalRules">-</span>
-                            <span class="overview-label">总阶段数</span>
+                        <div class="stat-card">
+                            <div class="stat-value" id="totalValue">-</div>
+                            <div class="stat-label" id="totalLabel">Total Runtime</div>
                         </div>
-                        <div class="overview-item">
-                            <span class="overview-value" id="totalDays">-</span>
-                            <span class="overview-label">总天数</span>
+                        <div class="stat-card">
+                            <div class="stat-value" id="avgValue">-</div>
+                            <div class="stat-label" id="avgLabel">Average</div>
+                        </div>
+                        <div class="stat-card tooltip-card">
+                            <div class="stat-value" id="maxValue">-</div>
+                            <div class="stat-label">Maximum</div>
+                            <div class="tooltip-content" id="maxTooltipContent"></div>
+                        </div>
+                        <div class="stat-card tooltip-card">
+                            <div class="stat-value" id="minValue">-</div>
+                            <div class="stat-label">Minimum</div>
+                            <div class="tooltip-content" id="minTooltipContent"></div>
                         </div>
                     </div>
-                </div>
 
-                <!-- 对比结果区域 -->
-                <div class="comparison-results" id="comparisonResults" style="display: none;">
-                    <div class="comparison-stats-grid" id="comparisonStatsGrid"></div>
-                    <div class="comparison-table-container">
-                        <div class="table-header">
-                            <input type="text" id="comparisonSearch" placeholder="搜索 rule..." class="filter-input">
-                        </div>
-                        <div class="table-wrapper">
-                            <table class="comparison-table" id="comparisonTable">
-                                
-                                <tbody id="comparisonTableBody"></tbody>
-                            </table>
+                    <div class="overview-card">
+                        <h4>项目概况</h4>
+                        <div class="overview-stats" id="overviewStats">
+                            <div class="overview-item">
+                                <span class="overview-value" id="totalCases">-</span>
+                                <span class="overview-label">总 case 数</span>
+                            </div>
+                            <div class="overview-item">
+                                <span class="overview-value" id="totalRules">-</span>
+                                <span class="overview-label">总阶段数</span>
+                            </div>
+                            <div class="overview-item">
+                                <span class="overview-value" id="totalDays">-</span>
+                                <span class="overview-label">总天数</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -454,15 +346,12 @@
         <div class="modal-overlay"></div>
         <div class="modal-container medium">
             <div class="modal-header">
-                <h3> 选择日期</h3>
-                <button class="modal-close" id="closeDateModalBtn">
-                    ✕
-                </button>
+                <h3>选择日期</h3>
+                <button class="modal-close" id="closeDateModalBtn">✕</button>
             </div>
             <div class="modal-body">
                 <div class="date-search">
-                    🔍 
-                    <input type="text" id="dateSearch" placeholder="搜索日期..." class="filter-input">
+                    🔍 <input type="text" id="dateSearch" placeholder="搜索日期..." class="filter-input">
                 </div>
                 <div class="date-actions">
                     <label class="checkbox-label">
@@ -485,14 +374,12 @@
         <div class="modal-container medium">
             <div class="modal-header">
                 <h3>添加自定义数据</h3>
-                <button class="modal-close" id="closeAddDataModalBtn">
-                    ✕
-                </button>
+                <button class="modal-close" id="closeAddDataModalBtn">✕</button>
             </div>
             <div class="modal-body">
                 <div class="form-group">
                     <label>数据路径</label>
-                    <textarea id="dataPaths" rows="6" placeholder="每行输入一个数据路径&#10;例如：&#10;/data/user1/&#10;/data/user2/" class="filter-input"></textarea>
+                    <textarea id="dataPaths" rows="6" placeholder="每行输入一个数据路径" class="filter-input"></textarea>
                     <div class="form-hint">支持 JSON 文件路径或目录路径</div>
                 </div>
             </div>
@@ -504,26 +391,25 @@
     </div>
 
     <script>
-    // 全局函数供多线程选择器使用
-    window.toggleMultiThreadDropdown = function() {
-        const dropdown = document.getElementById('multiThreadDropdown');
-        if (dropdown) {
-            dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
-        }
-    };
-    
-    // 点击外部关闭下拉框
-    document.addEventListener('click', function(e) {
-        const container = document.getElementById('multiThreadMultiSelect');
-        const dropdown = document.getElementById('multiThreadDropdown');
-        if (container && dropdown && !container.contains(e.target)) {
-            dropdown.style.display = 'none';
-        }
-    });
+        // 全局函数供多线程选择器使用（保留，因为多线程模块可能用到）
+        window.toggleMultiThreadDropdown = function() {
+            const dropdown = document.getElementById('multiThreadDropdown');
+            if (dropdown) {
+                dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
+            }
+        };
+        document.addEventListener('click', function(e) {
+            const container = document.getElementById('multiThreadMultiSelect');
+            const dropdown = document.getElementById('multiThreadDropdown');
+            if (container && dropdown && !container.contains(e.target)) {
+                dropdown.style.display = 'none';
+            }
+        });
     </script>
     <script src="{{ url_for('static', filename='js/single_thread.js') }}"></script>
     <script src="{{ url_for('static', filename='js/multi_thread.js') }}"></script>
     <script src="{{ url_for('static', filename='js/thread_chart.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/comparison.js') }}"></script>
     <script src="{{ url_for('static', filename='js/tool.js') }}"></script>
 </body>
 </html>

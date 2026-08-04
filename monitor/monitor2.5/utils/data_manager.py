@@ -196,7 +196,7 @@ class DataManager:
         rules = frond_data.get('rules', [])
         dates = frond_data.get('dates', [])
         selected_threads = frond_data.get('selected_threads', [])
-        
+
         if not rules:
             return {"dates": dates, "rules": {}, "crash_dates": [], "overall_data": {}, "selected_threads": []}
         
@@ -564,6 +564,77 @@ class DataManager:
         case_rule_data = load_tool_data(case_rule_data_json_path)
 
         return case_rule_data
-        
+
+
+    def compare_data(self, tool_id, mode, casename, date1, date2,
+                 compare_mode='all', dimension='all',
+                 runtime_threshold=0, memory_threshold=0,
+                 error_mode='absolute', threads=None,
+                 compare_type='version'):
+        if compare_type == 'version':
+            return self._version_compare(...)
+        elif compare_type == 'thread':
+            return self._thread_compare(...)
+        else:
+            raise ValueError("不支持的对比类型")
+
+    def _thread_compare(self, tool_id, mode, casename, date1, date2,
+                        compare_mode, dimension, threads):
+        """线程对比：返回多规则的折线图数据"""
+        if mode != 'multi':
+            return {"error": "线程对比仅适用于多线程数据"}
+
+        # 获取规则列表
+        if compare_mode == "all":
+            mode_path = DATA_DIR / tool_id / f"{mode}.json"
+            mode_data = load_tool_data(mode_path) or {}
+            case_data = mode_data.get(casename, {})
+            chart_data = case_data.get(dimension, {}) if dimension in ['runtime', 'memory'] else {}
+            rules = list(chart_data.keys())
+        else:
+            rules = [compare_mode]
+
+        if not rules:
+            return {"error": "没有可用的规则"}
+
+        result = {"rules": {}, "threads": [], "date1": date1, "date2": date2}
+        all_threads = set()
+
+        for rule in rules:
+            file_path = DATA_DIR / tool_id / "original" / "multi" / casename / dimension / f"{rule}.json"
+            data = load_tool_data(file_path) or {}
+            rules_data = data.get("rules", {})
+            # 提取该规则的所有线程
+            rule_threads = []
+            date1_values = []
+            date2_values = []
+            for key, val in rules_data.items():
+                import re
+                match = re.search(r'\((\d+)\)$', key)
+                if match:
+                    thread = int(match.group(1))
+                    rule_threads.append(thread)
+                    dates = val.get("dates", [])
+                    values = val.get("values", [])
+                    idx1 = dates.index(date1) if date1 in dates else -1
+                    idx2 = dates.index(date2) if date2 in dates else -1
+                    date1_values.append(values[idx1] if idx1 >= 0 else None)
+                    date2_values.append(values[idx2] if idx2 >= 0 else None)
+            # 按线程排序
+            sorted_indices = sorted(range(len(rule_threads)), key=lambda i: rule_threads[i])
+            sorted_threads = [rule_threads[i] for i in sorted_indices]
+            sorted_date1 = [date1_values[i] for i in sorted_indices]
+            sorted_date2 = [date2_values[i] for i in sorted_indices]
+
+            result["rules"][rule] = {
+                "threads": sorted_threads,
+                "date1_values": sorted_date1,
+                "date2_values": sorted_date2
+            }
+            all_threads.update(sorted_threads)
+
+        result["threads"] = sorted(all_threads)
+        return result
+
 # # 全局实例
 data_manager = DataManager()
