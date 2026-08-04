@@ -4340,3 +4340,1040 @@
 2026-08-04 21:09:10 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:09:10] "POST /api/thread/chart/data HTTP/1.1" 200 -
 2026-08-04 21:09:10 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\single\aes\cputime\Overall.json
 2026-08-04 21:09:10 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:09:10] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:10:30 - INFO - utils.data_parser - data_parser.py:22 - 数据管理器初始化
+2026-08-04 21:10:30 - INFO - utils.tool_manager - tool_manager.py:54 - 加载工具配置文件: E:\git\develop\monitor\monitor2.5\data\tools.json
+2026-08-04 21:10:30 - INFO - utils.tool_manager - tool_manager.py:45 - 工具管理器初始化完成
+2026-08-04 21:10:30 - INFO - utils.data_manager - data_manager.py:44 - 数据管理器初始化
+2026-08-04 21:10:30 - INFO - __main__ - app.py:204 - 启动性能监控平台后端服务
+2026-08-04 21:10:30 - INFO - werkzeug - _internal.py:97 - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5020
+ * Running on http://192.168.1.33:5020
+2026-08-04 21:10:30 - INFO - werkzeug - _internal.py:97 - [33mPress CTRL+C to quit[0m
+2026-08-04 21:10:30 - INFO - werkzeug - _internal.py:97 -  * Restarting with watchdog (windowsapi)
+2026-08-04 21:10:31 - INFO - utils.data_parser - data_parser.py:22 - 数据管理器初始化
+2026-08-04 21:10:31 - INFO - utils.tool_manager - tool_manager.py:54 - 加载工具配置文件: E:\git\develop\monitor\monitor2.5\data\tools.json
+2026-08-04 21:10:31 - INFO - utils.tool_manager - tool_manager.py:45 - 工具管理器初始化完成
+2026-08-04 21:10:31 - INFO - utils.data_manager - data_manager.py:44 - 数据管理器初始化
+2026-08-04 21:10:31 - INFO - __main__ - app.py:204 - 启动性能监控平台后端服务
+2026-08-04 21:10:31 - WARN - werkzeug - _internal.py:97 -  * Debugger is active!
+2026-08-04 21:10:31 - INFO - werkzeug - _internal.py:97 -  * Debugger PIN: 644-902-559
+2026-08-04 21:10:33 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:10:33] "GET /tool/elint/performance HTTP/1.1" 200 -
+2026-08-04 21:10:33 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:10:33] "[36mGET /static/js/echarts.min.js HTTP/1.1[0m" 304 -
+2026-08-04 21:10:33 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:10:33] "[36mGET /static/js/axios.min.js HTTP/1.1[0m" 304 -
+2026-08-04 21:10:33 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:10:33] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2026-08-04 21:10:33 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:10:33] "[36mGET /static/css/select.css HTTP/1.1[0m" 304 -
+2026-08-04 21:10:33 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:10:33] "[36mGET /static/js/single_thread.js HTTP/1.1[0m" 304 -
+2026-08-04 21:10:33 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:10:33] "[36mGET /static/js/multi_thread.js HTTP/1.1[0m" 304 -
+2026-08-04 21:10:33 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:10:33] "[36mGET /static/js/thread_chart.js HTTP/1.1[0m" 304 -
+2026-08-04 21:10:33 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:10:33] "GET /static/js/comparison.js HTTP/1.1" 200 -
+2026-08-04 21:10:33 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:10:33] "[36mGET /static/js/select.js HTTP/1.1[0m" 304 -
+2026-08-04 21:10:33 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:10:33] "[36mGET /static/js/tool.js HTTP/1.1[0m" 304 -
+2026-08-04 21:10:33 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:10:33] "[33mGET /static/js/axios.min.js.map HTTP/1.1[0m" 404 -
+2026-08-04 21:10:33 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:10:33] "GET /api/tools HTTP/1.1" 200 -
+2026-08-04 21:10:33 - INFO - utils.data_manager - data_manager.py:54 - 用户数据目录: E:\git\develop\monitor\monitor2.5\data\elint\6d9c919c-f6f8-42da-862d-c31dd176ecbc 已存在
+2026-08-04 21:10:33 - INFO - utils.data_manager - data_manager.py:477 - 加载工具elint单线程数据
+2026-08-04 21:10:33 - INFO - utils.data_manager - data_manager.py:106 - 用户 6d9c919c-f6f8-42da-862d-c31dd176ecbc 加载工具 elint 的 single 数据到前端
+2026-08-04 21:10:33 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\dataFiles.json
+2026-08-04 21:10:33 - INFO - utils.data_manager - data_manager.py:136 - 用户 6d9c919c-f6f8-42da-862d-c31dd176ecbc 没有新增 single 数据
+2026-08-04 21:10:33 - INFO - utils.common - common.py:85 - 成功保存工具数据到 E:\git\develop\monitor\monitor2.5\data\elint\dataFiles.json
+2026-08-04 21:10:33 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\single.json
+2026-08-04 21:10:33 - INFO - utils.data_manager - data_manager.py:497 - 加载工具elint多线程数据
+2026-08-04 21:10:33 - INFO - utils.data_manager - data_manager.py:106 - 用户 6d9c919c-f6f8-42da-862d-c31dd176ecbc 加载工具 elint 的 multi 数据到前端
+2026-08-04 21:10:33 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\dataFiles.json
+2026-08-04 21:10:33 - INFO - utils.data_manager - data_manager.py:136 - 用户 6d9c919c-f6f8-42da-862d-c31dd176ecbc 没有新增 multi 数据
+2026-08-04 21:10:33 - INFO - utils.common - common.py:85 - 成功保存工具数据到 E:\git\develop\monitor\monitor2.5\data\elint\dataFiles.json
+2026-08-04 21:10:33 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\multi.json
+2026-08-04 21:10:33 - INFO - utils.data_manager - data_manager.py:514 - 加载工具elint其他数据
+2026-08-04 21:10:33 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:10:33] "POST /api/tools/elint/data HTTP/1.1" 200 -
+2026-08-04 21:10:33 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\single\aes\cputime\Overall.json
+2026-08-04 21:10:33 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:10:33] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:10:33 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\single\aes\cputime\Overall.json
+2026-08-04 21:10:33 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\single\aes\cputime\Overall.json
+2026-08-04 21:10:33 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:10:33] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:10:33 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:10:33] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:10:33 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\single\aes\cputime\Overall.json
+2026-08-04 21:10:33 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:10:33] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:10:33 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\multi\aes\cputime\Overall.json
+2026-08-04 21:10:33 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\multi\aes\cputime\Overall.json
+2026-08-04 21:10:33 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\multi\aes\cputime\Overall.json
+2026-08-04 21:10:33 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:10:33] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:10:33 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:10:33] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:10:33 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:10:33] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:10:33 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\multi\aes\cputime\Overall.json
+2026-08-04 21:10:33 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\thread\aes\20260513\Overall.json
+2026-08-04 21:10:33 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\thread\aes\20260513\Overall.json
+2026-08-04 21:10:33 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:10:33] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:10:33 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:10:33] "POST /api/thread/chart/data HTTP/1.1" 200 -
+2026-08-04 21:10:33 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:10:33] "POST /api/thread/chart/data HTTP/1.1" 200 -
+2026-08-04 21:10:33 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\thread\aes\20260513\Overall.json
+2026-08-04 21:10:33 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\thread\aes\20260513\Overall.json
+2026-08-04 21:10:33 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:10:33] "POST /api/thread/chart/data HTTP/1.1" 200 -
+2026-08-04 21:10:33 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\thread\aes\20260513\Overall.json
+2026-08-04 21:10:33 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:10:33] "POST /api/thread/chart/data HTTP/1.1" 200 -
+2026-08-04 21:10:33 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\thread\aes\20260513\Overall.json
+2026-08-04 21:10:33 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:10:33] "POST /api/thread/chart/data HTTP/1.1" 200 -
+2026-08-04 21:10:33 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\thread\aes\20260513\Overall.json
+2026-08-04 21:10:33 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:10:33] "POST /api/thread/chart/data HTTP/1.1" 200 -
+2026-08-04 21:10:33 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:10:33] "POST /api/thread/chart/data HTTP/1.1" 200 -
+2026-08-04 21:10:33 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\single\aes\cputime\Overall.json
+2026-08-04 21:10:33 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:10:33] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:10:48 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:10:48] "GET /tool/elint/performance HTTP/1.1" 200 -
+2026-08-04 21:10:48 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:10:48] "[36mGET /static/css/select.css HTTP/1.1[0m" 304 -
+2026-08-04 21:10:48 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:10:48] "[36mGET /static/js/echarts.min.js HTTP/1.1[0m" 304 -
+2026-08-04 21:10:48 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:10:48] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2026-08-04 21:10:48 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:10:48] "[36mGET /static/js/axios.min.js HTTP/1.1[0m" 304 -
+2026-08-04 21:10:48 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:10:48] "[36mGET /static/js/single_thread.js HTTP/1.1[0m" 304 -
+2026-08-04 21:10:48 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:10:48] "[36mGET /static/js/multi_thread.js HTTP/1.1[0m" 304 -
+2026-08-04 21:10:48 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:10:48] "[36mGET /static/js/thread_chart.js HTTP/1.1[0m" 304 -
+2026-08-04 21:10:48 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:10:48] "GET /static/js/comparison.js HTTP/1.1" 200 -
+2026-08-04 21:10:48 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:10:48] "[36mGET /static/js/select.js HTTP/1.1[0m" 304 -
+2026-08-04 21:10:48 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:10:48] "[36mGET /static/js/tool.js HTTP/1.1[0m" 304 -
+2026-08-04 21:10:48 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:10:48] "[33mGET /static/js/axios.min.js.map HTTP/1.1[0m" 404 -
+2026-08-04 21:10:48 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:10:48] "GET /api/tools HTTP/1.1" 200 -
+2026-08-04 21:10:48 - INFO - utils.data_manager - data_manager.py:54 - 用户数据目录: E:\git\develop\monitor\monitor2.5\data\elint\6d9c919c-f6f8-42da-862d-c31dd176ecbc 已存在
+2026-08-04 21:10:48 - INFO - utils.data_manager - data_manager.py:477 - 加载工具elint单线程数据
+2026-08-04 21:10:48 - INFO - utils.data_manager - data_manager.py:106 - 用户 6d9c919c-f6f8-42da-862d-c31dd176ecbc 加载工具 elint 的 single 数据到前端
+2026-08-04 21:10:48 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\dataFiles.json
+2026-08-04 21:10:48 - INFO - utils.data_manager - data_manager.py:136 - 用户 6d9c919c-f6f8-42da-862d-c31dd176ecbc 没有新增 single 数据
+2026-08-04 21:10:48 - INFO - utils.common - common.py:85 - 成功保存工具数据到 E:\git\develop\monitor\monitor2.5\data\elint\dataFiles.json
+2026-08-04 21:10:48 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\single.json
+2026-08-04 21:10:48 - INFO - utils.data_manager - data_manager.py:497 - 加载工具elint多线程数据
+2026-08-04 21:10:48 - INFO - utils.data_manager - data_manager.py:106 - 用户 6d9c919c-f6f8-42da-862d-c31dd176ecbc 加载工具 elint 的 multi 数据到前端
+2026-08-04 21:10:48 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\dataFiles.json
+2026-08-04 21:10:48 - INFO - utils.data_manager - data_manager.py:136 - 用户 6d9c919c-f6f8-42da-862d-c31dd176ecbc 没有新增 multi 数据
+2026-08-04 21:10:48 - INFO - utils.common - common.py:85 - 成功保存工具数据到 E:\git\develop\monitor\monitor2.5\data\elint\dataFiles.json
+2026-08-04 21:10:48 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\multi.json
+2026-08-04 21:10:48 - INFO - utils.data_manager - data_manager.py:514 - 加载工具elint其他数据
+2026-08-04 21:10:48 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:10:48] "POST /api/tools/elint/data HTTP/1.1" 200 -
+2026-08-04 21:10:48 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\single\aes\cputime\Overall.json
+2026-08-04 21:10:48 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:10:48] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:10:48 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\single\aes\cputime\Overall.json
+2026-08-04 21:10:48 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\single\aes\cputime\Overall.json
+2026-08-04 21:10:48 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:10:48] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:10:48 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\single\aes\cputime\Overall.json
+2026-08-04 21:10:48 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:10:48] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:10:48 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\multi\aes\cputime\Overall.json
+2026-08-04 21:10:48 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:10:48] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:10:48 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\multi\aes\cputime\Overall.json
+2026-08-04 21:10:48 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:10:48] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:10:48 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\multi\aes\cputime\Overall.json
+2026-08-04 21:10:48 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:10:48] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:10:48 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\multi\aes\cputime\Overall.json
+2026-08-04 21:10:48 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:10:48] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:10:48 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\thread\aes\20260513\Overall.json
+2026-08-04 21:10:48 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\thread\aes\20260513\Overall.json
+2026-08-04 21:10:48 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:10:48] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:10:48 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:10:48] "POST /api/thread/chart/data HTTP/1.1" 200 -
+2026-08-04 21:10:48 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\thread\aes\20260513\Overall.json
+2026-08-04 21:10:48 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:10:48] "POST /api/thread/chart/data HTTP/1.1" 200 -
+2026-08-04 21:10:48 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\thread\aes\20260513\Overall.json
+2026-08-04 21:10:48 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:10:48] "POST /api/thread/chart/data HTTP/1.1" 200 -
+2026-08-04 21:10:48 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\thread\aes\20260513\Overall.json
+2026-08-04 21:10:48 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:10:48] "POST /api/thread/chart/data HTTP/1.1" 200 -
+2026-08-04 21:10:48 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:10:48] "POST /api/thread/chart/data HTTP/1.1" 200 -
+2026-08-04 21:10:48 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\thread\aes\20260513\Overall.json
+2026-08-04 21:10:48 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\thread\aes\20260513\Overall.json
+2026-08-04 21:10:48 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:10:48] "POST /api/thread/chart/data HTTP/1.1" 200 -
+2026-08-04 21:10:48 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:10:48] "POST /api/thread/chart/data HTTP/1.1" 200 -
+2026-08-04 21:10:49 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\single\aes\cputime\Overall.json
+2026-08-04 21:10:49 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:10:49] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:21:25 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:21:25] "GET /tool/elint/performance HTTP/1.1" 200 -
+2026-08-04 21:21:25 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:21:25] "[36mGET /static/js/echarts.min.js HTTP/1.1[0m" 304 -
+2026-08-04 21:21:25 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:21:25] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2026-08-04 21:21:25 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:21:25] "[36mGET /static/css/select.css HTTP/1.1[0m" 304 -
+2026-08-04 21:21:25 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:21:25] "[36mGET /static/js/axios.min.js HTTP/1.1[0m" 304 -
+2026-08-04 21:21:25 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:21:25] "[36mGET /static/js/single_thread.js HTTP/1.1[0m" 304 -
+2026-08-04 21:21:25 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:21:25] "[36mGET /static/js/multi_thread.js HTTP/1.1[0m" 304 -
+2026-08-04 21:21:25 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:21:25] "[36mGET /static/js/thread_chart.js HTTP/1.1[0m" 304 -
+2026-08-04 21:21:25 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:21:25] "[36mGET /static/js/comparison.js HTTP/1.1[0m" 304 -
+2026-08-04 21:21:25 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:21:25] "[36mGET /static/js/select.js HTTP/1.1[0m" 304 -
+2026-08-04 21:21:25 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:21:25] "[36mGET /static/js/tool.js HTTP/1.1[0m" 304 -
+2026-08-04 21:21:25 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:21:25] "GET /api/tools HTTP/1.1" 200 -
+2026-08-04 21:21:25 - INFO - utils.data_manager - data_manager.py:54 - 用户数据目录: E:\git\develop\monitor\monitor2.5\data\elint\6d9c919c-f6f8-42da-862d-c31dd176ecbc 已存在
+2026-08-04 21:21:25 - INFO - utils.data_manager - data_manager.py:477 - 加载工具elint单线程数据
+2026-08-04 21:21:25 - INFO - utils.data_manager - data_manager.py:106 - 用户 6d9c919c-f6f8-42da-862d-c31dd176ecbc 加载工具 elint 的 single 数据到前端
+2026-08-04 21:21:25 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\dataFiles.json
+2026-08-04 21:21:25 - INFO - utils.data_manager - data_manager.py:136 - 用户 6d9c919c-f6f8-42da-862d-c31dd176ecbc 没有新增 single 数据
+2026-08-04 21:21:25 - INFO - utils.common - common.py:85 - 成功保存工具数据到 E:\git\develop\monitor\monitor2.5\data\elint\dataFiles.json
+2026-08-04 21:21:25 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\single.json
+2026-08-04 21:21:25 - INFO - utils.data_manager - data_manager.py:497 - 加载工具elint多线程数据
+2026-08-04 21:21:25 - INFO - utils.data_manager - data_manager.py:106 - 用户 6d9c919c-f6f8-42da-862d-c31dd176ecbc 加载工具 elint 的 multi 数据到前端
+2026-08-04 21:21:25 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\dataFiles.json
+2026-08-04 21:21:25 - INFO - utils.data_manager - data_manager.py:136 - 用户 6d9c919c-f6f8-42da-862d-c31dd176ecbc 没有新增 multi 数据
+2026-08-04 21:21:25 - INFO - utils.common - common.py:85 - 成功保存工具数据到 E:\git\develop\monitor\monitor2.5\data\elint\dataFiles.json
+2026-08-04 21:21:25 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:21:25] "[33mGET /static/js/axios.min.js.map HTTP/1.1[0m" 404 -
+2026-08-04 21:21:25 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\multi.json
+2026-08-04 21:21:25 - INFO - utils.data_manager - data_manager.py:514 - 加载工具elint其他数据
+2026-08-04 21:21:25 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:21:25] "POST /api/tools/elint/data HTTP/1.1" 200 -
+2026-08-04 21:21:25 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\single\aes\cputime\Overall.json
+2026-08-04 21:21:25 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:21:25] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:21:25 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\single\aes\cputime\Overall.json
+2026-08-04 21:21:25 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:21:25] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:21:25 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\single\aes\cputime\Overall.json
+2026-08-04 21:21:25 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:21:25] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:21:25 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\single\aes\cputime\Overall.json
+2026-08-04 21:21:25 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:21:25] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:21:25 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\multi\aes\cputime\Overall.json
+2026-08-04 21:21:25 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\multi\aes\cputime\Overall.json
+2026-08-04 21:21:25 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:21:25] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:21:25 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:21:25] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:21:25 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\multi\aes\cputime\Overall.json
+2026-08-04 21:21:25 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\multi\aes\cputime\Overall.json
+2026-08-04 21:21:25 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:21:25] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:21:25 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:21:25] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:21:25 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\thread\aes\20260513\Overall.json
+2026-08-04 21:21:25 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\thread\aes\20260513\Overall.json
+2026-08-04 21:21:25 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\thread\aes\20260513\Overall.json
+2026-08-04 21:21:25 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:21:25] "POST /api/thread/chart/data HTTP/1.1" 200 -
+2026-08-04 21:21:25 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:21:25] "POST /api/thread/chart/data HTTP/1.1" 200 -
+2026-08-04 21:21:25 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\thread\aes\20260513\Overall.json
+2026-08-04 21:21:25 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:21:25] "POST /api/thread/chart/data HTTP/1.1" 200 -
+2026-08-04 21:21:25 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\thread\aes\20260513\Overall.json
+2026-08-04 21:21:25 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\thread\aes\20260513\Overall.json
+2026-08-04 21:21:25 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:21:25] "POST /api/thread/chart/data HTTP/1.1" 200 -
+2026-08-04 21:21:25 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:21:25] "POST /api/thread/chart/data HTTP/1.1" 200 -
+2026-08-04 21:21:25 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:21:25] "POST /api/thread/chart/data HTTP/1.1" 200 -
+2026-08-04 21:21:25 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\thread\aes\20260513\Overall.json
+2026-08-04 21:21:25 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:21:25] "POST /api/thread/chart/data HTTP/1.1" 200 -
+2026-08-04 21:21:25 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\single\aes\cputime\Overall.json
+2026-08-04 21:21:25 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:21:25] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:23:31 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:23:31] "GET /tool/elint/performance HTTP/1.1" 200 -
+2026-08-04 21:23:31 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:23:31] "[36mGET /static/js/echarts.min.js HTTP/1.1[0m" 304 -
+2026-08-04 21:23:31 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:23:31] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2026-08-04 21:23:31 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:23:31] "[36mGET /static/css/select.css HTTP/1.1[0m" 304 -
+2026-08-04 21:23:31 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:23:31] "[36mGET /static/js/axios.min.js HTTP/1.1[0m" 304 -
+2026-08-04 21:23:31 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:23:31] "[36mGET /static/js/single_thread.js HTTP/1.1[0m" 304 -
+2026-08-04 21:23:31 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:23:31] "[36mGET /static/js/multi_thread.js HTTP/1.1[0m" 304 -
+2026-08-04 21:23:31 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:23:31] "[36mGET /static/js/comparison.js HTTP/1.1[0m" 304 -
+2026-08-04 21:23:31 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:23:31] "[36mGET /static/js/thread_chart.js HTTP/1.1[0m" 304 -
+2026-08-04 21:23:31 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:23:31] "[36mGET /static/js/select.js HTTP/1.1[0m" 304 -
+2026-08-04 21:23:31 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:23:31] "[36mGET /static/js/tool.js HTTP/1.1[0m" 304 -
+2026-08-04 21:23:31 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:23:31] "[33mGET /static/js/axios.min.js.map HTTP/1.1[0m" 404 -
+2026-08-04 21:23:31 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:23:31] "GET /api/tools HTTP/1.1" 200 -
+2026-08-04 21:23:31 - INFO - utils.data_manager - data_manager.py:54 - 用户数据目录: E:\git\develop\monitor\monitor2.5\data\elint\6d9c919c-f6f8-42da-862d-c31dd176ecbc 已存在
+2026-08-04 21:23:31 - INFO - utils.data_manager - data_manager.py:477 - 加载工具elint单线程数据
+2026-08-04 21:23:31 - INFO - utils.data_manager - data_manager.py:106 - 用户 6d9c919c-f6f8-42da-862d-c31dd176ecbc 加载工具 elint 的 single 数据到前端
+2026-08-04 21:23:31 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\dataFiles.json
+2026-08-04 21:23:31 - INFO - utils.data_manager - data_manager.py:136 - 用户 6d9c919c-f6f8-42da-862d-c31dd176ecbc 没有新增 single 数据
+2026-08-04 21:23:31 - INFO - utils.common - common.py:85 - 成功保存工具数据到 E:\git\develop\monitor\monitor2.5\data\elint\dataFiles.json
+2026-08-04 21:23:31 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\single.json
+2026-08-04 21:23:31 - INFO - utils.data_manager - data_manager.py:497 - 加载工具elint多线程数据
+2026-08-04 21:23:31 - INFO - utils.data_manager - data_manager.py:106 - 用户 6d9c919c-f6f8-42da-862d-c31dd176ecbc 加载工具 elint 的 multi 数据到前端
+2026-08-04 21:23:31 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\dataFiles.json
+2026-08-04 21:23:31 - INFO - utils.data_manager - data_manager.py:136 - 用户 6d9c919c-f6f8-42da-862d-c31dd176ecbc 没有新增 multi 数据
+2026-08-04 21:23:31 - INFO - utils.common - common.py:85 - 成功保存工具数据到 E:\git\develop\monitor\monitor2.5\data\elint\dataFiles.json
+2026-08-04 21:23:31 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\multi.json
+2026-08-04 21:23:31 - INFO - utils.data_manager - data_manager.py:514 - 加载工具elint其他数据
+2026-08-04 21:23:31 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:23:31] "POST /api/tools/elint/data HTTP/1.1" 200 -
+2026-08-04 21:23:31 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\single\aes\cputime\Overall.json
+2026-08-04 21:23:31 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:23:31] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:23:31 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\single\aes\cputime\Overall.json
+2026-08-04 21:23:31 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\single\aes\cputime\Overall.json
+2026-08-04 21:23:31 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:23:31] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:23:31 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\single\aes\cputime\Overall.json
+2026-08-04 21:23:31 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:23:31] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:23:31 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:23:31] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:23:31 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\multi\aes\cputime\Overall.json
+2026-08-04 21:23:31 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:23:31] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:23:31 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\multi\aes\cputime\Overall.json
+2026-08-04 21:23:31 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\multi\aes\cputime\Overall.json
+2026-08-04 21:23:31 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:23:31] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:23:31 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\multi\aes\cputime\Overall.json
+2026-08-04 21:23:31 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:23:31] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:23:31 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:23:31] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:23:31 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\thread\aes\20260513\Overall.json
+2026-08-04 21:23:31 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\thread\aes\20260513\Overall.json
+2026-08-04 21:23:31 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\thread\aes\20260513\Overall.json
+2026-08-04 21:23:31 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:23:31] "POST /api/thread/chart/data HTTP/1.1" 200 -
+2026-08-04 21:23:31 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\thread\aes\20260513\Overall.json
+2026-08-04 21:23:31 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:23:31] "POST /api/thread/chart/data HTTP/1.1" 200 -
+2026-08-04 21:23:31 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:23:31] "POST /api/thread/chart/data HTTP/1.1" 200 -
+2026-08-04 21:23:31 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:23:31] "POST /api/thread/chart/data HTTP/1.1" 200 -
+2026-08-04 21:23:31 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\thread\aes\20260513\Overall.json
+2026-08-04 21:23:31 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\thread\aes\20260513\Overall.json
+2026-08-04 21:23:31 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:23:31] "POST /api/thread/chart/data HTTP/1.1" 200 -
+2026-08-04 21:23:31 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\thread\aes\20260513\Overall.json
+2026-08-04 21:23:31 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:23:31] "POST /api/thread/chart/data HTTP/1.1" 200 -
+2026-08-04 21:23:31 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:23:31] "POST /api/thread/chart/data HTTP/1.1" 200 -
+2026-08-04 21:23:32 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\single\aes\cputime\Overall.json
+2026-08-04 21:23:32 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:23:32] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:23:32 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\thread\aes\20260513\Overall.json
+2026-08-04 21:23:32 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:23:32] "POST /api/thread/chart/data HTTP/1.1" 200 -
+2026-08-04 21:23:32 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\thread\aes\20260513\Overall.json
+2026-08-04 21:23:32 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:23:32] "POST /api/thread/chart/data HTTP/1.1" 200 -
+2026-08-04 21:24:29 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:24:29] "GET /tool/elint/performance HTTP/1.1" 200 -
+2026-08-04 21:24:29 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:24:29] "[36mGET /static/js/echarts.min.js HTTP/1.1[0m" 304 -
+2026-08-04 21:24:29 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:24:29] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2026-08-04 21:24:29 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:24:29] "[36mGET /static/js/axios.min.js HTTP/1.1[0m" 304 -
+2026-08-04 21:24:29 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:24:29] "[36mGET /static/css/select.css HTTP/1.1[0m" 304 -
+2026-08-04 21:24:29 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:24:29] "[36mGET /static/js/single_thread.js HTTP/1.1[0m" 304 -
+2026-08-04 21:24:29 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:24:29] "[36mGET /static/js/thread_chart.js HTTP/1.1[0m" 304 -
+2026-08-04 21:24:29 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:24:29] "[36mGET /static/js/multi_thread.js HTTP/1.1[0m" 304 -
+2026-08-04 21:24:29 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:24:29] "[36mGET /static/js/comparison.js HTTP/1.1[0m" 304 -
+2026-08-04 21:24:29 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:24:29] "[36mGET /static/js/select.js HTTP/1.1[0m" 304 -
+2026-08-04 21:24:29 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:24:29] "[36mGET /static/js/tool.js HTTP/1.1[0m" 304 -
+2026-08-04 21:24:29 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:24:29] "GET /api/tools HTTP/1.1" 200 -
+2026-08-04 21:24:29 - INFO - utils.data_manager - data_manager.py:54 - 用户数据目录: E:\git\develop\monitor\monitor2.5\data\elint\6d9c919c-f6f8-42da-862d-c31dd176ecbc 已存在
+2026-08-04 21:24:29 - INFO - utils.data_manager - data_manager.py:477 - 加载工具elint单线程数据
+2026-08-04 21:24:29 - INFO - utils.data_manager - data_manager.py:106 - 用户 6d9c919c-f6f8-42da-862d-c31dd176ecbc 加载工具 elint 的 single 数据到前端
+2026-08-04 21:24:29 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\dataFiles.json
+2026-08-04 21:24:29 - INFO - utils.data_manager - data_manager.py:136 - 用户 6d9c919c-f6f8-42da-862d-c31dd176ecbc 没有新增 single 数据
+2026-08-04 21:24:29 - INFO - utils.common - common.py:85 - 成功保存工具数据到 E:\git\develop\monitor\monitor2.5\data\elint\dataFiles.json
+2026-08-04 21:24:29 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:24:29] "[33mGET /static/js/axios.min.js.map HTTP/1.1[0m" 404 -
+2026-08-04 21:24:29 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\single.json
+2026-08-04 21:24:29 - INFO - utils.data_manager - data_manager.py:497 - 加载工具elint多线程数据
+2026-08-04 21:24:29 - INFO - utils.data_manager - data_manager.py:106 - 用户 6d9c919c-f6f8-42da-862d-c31dd176ecbc 加载工具 elint 的 multi 数据到前端
+2026-08-04 21:24:29 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\dataFiles.json
+2026-08-04 21:24:29 - INFO - utils.data_manager - data_manager.py:136 - 用户 6d9c919c-f6f8-42da-862d-c31dd176ecbc 没有新增 multi 数据
+2026-08-04 21:24:29 - INFO - utils.common - common.py:85 - 成功保存工具数据到 E:\git\develop\monitor\monitor2.5\data\elint\dataFiles.json
+2026-08-04 21:24:29 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\multi.json
+2026-08-04 21:24:29 - INFO - utils.data_manager - data_manager.py:514 - 加载工具elint其他数据
+2026-08-04 21:24:29 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:24:29] "POST /api/tools/elint/data HTTP/1.1" 200 -
+2026-08-04 21:24:29 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\single\aes\cputime\Overall.json
+2026-08-04 21:24:29 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:24:29] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:24:29 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\single\aes\cputime\Overall.json
+2026-08-04 21:24:29 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:24:29] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:24:29 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\single\aes\cputime\Overall.json
+2026-08-04 21:24:29 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\single\aes\cputime\Overall.json
+2026-08-04 21:24:29 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:24:29] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:24:29 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:24:29] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:24:29 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\multi\aes\cputime\Overall.json
+2026-08-04 21:24:29 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:24:29] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:24:29 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\multi\aes\cputime\Overall.json
+2026-08-04 21:24:29 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\multi\aes\cputime\Overall.json
+2026-08-04 21:24:29 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:24:29] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:24:29 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\multi\aes\cputime\Overall.json
+2026-08-04 21:24:29 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:24:29] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:24:29 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\thread\aes\20260513\Overall.json
+2026-08-04 21:24:29 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:24:29] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:24:29 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\thread\aes\20260513\Overall.json
+2026-08-04 21:24:29 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\thread\aes\20260513\Overall.json
+2026-08-04 21:24:29 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:24:29] "POST /api/thread/chart/data HTTP/1.1" 200 -
+2026-08-04 21:24:29 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:24:29] "POST /api/thread/chart/data HTTP/1.1" 200 -
+2026-08-04 21:24:29 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\thread\aes\20260513\Overall.json
+2026-08-04 21:24:29 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:24:29] "POST /api/thread/chart/data HTTP/1.1" 200 -
+2026-08-04 21:24:29 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\thread\aes\20260513\Overall.json
+2026-08-04 21:24:29 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\thread\aes\20260513\Overall.json
+2026-08-04 21:24:29 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:24:29] "POST /api/thread/chart/data HTTP/1.1" 200 -
+2026-08-04 21:24:29 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:24:29] "POST /api/thread/chart/data HTTP/1.1" 200 -
+2026-08-04 21:24:29 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:24:29] "POST /api/thread/chart/data HTTP/1.1" 200 -
+2026-08-04 21:24:29 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\thread\aes\20260513\Overall.json
+2026-08-04 21:24:29 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:24:29] "POST /api/thread/chart/data HTTP/1.1" 200 -
+2026-08-04 21:24:29 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\single\aes\cputime\Overall.json
+2026-08-04 21:24:29 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:24:29] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:24:37 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:24:37] "GET /tool/elint/performance HTTP/1.1" 200 -
+2026-08-04 21:24:37 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:24:37] "[36mGET /static/js/echarts.min.js HTTP/1.1[0m" 304 -
+2026-08-04 21:24:37 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:24:37] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2026-08-04 21:24:37 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:24:37] "[36mGET /static/css/select.css HTTP/1.1[0m" 304 -
+2026-08-04 21:24:37 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:24:37] "[36mGET /static/js/axios.min.js HTTP/1.1[0m" 304 -
+2026-08-04 21:24:37 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:24:37] "[36mGET /static/js/single_thread.js HTTP/1.1[0m" 304 -
+2026-08-04 21:24:37 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:24:37] "[36mGET /static/js/multi_thread.js HTTP/1.1[0m" 304 -
+2026-08-04 21:24:37 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:24:37] "[36mGET /static/js/thread_chart.js HTTP/1.1[0m" 304 -
+2026-08-04 21:24:37 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:24:37] "[36mGET /static/js/comparison.js HTTP/1.1[0m" 304 -
+2026-08-04 21:24:37 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:24:37] "[36mGET /static/js/select.js HTTP/1.1[0m" 304 -
+2026-08-04 21:24:37 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:24:37] "[36mGET /static/js/tool.js HTTP/1.1[0m" 304 -
+2026-08-04 21:24:37 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:24:37] "[33mGET /static/js/axios.min.js.map HTTP/1.1[0m" 404 -
+2026-08-04 21:24:37 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:24:37] "GET /api/tools HTTP/1.1" 200 -
+2026-08-04 21:24:37 - INFO - utils.data_manager - data_manager.py:54 - 用户数据目录: E:\git\develop\monitor\monitor2.5\data\elint\6d9c919c-f6f8-42da-862d-c31dd176ecbc 已存在
+2026-08-04 21:24:37 - INFO - utils.data_manager - data_manager.py:477 - 加载工具elint单线程数据
+2026-08-04 21:24:37 - INFO - utils.data_manager - data_manager.py:106 - 用户 6d9c919c-f6f8-42da-862d-c31dd176ecbc 加载工具 elint 的 single 数据到前端
+2026-08-04 21:24:37 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\dataFiles.json
+2026-08-04 21:24:37 - INFO - utils.data_manager - data_manager.py:136 - 用户 6d9c919c-f6f8-42da-862d-c31dd176ecbc 没有新增 single 数据
+2026-08-04 21:24:37 - INFO - utils.common - common.py:85 - 成功保存工具数据到 E:\git\develop\monitor\monitor2.5\data\elint\dataFiles.json
+2026-08-04 21:24:37 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\single.json
+2026-08-04 21:24:37 - INFO - utils.data_manager - data_manager.py:497 - 加载工具elint多线程数据
+2026-08-04 21:24:37 - INFO - utils.data_manager - data_manager.py:106 - 用户 6d9c919c-f6f8-42da-862d-c31dd176ecbc 加载工具 elint 的 multi 数据到前端
+2026-08-04 21:24:37 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\dataFiles.json
+2026-08-04 21:24:37 - INFO - utils.data_manager - data_manager.py:136 - 用户 6d9c919c-f6f8-42da-862d-c31dd176ecbc 没有新增 multi 数据
+2026-08-04 21:24:37 - INFO - utils.common - common.py:85 - 成功保存工具数据到 E:\git\develop\monitor\monitor2.5\data\elint\dataFiles.json
+2026-08-04 21:24:37 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\multi.json
+2026-08-04 21:24:37 - INFO - utils.data_manager - data_manager.py:514 - 加载工具elint其他数据
+2026-08-04 21:24:37 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:24:37] "POST /api/tools/elint/data HTTP/1.1" 200 -
+2026-08-04 21:24:37 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\single\aes\cputime\Overall.json
+2026-08-04 21:24:37 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:24:37] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:24:37 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\single\aes\cputime\Overall.json
+2026-08-04 21:24:37 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\single\aes\cputime\Overall.json
+2026-08-04 21:24:37 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:24:37] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:24:37 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:24:37] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:24:37 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\single\aes\cputime\Overall.json
+2026-08-04 21:24:37 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:24:37] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:24:37 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\multi\aes\cputime\Overall.json
+2026-08-04 21:24:37 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\multi\aes\cputime\Overall.json
+2026-08-04 21:24:37 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:24:37] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:24:37 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:24:37] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:24:37 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\multi\aes\cputime\Overall.json
+2026-08-04 21:24:37 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\multi\aes\cputime\Overall.json
+2026-08-04 21:24:37 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\thread\aes\20260513\Overall.json
+2026-08-04 21:24:37 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:24:37] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:24:37 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\thread\aes\20260513\Overall.json
+2026-08-04 21:24:37 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:24:37] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:24:37 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:24:37] "POST /api/thread/chart/data HTTP/1.1" 200 -
+2026-08-04 21:24:37 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:24:37] "POST /api/thread/chart/data HTTP/1.1" 200 -
+2026-08-04 21:24:37 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\thread\aes\20260513\Overall.json
+2026-08-04 21:24:37 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\thread\aes\20260513\Overall.json
+2026-08-04 21:24:37 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:24:37] "POST /api/thread/chart/data HTTP/1.1" 200 -
+2026-08-04 21:24:37 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:24:37] "POST /api/thread/chart/data HTTP/1.1" 200 -
+2026-08-04 21:24:37 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\thread\aes\20260513\Overall.json
+2026-08-04 21:24:37 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\thread\aes\20260513\Overall.json
+2026-08-04 21:24:37 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\thread\aes\20260513\Overall.json
+2026-08-04 21:24:37 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:24:37] "POST /api/thread/chart/data HTTP/1.1" 200 -
+2026-08-04 21:24:37 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:24:37] "POST /api/thread/chart/data HTTP/1.1" 200 -
+2026-08-04 21:24:37 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:24:37] "POST /api/thread/chart/data HTTP/1.1" 200 -
+2026-08-04 21:24:37 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\single\aes\cputime\Overall.json
+2026-08-04 21:24:37 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:24:37] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:25:00 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:25:00] "GET /tool/elint/performance HTTP/1.1" 200 -
+2026-08-04 21:25:00 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:25:00] "[36mGET /static/css/select.css HTTP/1.1[0m" 304 -
+2026-08-04 21:25:00 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:25:00] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2026-08-04 21:25:00 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:25:00] "[36mGET /static/js/echarts.min.js HTTP/1.1[0m" 304 -
+2026-08-04 21:25:00 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:25:00] "[36mGET /static/js/axios.min.js HTTP/1.1[0m" 304 -
+2026-08-04 21:25:00 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:25:00] "[36mGET /static/js/single_thread.js HTTP/1.1[0m" 304 -
+2026-08-04 21:25:00 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:25:00] "[36mGET /static/js/multi_thread.js HTTP/1.1[0m" 304 -
+2026-08-04 21:25:00 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:25:00] "[36mGET /static/js/thread_chart.js HTTP/1.1[0m" 304 -
+2026-08-04 21:25:00 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:25:00] "[36mGET /static/js/comparison.js HTTP/1.1[0m" 304 -
+2026-08-04 21:25:00 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:25:00] "[36mGET /static/js/select.js HTTP/1.1[0m" 304 -
+2026-08-04 21:25:00 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:25:00] "[36mGET /static/js/tool.js HTTP/1.1[0m" 304 -
+2026-08-04 21:25:00 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:25:00] "GET /api/tools HTTP/1.1" 200 -
+2026-08-04 21:25:00 - INFO - utils.data_manager - data_manager.py:54 - 用户数据目录: E:\git\develop\monitor\monitor2.5\data\elint\6d9c919c-f6f8-42da-862d-c31dd176ecbc 已存在
+2026-08-04 21:25:00 - INFO - utils.data_manager - data_manager.py:477 - 加载工具elint单线程数据
+2026-08-04 21:25:00 - INFO - utils.data_manager - data_manager.py:106 - 用户 6d9c919c-f6f8-42da-862d-c31dd176ecbc 加载工具 elint 的 single 数据到前端
+2026-08-04 21:25:00 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:25:00] "[33mGET /static/js/axios.min.js.map HTTP/1.1[0m" 404 -
+2026-08-04 21:25:00 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\dataFiles.json
+2026-08-04 21:25:00 - INFO - utils.data_manager - data_manager.py:136 - 用户 6d9c919c-f6f8-42da-862d-c31dd176ecbc 没有新增 single 数据
+2026-08-04 21:25:00 - INFO - utils.common - common.py:85 - 成功保存工具数据到 E:\git\develop\monitor\monitor2.5\data\elint\dataFiles.json
+2026-08-04 21:25:00 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\single.json
+2026-08-04 21:25:00 - INFO - utils.data_manager - data_manager.py:497 - 加载工具elint多线程数据
+2026-08-04 21:25:00 - INFO - utils.data_manager - data_manager.py:106 - 用户 6d9c919c-f6f8-42da-862d-c31dd176ecbc 加载工具 elint 的 multi 数据到前端
+2026-08-04 21:25:00 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\dataFiles.json
+2026-08-04 21:25:00 - INFO - utils.data_manager - data_manager.py:136 - 用户 6d9c919c-f6f8-42da-862d-c31dd176ecbc 没有新增 multi 数据
+2026-08-04 21:25:00 - INFO - utils.common - common.py:85 - 成功保存工具数据到 E:\git\develop\monitor\monitor2.5\data\elint\dataFiles.json
+2026-08-04 21:25:00 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\multi.json
+2026-08-04 21:25:00 - INFO - utils.data_manager - data_manager.py:514 - 加载工具elint其他数据
+2026-08-04 21:25:00 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:25:00] "POST /api/tools/elint/data HTTP/1.1" 200 -
+2026-08-04 21:25:00 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\single\aes\cputime\Overall.json
+2026-08-04 21:25:00 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:25:00] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:25:00 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\single\aes\cputime\Overall.json
+2026-08-04 21:25:00 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:25:00] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:25:00 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\single\aes\cputime\Overall.json
+2026-08-04 21:25:00 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\single\aes\cputime\Overall.json
+2026-08-04 21:25:00 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:25:00] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:25:00 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\multi\aes\cputime\Overall.json
+2026-08-04 21:25:00 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:25:00] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:25:00 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\multi\aes\cputime\Overall.json
+2026-08-04 21:25:00 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:25:00] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:25:00 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\multi\aes\cputime\Overall.json
+2026-08-04 21:25:00 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\multi\aes\cputime\Overall.json
+2026-08-04 21:25:00 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:25:00] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:25:00 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\thread\aes\20260513\Overall.json
+2026-08-04 21:25:00 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:25:00] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:25:00 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:25:00] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:25:00 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\thread\aes\20260513\Overall.json
+2026-08-04 21:25:00 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:25:00] "POST /api/thread/chart/data HTTP/1.1" 200 -
+2026-08-04 21:25:00 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\thread\aes\20260513\Overall.json
+2026-08-04 21:25:00 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:25:00] "POST /api/thread/chart/data HTTP/1.1" 200 -
+2026-08-04 21:25:00 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\thread\aes\20260513\Overall.json
+2026-08-04 21:25:00 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:25:00] "POST /api/thread/chart/data HTTP/1.1" 200 -
+2026-08-04 21:25:00 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\thread\aes\20260513\Overall.json
+2026-08-04 21:25:00 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:25:00] "POST /api/thread/chart/data HTTP/1.1" 200 -
+2026-08-04 21:25:00 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:25:00] "POST /api/thread/chart/data HTTP/1.1" 200 -
+2026-08-04 21:25:00 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\thread\aes\20260513\Overall.json
+2026-08-04 21:25:00 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\thread\aes\20260513\Overall.json
+2026-08-04 21:25:00 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:25:00] "POST /api/thread/chart/data HTTP/1.1" 200 -
+2026-08-04 21:25:00 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:25:00] "POST /api/thread/chart/data HTTP/1.1" 200 -
+2026-08-04 21:25:01 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\single\aes\cputime\Overall.json
+2026-08-04 21:25:01 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:25:01] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:27:38 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:27:38] "GET /tool/elint/performance HTTP/1.1" 200 -
+2026-08-04 21:27:38 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:27:38] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2026-08-04 21:27:38 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:27:38] "[36mGET /static/js/echarts.min.js HTTP/1.1[0m" 304 -
+2026-08-04 21:27:38 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:27:38] "[36mGET /static/css/select.css HTTP/1.1[0m" 304 -
+2026-08-04 21:27:38 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:27:38] "[36mGET /static/js/axios.min.js HTTP/1.1[0m" 304 -
+2026-08-04 21:27:38 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:27:38] "[36mGET /static/js/multi_thread.js HTTP/1.1[0m" 304 -
+2026-08-04 21:27:38 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:27:38] "[36mGET /static/js/single_thread.js HTTP/1.1[0m" 304 -
+2026-08-04 21:27:38 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:27:38] "[36mGET /static/js/thread_chart.js HTTP/1.1[0m" 304 -
+2026-08-04 21:27:38 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:27:38] "[36mGET /static/js/comparison.js HTTP/1.1[0m" 304 -
+2026-08-04 21:27:38 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:27:38] "[36mGET /static/js/select.js HTTP/1.1[0m" 304 -
+2026-08-04 21:27:38 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:27:38] "[36mGET /static/js/tool.js HTTP/1.1[0m" 304 -
+2026-08-04 21:27:38 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:27:38] "GET /api/tools HTTP/1.1" 200 -
+2026-08-04 21:27:38 - INFO - utils.data_manager - data_manager.py:54 - 用户数据目录: E:\git\develop\monitor\monitor2.5\data\elint\6d9c919c-f6f8-42da-862d-c31dd176ecbc 已存在
+2026-08-04 21:27:38 - INFO - utils.data_manager - data_manager.py:477 - 加载工具elint单线程数据
+2026-08-04 21:27:38 - INFO - utils.data_manager - data_manager.py:106 - 用户 6d9c919c-f6f8-42da-862d-c31dd176ecbc 加载工具 elint 的 single 数据到前端
+2026-08-04 21:27:38 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\dataFiles.json
+2026-08-04 21:27:38 - INFO - utils.data_manager - data_manager.py:136 - 用户 6d9c919c-f6f8-42da-862d-c31dd176ecbc 没有新增 single 数据
+2026-08-04 21:27:38 - INFO - utils.common - common.py:85 - 成功保存工具数据到 E:\git\develop\monitor\monitor2.5\data\elint\dataFiles.json
+2026-08-04 21:27:38 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\single.json
+2026-08-04 21:27:38 - INFO - utils.data_manager - data_manager.py:497 - 加载工具elint多线程数据
+2026-08-04 21:27:38 - INFO - utils.data_manager - data_manager.py:106 - 用户 6d9c919c-f6f8-42da-862d-c31dd176ecbc 加载工具 elint 的 multi 数据到前端
+2026-08-04 21:27:38 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\dataFiles.json
+2026-08-04 21:27:38 - INFO - utils.data_manager - data_manager.py:136 - 用户 6d9c919c-f6f8-42da-862d-c31dd176ecbc 没有新增 multi 数据
+2026-08-04 21:27:38 - INFO - utils.common - common.py:85 - 成功保存工具数据到 E:\git\develop\monitor\monitor2.5\data\elint\dataFiles.json
+2026-08-04 21:27:38 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\multi.json
+2026-08-04 21:27:38 - INFO - utils.data_manager - data_manager.py:514 - 加载工具elint其他数据
+2026-08-04 21:27:38 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:27:38] "POST /api/tools/elint/data HTTP/1.1" 200 -
+2026-08-04 21:27:38 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\single\aes\cputime\Overall.json
+2026-08-04 21:27:38 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:27:38] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:27:38 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\single\aes\cputime\Overall.json
+2026-08-04 21:27:38 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:27:38] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:27:38 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\single\aes\cputime\Overall.json
+2026-08-04 21:27:38 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:27:38] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:27:38 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\single\aes\cputime\Overall.json
+2026-08-04 21:27:38 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:27:38] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:27:38 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\multi\aes\cputime\Overall.json
+2026-08-04 21:27:38 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\multi\aes\cputime\Overall.json
+2026-08-04 21:27:38 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:27:38] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:27:38 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:27:38] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:27:38 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\multi\aes\cputime\Overall.json
+2026-08-04 21:27:38 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\multi\aes\cputime\Overall.json
+2026-08-04 21:27:38 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:27:38] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:27:38 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:27:38] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:27:38 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\thread\aes\20260513\Overall.json
+2026-08-04 21:27:38 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:27:38] "POST /api/thread/chart/data HTTP/1.1" 200 -
+2026-08-04 21:27:38 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\thread\aes\20260513\Overall.json
+2026-08-04 21:27:38 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\thread\aes\20260513\Overall.json
+2026-08-04 21:27:38 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:27:38] "POST /api/thread/chart/data HTTP/1.1" 200 -
+2026-08-04 21:27:38 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\thread\aes\20260513\Overall.json
+2026-08-04 21:27:38 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:27:38] "POST /api/thread/chart/data HTTP/1.1" 200 -
+2026-08-04 21:27:38 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\thread\aes\20260513\Overall.json
+2026-08-04 21:27:38 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:27:38] "POST /api/thread/chart/data HTTP/1.1" 200 -
+2026-08-04 21:27:38 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\thread\aes\20260513\Overall.json
+2026-08-04 21:27:38 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\thread\aes\20260513\Overall.json
+2026-08-04 21:27:38 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:27:38] "POST /api/thread/chart/data HTTP/1.1" 200 -
+2026-08-04 21:27:38 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:27:38] "POST /api/thread/chart/data HTTP/1.1" 200 -
+2026-08-04 21:27:38 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:27:38] "POST /api/thread/chart/data HTTP/1.1" 200 -
+2026-08-04 21:27:38 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:27:38] "[33mGET /static/js/axios.min.js.map HTTP/1.1[0m" 404 -
+2026-08-04 21:27:38 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\single\aes\cputime\Overall.json
+2026-08-04 21:27:38 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:27:38] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:31:09 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:31:09] "GET /tool/elint/performance HTTP/1.1" 200 -
+2026-08-04 21:31:09 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:31:09] "[36mGET /static/js/echarts.min.js HTTP/1.1[0m" 304 -
+2026-08-04 21:31:09 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:31:09] "[36mGET /static/css/select.css HTTP/1.1[0m" 304 -
+2026-08-04 21:31:09 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:31:09] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2026-08-04 21:31:09 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:31:09] "[36mGET /static/js/axios.min.js HTTP/1.1[0m" 304 -
+2026-08-04 21:31:09 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:31:09] "[36mGET /static/js/single_thread.js HTTP/1.1[0m" 304 -
+2026-08-04 21:31:09 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:31:09] "[36mGET /static/js/multi_thread.js HTTP/1.1[0m" 304 -
+2026-08-04 21:31:09 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:31:09] "[36mGET /static/js/thread_chart.js HTTP/1.1[0m" 304 -
+2026-08-04 21:31:09 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:31:09] "[36mGET /static/js/comparison.js HTTP/1.1[0m" 304 -
+2026-08-04 21:31:09 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:31:09] "[36mGET /static/js/select.js HTTP/1.1[0m" 304 -
+2026-08-04 21:31:09 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:31:09] "[36mGET /static/js/tool.js HTTP/1.1[0m" 304 -
+2026-08-04 21:31:09 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:31:09] "GET /api/tools HTTP/1.1" 200 -
+2026-08-04 21:31:09 - INFO - utils.data_manager - data_manager.py:54 - 用户数据目录: E:\git\develop\monitor\monitor2.5\data\elint\6d9c919c-f6f8-42da-862d-c31dd176ecbc 已存在
+2026-08-04 21:31:09 - INFO - utils.data_manager - data_manager.py:477 - 加载工具elint单线程数据
+2026-08-04 21:31:09 - INFO - utils.data_manager - data_manager.py:106 - 用户 6d9c919c-f6f8-42da-862d-c31dd176ecbc 加载工具 elint 的 single 数据到前端
+2026-08-04 21:31:09 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\dataFiles.json
+2026-08-04 21:31:09 - INFO - utils.data_manager - data_manager.py:136 - 用户 6d9c919c-f6f8-42da-862d-c31dd176ecbc 没有新增 single 数据
+2026-08-04 21:31:09 - INFO - utils.common - common.py:85 - 成功保存工具数据到 E:\git\develop\monitor\monitor2.5\data\elint\dataFiles.json
+2026-08-04 21:31:09 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\single.json
+2026-08-04 21:31:09 - INFO - utils.data_manager - data_manager.py:497 - 加载工具elint多线程数据
+2026-08-04 21:31:09 - INFO - utils.data_manager - data_manager.py:106 - 用户 6d9c919c-f6f8-42da-862d-c31dd176ecbc 加载工具 elint 的 multi 数据到前端
+2026-08-04 21:31:09 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\dataFiles.json
+2026-08-04 21:31:09 - INFO - utils.data_manager - data_manager.py:136 - 用户 6d9c919c-f6f8-42da-862d-c31dd176ecbc 没有新增 multi 数据
+2026-08-04 21:31:09 - INFO - utils.common - common.py:85 - 成功保存工具数据到 E:\git\develop\monitor\monitor2.5\data\elint\dataFiles.json
+2026-08-04 21:31:09 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\multi.json
+2026-08-04 21:31:09 - INFO - utils.data_manager - data_manager.py:514 - 加载工具elint其他数据
+2026-08-04 21:31:09 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:31:09] "POST /api/tools/elint/data HTTP/1.1" 200 -
+2026-08-04 21:31:09 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\single\aes\cputime\Overall.json
+2026-08-04 21:31:09 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:31:09] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:31:09 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\single\aes\cputime\Overall.json
+2026-08-04 21:31:09 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\single\aes\cputime\Overall.json
+2026-08-04 21:31:09 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:31:09] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:31:09 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\single\aes\cputime\Overall.json
+2026-08-04 21:31:09 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:31:09] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:31:09 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\multi\aes\cputime\Overall.json
+2026-08-04 21:31:09 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:31:09] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:31:09 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\multi\aes\cputime\Overall.json
+2026-08-04 21:31:09 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:31:09] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:31:09 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\multi\aes\cputime\Overall.json
+2026-08-04 21:31:09 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:31:09] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:31:09 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\multi\aes\cputime\Overall.json
+2026-08-04 21:31:09 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:31:09] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:31:09 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\thread\aes\20260513\Overall.json
+2026-08-04 21:31:09 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\thread\aes\20260513\Overall.json
+2026-08-04 21:31:09 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:31:09] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:31:09 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\thread\aes\20260513\Overall.json
+2026-08-04 21:31:09 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:31:09] "POST /api/thread/chart/data HTTP/1.1" 200 -
+2026-08-04 21:31:09 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:31:09] "POST /api/thread/chart/data HTTP/1.1" 200 -
+2026-08-04 21:31:09 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\thread\aes\20260513\Overall.json
+2026-08-04 21:31:09 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:31:09] "POST /api/thread/chart/data HTTP/1.1" 200 -
+2026-08-04 21:31:09 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\thread\aes\20260513\Overall.json
+2026-08-04 21:31:09 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:31:09] "POST /api/thread/chart/data HTTP/1.1" 200 -
+2026-08-04 21:31:09 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\thread\aes\20260513\Overall.json
+2026-08-04 21:31:09 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:31:09] "POST /api/thread/chart/data HTTP/1.1" 200 -
+2026-08-04 21:31:09 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\thread\aes\20260513\Overall.json
+2026-08-04 21:31:09 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:31:09] "POST /api/thread/chart/data HTTP/1.1" 200 -
+2026-08-04 21:31:09 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:31:09] "POST /api/thread/chart/data HTTP/1.1" 200 -
+2026-08-04 21:31:09 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\single\aes\cputime\Overall.json
+2026-08-04 21:31:09 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:31:09] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:32:07 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:32:07] "GET /tool/elint/performance HTTP/1.1" 200 -
+2026-08-04 21:32:07 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:32:07] "[36mGET /static/js/echarts.min.js HTTP/1.1[0m" 304 -
+2026-08-04 21:32:07 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:32:07] "[36mGET /static/js/axios.min.js HTTP/1.1[0m" 304 -
+2026-08-04 21:32:07 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:32:07] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2026-08-04 21:32:07 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:32:07] "[36mGET /static/css/select.css HTTP/1.1[0m" 304 -
+2026-08-04 21:32:07 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:32:07] "[36mGET /static/js/single_thread.js HTTP/1.1[0m" 304 -
+2026-08-04 21:32:07 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:32:07] "[36mGET /static/js/multi_thread.js HTTP/1.1[0m" 304 -
+2026-08-04 21:32:07 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:32:07] "[36mGET /static/js/thread_chart.js HTTP/1.1[0m" 304 -
+2026-08-04 21:32:07 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:32:07] "[36mGET /static/js/comparison.js HTTP/1.1[0m" 304 -
+2026-08-04 21:32:07 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:32:07] "[36mGET /static/js/select.js HTTP/1.1[0m" 304 -
+2026-08-04 21:32:07 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:32:07] "[36mGET /static/js/tool.js HTTP/1.1[0m" 304 -
+2026-08-04 21:32:07 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:32:07] "GET /api/tools HTTP/1.1" 200 -
+2026-08-04 21:32:07 - INFO - utils.data_manager - data_manager.py:54 - 用户数据目录: E:\git\develop\monitor\monitor2.5\data\elint\6d9c919c-f6f8-42da-862d-c31dd176ecbc 已存在
+2026-08-04 21:32:07 - INFO - utils.data_manager - data_manager.py:477 - 加载工具elint单线程数据
+2026-08-04 21:32:07 - INFO - utils.data_manager - data_manager.py:106 - 用户 6d9c919c-f6f8-42da-862d-c31dd176ecbc 加载工具 elint 的 single 数据到前端
+2026-08-04 21:32:07 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\dataFiles.json
+2026-08-04 21:32:07 - INFO - utils.data_manager - data_manager.py:136 - 用户 6d9c919c-f6f8-42da-862d-c31dd176ecbc 没有新增 single 数据
+2026-08-04 21:32:07 - INFO - utils.common - common.py:85 - 成功保存工具数据到 E:\git\develop\monitor\monitor2.5\data\elint\dataFiles.json
+2026-08-04 21:32:07 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\single.json
+2026-08-04 21:32:07 - INFO - utils.data_manager - data_manager.py:497 - 加载工具elint多线程数据
+2026-08-04 21:32:07 - INFO - utils.data_manager - data_manager.py:106 - 用户 6d9c919c-f6f8-42da-862d-c31dd176ecbc 加载工具 elint 的 multi 数据到前端
+2026-08-04 21:32:07 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\dataFiles.json
+2026-08-04 21:32:07 - INFO - utils.data_manager - data_manager.py:136 - 用户 6d9c919c-f6f8-42da-862d-c31dd176ecbc 没有新增 multi 数据
+2026-08-04 21:32:07 - INFO - utils.common - common.py:85 - 成功保存工具数据到 E:\git\develop\monitor\monitor2.5\data\elint\dataFiles.json
+2026-08-04 21:32:07 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\multi.json
+2026-08-04 21:32:07 - INFO - utils.data_manager - data_manager.py:514 - 加载工具elint其他数据
+2026-08-04 21:32:07 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:32:07] "POST /api/tools/elint/data HTTP/1.1" 200 -
+2026-08-04 21:32:07 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\single\aes\cputime\Overall.json
+2026-08-04 21:32:07 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:32:07] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:32:07 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\single\aes\cputime\Overall.json
+2026-08-04 21:32:07 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\single\aes\cputime\Overall.json
+2026-08-04 21:32:07 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:32:07] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:32:07 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:32:07] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:32:07 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\single\aes\cputime\Overall.json
+2026-08-04 21:32:07 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\multi\aes\cputime\Overall.json
+2026-08-04 21:32:07 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:32:07] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:32:07 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:32:07] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:32:07 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\multi\aes\cputime\Overall.json
+2026-08-04 21:32:07 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:32:07] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:32:07 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\multi\aes\cputime\Overall.json
+2026-08-04 21:32:07 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\multi\aes\cputime\Overall.json
+2026-08-04 21:32:07 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:32:07] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:32:07 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:32:07] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:32:07 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\thread\aes\20260513\Overall.json
+2026-08-04 21:32:07 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\thread\aes\20260513\Overall.json
+2026-08-04 21:32:07 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:32:07] "POST /api/thread/chart/data HTTP/1.1" 200 -
+2026-08-04 21:32:07 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:32:07] "POST /api/thread/chart/data HTTP/1.1" 200 -
+2026-08-04 21:32:07 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\thread\aes\20260513\Overall.json
+2026-08-04 21:32:07 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\thread\aes\20260513\Overall.json
+2026-08-04 21:32:07 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\thread\aes\20260513\Overall.json
+2026-08-04 21:32:07 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:32:07] "POST /api/thread/chart/data HTTP/1.1" 200 -
+2026-08-04 21:32:07 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:32:07] "POST /api/thread/chart/data HTTP/1.1" 200 -
+2026-08-04 21:32:07 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:32:07] "POST /api/thread/chart/data HTTP/1.1" 200 -
+2026-08-04 21:32:07 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\thread\aes\20260513\Overall.json
+2026-08-04 21:32:07 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\thread\aes\20260513\Overall.json
+2026-08-04 21:32:07 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:32:07] "POST /api/thread/chart/data HTTP/1.1" 200 -
+2026-08-04 21:32:07 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:32:07] "POST /api/thread/chart/data HTTP/1.1" 200 -
+2026-08-04 21:32:08 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\single\aes\cputime\Overall.json
+2026-08-04 21:32:08 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:32:08] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:32:30 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:32:30] "GET /tool/elint/performance HTTP/1.1" 200 -
+2026-08-04 21:32:30 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:32:30] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2026-08-04 21:32:30 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:32:30] "[36mGET /static/js/echarts.min.js HTTP/1.1[0m" 304 -
+2026-08-04 21:32:30 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:32:30] "[36mGET /static/css/select.css HTTP/1.1[0m" 304 -
+2026-08-04 21:32:30 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:32:30] "[36mGET /static/js/axios.min.js HTTP/1.1[0m" 304 -
+2026-08-04 21:32:30 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:32:30] "[36mGET /static/js/single_thread.js HTTP/1.1[0m" 304 -
+2026-08-04 21:32:30 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:32:30] "[36mGET /static/js/multi_thread.js HTTP/1.1[0m" 304 -
+2026-08-04 21:32:30 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:32:30] "[36mGET /static/js/comparison.js HTTP/1.1[0m" 304 -
+2026-08-04 21:32:30 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:32:30] "[36mGET /static/js/thread_chart.js HTTP/1.1[0m" 304 -
+2026-08-04 21:32:30 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:32:30] "[36mGET /static/js/select.js HTTP/1.1[0m" 304 -
+2026-08-04 21:32:30 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:32:30] "[36mGET /static/js/tool.js HTTP/1.1[0m" 304 -
+2026-08-04 21:32:30 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:32:30] "GET /api/tools HTTP/1.1" 200 -
+2026-08-04 21:32:30 - INFO - utils.data_manager - data_manager.py:54 - 用户数据目录: E:\git\develop\monitor\monitor2.5\data\elint\6d9c919c-f6f8-42da-862d-c31dd176ecbc 已存在
+2026-08-04 21:32:30 - INFO - utils.data_manager - data_manager.py:477 - 加载工具elint单线程数据
+2026-08-04 21:32:30 - INFO - utils.data_manager - data_manager.py:106 - 用户 6d9c919c-f6f8-42da-862d-c31dd176ecbc 加载工具 elint 的 single 数据到前端
+2026-08-04 21:32:30 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\dataFiles.json
+2026-08-04 21:32:30 - INFO - utils.data_manager - data_manager.py:136 - 用户 6d9c919c-f6f8-42da-862d-c31dd176ecbc 没有新增 single 数据
+2026-08-04 21:32:30 - INFO - utils.common - common.py:85 - 成功保存工具数据到 E:\git\develop\monitor\monitor2.5\data\elint\dataFiles.json
+2026-08-04 21:32:30 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\single.json
+2026-08-04 21:32:30 - INFO - utils.data_manager - data_manager.py:497 - 加载工具elint多线程数据
+2026-08-04 21:32:30 - INFO - utils.data_manager - data_manager.py:106 - 用户 6d9c919c-f6f8-42da-862d-c31dd176ecbc 加载工具 elint 的 multi 数据到前端
+2026-08-04 21:32:30 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\dataFiles.json
+2026-08-04 21:32:30 - INFO - utils.data_manager - data_manager.py:136 - 用户 6d9c919c-f6f8-42da-862d-c31dd176ecbc 没有新增 multi 数据
+2026-08-04 21:32:30 - INFO - utils.common - common.py:85 - 成功保存工具数据到 E:\git\develop\monitor\monitor2.5\data\elint\dataFiles.json
+2026-08-04 21:32:30 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\multi.json
+2026-08-04 21:32:30 - INFO - utils.data_manager - data_manager.py:514 - 加载工具elint其他数据
+2026-08-04 21:32:30 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:32:30] "POST /api/tools/elint/data HTTP/1.1" 200 -
+2026-08-04 21:32:30 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\single\aes\cputime\Overall.json
+2026-08-04 21:32:30 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:32:30] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:32:30 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\single\aes\cputime\Overall.json
+2026-08-04 21:32:30 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\single\aes\cputime\Overall.json
+2026-08-04 21:32:30 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:32:30] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:32:30 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:32:30] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:32:30 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\single\aes\cputime\Overall.json
+2026-08-04 21:32:30 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:32:30] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:32:30 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\multi\aes\cputime\Overall.json
+2026-08-04 21:32:30 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\multi\aes\cputime\Overall.json
+2026-08-04 21:32:30 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:32:30] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:32:30 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\multi\aes\cputime\Overall.json
+2026-08-04 21:32:30 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:32:30] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:32:30 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:32:30] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:32:30 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\multi\aes\cputime\Overall.json
+2026-08-04 21:32:30 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\thread\aes\20260513\Overall.json
+2026-08-04 21:32:30 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\thread\aes\20260513\Overall.json
+2026-08-04 21:32:30 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:32:30] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:32:30 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\thread\aes\20260513\Overall.json
+2026-08-04 21:32:30 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:32:30] "POST /api/thread/chart/data HTTP/1.1" 200 -
+2026-08-04 21:32:30 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:32:30] "POST /api/thread/chart/data HTTP/1.1" 200 -
+2026-08-04 21:32:30 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\thread\aes\20260513\Overall.json
+2026-08-04 21:32:30 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:32:30] "POST /api/thread/chart/data HTTP/1.1" 200 -
+2026-08-04 21:32:30 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\thread\aes\20260513\Overall.json
+2026-08-04 21:32:30 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:32:30] "POST /api/thread/chart/data HTTP/1.1" 200 -
+2026-08-04 21:32:30 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:32:30] "POST /api/thread/chart/data HTTP/1.1" 200 -
+2026-08-04 21:32:30 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\thread\aes\20260513\Overall.json
+2026-08-04 21:32:30 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\thread\aes\20260513\Overall.json
+2026-08-04 21:32:30 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:32:30] "POST /api/thread/chart/data HTTP/1.1" 200 -
+2026-08-04 21:32:30 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:32:30] "POST /api/thread/chart/data HTTP/1.1" 200 -
+2026-08-04 21:32:30 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\single\aes\cputime\Overall.json
+2026-08-04 21:32:30 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:32:30] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:33:32 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:33:32] "GET /tool/elint/performance HTTP/1.1" 200 -
+2026-08-04 21:33:32 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:33:32] "[36mGET /static/js/echarts.min.js HTTP/1.1[0m" 304 -
+2026-08-04 21:33:32 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:33:32] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2026-08-04 21:33:32 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:33:32] "[36mGET /static/css/select.css HTTP/1.1[0m" 304 -
+2026-08-04 21:33:32 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:33:32] "[36mGET /static/js/axios.min.js HTTP/1.1[0m" 304 -
+2026-08-04 21:33:32 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:33:32] "[36mGET /static/js/single_thread.js HTTP/1.1[0m" 304 -
+2026-08-04 21:33:32 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:33:32] "[36mGET /static/js/multi_thread.js HTTP/1.1[0m" 304 -
+2026-08-04 21:33:32 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:33:32] "[36mGET /static/js/thread_chart.js HTTP/1.1[0m" 304 -
+2026-08-04 21:33:32 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:33:32] "GET /static/js/comparison.js HTTP/1.1" 200 -
+2026-08-04 21:33:32 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:33:32] "[36mGET /static/js/select.js HTTP/1.1[0m" 304 -
+2026-08-04 21:33:32 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:33:32] "[36mGET /static/js/tool.js HTTP/1.1[0m" 304 -
+2026-08-04 21:33:32 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:33:32] "GET /api/tools HTTP/1.1" 200 -
+2026-08-04 21:33:32 - INFO - utils.data_manager - data_manager.py:54 - 用户数据目录: E:\git\develop\monitor\monitor2.5\data\elint\6d9c919c-f6f8-42da-862d-c31dd176ecbc 已存在
+2026-08-04 21:33:32 - INFO - utils.data_manager - data_manager.py:477 - 加载工具elint单线程数据
+2026-08-04 21:33:32 - INFO - utils.data_manager - data_manager.py:106 - 用户 6d9c919c-f6f8-42da-862d-c31dd176ecbc 加载工具 elint 的 single 数据到前端
+2026-08-04 21:33:32 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\dataFiles.json
+2026-08-04 21:33:32 - INFO - utils.data_manager - data_manager.py:136 - 用户 6d9c919c-f6f8-42da-862d-c31dd176ecbc 没有新增 single 数据
+2026-08-04 21:33:32 - INFO - utils.common - common.py:85 - 成功保存工具数据到 E:\git\develop\monitor\monitor2.5\data\elint\dataFiles.json
+2026-08-04 21:33:32 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\single.json
+2026-08-04 21:33:32 - INFO - utils.data_manager - data_manager.py:497 - 加载工具elint多线程数据
+2026-08-04 21:33:32 - INFO - utils.data_manager - data_manager.py:106 - 用户 6d9c919c-f6f8-42da-862d-c31dd176ecbc 加载工具 elint 的 multi 数据到前端
+2026-08-04 21:33:32 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\dataFiles.json
+2026-08-04 21:33:32 - INFO - utils.data_manager - data_manager.py:136 - 用户 6d9c919c-f6f8-42da-862d-c31dd176ecbc 没有新增 multi 数据
+2026-08-04 21:33:32 - INFO - utils.common - common.py:85 - 成功保存工具数据到 E:\git\develop\monitor\monitor2.5\data\elint\dataFiles.json
+2026-08-04 21:33:32 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\multi.json
+2026-08-04 21:33:32 - INFO - utils.data_manager - data_manager.py:514 - 加载工具elint其他数据
+2026-08-04 21:33:32 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:33:32] "POST /api/tools/elint/data HTTP/1.1" 200 -
+2026-08-04 21:33:32 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\single\aes\cputime\Overall.json
+2026-08-04 21:33:32 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:33:32] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:33:32 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\single\aes\cputime\Overall.json
+2026-08-04 21:33:32 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\single\aes\cputime\Overall.json
+2026-08-04 21:33:32 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:33:32] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:33:32 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:33:32] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:33:32 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\single\aes\cputime\Overall.json
+2026-08-04 21:33:32 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\multi\aes\cputime\Overall.json
+2026-08-04 21:33:32 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\multi\aes\cputime\Overall.json
+2026-08-04 21:33:32 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:33:32] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:33:32 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\multi\aes\cputime\Overall.json
+2026-08-04 21:33:32 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:33:32] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:33:32 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\multi\aes\cputime\Overall.json
+2026-08-04 21:33:32 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:33:32] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:33:32 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\thread\aes\20260513\Overall.json
+2026-08-04 21:33:32 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:33:32] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:33:32 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:33:32] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:33:32 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:33:32] "POST /api/thread/chart/data HTTP/1.1" 200 -
+2026-08-04 21:33:32 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\thread\aes\20260513\Overall.json
+2026-08-04 21:33:32 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:33:32] "POST /api/thread/chart/data HTTP/1.1" 200 -
+2026-08-04 21:33:32 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\thread\aes\20260513\Overall.json
+2026-08-04 21:33:32 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\thread\aes\20260513\Overall.json
+2026-08-04 21:33:32 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\thread\aes\20260513\Overall.json
+2026-08-04 21:33:32 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:33:32] "POST /api/thread/chart/data HTTP/1.1" 200 -
+2026-08-04 21:33:32 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:33:32] "POST /api/thread/chart/data HTTP/1.1" 200 -
+2026-08-04 21:33:32 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\thread\aes\20260513\Overall.json
+2026-08-04 21:33:32 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:33:32] "POST /api/thread/chart/data HTTP/1.1" 200 -
+2026-08-04 21:33:32 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\thread\aes\20260513\Overall.json
+2026-08-04 21:33:32 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:33:32] "POST /api/thread/chart/data HTTP/1.1" 200 -
+2026-08-04 21:33:32 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:33:32] "POST /api/thread/chart/data HTTP/1.1" 200 -
+2026-08-04 21:33:32 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\single\aes\cputime\Overall.json
+2026-08-04 21:33:32 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:33:32] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:34:46 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:34:46] "GET /tool/elint/performance HTTP/1.1" 200 -
+2026-08-04 21:34:46 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:34:46] "[36mGET /static/js/echarts.min.js HTTP/1.1[0m" 304 -
+2026-08-04 21:34:46 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:34:46] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2026-08-04 21:34:46 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:34:46] "[36mGET /static/css/select.css HTTP/1.1[0m" 304 -
+2026-08-04 21:34:46 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:34:46] "[36mGET /static/js/axios.min.js HTTP/1.1[0m" 304 -
+2026-08-04 21:34:46 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:34:46] "[36mGET /static/js/single_thread.js HTTP/1.1[0m" 304 -
+2026-08-04 21:34:46 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:34:46] "[36mGET /static/js/multi_thread.js HTTP/1.1[0m" 304 -
+2026-08-04 21:34:46 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:34:46] "[36mGET /static/js/thread_chart.js HTTP/1.1[0m" 304 -
+2026-08-04 21:34:46 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:34:46] "GET /static/js/comparison.js HTTP/1.1" 200 -
+2026-08-04 21:34:46 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:34:46] "[36mGET /static/js/select.js HTTP/1.1[0m" 304 -
+2026-08-04 21:34:46 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:34:46] "[36mGET /static/js/tool.js HTTP/1.1[0m" 304 -
+2026-08-04 21:34:46 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:34:46] "GET /api/tools HTTP/1.1" 200 -
+2026-08-04 21:34:46 - INFO - utils.data_manager - data_manager.py:54 - 用户数据目录: E:\git\develop\monitor\monitor2.5\data\elint\6d9c919c-f6f8-42da-862d-c31dd176ecbc 已存在
+2026-08-04 21:34:46 - INFO - utils.data_manager - data_manager.py:477 - 加载工具elint单线程数据
+2026-08-04 21:34:46 - INFO - utils.data_manager - data_manager.py:106 - 用户 6d9c919c-f6f8-42da-862d-c31dd176ecbc 加载工具 elint 的 single 数据到前端
+2026-08-04 21:34:46 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\dataFiles.json
+2026-08-04 21:34:46 - INFO - utils.data_manager - data_manager.py:136 - 用户 6d9c919c-f6f8-42da-862d-c31dd176ecbc 没有新增 single 数据
+2026-08-04 21:34:46 - INFO - utils.common - common.py:85 - 成功保存工具数据到 E:\git\develop\monitor\monitor2.5\data\elint\dataFiles.json
+2026-08-04 21:34:46 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\single.json
+2026-08-04 21:34:46 - INFO - utils.data_manager - data_manager.py:497 - 加载工具elint多线程数据
+2026-08-04 21:34:46 - INFO - utils.data_manager - data_manager.py:106 - 用户 6d9c919c-f6f8-42da-862d-c31dd176ecbc 加载工具 elint 的 multi 数据到前端
+2026-08-04 21:34:46 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\dataFiles.json
+2026-08-04 21:34:46 - INFO - utils.data_manager - data_manager.py:136 - 用户 6d9c919c-f6f8-42da-862d-c31dd176ecbc 没有新增 multi 数据
+2026-08-04 21:34:46 - INFO - utils.common - common.py:85 - 成功保存工具数据到 E:\git\develop\monitor\monitor2.5\data\elint\dataFiles.json
+2026-08-04 21:34:46 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\multi.json
+2026-08-04 21:34:46 - INFO - utils.data_manager - data_manager.py:514 - 加载工具elint其他数据
+2026-08-04 21:34:46 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:34:46] "POST /api/tools/elint/data HTTP/1.1" 200 -
+2026-08-04 21:34:46 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\single\aes\cputime\Overall.json
+2026-08-04 21:34:46 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:34:46] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:34:46 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\single\aes\cputime\Overall.json
+2026-08-04 21:34:46 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:34:46] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:34:46 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\single\aes\cputime\Overall.json
+2026-08-04 21:34:46 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\single\aes\cputime\Overall.json
+2026-08-04 21:34:46 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:34:46] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:34:46 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:34:46] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:34:46 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\multi\aes\cputime\Overall.json
+2026-08-04 21:34:46 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:34:46] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:34:46 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\multi\aes\cputime\Overall.json
+2026-08-04 21:34:46 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\multi\aes\cputime\Overall.json
+2026-08-04 21:34:46 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:34:46] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:34:46 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\multi\aes\cputime\Overall.json
+2026-08-04 21:34:46 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:34:46] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:34:46 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\thread\aes\20260513\Overall.json
+2026-08-04 21:34:46 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:34:46] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:34:46 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\thread\aes\20260513\Overall.json
+2026-08-04 21:34:46 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\thread\aes\20260513\Overall.json
+2026-08-04 21:34:46 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:34:46] "POST /api/thread/chart/data HTTP/1.1" 200 -
+2026-08-04 21:34:46 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\thread\aes\20260513\Overall.json
+2026-08-04 21:34:46 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:34:46] "POST /api/thread/chart/data HTTP/1.1" 200 -
+2026-08-04 21:34:46 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:34:46] "POST /api/thread/chart/data HTTP/1.1" 200 -
+2026-08-04 21:34:46 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:34:46] "POST /api/thread/chart/data HTTP/1.1" 200 -
+2026-08-04 21:34:46 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\thread\aes\20260513\Overall.json
+2026-08-04 21:34:46 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\thread\aes\20260513\Overall.json
+2026-08-04 21:34:46 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:34:46] "POST /api/thread/chart/data HTTP/1.1" 200 -
+2026-08-04 21:34:46 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\thread\aes\20260513\Overall.json
+2026-08-04 21:34:46 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:34:46] "POST /api/thread/chart/data HTTP/1.1" 200 -
+2026-08-04 21:34:46 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:34:46] "POST /api/thread/chart/data HTTP/1.1" 200 -
+2026-08-04 21:34:47 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\single\aes\cputime\Overall.json
+2026-08-04 21:34:47 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:34:47] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:34:55 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:34:55] "GET /tool/elint/performance HTTP/1.1" 200 -
+2026-08-04 21:34:55 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:34:55] "[36mGET /static/js/echarts.min.js HTTP/1.1[0m" 304 -
+2026-08-04 21:34:55 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:34:55] "[36mGET /static/css/select.css HTTP/1.1[0m" 304 -
+2026-08-04 21:34:55 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:34:55] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2026-08-04 21:34:55 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:34:55] "[36mGET /static/js/axios.min.js HTTP/1.1[0m" 304 -
+2026-08-04 21:34:55 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:34:55] "[36mGET /static/js/single_thread.js HTTP/1.1[0m" 304 -
+2026-08-04 21:34:55 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:34:55] "[36mGET /static/js/multi_thread.js HTTP/1.1[0m" 304 -
+2026-08-04 21:34:55 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:34:55] "[36mGET /static/js/thread_chart.js HTTP/1.1[0m" 304 -
+2026-08-04 21:34:55 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:34:55] "GET /static/js/comparison.js HTTP/1.1" 200 -
+2026-08-04 21:34:55 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:34:55] "[36mGET /static/js/select.js HTTP/1.1[0m" 304 -
+2026-08-04 21:34:55 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:34:55] "[36mGET /static/js/tool.js HTTP/1.1[0m" 304 -
+2026-08-04 21:34:55 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:34:55] "GET /api/tools HTTP/1.1" 200 -
+2026-08-04 21:34:55 - INFO - utils.data_manager - data_manager.py:54 - 用户数据目录: E:\git\develop\monitor\monitor2.5\data\elint\6d9c919c-f6f8-42da-862d-c31dd176ecbc 已存在
+2026-08-04 21:34:55 - INFO - utils.data_manager - data_manager.py:477 - 加载工具elint单线程数据
+2026-08-04 21:34:55 - INFO - utils.data_manager - data_manager.py:106 - 用户 6d9c919c-f6f8-42da-862d-c31dd176ecbc 加载工具 elint 的 single 数据到前端
+2026-08-04 21:34:55 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\dataFiles.json
+2026-08-04 21:34:55 - INFO - utils.data_manager - data_manager.py:136 - 用户 6d9c919c-f6f8-42da-862d-c31dd176ecbc 没有新增 single 数据
+2026-08-04 21:34:55 - INFO - utils.common - common.py:85 - 成功保存工具数据到 E:\git\develop\monitor\monitor2.5\data\elint\dataFiles.json
+2026-08-04 21:34:55 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\single.json
+2026-08-04 21:34:55 - INFO - utils.data_manager - data_manager.py:497 - 加载工具elint多线程数据
+2026-08-04 21:34:55 - INFO - utils.data_manager - data_manager.py:106 - 用户 6d9c919c-f6f8-42da-862d-c31dd176ecbc 加载工具 elint 的 multi 数据到前端
+2026-08-04 21:34:55 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\dataFiles.json
+2026-08-04 21:34:55 - INFO - utils.data_manager - data_manager.py:136 - 用户 6d9c919c-f6f8-42da-862d-c31dd176ecbc 没有新增 multi 数据
+2026-08-04 21:34:55 - INFO - utils.common - common.py:85 - 成功保存工具数据到 E:\git\develop\monitor\monitor2.5\data\elint\dataFiles.json
+2026-08-04 21:34:55 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\multi.json
+2026-08-04 21:34:55 - INFO - utils.data_manager - data_manager.py:514 - 加载工具elint其他数据
+2026-08-04 21:34:55 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:34:55] "POST /api/tools/elint/data HTTP/1.1" 200 -
+2026-08-04 21:34:55 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\single\aes\cputime\Overall.json
+2026-08-04 21:34:55 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:34:55] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:34:55 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\single\aes\cputime\Overall.json
+2026-08-04 21:34:55 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\single\aes\cputime\Overall.json
+2026-08-04 21:34:55 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:34:55] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:34:55 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\single\aes\cputime\Overall.json
+2026-08-04 21:34:55 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\multi\aes\cputime\Overall.json
+2026-08-04 21:34:55 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:34:55] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:34:55 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\multi\aes\cputime\Overall.json
+2026-08-04 21:34:55 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:34:55] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:34:55 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\multi\aes\cputime\Overall.json
+2026-08-04 21:34:55 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:34:55] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:34:55 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:34:55] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:34:55 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:34:55] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:34:55 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\multi\aes\cputime\Overall.json
+2026-08-04 21:34:55 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\thread\aes\20260513\Overall.json
+2026-08-04 21:34:55 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\thread\aes\20260513\Overall.json
+2026-08-04 21:34:55 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:34:55] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:34:55 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\thread\aes\20260513\Overall.json
+2026-08-04 21:34:55 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:34:55] "POST /api/thread/chart/data HTTP/1.1" 200 -
+2026-08-04 21:34:55 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:34:55] "POST /api/thread/chart/data HTTP/1.1" 200 -
+2026-08-04 21:34:55 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\thread\aes\20260513\Overall.json
+2026-08-04 21:34:55 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\thread\aes\20260513\Overall.json
+2026-08-04 21:34:55 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:34:55] "POST /api/thread/chart/data HTTP/1.1" 200 -
+2026-08-04 21:34:55 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:34:55] "POST /api/thread/chart/data HTTP/1.1" 200 -
+2026-08-04 21:34:55 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:34:55] "POST /api/thread/chart/data HTTP/1.1" 200 -
+2026-08-04 21:34:55 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\thread\aes\20260513\Overall.json
+2026-08-04 21:34:55 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\thread\aes\20260513\Overall.json
+2026-08-04 21:34:55 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:34:55] "POST /api/thread/chart/data HTTP/1.1" 200 -
+2026-08-04 21:34:55 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:34:55] "POST /api/thread/chart/data HTTP/1.1" 200 -
+2026-08-04 21:34:55 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\single\aes\cputime\Overall.json
+2026-08-04 21:34:55 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:34:55] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:35:22 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:35:22] "GET /tool/elint/performance HTTP/1.1" 200 -
+2026-08-04 21:35:22 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:35:22] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2026-08-04 21:35:22 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:35:22] "[36mGET /static/js/echarts.min.js HTTP/1.1[0m" 304 -
+2026-08-04 21:35:22 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:35:22] "[36mGET /static/css/select.css HTTP/1.1[0m" 304 -
+2026-08-04 21:35:22 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:35:22] "[36mGET /static/js/axios.min.js HTTP/1.1[0m" 304 -
+2026-08-04 21:35:22 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:35:22] "[36mGET /static/js/single_thread.js HTTP/1.1[0m" 304 -
+2026-08-04 21:35:22 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:35:22] "[36mGET /static/js/multi_thread.js HTTP/1.1[0m" 304 -
+2026-08-04 21:35:22 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:35:22] "[36mGET /static/js/thread_chart.js HTTP/1.1[0m" 304 -
+2026-08-04 21:35:22 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:35:22] "GET /static/js/comparison.js HTTP/1.1" 200 -
+2026-08-04 21:35:22 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:35:22] "[36mGET /static/js/select.js HTTP/1.1[0m" 304 -
+2026-08-04 21:35:22 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:35:22] "[36mGET /static/js/tool.js HTTP/1.1[0m" 304 -
+2026-08-04 21:35:22 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:35:22] "GET /api/tools HTTP/1.1" 200 -
+2026-08-04 21:35:22 - INFO - utils.data_manager - data_manager.py:54 - 用户数据目录: E:\git\develop\monitor\monitor2.5\data\elint\6d9c919c-f6f8-42da-862d-c31dd176ecbc 已存在
+2026-08-04 21:35:22 - INFO - utils.data_manager - data_manager.py:477 - 加载工具elint单线程数据
+2026-08-04 21:35:22 - INFO - utils.data_manager - data_manager.py:106 - 用户 6d9c919c-f6f8-42da-862d-c31dd176ecbc 加载工具 elint 的 single 数据到前端
+2026-08-04 21:35:22 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\dataFiles.json
+2026-08-04 21:35:22 - INFO - utils.data_manager - data_manager.py:136 - 用户 6d9c919c-f6f8-42da-862d-c31dd176ecbc 没有新增 single 数据
+2026-08-04 21:35:22 - INFO - utils.common - common.py:85 - 成功保存工具数据到 E:\git\develop\monitor\monitor2.5\data\elint\dataFiles.json
+2026-08-04 21:35:22 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\single.json
+2026-08-04 21:35:22 - INFO - utils.data_manager - data_manager.py:497 - 加载工具elint多线程数据
+2026-08-04 21:35:22 - INFO - utils.data_manager - data_manager.py:106 - 用户 6d9c919c-f6f8-42da-862d-c31dd176ecbc 加载工具 elint 的 multi 数据到前端
+2026-08-04 21:35:22 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\dataFiles.json
+2026-08-04 21:35:22 - INFO - utils.data_manager - data_manager.py:136 - 用户 6d9c919c-f6f8-42da-862d-c31dd176ecbc 没有新增 multi 数据
+2026-08-04 21:35:22 - INFO - utils.common - common.py:85 - 成功保存工具数据到 E:\git\develop\monitor\monitor2.5\data\elint\dataFiles.json
+2026-08-04 21:35:22 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\multi.json
+2026-08-04 21:35:22 - INFO - utils.data_manager - data_manager.py:514 - 加载工具elint其他数据
+2026-08-04 21:35:22 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:35:22] "POST /api/tools/elint/data HTTP/1.1" 200 -
+2026-08-04 21:35:22 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\single\aes\cputime\Overall.json
+2026-08-04 21:35:22 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:35:22] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:35:22 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\single\aes\cputime\Overall.json
+2026-08-04 21:35:22 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\single\aes\cputime\Overall.json
+2026-08-04 21:35:22 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:35:22] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:35:22 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:35:22] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:35:22 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\single\aes\cputime\Overall.json
+2026-08-04 21:35:22 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\multi\aes\cputime\Overall.json
+2026-08-04 21:35:22 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\multi\aes\cputime\Overall.json
+2026-08-04 21:35:22 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:35:22] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:35:22 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:35:22] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:35:22 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\multi\aes\cputime\Overall.json
+2026-08-04 21:35:22 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:35:22] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:35:22 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\multi\aes\cputime\Overall.json
+2026-08-04 21:35:22 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\thread\aes\20260513\Overall.json
+2026-08-04 21:35:22 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:35:22] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:35:22 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\thread\aes\20260513\Overall.json
+2026-08-04 21:35:22 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:35:22] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:35:22 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\thread\aes\20260513\Overall.json
+2026-08-04 21:35:22 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:35:22] "POST /api/thread/chart/data HTTP/1.1" 200 -
+2026-08-04 21:35:22 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\thread\aes\20260513\Overall.json
+2026-08-04 21:35:22 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:35:22] "POST /api/thread/chart/data HTTP/1.1" 200 -
+2026-08-04 21:35:22 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:35:22] "POST /api/thread/chart/data HTTP/1.1" 200 -
+2026-08-04 21:35:22 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:35:22] "POST /api/thread/chart/data HTTP/1.1" 200 -
+2026-08-04 21:35:22 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\thread\aes\20260513\Overall.json
+2026-08-04 21:35:22 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\thread\aes\20260513\Overall.json
+2026-08-04 21:35:22 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\thread\aes\20260513\Overall.json
+2026-08-04 21:35:22 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:35:22] "POST /api/thread/chart/data HTTP/1.1" 200 -
+2026-08-04 21:35:22 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:35:22] "POST /api/thread/chart/data HTTP/1.1" 200 -
+2026-08-04 21:35:22 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:35:22] "POST /api/thread/chart/data HTTP/1.1" 200 -
+2026-08-04 21:35:22 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\single\aes\cputime\Overall.json
+2026-08-04 21:35:22 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:35:22] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:37:07 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:37:07] "GET /tool/elint/performance HTTP/1.1" 200 -
+2026-08-04 21:37:07 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:37:07] "[36mGET /static/js/echarts.min.js HTTP/1.1[0m" 304 -
+2026-08-04 21:37:07 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:37:07] "[36mGET /static/css/select.css HTTP/1.1[0m" 304 -
+2026-08-04 21:37:07 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:37:07] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2026-08-04 21:37:07 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:37:07] "[36mGET /static/js/axios.min.js HTTP/1.1[0m" 304 -
+2026-08-04 21:37:07 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:37:07] "[36mGET /static/js/single_thread.js HTTP/1.1[0m" 304 -
+2026-08-04 21:37:07 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:37:07] "[36mGET /static/js/multi_thread.js HTTP/1.1[0m" 304 -
+2026-08-04 21:37:07 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:37:07] "[36mGET /static/js/thread_chart.js HTTP/1.1[0m" 304 -
+2026-08-04 21:37:07 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:37:07] "[36mGET /static/js/comparison.js HTTP/1.1[0m" 304 -
+2026-08-04 21:37:07 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:37:07] "[36mGET /static/js/select.js HTTP/1.1[0m" 304 -
+2026-08-04 21:37:07 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:37:07] "[36mGET /static/js/tool.js HTTP/1.1[0m" 304 -
+2026-08-04 21:37:07 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:37:07] "GET /api/tools HTTP/1.1" 200 -
+2026-08-04 21:37:07 - INFO - utils.data_manager - data_manager.py:54 - 用户数据目录: E:\git\develop\monitor\monitor2.5\data\elint\6d9c919c-f6f8-42da-862d-c31dd176ecbc 已存在
+2026-08-04 21:37:07 - INFO - utils.data_manager - data_manager.py:477 - 加载工具elint单线程数据
+2026-08-04 21:37:07 - INFO - utils.data_manager - data_manager.py:106 - 用户 6d9c919c-f6f8-42da-862d-c31dd176ecbc 加载工具 elint 的 single 数据到前端
+2026-08-04 21:37:07 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\dataFiles.json
+2026-08-04 21:37:07 - INFO - utils.data_manager - data_manager.py:136 - 用户 6d9c919c-f6f8-42da-862d-c31dd176ecbc 没有新增 single 数据
+2026-08-04 21:37:07 - INFO - utils.common - common.py:85 - 成功保存工具数据到 E:\git\develop\monitor\monitor2.5\data\elint\dataFiles.json
+2026-08-04 21:37:07 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\single.json
+2026-08-04 21:37:07 - INFO - utils.data_manager - data_manager.py:497 - 加载工具elint多线程数据
+2026-08-04 21:37:07 - INFO - utils.data_manager - data_manager.py:106 - 用户 6d9c919c-f6f8-42da-862d-c31dd176ecbc 加载工具 elint 的 multi 数据到前端
+2026-08-04 21:37:07 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\dataFiles.json
+2026-08-04 21:37:07 - INFO - utils.data_manager - data_manager.py:136 - 用户 6d9c919c-f6f8-42da-862d-c31dd176ecbc 没有新增 multi 数据
+2026-08-04 21:37:07 - INFO - utils.common - common.py:85 - 成功保存工具数据到 E:\git\develop\monitor\monitor2.5\data\elint\dataFiles.json
+2026-08-04 21:37:07 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\multi.json
+2026-08-04 21:37:07 - INFO - utils.data_manager - data_manager.py:514 - 加载工具elint其他数据
+2026-08-04 21:37:07 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:37:07] "POST /api/tools/elint/data HTTP/1.1" 200 -
+2026-08-04 21:37:07 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\single\aes\cputime\Overall.json
+2026-08-04 21:37:07 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:37:07] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:37:07 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\single\aes\cputime\Overall.json
+2026-08-04 21:37:07 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\single\aes\cputime\Overall.json
+2026-08-04 21:37:07 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:37:07] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:37:07 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:37:07] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:37:07 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\single\aes\cputime\Overall.json
+2026-08-04 21:37:07 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\multi\aes\cputime\Overall.json
+2026-08-04 21:37:07 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:37:07] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:37:07 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\multi\aes\cputime\Overall.json
+2026-08-04 21:37:07 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:37:07] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:37:07 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\multi\aes\cputime\Overall.json
+2026-08-04 21:37:07 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:37:07] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:37:07 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\multi\aes\cputime\Overall.json
+2026-08-04 21:37:07 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\thread\aes\20260513\Overall.json
+2026-08-04 21:37:07 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:37:07] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:37:07 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:37:07] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:37:07 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\thread\aes\20260513\Overall.json
+2026-08-04 21:37:07 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:37:07] "POST /api/thread/chart/data HTTP/1.1" 200 -
+2026-08-04 21:37:07 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\thread\aes\20260513\Overall.json
+2026-08-04 21:37:07 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\thread\aes\20260513\Overall.json
+2026-08-04 21:37:07 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:37:07] "POST /api/thread/chart/data HTTP/1.1" 200 -
+2026-08-04 21:37:07 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:37:07] "POST /api/thread/chart/data HTTP/1.1" 200 -
+2026-08-04 21:37:07 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:37:07] "POST /api/thread/chart/data HTTP/1.1" 200 -
+2026-08-04 21:37:07 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\thread\aes\20260513\Overall.json
+2026-08-04 21:37:07 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\thread\aes\20260513\Overall.json
+2026-08-04 21:37:07 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:37:07] "POST /api/thread/chart/data HTTP/1.1" 200 -
+2026-08-04 21:37:07 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\thread\aes\20260513\Overall.json
+2026-08-04 21:37:07 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:37:07] "POST /api/thread/chart/data HTTP/1.1" 200 -
+2026-08-04 21:37:07 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:37:07] "POST /api/thread/chart/data HTTP/1.1" 200 -
+2026-08-04 21:37:07 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\single\aes\cputime\Overall.json
+2026-08-04 21:37:07 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:37:07] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:39:19 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:39:19] "GET /tool/elint/performance HTTP/1.1" 200 -
+2026-08-04 21:39:19 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:39:19] "[36mGET /static/js/echarts.min.js HTTP/1.1[0m" 304 -
+2026-08-04 21:39:19 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:39:19] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2026-08-04 21:39:19 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:39:19] "[36mGET /static/css/select.css HTTP/1.1[0m" 304 -
+2026-08-04 21:39:19 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:39:19] "[36mGET /static/js/axios.min.js HTTP/1.1[0m" 304 -
+2026-08-04 21:39:19 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:39:19] "[36mGET /static/js/single_thread.js HTTP/1.1[0m" 304 -
+2026-08-04 21:39:19 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:39:19] "[36mGET /static/js/multi_thread.js HTTP/1.1[0m" 304 -
+2026-08-04 21:39:19 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:39:19] "[36mGET /static/js/thread_chart.js HTTP/1.1[0m" 304 -
+2026-08-04 21:39:19 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:39:19] "GET /static/js/comparison.js HTTP/1.1" 200 -
+2026-08-04 21:39:19 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:39:19] "[36mGET /static/js/select.js HTTP/1.1[0m" 304 -
+2026-08-04 21:39:19 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:39:19] "[36mGET /static/js/tool.js HTTP/1.1[0m" 304 -
+2026-08-04 21:39:19 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:39:19] "GET /api/tools HTTP/1.1" 200 -
+2026-08-04 21:39:19 - INFO - utils.data_manager - data_manager.py:54 - 用户数据目录: E:\git\develop\monitor\monitor2.5\data\elint\6d9c919c-f6f8-42da-862d-c31dd176ecbc 已存在
+2026-08-04 21:39:19 - INFO - utils.data_manager - data_manager.py:477 - 加载工具elint单线程数据
+2026-08-04 21:39:19 - INFO - utils.data_manager - data_manager.py:106 - 用户 6d9c919c-f6f8-42da-862d-c31dd176ecbc 加载工具 elint 的 single 数据到前端
+2026-08-04 21:39:19 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\dataFiles.json
+2026-08-04 21:39:19 - INFO - utils.data_manager - data_manager.py:136 - 用户 6d9c919c-f6f8-42da-862d-c31dd176ecbc 没有新增 single 数据
+2026-08-04 21:39:19 - INFO - utils.common - common.py:85 - 成功保存工具数据到 E:\git\develop\monitor\monitor2.5\data\elint\dataFiles.json
+2026-08-04 21:39:19 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\single.json
+2026-08-04 21:39:19 - INFO - utils.data_manager - data_manager.py:497 - 加载工具elint多线程数据
+2026-08-04 21:39:19 - INFO - utils.data_manager - data_manager.py:106 - 用户 6d9c919c-f6f8-42da-862d-c31dd176ecbc 加载工具 elint 的 multi 数据到前端
+2026-08-04 21:39:19 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\dataFiles.json
+2026-08-04 21:39:19 - INFO - utils.data_manager - data_manager.py:136 - 用户 6d9c919c-f6f8-42da-862d-c31dd176ecbc 没有新增 multi 数据
+2026-08-04 21:39:19 - INFO - utils.common - common.py:85 - 成功保存工具数据到 E:\git\develop\monitor\monitor2.5\data\elint\dataFiles.json
+2026-08-04 21:39:19 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\multi.json
+2026-08-04 21:39:19 - INFO - utils.data_manager - data_manager.py:514 - 加载工具elint其他数据
+2026-08-04 21:39:19 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:39:19] "POST /api/tools/elint/data HTTP/1.1" 200 -
+2026-08-04 21:39:19 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\single\aes\cputime\Overall.json
+2026-08-04 21:39:19 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:39:19] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:39:19 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\single\aes\cputime\Overall.json
+2026-08-04 21:39:19 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:39:19] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:39:19 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\single\aes\cputime\Overall.json
+2026-08-04 21:39:19 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\single\aes\cputime\Overall.json
+2026-08-04 21:39:19 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:39:19] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:39:19 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\multi\aes\cputime\Overall.json
+2026-08-04 21:39:19 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:39:19] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:39:19 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:39:19] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:39:19 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\multi\aes\cputime\Overall.json
+2026-08-04 21:39:19 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\multi\aes\cputime\Overall.json
+2026-08-04 21:39:19 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\multi\aes\cputime\Overall.json
+2026-08-04 21:39:19 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:39:19] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:39:19 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:39:19] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:39:19 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\thread\aes\20260513\Overall.json
+2026-08-04 21:39:19 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:39:19] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:39:19 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\thread\aes\20260513\Overall.json
+2026-08-04 21:39:19 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:39:19] "POST /api/thread/chart/data HTTP/1.1" 200 -
+2026-08-04 21:39:19 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\thread\aes\20260513\Overall.json
+2026-08-04 21:39:19 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:39:19] "POST /api/thread/chart/data HTTP/1.1" 200 -
+2026-08-04 21:39:19 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:39:19] "POST /api/thread/chart/data HTTP/1.1" 200 -
+2026-08-04 21:39:19 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\thread\aes\20260513\Overall.json
+2026-08-04 21:39:19 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\thread\aes\20260513\Overall.json
+2026-08-04 21:39:19 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:39:19] "POST /api/thread/chart/data HTTP/1.1" 200 -
+2026-08-04 21:39:19 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:39:19] "POST /api/thread/chart/data HTTP/1.1" 200 -
+2026-08-04 21:39:19 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\thread\aes\20260513\Overall.json
+2026-08-04 21:39:19 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\thread\aes\20260513\Overall.json
+2026-08-04 21:39:19 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:39:19] "POST /api/thread/chart/data HTTP/1.1" 200 -
+2026-08-04 21:39:19 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:39:19] "POST /api/thread/chart/data HTTP/1.1" 200 -
+2026-08-04 21:39:19 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\single\aes\cputime\Overall.json
+2026-08-04 21:39:19 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:39:19] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:39:26 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\multi\aes\cputime\Overall.json
+2026-08-04 21:39:26 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:39:26] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-04 21:39:27 - INFO - utils.common - common.py:95 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\original\single\aes\cputime\Overall.json
+2026-08-04 21:39:27 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [04/Aug/2026 21:39:27] "POST /api/chart/data HTTP/1.1" 200 -

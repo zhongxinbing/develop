@@ -34,7 +34,7 @@ class ComparisonManager {
         this.toolId = toolId;
         this.getCurrentMode = getCurrentMode;
 
-        // 初始化版本对比的可搜索下拉框
+        // ========== 版本对比 ==========
         this.casenameSelect = new SearchableSelect({
             container: document.getElementById('compCasenameSelect'),
             options: [],
@@ -97,7 +97,7 @@ class ComparisonManager {
             onChange: () => {}
         });
 
-        // 初始化线程对比的可搜索下拉框
+        // ========== 线程对比 ==========
         this.threadCasenameSelect = new SearchableSelect({
             container: document.getElementById('threadCompCasenameSelect'),
             options: [],
@@ -109,17 +109,28 @@ class ComparisonManager {
             }
         });
 
-        this.threadDate1Select = new SearchableSelect({
-            container: document.getElementById('threadCompDate1Select'),
+        this.threadRuleSelect = new SearchableSelect({
+            container: document.getElementById('threadCompRuleSelect'),
             options: [],
-            placeholder: '请选择日期1...',
+            multiple: true,
+            placeholder: '请选择 Rule...',
             onChange: () => {}
         });
 
-        this.threadDate2Select = new SearchableSelect({
-            container: document.getElementById('threadCompDate2Select'),
+        // ===== 修复：线程多选选择框 =====
+        this.threadThreadSelect = new SearchableSelect({
+            container: document.getElementById('threadCompThreadSelect'),
             options: [],
-            placeholder: '请选择日期2...',
+            multiple: true,
+            placeholder: '请选择线程...',
+            onChange: () => {}
+        });
+
+        // ===== 修复：日期选择框 =====
+        this.threadDateSelect = new SearchableSelect({
+            container: document.getElementById('threadCompDateSelect'),
+            options: [],
+            placeholder: '请选择日期...',
             onChange: () => {}
         });
 
@@ -133,13 +144,23 @@ class ComparisonManager {
             onChange: () => {}
         });
 
-        this.threadRuleSelect = new SearchableSelect({
-            container: document.getElementById('threadCompRuleSelect'),
-            options: [],
-            multiple: true,
-            placeholder: '请选择 Rule...',
+        // ===== 修复：误差模式选择框 =====
+        this.threadErrorModeSelect = new SearchableSelect({
+            container: document.getElementById('threadCompErrorModeSelect'),
+            options: [
+                { value: 'absolute', label: '绝对值' },
+                { value: 'percentage', label: '百分比' }
+            ],
+            placeholder: '请选择误差模式...',
             onChange: () => {}
         });
+
+        // 阈值输入框
+        this.threadRuntimeThreshold = document.getElementById('threadCompRuntimeThreshold');
+        this.threadMemoryThreshold = document.getElementById('threadCompMemoryThreshold');
+
+        // 导出按钮
+        this.threadExportBtn = document.getElementById('threadCompExportBtn');
 
         this._bindEvents();
         this._populateForms();
@@ -197,6 +218,10 @@ class ComparisonManager {
         document.getElementById('threadCompRuleSearch')?.addEventListener('input', function() {
             ComparisonManager._filterOptions('threadCompRuleSelect', this.value);
         });
+
+        document.getElementById('threadCompConfirmBtn')?.addEventListener('click', () => this._performThreadComparison());
+        document.getElementById('threadCompExportBtn')?.addEventListener('click', () => this._exportThreadComparison());
+
     }
 
     static _filterOptions(selectId, keyword) {
@@ -296,6 +321,7 @@ class ComparisonManager {
             }
         }
 
+        // 获取日期列表
         let dates = [];
         if (caseData.runtime && caseData.runtime['Overall']) {
             dates = caseData.runtime['Overall'].dates || [];
@@ -309,30 +335,45 @@ class ComparisonManager {
         }
         dates.sort();
 
-        const date1Select = type === 'version' ? this.date1Select : this.threadDate1Select;
-        const date2Select = type === 'version' ? this.date2Select : this.threadDate2Select;
-        
-        if (date1Select) {
-            const options = dates.map(d => ({
-                value: d,
-                label: formatDate(d)
-            }));
-            date1Select.setOptions(options);
-            if (dates.length > 0) date1Select.setValue(dates[0]);
-        }
-        if (date2Select) {
-            const options = dates.map(d => ({
-                value: d,
-                label: formatDate(d)
-            }));
-            date2Select.setOptions(options);
-            if (dates.length > 1) date2Select.setValue(dates[dates.length - 1]);
-            else if (dates.length > 0) date2Select.setValue(dates[0]);
+        // ===== 版本对比：日期1 和 日期2 =====
+        if (type === 'version') {
+            const date1Select = this.date1Select;
+            const date2Select = this.date2Select;
+            
+            if (date1Select) {
+                const options = dates.map(d => ({
+                    value: d,
+                    label: formatDate(d)
+                }));
+                date1Select.setOptions(options);
+                if (dates.length > 0) date1Select.setValue(dates[0]);
+            }
+            if (date2Select) {
+                const options = dates.map(d => ({
+                    value: d,
+                    label: formatDate(d)
+                }));
+                date2Select.setOptions(options);
+                if (dates.length > 1) date2Select.setValue(dates[dates.length - 1]);
+                else if (dates.length > 0) date2Select.setValue(dates[0]);
+            }
         }
 
-        if (type === 'version' && mode === 'multi') {
-            const threadSelect = this.threadSelect;
-            if (threadSelect) {
+        // ===== 线程对比：日期（单选） =====
+        if (type === 'thread') {
+            const dateSelect = this.threadDateSelect;
+            if (dateSelect) {
+                const options = dates.map(d => ({
+                    value: d,
+                    label: formatDate(d)
+                }));
+                dateSelect.setOptions(options);
+                if (dates.length > 0) dateSelect.setValue(dates[dates.length - 1]);
+            }
+
+            // 线程对比的线程选择框
+            const threadSelect = this.threadThreadSelect;
+            if (threadSelect && mode === 'multi') {
                 const multiData = window.multiData || {};
                 const caseMulti = multiData[casename];
                 let allThreads = [];
@@ -680,42 +721,51 @@ class ComparisonManager {
     async _performThreadComparison() {
         // 收集表单参数
         const casename = document.getElementById('threadCompCasenameSelect')?.value;
-        const date1 = document.getElementById('threadCompDate1Select')?.value;
-        const date2 = document.getElementById('threadCompDate2Select')?.value;
+        const date = document.getElementById('threadCompDateSelect')?.value;
         const dimension = document.getElementById('threadCompDimensionSelect')?.value;
+        const errorMode = document.getElementById('threadCompErrorModeSelect')?.value;
+        const runtimeThreshold = parseFloat(document.getElementById('threadCompRuntimeThreshold')?.value || 0);
+        const memoryThreshold = parseFloat(document.getElementById('threadCompMemoryThreshold')?.value || 0);
 
-        // 获取选中的规则
+        // 获取选中的规则（多选）
         const ruleSelect = document.getElementById('threadCompRuleSelect');
-        const selectedRules = Array.from(ruleSelect.selectedOptions).map(o => o.value);
-        const compareMode = selectedRules.length === 0 ? 'all' : selectedRules[0];
+        const selectedRules = ruleSelect?.value || [];
+
+        // 获取选中的线程（多选）
+        const threadSelect = document.getElementById('threadCompThreadSelect');
+        const selectedThreads = threadSelect?.value || [];
 
         // 验证必填参数
-        if (!casename || !date1 || !date2 || !compareMode) {
-            showToast('请选择 Casename、两个日期和至少一个 Rule', 'error');
+        if (!casename || !date || selectedRules.length === 0) {
+            showToast('请选择 Casename、日期和至少一个 Rule', 'error');
             return;
         }
+
+        // 使用第一个规则作为对比规则，或者使用 'all'
+        const compareMode = selectedRules.length === 0 ? 'all' : selectedRules[0];
 
         // 更新按钮状态
         const confirmBtn = document.getElementById('threadCompConfirmBtn');
         const originalText = confirmBtn.textContent;
-        confirmBtn.textContent = '加载中...';
+        confirmBtn.textContent = '对比中...';
         confirmBtn.disabled = true;
 
         try {
-            // 发送线程对比请求
             const response = await axios.post('/api/comparison', {
                 tool_id: this.toolId,
                 mode: 'multi',
                 casename: casename,
-                date1: date1,
-                date2: date2,
+                date1: date,
                 compare_mode: compareMode,
                 dimension: dimension,
+                runtime_threshold: runtimeThreshold,
+                memory_threshold: memoryThreshold,
+                error_mode: errorMode,
+                threads: selectedThreads,
                 compare_type: 'thread'
             });
 
             if (response.data.success) {
-                // 渲染线程对比结果
                 this._renderThreadResults(response.data.data, dimension);
             } else {
                 showToast(response.data.error || '线程对比失败', 'error');
@@ -724,7 +774,6 @@ class ComparisonManager {
             console.error('线程对比失败:', error);
             showToast('线程对比失败: ' + (error.message || '未知错误'), 'error');
         } finally {
-            // 恢复按钮状态
             confirmBtn.textContent = originalText;
             confirmBtn.disabled = false;
         }
@@ -893,7 +942,90 @@ class ComparisonManager {
             window.addEventListener('resize', this.comparisonChart._resizeHandler);
         }
     }
+
+    _exportThreadComparison() {
+    // 导出线程对比结果为 CSV
+    const chart = this.comparisonChart;
+    if (!chart || chart.isDisposed()) {
+        showToast('没有可导出的图表数据', 'error');
+        return;
+    }
+
+    // 获取图表数据
+    const option = chart.getOption();
+    const series = option.series || [];
+    const xAxisData = option.xAxis?.[0]?.data || [];
+
+    if (series.length === 0 || xAxisData.length === 0) {
+        showToast('没有可导出的数据', 'error');
+        return;
+    }
+
+    // 构建 CSV
+    let csv = '线程';
+    series.forEach(s => { csv += `,${s.name}`; });
+    csv += '\n';
+
+    for (let i = 0; i < xAxisData.length; i++) {
+        csv += xAxisData[i];
+        series.forEach(s => {
+            const val = s.data?.[i] ?? '';
+            csv += `,${val}`;
+        });
+        csv += '\n';
+    }
+
+    // 下载 CSV
+    const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.href = url;
+    link.setAttribute('download', `thread_comparison_${new Date().toISOString().slice(0,19)}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
 }
+
+}
+
+
+
+// 在 ComparisonManager 构造函数中添加
+this.threadCompThreadSelect = null;
+this.threadCompErrorModeSelect = null;
+this.threadCompRuntimeThreshold = null;
+this.threadCompMemoryThreshold = null;
+this.threadCompExportBtn = null;
+
+// 在 init 方法中添加初始化（在现有的 threadComp 初始化后面添加）
+this.threadCompThreadSelect = new SearchableSelect({
+    container: document.getElementById('threadCompThreadSelect'),
+    options: [],
+    multiple: true,
+    placeholder: '请选择线程...',
+    onChange: () => {}
+});
+
+this.threadCompErrorModeSelect = new SearchableSelect({
+    container: document.getElementById('threadCompErrorModeSelect'),
+    options: [
+        { value: 'absolute', label: '绝对值' },
+        { value: 'percentage', label: '百分比' }
+    ],
+    placeholder: '请选择误差模式...',
+    onChange: () => {}
+});
+
+
+
+
+// 阈值输入框
+this.threadCompRuntimeThreshold = document.getElementById('threadCompRuntimeThreshold');
+this.threadCompMemoryThreshold = document.getElementById('threadCompMemoryThreshold');
+
+// 导出按钮
+this.threadCompExportBtn = document.getElementById('threadCompExportBtn');
 
 // 将 ComparisonManager 暴露到全局作用域，供其他模块使用
 window.ComparisonManager = ComparisonManager;
