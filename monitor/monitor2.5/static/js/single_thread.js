@@ -66,6 +66,7 @@ class SingleThreadManager {
             options: [],
             placeholder: '请选择 Rule...',
             onChange: (values) => {
+
                 this.selectedRules = values.length > 0 ? [values] : ['Overall'];
                 const chart = window.mainChart || echarts.getInstanceByDom(document.getElementById('mainChart'));
                 if (chart) {
@@ -139,9 +140,10 @@ class SingleThreadManager {
             this.selectedRules = ['Overall'];
         }
         
-        const  allDatesSet = new Set(ruleData[this.currentChartType][this.selectedRules])
-        console.warn('allDatesSet:', allDatesSet);
+        const  allDatesSet = new Set(ruleData[this.currentChartType][this.selectedRules[0]])
+        
         this.allDates = Array.from(allDatesSet).sort();
+
         // console.warn(this.allDates)
         this.updateRuleSelect();
         this.updateOverview();
@@ -213,7 +215,7 @@ class SingleThreadManager {
                 selected_threads: [-1],
             };
             const response = await axios.post('/api/chart/data', requestData);
-
+            
             if (response.data.success) {
                 let chartData = response.data.data;
                 if (typeof chartData === 'string') {
@@ -587,7 +589,15 @@ class SingleThreadManager {
         if (cancelBtn) cancelBtn.addEventListener('click', closeModal);
 
         if (confirmBtn) {
+
             confirmBtn.addEventListener('click', () => {
+                // ========== 关键修复：只有当前模式是 single 时才执行 ==========
+                if (window.currentMode !== 'single') {
+                    console.log('日期选择确认被忽略：当前模式不是 single');
+                    closeModal();
+                    return;
+                }
+                
                 const checkboxes = document.querySelectorAll('.date-checkbox:checked');
                 this.selectedDates = Array.from(checkboxes).map(cb => cb.value);
                 closeModal();

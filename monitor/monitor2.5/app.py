@@ -145,8 +145,8 @@ def api_get_chart_data():
     """获取图表数据（支持Runtime和Memory）"""
     data = request.json
     # time.sleep(30) 
-    print("============================================================================")
-    print(json.dumps(data, indent=4, ensure_ascii=False))  # 打印请求数据，便于调试
+    # print("============================================================================")
+    # print(json.dumps(data, indent=4, ensure_ascii=False))  # 打印请求数据，便于调试
     chioce_data = data_manager.send_data_to_frontend_for_chart(data)
     # logger.error(f"获取图表数据: {chioce_data}")
     return jsonify({'success': True, 'data': chioce_data})

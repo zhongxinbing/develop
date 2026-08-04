@@ -172,7 +172,7 @@ class MultiThreadManager {
         
         this.ruleSelect.setOptions(options);
         if (this.selectedRules.length > 0) {
-            this.ruleSelect.setValue(this.selectedRules);
+            this.ruleSelect.setValue(this.selectedRules[0]);
         }
     }
 
@@ -694,6 +694,13 @@ class MultiThreadManager {
 
         if (confirmBtn) {
             confirmBtn.addEventListener('click', () => {
+                // ========== 关键修复：只有当前模式是 multi 时才执行 ==========
+                if (window.currentMode !== 'multi') {
+                    console.log('日期选择确认被忽略：当前模式不是 multi');
+                    closeModal();
+                    return;
+                }
+                
                 const checkboxes = document.querySelectorAll('.date-checkbox:checked');
                 this.selectedDates = Array.from(checkboxes).map(cb => cb.value);
                 closeModal();

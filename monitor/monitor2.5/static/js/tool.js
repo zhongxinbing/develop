@@ -21,6 +21,9 @@ let multiThreadManager = null;
 let threadChartManager = null;
 let comparisonManager = null;
 
+// ========== 暴露当前模式到全局，供子模块使用 ==========
+window.currentMode = currentMode;
+
 // ========== 新增：全局图表实例 ==========
 let mainChart = null;
 
@@ -306,6 +309,7 @@ function showComparisonContainer(show) {
 
 async function switchToSingleMode() {
     currentMode = 'single';
+    window.currentMode = 'single';  // 暴露到全局
     updateModeNav('single');
     toggleSidebars('single');
     hideThreadSelector();
@@ -328,6 +332,7 @@ async function switchToSingleMode() {
 
 async function switchToMultiMode() {
     currentMode = 'multi';
+    window.currentMode = 'multi';  // 暴露到全局
     updateModeNav('multi');
     toggleSidebars('multi');
     showThreadSelector(true);
@@ -350,6 +355,7 @@ async function switchToMultiMode() {
 
 async function switchToThreadMode() {
     currentMode = 'thread';
+    window.currentMode = 'thread';  // 暴露到全局
     updateModeNav('thread');
     toggleSidebars('thread');
     hideThreadSelector();
@@ -371,6 +377,7 @@ async function switchToThreadMode() {
 
 async function switchToComparisonMode() {
     currentMode = 'comparison';
+    window.currentMode = 'comparison';  // 暴露到全局
     updateModeNav('comparison');
     toggleSidebars(null);
     hideThreadSelector();
