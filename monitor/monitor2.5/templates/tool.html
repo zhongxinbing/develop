@@ -7,6 +7,7 @@
     <script src="{{ url_for('static', filename='js/echarts.min.js') }}"></script>
     <script src="{{ url_for('static', filename='js/axios.min.js') }}"></script>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/select.css') }}">
 </head>
 <body>
     <div class="app-container tool-page">
@@ -56,17 +57,12 @@
                     </div>
                     <div class="filters-panel" id="singleFiltersPanel">
                         <div class="filter-group">
-                            <label>🏷  Casename</label>
-                            <select id="singleCasenameSelect" class="filter-select"></select>
+                            <label>🏷 Casename</label>
+                            <div id="singleCasenameSelect" class="searchable-select"></div>
                         </div>
                         <div class="filter-group">
                             <label>📜 Rule</label>
-                            <div class="searchable-select">
-                                <div class="select-search">
-                                    🔍 <input type="text" id="singleRuleSearch" placeholder="搜索 rule...">
-                                </div>
-                                <select id="singleRuleSelect" class="filter-select" multiple size="5"></select>
-                            </div>
+                            <div id="singleRuleSelect" class="searchable-select"></div>
                         </div>
                         <div class="filter-actions">
                             <button class="btn-icon" id="singleDatePickerBtn" title="选择日期">选择日期</button>
@@ -95,17 +91,12 @@
                     </div>
                     <div class="filters-panel" id="multiFiltersPanel">
                         <div class="filter-group">
-                            <label>🏷   Casename</label>
-                            <select id="multiCasenameSelect" class="filter-select"></select>
+                            <label>🏷 Casename</label>
+                            <div id="multiCasenameSelect" class="searchable-select"></div>
                         </div>
                         <div class="filter-group">
-                            <label>📜  Rule</label>
-                            <div class="searchable-select">
-                                <div class="select-search">
-                                    🔍 <input type="text" id="multiRuleSearch" placeholder="搜索 rule...">
-                                </div>
-                                <select id="multiRuleSelect" class="filter-select" multiple size="5"></select>
-                            </div>
+                            <label>📜 Rule</label>
+                            <div id="multiRuleSelect" class="searchable-select"></div>
                         </div>
                         <div class="filter-actions">
                             <button class="btn-icon" id="multiDatePickerBtn" title="选择日期">选择日期</button>
@@ -135,20 +126,15 @@
                     <div class="filters-panel" id="threadFiltersPanel">
                         <div class="filter-group">
                             <label>🏷 Casename</label>
-                            <select id="threadCasenameSelect" class="filter-select"></select>
+                            <div id="threadCasenameSelect" class="searchable-select"></div>
                         </div>
                         <div class="filter-group">
                             <label>📜 Rule</label>
-                            <div class="searchable-select">
-                                <div class="select-search">
-                                    🔍 <input type="text" id="threadRuleSearch" placeholder="搜索 rule...">
-                                </div>
-                                <select id="threadRuleSelect" class="filter-select" size="5"></select>
-                            </div>
+                            <div id="threadRuleSelect" class="searchable-select"></div>
                         </div>
                         <div class="filter-group">
                             <label>📅 选择日期</label>
-                            <select id="threadDateSelect" class="filter-select"></select>
+                            <div id="threadDateSelect" class="searchable-select"></div>
                         </div>
                         <div class="filter-actions">
                             <button class="btn-primary" id="refreshThreadChartBtn">更新图表</button>
@@ -172,42 +158,42 @@
                         <div class="comparison-form" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; background: var(--bg-surface); padding: 20px; border-radius: var(--radius-lg); margin-bottom: 20px;">
                             <div class="filter-group">
                                 <label>🏷 Casename</label>
-                                <select id="compCasenameSelect" class="filter-select"></select>
+                                <div id="compCasenameSelect" class="searchable-select"></div>
                             </div>
+                            <!-- 日期1 -->
                             <div class="filter-group">
                                 <label>📅 日期1</label>
-                                <select id="compDate1Select" class="filter-select"></select>
+                                <div id="compDate1Select" class="searchable-select"></div>
                             </div>
+                            <!-- 日期2 -->
                             <div class="filter-group">
                                 <label>📅 日期2</label>
-                                <select id="compDate2Select" class="filter-select"></select>
+                                <div id="compDate2Select" class="searchable-select"></div>
                             </div>
+                            <!-- 对比维度 -->
                             <div class="filter-group">
                                 <label>📊 对比维度</label>
-                                <select id="compDimensionSelect" class="filter-select">
-                                    <option value="all">全部</option>
-                                    <option value="runtime">Runtime</option>
-                                    <option value="memory">Memory</option>
-                                </select>
+                                <div id="compDimensionSelect" class="searchable-select"></div>
                             </div>
+                            <!-- 误差模式 -->
                             <div class="filter-group">
                                 <label>% 误差模式</label>
-                                <select id="compErrorModeSelect" class="filter-select">
-                                    <option value="absolute">绝对值</option>
-                                    <option value="percentage">百分比</option>
-                                </select>
+                                <div id="compErrorModeSelect" class="searchable-select"></div>
                             </div>
+                            <!-- Rule 搜索 (保留搜索框) -->
                             <div class="filter-group">
                                 <label>🔍 搜索 Rule</label>
                                 <input type="text" id="compRuleSearch" placeholder="搜索 rule..." class="filter-input">
                             </div>
+                            <!-- Rule 选择 -->
                             <div class="filter-group" style="grid-column: span 2;">
                                 <label>📜 选择 Rule（多选）</label>
-                                <select id="compRuleSelect" class="filter-select" multiple size="4"></select>
+                                <div id="compRuleSelect" class="searchable-select multi-select"></div>
                             </div>
+                            <!-- 线程选择 -->
                             <div class="filter-group" style="grid-column: span 2;">
                                 <label>🧵 选择线程（多选，仅多线程有效）</label>
-                                <select id="compThreadSelect" class="filter-select" multiple size="3"></select>
+                                <div id="compThreadSelect" class="searchable-select multi-select"></div>
                             </div>
                             <div class="filter-row" style="grid-column: span 2; display: flex; gap: 16px;">
                                 <div class="filter-group half">
@@ -246,30 +232,27 @@
                         <div class="comparison-form" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; background: var(--bg-surface); padding: 20px; border-radius: var(--radius-lg); margin-bottom: 20px;">
                             <div class="filter-group">
                                 <label>🏷 Casename</label>
-                                <select id="threadCompCasenameSelect" class="filter-select"></select>
+                                <div id="threadCompCasenameSelect" class="searchable-select"></div>
                             </div>
+                            <!-- 日期1 -->
                             <div class="filter-group">
                                 <label>📅 日期1</label>
-                                <select id="threadCompDate1Select" class="filter-select"></select>
+                                <div id="threadCompDate1Select" class="searchable-select"></div>
                             </div>
+                            <!-- 日期2 -->
                             <div class="filter-group">
                                 <label>📅 日期2</label>
-                                <select id="threadCompDate2Select" class="filter-select"></select>
+                                <div id="threadCompDate2Select" class="searchable-select"></div>
                             </div>
+                            <!-- 对比维度 -->
                             <div class="filter-group">
                                 <label>📊 对比维度</label>
-                                <select id="threadCompDimensionSelect" class="filter-select">
-                                    <option value="runtime">Runtime</option>
-                                    <option value="memory">Memory</option>
-                                </select>
+                                <div id="threadCompDimensionSelect" class="searchable-select"></div>
                             </div>
-                            <div class="filter-group">
-                                <label>🔍 搜索 Rule</label>
-                                <input type="text" id="threadCompRuleSearch" placeholder="搜索 rule..." class="filter-input">
-                            </div>
+                            <!-- Rule 选择 -->
                             <div class="filter-group" style="grid-column: span 2;">
                                 <label>📜 选择 Rule（多选）</label>
-                                <select id="threadCompRuleSelect" class="filter-select" multiple size="4"></select>
+                                <div id="threadCompRuleSelect" class="searchable-select multi-select"></div>
                             </div>
                             <div class="filter-actions" style="grid-column: span 2; display: flex; gap: 12px; justify-content: flex-end;">
                                 <button class="btn-primary" id="threadCompConfirmBtn">确认对比</button>
@@ -392,6 +375,7 @@
 
     <script>
         // 全局函数供多线程选择器使用（保留，因为多线程模块可能用到）
+        window.mainChart = null;
         window.toggleMultiThreadDropdown = function() {
             const dropdown = document.getElementById('multiThreadDropdown');
             if (dropdown) {
@@ -410,6 +394,7 @@
     <script src="{{ url_for('static', filename='js/multi_thread.js') }}"></script>
     <script src="{{ url_for('static', filename='js/thread_chart.js') }}"></script>
     <script src="{{ url_for('static', filename='js/comparison.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/select.js') }}"></script>
     <script src="{{ url_for('static', filename='js/tool.js') }}"></script>
 </body>
 </html>

@@ -1,10 +1,9 @@
 /**
  * 单线程模块 - 处理单线程数据展示和图表渲染
- * 已移除所有对比相关代码
  */
 class SingleThreadManager {
     constructor() {
-        this.chart = null;
+        this.chart = null;  // 将存储外部传入的图表实例
         this.currentChartType = 'cputime';
         this.selectedCasename = '';
         this.selectedRules = ['Overall'];
@@ -17,7 +16,6 @@ class SingleThreadManager {
 
         this.idPrefix = 'single';
 
-        // DOM 元素（仅保留筛选控件）
         this.casenameSelect = null;
         this.ruleSelect = null;
         this.ruleSearch = null;
@@ -30,11 +28,8 @@ class SingleThreadManager {
     }
 
     async init(rawData, userAddedData, extraData) {
-        console.log('SingleThreadManager.init 开始', rawData, userAddedData, extraData);
+        console.log('SingleThreadManager.init 开始', rawData);
 
-        // 获取 DOM 元素
-        this.casenameSelect = document.getElementById(`${this.idPrefix}CasenameSelect`);
-        this.ruleSelect = document.getElementById(`${this.idPrefix}RuleSelect`);
         this.ruleSearch = document.getElementById(`${this.idPrefix}RuleSearch`);
         this.datePickerBtn = document.getElementById(`${this.idPrefix}DatePickerBtn`);
         this.latest50Btn = document.getElementById(`${this.idPrefix}Latest50Btn`);
@@ -44,9 +39,41 @@ class SingleThreadManager {
         this.userAddedData = userAddedData || {};
         this.allData = { ...this.rawData, ...this.userAddedData };
         this.extraData = extraData;
-        // this.allDates = Array.from(allDates).sort();
 
-        this.initChartContainer();
+        // 初始化可搜索下拉框
+        this.casenameSelect = new SearchableSelect({
+            container: document.getElementById(`${this.idPrefix}CasenameSelect`),
+            options: [],
+            placeholder: '请选择 Casename...',
+            onChange: async (value) => {
+                if (value) {
+                    this.selectedCasename = value;
+                    await this.updateRulesAndDates();
+                    this.selectedRules = ['Overall'];
+                    this.selectedDates = this.allDates.slice(-50);
+                    // 使用全局图表实例
+                    const chart = window.mainChart || echarts.getInstanceByDom(document.getElementById('mainChart'));
+                    if (chart) {
+                        await this.renderChart(chart);
+                    }
+                    this.updateOverview();
+                }
+            }
+        });
+
+        this.ruleSelect = new SearchableSelect({
+            container: document.getElementById(`${this.idPrefix}RuleSelect`),
+            options: [],
+            placeholder: '请选择 Rule...',
+            onChange: (values) => {
+                this.selectedRules = values.length > 0 ? [values] : ['Overall'];
+                const chart = window.mainChart || echarts.getInstanceByDom(document.getElementById('mainChart'));
+                if (chart) {
+                    this.renderChart(chart);
+                }
+            }
+        });
+
         this.updateCasenameSelect();
         await this.updateRulesAndDates();
         this.initEventListeners();
@@ -59,32 +86,37 @@ class SingleThreadManager {
         this.updateOverview();
     }
 
-    initChartContainer() {
-        const container = document.getElementById('mainChart');
-        if (container) {
-            if (this.chart) {
-                this.chart.dispose();
-            }
-            this.chart = echarts.init(container);
-            console.log('图表容器初始化成功');
-        } else {
-            console.error('找不到图表容器 #mainChart');
-        }
-    }
+    // initChartContainer() {
+    //     const container = document.getElementById('mainChart');
+    //     if (container) {
+    //         if (this.chart) {
+    //             this.chart.dispose();
+    //         }
+    //         this.chart = echarts.init(container);
+    //         console.log('图表容器初始化成功');
+    //     } else {
+    //         console.error('找不到图表容器 #mainChart');
+    //     }
+    // }
 
     updateCasenameSelect() {
         if (!this.casenameSelect) return;
+        
         const casenames = Object.keys(this.allData).filter(name => {
             const rule = this.allData[name];
             return rule;
         });
-        const options = casenames.map(name =>
-            `<option value="${this.escapeHtml(name)}">${this.escapeHtml(name)}</option>`
-        ).join('');
-        this.casenameSelect.innerHTML = options;
+        
+        const options = casenames.map(name => ({
+            value: name,
+            label: name
+        }));
+        
+        this.casenameSelect.setOptions(options);
+        
         if (casenames.length > 0 && !this.selectedCasename) {
             this.selectedCasename = casenames[0];
-            this.casenameSelect.value = this.selectedCasename;
+            this.casenameSelect.setValue(this.selectedCasename);
         }
     }
 
@@ -98,7 +130,7 @@ class SingleThreadManager {
             console.log('updateRulesAndDates: 无有效的 rule 数据', this.selectedCasename);
             return;
         }
-        const rulesSet = new Set(Object.keys(ruleData[this.currentChartType]));
+        const rulesSet = new Set(Object.keys(ruleData[this.currentChartType] || {}));
         this.allRules = Array.from(rulesSet).sort();
         if (this.allRules.includes('Overall')) {
             this.allRules = ['Overall', ...this.allRules.filter(r => r !== 'Overall')];
@@ -106,30 +138,33 @@ class SingleThreadManager {
         if (this.allRules.includes('Overall') && this.selectedRules.length === 0) {
             this.selectedRules = ['Overall'];
         }
-
-        const allDates = new Set(this.allData[this.selectedCasename][this.currentChartType][this.selectedRules]);
-        this.allDates = Array.from(allDates).sort();
+        
+        const  allDatesSet = new Set(ruleData[this.currentChartType][this.selectedRules])
+        console.warn('allDatesSet:', allDatesSet);
+        this.allDates = Array.from(allDatesSet).sort();
+        // console.warn(this.allDates)
         this.updateRuleSelect();
-        // this.updateDateSelects();
         this.updateOverview();
     }
 
     updateRuleSelect() {
         if (!this.ruleSelect) return;
+        
         const searchTerm = this.ruleSearch ? this.ruleSearch.value.toLowerCase() : '';
         const filteredRules = searchTerm
             ? this.allRules.filter(rule => rule.toLowerCase().includes(searchTerm))
             : this.allRules;
-        const options = filteredRules.map(rule =>
-            `<option value="${this.escapeHtml(rule)}" ${this.selectedRules.includes(rule) ? 'selected' : ''}>
-                ${this.escapeHtml(rule)}
-            </option>`
-        ).join('');
-        this.ruleSelect.innerHTML = options;
-        this.ruleSelect.multiple = true;
-        this.ruleSelect.size = 5;
+        
+        const options = filteredRules.map(rule => ({
+            value: rule,
+            label: rule
+        }));
+        
+        this.ruleSelect.setOptions(options);
+        if (this.selectedRules.length > 0) {
+            this.ruleSelect.setValue(this.selectedRules[0]);
+        }
     }
-
 
     selectLatest50Days() {
         this.selectedDates = this.allDates.slice(-50);
@@ -137,17 +172,21 @@ class SingleThreadManager {
         this.renderChart();
     }
 
-    async renderChart() {
+    
+    async renderChart(chartInstance) {
+        // 如果传入了图表实例，使用传入的；否则尝试获取全局实例
+        const chart = chartInstance || window.mainChart || echarts.getInstanceByDom(document.getElementById('mainChart'));
+        
+        if (!chart) {
+            console.error('renderChart: 图表实例不存在');
+            return;
+        }
+        // 存储引用供其他方法使用
+        this.chart = chart;
+
         if (!this.selectedCasename) {
             console.log('renderChart: 未选择 casename');
             return;
-        }
-        if (!this.chart) {
-            this.initChartContainer();
-            if (!this.chart) {
-                console.error('renderChart: 图表实例不存在');
-                return;
-            }
         }
         if (this.selectedRules.length === 0) {
             this.selectedRules = ['Overall'];
@@ -155,8 +194,8 @@ class SingleThreadManager {
         if (this.selectedDates.length === 0) {
             this.selectedDates = this.allDates.slice(-50);
         }
-        console.error('renderChart: 开始', this.allDates);
-        this.chart.showLoading({
+
+        chart.showLoading({
             text: '加载中...',
             color: '#00E5FF',
             textColor: '#94A3B8',
@@ -173,7 +212,6 @@ class SingleThreadManager {
                 chart_type: this.currentChartType,
                 selected_threads: [-1],
             };
-            // console.error( requestData);
             const response = await axios.post('/api/chart/data', requestData);
 
             if (response.data.success) {
@@ -181,29 +219,31 @@ class SingleThreadManager {
                 if (typeof chartData === 'string') {
                     chartData = JSON.parse(chartData);
                 }
-                this.chart.hideLoading();
+                chart.hideLoading();
                 if (Object.keys(chartData.rules || {}).length === 0) {
-                    this.showNoDataMessage();
+                    this.showNoDataMessage(chart);
                 } else {
-                    this.drawChart(chartData);
+                    this.drawChart(chart, chartData);
                     this.updateStatistics(chartData);
                 }
             } else {
-                this.chart.hideLoading();
-                this.showErrorMessage(response.data.error || '获取数据失败');
+                chart.hideLoading();
+                this.showErrorMessage(chart, response.data.error || '获取数据失败');
             }
         } catch (error) {
             console.error('获取图表数据失败:', error);
-            this.chart.hideLoading();
-            this.showErrorMessage('获取图表数据失败: ' + (error.message || '未知错误'));
+            chart.hideLoading();
+            this.showErrorMessage(chart, '获取图表数据失败: ' + (error.message || '未知错误'));
         }
     }
 
-    drawChart(chartData) {
-        if (!this.chart || this.chart.isDisposed()) {
-            this.initChartContainer();
-            if (!this.chart) return;
+    
+    drawChart(chart, chartData) {
+        if (!chart || chart.isDisposed()) {
+            console.error('drawChart: 图表实例无效');
+            return;
         }
+
         const { dates, rules, crash_dates } = chartData;
         const normalizedType = (this.currentChartType || 'cputime').toLowerCase();
         const isRuntime = normalizedType === 'runtime' || normalizedType === 'cputime' || normalizedType === 'realtime';
@@ -312,21 +352,21 @@ class SingleThreadManager {
                         const value = p.value;
                         const seriesName = p.seriesName;
                         const color = p.color;
-                        const unit = isRuntime ? "s" :"MB"
+                        const unit = isRuntime ? "s" :"MB";
                         html += `<div style="display:flex;justify-content:space-between;gap:16px;margin-bottom:4px;">
                             <span style="color:${color}">● ${this.escapeHtml(seriesName)}</span>
                             <span style="font-family:monospace;font-weight:600;">${value !== '-' && value !== null ? Number(value).toFixed(2) : 'N/A'} ${unit}</span>
                         </div>`;
                     }
 
-                    if (this.extraData.cpu && this.extraData.mem) {
+                    if (this.extraData && this.extraData.cpu && this.extraData.mem) {
                         if (isRuntime) {
                             if (this.extraData.cpu[date]) {
-                                html += `<div class="mr-update">MR更新: ${this.extraData.cpu[date]}</div>`
+                                html += `<div class="mr-update">MR更新: ${this.extraData.cpu[date]}</div>`;
                             }
                         } else {
                             if (this.extraData.mem[date]) {
-                                html += `<div class="mr-update">MR更新: ${this.extraData.mem[date]}</div>`
+                                html += `<div class="mr-update">MR更新: ${this.extraData.mem[date]}</div>`;
                             }
                         }
                     }
@@ -408,17 +448,18 @@ class SingleThreadManager {
             };
         }
 
-        this.chart.setOption(option, true);
+        chart.setOption(option, true);
 
         if (!this._resizeHandler) {
             this._resizeHandler = () => {
-                if (this.chart && !this.chart.isDisposed()) {
-                    this.chart.resize();
+                if (chart && !chart.isDisposed()) {
+                    chart.resize();
                 }
             };
             window.addEventListener('resize', this._resizeHandler);
         }
     }
+
 
     updateStatistics(chartData) {
         const { dates, overall_data } = chartData;
@@ -510,25 +551,9 @@ class SingleThreadManager {
     }
 
     initEventListeners() {
-        if (this.casenameSelect) {
-            this.casenameSelect.addEventListener('change', async (e) => {
-                this.selectedCasename = e.target.value;
-                await this.updateRulesAndDates();
-                this.selectedRules = ['Overall'];
-                this.selectedDates = this.allDates.slice(-50);
-                await this.renderChart();
-                this.updateOverview();
-            });
-        }
         if (this.ruleSearch) {
             this.ruleSearch.addEventListener('input', () => {
                 this.updateRuleSelect();
-            });
-        }
-        if (this.ruleSelect) {
-            this.ruleSelect.addEventListener('change', (e) => {
-                this.selectedRules = Array.from(this.ruleSelect.selectedOptions).map(opt => opt.value);
-                this.renderChart();
             });
         }
         if (this.latest50Btn) {
@@ -668,10 +693,11 @@ class SingleThreadManager {
         }
     }
 
-    showNoDataMessage() {
-        if (this.chart && !this.chart.isDisposed()) {
-            this.chart.clear();
-            this.chart.setOption({
+    // ========== showNoDataMessage 接收图表实例作为参数 ==========
+    showNoDataMessage(chart) {
+        if (chart && !chart.isDisposed()) {
+            chart.clear();
+            chart.setOption({
                 graphic: [{
                     type: 'text',
                     left: 'center',
@@ -686,9 +712,10 @@ class SingleThreadManager {
         }
     }
 
-    showErrorMessage(message) {
-        if (this.chart && !this.chart.isDisposed()) {
-            this.chart.setOption({
+    // ========== showErrorMessage 接收图表实例作为参数 ==========
+    showErrorMessage(chart, message) {
+        if (chart && !chart.isDisposed()) {
+            chart.setOption({
                 title: {
                     show: true,
                     text: message,
@@ -743,10 +770,8 @@ class SingleThreadManager {
             window.removeEventListener('resize', this._resizeHandler);
             this._resizeHandler = null;
         }
-        if (this.chart && !this.chart.isDisposed()) {
-            this.chart.dispose();
-            this.chart = null;
-        }
+        // 不再销毁图表实例，由全局管理
+        this.chart = null;
     }
 }
 

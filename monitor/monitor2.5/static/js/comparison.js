@@ -4,29 +4,148 @@
  *       以及 ECharts 全局变量 echarts
  */
 class ComparisonManager {
+    /**
+     * 构造函数
+     * 初始化对比管理器的属性
+     */
     constructor() {
         this.comparisonChart = null;
         this.toolId = null;
-        this.currentMode = null; // 'single' 或 'multi'
+        this.currentMode = null;
         this.isInitialized = false;
+        
+        // 可搜索下拉框组件实例
+        this.casenameSelect = null;
+        this.date1Select = null;
+        this.date2Select = null;
+        this.dimensionSelect = null;
+        this.errorModeSelect = null;
+        this.ruleSelect = null;
+        this.threadSelect = null;
+        
+        this.threadCasenameSelect = null;
+        this.threadDate1Select = null;
+        this.threadDate2Select = null;
+        this.threadDimensionSelect = null;
+        this.threadRuleSelect = null;
     }
 
-    /**
-     * 初始化对比模块
-     * @param {string} toolId - 工具ID
-     * @param {function} getCurrentMode - 返回当前模式（'single'/'multi'）的函数
-     */
     init(toolId, getCurrentMode) {
         this.toolId = toolId;
         this.getCurrentMode = getCurrentMode;
+
+        // 初始化版本对比的可搜索下拉框
+        this.casenameSelect = new SearchableSelect({
+            container: document.getElementById('compCasenameSelect'),
+            options: [],
+            placeholder: '请选择 Casename...',
+            onChange: (value) => {
+                if (value) {
+                    window.comparisonManager?._updateForm(value, 'version');
+                }
+            }
+        });
+
+        this.date1Select = new SearchableSelect({
+            container: document.getElementById('compDate1Select'),
+            options: [],
+            placeholder: '请选择日期1...',
+            onChange: () => {}
+        });
+
+        this.date2Select = new SearchableSelect({
+            container: document.getElementById('compDate2Select'),
+            options: [],
+            placeholder: '请选择日期2...',
+            onChange: () => {}
+        });
+
+        this.dimensionSelect = new SearchableSelect({
+            container: document.getElementById('compDimensionSelect'),
+            options: [
+                { value: 'all', label: '全部' },
+                { value: 'runtime', label: 'Runtime' },
+                { value: 'memory', label: 'Memory' }
+            ],
+            placeholder: '请选择对比维度...',
+            onChange: () => {}
+        });
+
+        this.errorModeSelect = new SearchableSelect({
+            container: document.getElementById('compErrorModeSelect'),
+            options: [
+                { value: 'absolute', label: '绝对值' },
+                { value: 'percentage', label: '百分比' }
+            ],
+            placeholder: '请选择误差模式...',
+            onChange: () => {}
+        });
+
+        this.ruleSelect = new SearchableSelect({
+            container: document.getElementById('compRuleSelect'),
+            options: [],
+            multiple: true,
+            placeholder: '请选择 Rule...',
+            onChange: () => {}
+        });
+
+        this.threadSelect = new SearchableSelect({
+            container: document.getElementById('compThreadSelect'),
+            options: [],
+            multiple: true,
+            placeholder: '请选择线程...',
+            onChange: () => {}
+        });
+
+        // 初始化线程对比的可搜索下拉框
+        this.threadCasenameSelect = new SearchableSelect({
+            container: document.getElementById('threadCompCasenameSelect'),
+            options: [],
+            placeholder: '请选择 Casename...',
+            onChange: (value) => {
+                if (value) {
+                    window.comparisonManager?._updateForm(value, 'thread');
+                }
+            }
+        });
+
+        this.threadDate1Select = new SearchableSelect({
+            container: document.getElementById('threadCompDate1Select'),
+            options: [],
+            placeholder: '请选择日期1...',
+            onChange: () => {}
+        });
+
+        this.threadDate2Select = new SearchableSelect({
+            container: document.getElementById('threadCompDate2Select'),
+            options: [],
+            placeholder: '请选择日期2...',
+            onChange: () => {}
+        });
+
+        this.threadDimensionSelect = new SearchableSelect({
+            container: document.getElementById('threadCompDimensionSelect'),
+            options: [
+                { value: 'runtime', label: 'Runtime' },
+                { value: 'memory', label: 'Memory' }
+            ],
+            placeholder: '请选择对比维度...',
+            onChange: () => {}
+        });
+
+        this.threadRuleSelect = new SearchableSelect({
+            container: document.getElementById('threadCompRuleSelect'),
+            options: [],
+            multiple: true,
+            placeholder: '请选择 Rule...',
+            onChange: () => {}
+        });
+
         this._bindEvents();
         this._populateForms();
         this.isInitialized = true;
     }
 
-    /**
-     * 显示对比子选项卡（版本/线程）
-     */
     showSubMode(submode) {
         const versionPanel = document.getElementById('versionComparisonPanel');
         const threadPanel = document.getElementById('threadComparisonPanel');
@@ -48,9 +167,6 @@ class ComparisonManager {
         }
     }
 
-    /**
-     * 初始化线程对比图表容器
-     */
     _initThreadChartContainer() {
         const container = document.getElementById('threadChart');
         if (container) {
@@ -64,54 +180,40 @@ class ComparisonManager {
         }
     }
 
-    // ==================== 事件绑定 ====================
     _bindEvents() {
-        // 子选项卡切换
         document.querySelectorAll('.comparison-tab').forEach(tab => {
             tab.addEventListener('click', () => {
                 this.showSubMode(tab.dataset.submode);
             });
         });
 
-        // 版本对比确认按钮
         document.getElementById('compConfirmBtn')?.addEventListener('click', () => this._performVersionComparison());
-        // 版本对比导出按钮
         document.getElementById('compExportBtn')?.addEventListener('click', () => this._exportVersionComparison());
-        // 线程对比确认按钮
         document.getElementById('threadCompConfirmBtn')?.addEventListener('click', () => this._performThreadComparison());
 
-        // 搜索过滤规则（版本对比）
         document.getElementById('compRuleSearch')?.addEventListener('input', function() {
             ComparisonManager._filterOptions('compRuleSelect', this.value);
         });
-        // 搜索过滤规则（线程对比）
         document.getElementById('threadCompRuleSearch')?.addEventListener('input', function() {
             ComparisonManager._filterOptions('threadCompRuleSelect', this.value);
         });
-
-        // Casename 变更时更新日期和规则列表
-        document.getElementById('compCasenameSelect')?.addEventListener('change', function() {
-            window.comparisonManager?._updateForm(this.value, 'version');
-        });
-        document.getElementById('threadCompCasenameSelect')?.addEventListener('change', function() {
-            window.comparisonManager?._updateForm(this.value, 'thread');
-        });
     }
 
-    /**
-     * 过滤下拉选项（用于规则搜索）
-     */
     static _filterOptions(selectId, keyword) {
-        const select = document.getElementById(selectId);
-        if (!select) return;
-        const options = select.querySelectorAll('option');
-        const lower = keyword.toLowerCase();
-        options.forEach(opt => {
-            opt.style.display = opt.textContent.toLowerCase().includes(lower) ? '' : 'none';
-        });
+        // 对于 SearchableSelect 组件，搜索是内置的
+        // 这里的 filterOptions 方法可以保留用于兼容
+        const container = document.getElementById(selectId);
+        if (!container) return;
+        const select = container.querySelector('.searchable-select');
+        if (select) {
+            const searchInput = select.querySelector('.dropdown-search input');
+            if (searchInput) {
+                searchInput.value = keyword;
+                searchInput.dispatchEvent(new Event('input'));
+            }
+        }
     }
 
-    // ==================== 表单填充 ====================
     _populateForms() {
         this._populateForm('version');
         this._populateForm('thread');
@@ -119,7 +221,7 @@ class ComparisonManager {
 
     _populateForm(type) {
         const prefix = type === 'version' ? 'comp' : 'threadComp';
-        const casenameSelect = document.getElementById(`${prefix}CasenameSelect`);
+        const casenameSelect = type === 'version' ? this.casenameSelect : this.threadCasenameSelect;
         if (!casenameSelect) return;
 
         const mode = this.getCurrentMode();
@@ -133,24 +235,30 @@ class ComparisonManager {
         }
 
         const casenames = Object.keys(allData);
-        const currentVal = casenameSelect.value;
-        casenameSelect.innerHTML = casenames.map(name =>
-            `<option value="${escapeHtml(name)}">${escapeHtml(name)}</option>`
-        ).join('');
+        const currentVal = casenameSelect.getValue();
+        
+        const options = casenames.map(name => ({
+            value: name,
+            label: name
+        }));
+        
+        casenameSelect.setOptions(options);
+
         if (currentVal && casenames.includes(currentVal)) {
-            casenameSelect.value = currentVal;
+            casenameSelect.setValue(currentVal);
         } else if (casenames.length > 0) {
-            casenameSelect.value = casenames[0];
+            casenameSelect.setValue(casenames[0]);
         }
 
-        if (casenameSelect.value) {
-            this._updateForm(casenameSelect.value, type);
+        if (casenameSelect.getValue()) {
+            this._updateForm(casenameSelect.getValue(), type);
         }
     }
 
     _updateForm(casename, type) {
         const prefix = type === 'version' ? 'comp' : 'threadComp';
         const mode = this.getCurrentMode();
+
         let allData = {};
         if (mode === 'single') allData = window.singleData || {};
         else if (mode === 'multi') allData = window.multiData || {};
@@ -159,7 +267,6 @@ class ComparisonManager {
         const caseData = allData[casename];
         if (!caseData) return;
 
-        // 提取规则
         const rulesSet = new Set();
         if (caseData.runtime) {
             Object.keys(caseData.runtime).forEach(r => rulesSet.add(r));
@@ -173,16 +280,22 @@ class ComparisonManager {
             rules.unshift('Overall');
         }
 
-        // 更新规则选择框
-        const ruleSelect = document.getElementById(`${prefix}RuleSelect`);
+        const ruleSelect = type === 'version' ? this.ruleSelect : this.threadRuleSelect;
         if (ruleSelect) {
-            const currentVals = Array.from(ruleSelect.selectedOptions).map(o => o.value);
-            ruleSelect.innerHTML = rules.map(r =>
-                `<option value="${escapeHtml(r)}" ${currentVals.includes(r) ? 'selected' : ''}>${escapeHtml(r)}</option>`
-            ).join('');
+            const currentVals = ruleSelect.getValue() || [];
+            const options = rules.map(r => ({
+                value: r,
+                label: r
+            }));
+            ruleSelect.setOptions(options);
+            if (currentVals.length > 0) {
+                const validVals = currentVals.filter(v => rules.includes(v));
+                if (validVals.length > 0) {
+                    ruleSelect.setValue(validVals);
+                }
+            }
         }
 
-        // 提取日期
         let dates = [];
         if (caseData.runtime && caseData.runtime['Overall']) {
             dates = caseData.runtime['Overall'].dates || [];
@@ -196,26 +309,29 @@ class ComparisonManager {
         }
         dates.sort();
 
-        // 更新日期选择框
-        const date1Select = document.getElementById(`${prefix}Date1Select`);
-        const date2Select = document.getElementById(`${prefix}Date2Select`);
+        const date1Select = type === 'version' ? this.date1Select : this.threadDate1Select;
+        const date2Select = type === 'version' ? this.date2Select : this.threadDate2Select;
+        
         if (date1Select) {
-            date1Select.innerHTML = dates.map(d =>
-                `<option value="${d}">${formatDate(d)}</option>`
-            ).join('');
-            if (dates.length > 0) date1Select.value = dates[0];
+            const options = dates.map(d => ({
+                value: d,
+                label: formatDate(d)
+            }));
+            date1Select.setOptions(options);
+            if (dates.length > 0) date1Select.setValue(dates[0]);
         }
         if (date2Select) {
-            date2Select.innerHTML = dates.map(d =>
-                `<option value="${d}">${formatDate(d)}</option>`
-            ).join('');
-            if (dates.length > 1) date2Select.value = dates[dates.length - 1];
-            else if (dates.length > 0) date2Select.value = dates[0];
+            const options = dates.map(d => ({
+                value: d,
+                label: formatDate(d)
+            }));
+            date2Select.setOptions(options);
+            if (dates.length > 1) date2Select.setValue(dates[dates.length - 1]);
+            else if (dates.length > 0) date2Select.setValue(dates[0]);
         }
 
-        // 如果是版本对比且模式为 multi，更新线程选择框
         if (type === 'version' && mode === 'multi') {
-            const threadSelect = document.getElementById('compThreadSelect');
+            const threadSelect = this.threadSelect;
             if (threadSelect) {
                 const multiData = window.multiData || {};
                 const caseMulti = multiData[casename];
@@ -231,17 +347,31 @@ class ComparisonManager {
                         }
                     });
                 }
-                allThreads = [...new Set(allThreads)].sort((a,b) => a - b);
-                const currentThreads = Array.from(threadSelect.selectedOptions).map(o => o.value);
-                threadSelect.innerHTML = allThreads.map(t =>
-                    `<option value="${t}" ${currentThreads.includes(String(t)) ? 'selected' : ''}>${t} 线程</option>`
-                ).join('');
+                allThreads = [...new Set(allThreads)].sort((a, b) => a - b);
+                const currentThreads = threadSelect.getValue() || [];
+                const options = allThreads.map(t => ({
+                    value: String(t),
+                    label: t + ' 线程'
+                }));
+                threadSelect.setOptions(options);
+                if (currentThreads.length > 0) {
+                    const validVals = currentThreads.filter(v => allThreads.includes(Number(v)));
+                    if (validVals.length > 0) {
+                        threadSelect.setValue(validVals);
+                    }
+                }
             }
         }
     }
 
     // ==================== 版本对比 ====================
+
+    /**
+     * 执行版本对比
+     * 收集表单参数，调用后端 API 进行版本对比计算
+     */
     async _performVersionComparison() {
+        // 收集表单参数
         const casename = document.getElementById('compCasenameSelect')?.value;
         const date1 = document.getElementById('compDate1Select')?.value;
         const date2 = document.getElementById('compDate2Select')?.value;
@@ -250,24 +380,29 @@ class ComparisonManager {
         const runtimeThreshold = parseFloat(document.getElementById('compRuntimeThreshold')?.value || 0);
         const memoryThreshold = parseFloat(document.getElementById('compMemoryThreshold')?.value || 0);
 
+        // 获取选中的规则（多选时取第一个作为对比模式）
         const ruleSelect = document.getElementById('compRuleSelect');
         const selectedRules = Array.from(ruleSelect.selectedOptions).map(o => o.value);
         const compareMode = selectedRules.length === 0 ? 'all' : selectedRules[0];
 
+        // 获取选中的线程列表
         const threadSelect = document.getElementById('compThreadSelect');
         const threads = Array.from(threadSelect.selectedOptions).map(o => parseInt(o.value));
 
+        // 验证必填参数
         if (!casename || !date1 || !date2) {
             showToast('请选择 Casename 和两个日期', 'error');
             return;
         }
 
+        // 更新按钮状态
         const confirmBtn = document.getElementById('compConfirmBtn');
         const originalText = confirmBtn.textContent;
         confirmBtn.textContent = '对比中...';
         confirmBtn.disabled = true;
 
         try {
+            // 发送对比请求
             const response = await axios.post('/api/comparison', {
                 tool_id: this.toolId,
                 mode: this.getCurrentMode(),
@@ -284,6 +419,7 @@ class ComparisonManager {
             });
 
             if (response.data.success) {
+                // 渲染对比结果
                 this._renderVersionResults(response.data.data, dimension, date1, date2, errorMode);
             } else {
                 showToast(response.data.error || '对比失败', 'error');
@@ -292,18 +428,30 @@ class ComparisonManager {
             console.error('版本对比失败:', error);
             showToast('版本对比失败: ' + (error.message || '未知错误'), 'error');
         } finally {
+            // 恢复按钮状态
             confirmBtn.textContent = originalText;
             confirmBtn.disabled = false;
         }
     }
 
+    /**
+     * 渲染版本对比结果
+     * 显示统计卡片、对比结果表格，并支持搜索过滤
+     * @param {object} result - 后端返回的对比结果
+     * @param {string} dimension - 对比维度 ('all'|'runtime'|'memory')
+     * @param {string} date1 - 日期1
+     * @param {string} date2 - 日期2
+     * @param {string} errorMode - 误差模式 ('absolute'|'percentage')
+     */
     _renderVersionResults(result, dimension, date1, date2, errorMode) {
         const stats = result.statistics;
         const comparisons = result.comparisons;
 
+        // ---------- 渲染统计卡片 ----------
         const statsGrid = document.getElementById('versionStatsGrid');
         if (statsGrid) {
             let html = '';
+            // Runtime 统计卡片
             if (dimension === 'all' || dimension === 'runtime') {
                 html += `
                     <div class="comparison-stat-card tooltip-card">
@@ -330,6 +478,7 @@ class ComparisonManager {
                     </div>
                 `;
             }
+            // Memory 统计卡片
             if (dimension === 'all' || dimension === 'memory') {
                 html += `
                     <div class="comparison-stat-card tooltip-card">
@@ -359,9 +508,11 @@ class ComparisonManager {
             statsGrid.innerHTML = html;
         }
 
+        // ---------- 渲染对比结果表格 ----------
         const tableHead = document.getElementById('versionTableHead');
         const tableBody = document.getElementById('versionTableBody');
         if (tableHead && tableBody) {
+            // 构建表头
             let headerHtml = '<tr><th>Rule</th>';
             if (dimension === 'all' || dimension === 'runtime') {
                 const errorLabel = errorMode === 'absolute' ? '差值' : '变化率';
@@ -384,6 +535,7 @@ class ComparisonManager {
             headerHtml += '</tr>';
             tableHead.innerHTML = headerHtml;
 
+            // 构建表格行
             let rowsHtml = '';
             comparisons.forEach(comp => {
                 let rowHtml = `<tr><td>${escapeHtml(comp[0])}</td>`;
@@ -410,9 +562,18 @@ class ComparisonManager {
             tableBody.innerHTML = rowsHtml;
         }
 
+        // 初始化表格搜索功能
         this._initSearch('versionComparisonSearch', 'versionTableBody');
     }
 
+    /**
+     * 生成 Tooltip 内容 HTML
+     * 用于统计卡片的悬浮提示，展示具体的 Rule 变化详情
+     * @param {Array} items - 数据项数组
+     * @param {string} label - 变化标签（如 "增加"/"减少"）
+     * @param {string} unit - 单位（如 "s"/"%"/"MB"）
+     * @returns {string} HTML 字符串
+     */
     _generateTooltipItems(items, label, unit) {
         if (!items || items.length === 0) {
             return '<div class="tooltip-item"><div class="tooltip-item-name">暂无数据</div></div>';
@@ -429,11 +590,18 @@ class ComparisonManager {
         }).join('');
     }
 
+    /**
+     * 初始化表格搜索功能
+     * 绑定搜索框的 input 事件，实时过滤表格行
+     * @param {string} searchInputId - 搜索输入框 ID
+     * @param {string} tableBodyId - 表格主体 ID
+     */
     _initSearch(searchInputId, tableBodyId) {
         const searchInput = document.getElementById(searchInputId);
         const tableBody = document.getElementById(tableBodyId);
         if (!searchInput || !tableBody) return;
 
+        // 克隆节点以移除旧事件监听
         const newSearch = searchInput.cloneNode(true);
         searchInput.parentNode.replaceChild(newSearch, searchInput);
 
@@ -441,6 +609,7 @@ class ComparisonManager {
             const term = this.value.toLowerCase().trim();
             const rows = tableBody.querySelectorAll('tr');
             let visibleCount = 0;
+            // 遍历所有行，根据搜索词显示/隐藏
             rows.forEach(row => {
                 const text = row.textContent.toLowerCase();
                 if (term === '' || text.includes(term)) {
@@ -450,6 +619,7 @@ class ComparisonManager {
                     row.style.display = 'none';
                 }
             });
+            // 显示/隐藏 "无匹配结果" 提示
             const noResult = document.getElementById('comparisonNoResult');
             if (term && visibleCount === 0) {
                 if (!noResult) {
@@ -470,19 +640,26 @@ class ComparisonManager {
         });
     }
 
+    /**
+     * 导出版本对比结果为 CSV 文件
+     * 收集表格数据，生成带 BOM 的 UTF-8 CSV 文件并触发下载
+     */
     _exportVersionComparison() {
         const tableBody = document.getElementById('versionTableBody');
         if (!tableBody) return;
 
+        // 收集表格行数据
         const rows = Array.from(tableBody.querySelectorAll('tr'));
         const csvData = rows.map(row => {
             const cells = Array.from(row.querySelectorAll('td'));
             return cells.map(cell => cell.textContent.trim().replace(/\n/g, ';')).join(',');
         });
 
+        // 构建 CSV 内容
         const headers = ['Rule', '日期1值', '日期2值', '差值', '状态'];
         const csvContent = [headers, ...csvData].map(row => row.join(',')).join('\n');
 
+        // 创建下载链接并触发下载
         const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' });
         const link = document.createElement('a');
         const url = URL.createObjectURL(blob);
@@ -495,27 +672,37 @@ class ComparisonManager {
     }
 
     // ==================== 线程对比 ====================
+
+    /**
+     * 执行线程对比
+     * 收集表单参数，调用后端 API 进行线程对比计算
+     */
     async _performThreadComparison() {
+        // 收集表单参数
         const casename = document.getElementById('threadCompCasenameSelect')?.value;
         const date1 = document.getElementById('threadCompDate1Select')?.value;
         const date2 = document.getElementById('threadCompDate2Select')?.value;
         const dimension = document.getElementById('threadCompDimensionSelect')?.value;
 
+        // 获取选中的规则
         const ruleSelect = document.getElementById('threadCompRuleSelect');
         const selectedRules = Array.from(ruleSelect.selectedOptions).map(o => o.value);
         const compareMode = selectedRules.length === 0 ? 'all' : selectedRules[0];
 
+        // 验证必填参数
         if (!casename || !date1 || !date2 || !compareMode) {
             showToast('请选择 Casename、两个日期和至少一个 Rule', 'error');
             return;
         }
 
+        // 更新按钮状态
         const confirmBtn = document.getElementById('threadCompConfirmBtn');
         const originalText = confirmBtn.textContent;
         confirmBtn.textContent = '加载中...';
         confirmBtn.disabled = true;
 
         try {
+            // 发送线程对比请求
             const response = await axios.post('/api/comparison', {
                 tool_id: this.toolId,
                 mode: 'multi',
@@ -528,6 +715,7 @@ class ComparisonManager {
             });
 
             if (response.data.success) {
+                // 渲染线程对比结果
                 this._renderThreadResults(response.data.data, dimension);
             } else {
                 showToast(response.data.error || '线程对比失败', 'error');
@@ -536,22 +724,31 @@ class ComparisonManager {
             console.error('线程对比失败:', error);
             showToast('线程对比失败: ' + (error.message || '未知错误'), 'error');
         } finally {
+            // 恢复按钮状态
             confirmBtn.textContent = originalText;
             confirmBtn.disabled = false;
         }
     }
 
+    /**
+     * 渲染线程对比结果
+     * 使用 ECharts 绘制折线图，展示不同日期各规则在线程维度上的性能对比
+     * @param {object} result - 后端返回的对比结果
+     * @param {string} dimension - 对比维度 ('runtime'|'memory')
+     */
     _renderThreadResults(result, dimension) {
+        // 确保图表实例有效
         if (!this.comparisonChart || this.comparisonChart.isDisposed()) {
             this._initThreadChartContainer();
             if (!this.comparisonChart) return;
         }
 
-        const rulesData = result.rules || {};
-        const threads = result.threads || [];
+        const rulesData = result.rules || {};   // 各规则的对比数据
+        const threads = result.threads || [];   // 线程数列表
         const date1 = result.date1 || '';
         const date2 = result.date2 || '';
 
+        // 无数据时显示提示
         if (!threads.length || Object.keys(rulesData).length === 0) {
             this.comparisonChart.clear();
             this.comparisonChart.setOption({
@@ -565,16 +762,19 @@ class ComparisonManager {
             return;
         }
 
+        // 准备配色方案
         const colors = ['#00E5FF', '#A855F7', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#EC4899', '#14B8A6', '#F97316'];
         let colorIdx = 0;
         const series = [];
         const legendData = [];
 
+        // 为每个规则生成两条折线（date1 实线，date2 虚线）
         Object.entries(rulesData).forEach(([ruleName, rule]) => {
             const color1 = colors[colorIdx % colors.length];
             const color2 = colors[(colorIdx + 1) % colors.length];
             colorIdx += 2;
 
+            // date1 折线（实线）
             series.push({
                 name: `${ruleName} (${dimension === 'runtime' ? 'Runtime' : 'Memory'}) - ${date1}`,
                 type: 'line',
@@ -588,6 +788,7 @@ class ComparisonManager {
             });
             legendData.push(series[series.length - 1].name);
 
+            // date2 折线（虚线）
             series.push({
                 name: `${ruleName} (${dimension === 'runtime' ? 'Runtime' : 'Memory'}) - ${date2}`,
                 type: 'line',
@@ -602,6 +803,7 @@ class ComparisonManager {
             legendData.push(series[series.length - 1].name);
         });
 
+        // 构建 ECharts 配置
         const option = {
             backgroundColor: 'transparent',
             tooltip: {
@@ -680,6 +882,7 @@ class ComparisonManager {
             }
         };
 
+        // 应用配置并绑定窗口大小调整事件
         this.comparisonChart.setOption(option, true);
         if (!this.comparisonChart._resizeHandler) {
             this.comparisonChart._resizeHandler = () => {
@@ -692,5 +895,5 @@ class ComparisonManager {
     }
 }
 
-// 暴露全局实例
+// 将 ComparisonManager 暴露到全局作用域，供其他模块使用
 window.ComparisonManager = ComparisonManager;
