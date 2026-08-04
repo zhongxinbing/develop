@@ -306,7 +306,7 @@ class SingleThreadManager {
                 }
                 
                 this.chart.hideLoading();
-                console.log('renderChart: 获取图表数据成功', chartData);
+                
                 if (Object.keys(chartData.rules || {}).length === 0) {
                     this.showNoDataMessage();
                 } else {
