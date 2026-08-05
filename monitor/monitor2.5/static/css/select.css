@@ -186,3 +186,9 @@
         max-height: 150px;
     }
 }
+@media (max-width: 600px) {
+    .comparison-form > div > div {
+        flex: 1 1 100% !important;
+        min-width: unset !important;
+    }
+}
