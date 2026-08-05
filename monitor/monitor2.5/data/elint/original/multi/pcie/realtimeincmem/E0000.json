@@ -5,38 +5,38 @@
         "20260515"
     ],
     "rules": {
-        "Overall(2)": {
+        "E0000(2)": {
             "dates": [
                 "20260511",
                 "20260513",
                 "20260515"
             ],
             "values": [
-                0.0,
-                0.0,
-                0.0
+                -0.0,
+                -0.0,
+                -0.0
             ],
             "type": "line",
-            "name": "Overall(2)",
+            "name": "E0000(2)",
             "thread": 2,
             "color": "#A855F7",
-            "rule_name": "Overall",
+            "rule_name": "E0000",
             "is_multi": true
         },
-        "Overall(4)": {
+        "E0000(4)": {
             "dates": [
                 "20260511",
                 "20260515"
             ],
             "values": [
-                0.0,
-                0.0
+                -0.0,
+                -0.0
             ],
             "type": "line",
-            "name": "Overall(4)",
+            "name": "E0000(4)",
             "thread": 4,
             "color": "#10B981",
-            "rule_name": "Overall",
+            "rule_name": "E0000",
             "is_multi": true
         }
     },

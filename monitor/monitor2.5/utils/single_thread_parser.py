@@ -43,20 +43,20 @@ class SingleThreadParser:
                     rule_dates_cputime.setdefault(rule, {})[date] = result.get('cputime', {})
                     rule_dates_peakmem.setdefault(rule, {})[date] = result.get('peakmem', {})
                     rule_dates_realtime.setdefault(rule, {})[date] = result.get('realtime', {})
-                    rule_dates_incmen.setdefault(rule, {})[date] = result.get('incmen', {})
-                    rule_dates_realtimeincmen.setdefault(rule, {})[date] = result.get('realtimeincmen', {})
+                    rule_dates_incmen.setdefault(rule, {})[date] = result.get('incmem', {})
+                    rule_dates_realtimeincmen.setdefault(rule, {})[date] = result.get('realtimeincmem', {})
 
             rule_dates_cputime = self.record_paser_rules(tool_id, casename, rule_dates_cputime, crash_dates, 'cputime')
             rule_dates_peakmem = self.record_paser_rules(tool_id, casename, rule_dates_peakmem, crash_dates, 'peakmem')
             rule_dates_realtime = self.record_paser_rules(tool_id, casename, rule_dates_realtime, crash_dates, 'realtime')
-            rule_dates_incmen = self.record_paser_rules(tool_id, casename, rule_dates_incmen, crash_dates, 'incmen')
-            rule_dates_realtimeincmen = self.record_paser_rules(tool_id, casename, rule_dates_realtimeincmen, crash_dates, 'realtimeincmen')
+            rule_dates_incmen = self.record_paser_rules(tool_id, casename, rule_dates_incmen, crash_dates, 'incmem')
+            rule_dates_realtimeincmen = self.record_paser_rules(tool_id, casename, rule_dates_realtimeincmen, crash_dates, 'realtimeincmem')
             casename_rule_dates[casename] = {
                 'cputime': rule_dates_cputime,
                 'peakmem': rule_dates_peakmem,
                 'realtime': rule_dates_realtime,
-                'incmen': rule_dates_incmen,
-                'realtimeincmen': rule_dates_realtimeincmen
+                'incmem': rule_dates_incmen,
+                'realtimeincmem': rule_dates_realtimeincmen
             }
 
         return casename_rule_dates

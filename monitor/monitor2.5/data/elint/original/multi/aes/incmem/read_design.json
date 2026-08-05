@@ -1,46 +1,45 @@
 {
     "dates": [
         "20260511",
-        "20260513",
-        "20260515"
+        "20260513"
     ],
     "rules": {
-        "E0000(2)": {
+        "read_design(2)": {
             "dates": [
                 "20260511",
-                "20260513",
-                "20260515"
+                "20260513"
             ],
             "values": [
-                0.0,
-                0.0,
-                0.0
+                -1,
+                -1
             ],
             "type": "line",
-            "name": "E0000(2)",
+            "name": "read_design(2)",
             "thread": 2,
             "color": "#A855F7",
-            "rule_name": "E0000",
+            "rule_name": "read_design",
             "is_multi": true
         },
-        "E0000(4)": {
+        "read_design(4)": {
             "dates": [
                 "20260511",
-                "20260515"
+                "20260513"
             ],
             "values": [
-                0.0,
-                0.0
+                -1,
+                -1
             ],
             "type": "line",
-            "name": "E0000(4)",
+            "name": "read_design(4)",
             "thread": 4,
             "color": "#10B981",
-            "rule_name": "E0000",
+            "rule_name": "read_design",
             "is_multi": true
         }
     },
-    "crash_dates": [],
+    "crash_dates": [
+        "20260515"
+    ],
     "overall_data": null,
     "all_threads": [
         2,

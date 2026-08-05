@@ -15,12 +15,12 @@
         173.812,
         173.812
     ],
-    "incmen": [
-        null,
-        null
+    "incmem": [
+        -1,
+        -1
     ],
-    "realtimeincmen": [
-        null,
-        null
+    "realtimeincmem": [
+        -1,
+        -1
     ]
 }

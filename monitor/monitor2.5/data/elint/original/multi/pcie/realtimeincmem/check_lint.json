@@ -5,38 +5,38 @@
         "20260515"
     ],
     "rules": {
-        "E0007(2)": {
+        "check_lint(2)": {
             "dates": [
                 "20260511",
                 "20260513",
                 "20260515"
             ],
             "values": [
-                0.0,
-                0.0,
-                0.0
+                -1,
+                -1,
+                -1
             ],
             "type": "line",
-            "name": "E0007(2)",
+            "name": "check_lint(2)",
             "thread": 2,
             "color": "#A855F7",
-            "rule_name": "E0007",
+            "rule_name": "check_lint",
             "is_multi": true
         },
-        "E0007(4)": {
+        "check_lint(4)": {
             "dates": [
                 "20260511",
                 "20260515"
             ],
             "values": [
-                0.0,
-                0.0
+                -1,
+                -1
             ],
             "type": "line",
-            "name": "E0007(4)",
+            "name": "check_lint(4)",
             "thread": 4,
             "color": "#10B981",
-            "rule_name": "E0007",
+            "rule_name": "check_lint",
             "is_multi": true
         }
     },

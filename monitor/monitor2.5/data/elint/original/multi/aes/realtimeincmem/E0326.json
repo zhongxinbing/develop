@@ -5,42 +5,46 @@
         "20260515"
     ],
     "rules": {
-        "Overall(2)": {
+        "E0326(2)": {
             "dates": [
                 "20260511",
                 "20260513",
                 "20260515"
             ],
             "values": [
-                0.0,
-                0.0,
+                50.0,
+                50.0,
                 0.0
             ],
             "type": "line",
-            "name": "Overall(2)",
+            "name": "E0326(2)",
             "thread": 2,
             "color": "#A855F7",
-            "rule_name": "Overall",
+            "rule_name": "E0326",
             "is_multi": true
         },
-        "Overall(4)": {
+        "E0326(4)": {
             "dates": [
                 "20260511",
+                "20260513",
                 "20260515"
             ],
             "values": [
+                50.0,
                 0.0,
                 0.0
             ],
             "type": "line",
-            "name": "Overall(4)",
+            "name": "E0326(4)",
             "thread": 4,
             "color": "#10B981",
-            "rule_name": "Overall",
+            "rule_name": "E0326",
             "is_multi": true
         }
     },
-    "crash_dates": [],
+    "crash_dates": [
+        "20260515"
+    ],
     "overall_data": null,
     "all_threads": [
         2,

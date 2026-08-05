@@ -15,12 +15,12 @@
         25.0,
         0.0
     ],
-    "incmen": [
-        null,
-        null
+    "incmem": [
+        0.0,
+        0.0
     ],
-    "realtimeincmen": [
-        null,
-        null
+    "realtimeincmem": [
+        50.0,
+        0.0
     ]
 }

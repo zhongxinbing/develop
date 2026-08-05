@@ -4,36 +4,36 @@
         "20260513"
     ],
     "rules": {
-        "read_design(2)": {
+        "save_session(2)": {
             "dates": [
                 "20260511",
                 "20260513"
             ],
             "values": [
-                0.0,
-                0.0
+                -1,
+                -1
             ],
             "type": "line",
-            "name": "read_design(2)",
+            "name": "save_session(2)",
             "thread": 2,
             "color": "#A855F7",
-            "rule_name": "read_design",
+            "rule_name": "save_session",
             "is_multi": true
         },
-        "read_design(4)": {
+        "save_session(4)": {
             "dates": [
                 "20260511",
                 "20260513"
             ],
             "values": [
-                0.0,
-                0.0
+                -1,
+                -1
             ],
             "type": "line",
-            "name": "read_design(4)",
+            "name": "save_session(4)",
             "thread": 4,
             "color": "#10B981",
-            "rule_name": "read_design",
+            "rule_name": "save_session",
             "is_multi": true
         }
     },

@@ -34,8 +34,8 @@ class MultiThreadParser:
             case_data_cputime_json_path = DATA_DIR / tool_id / "original" / mode / casename / "cputime" 
             case_data_peakmem_json_path = DATA_DIR / tool_id / "original" / mode / casename / "peakmem" 
             case_data_realtime_json_path = DATA_DIR / tool_id / "original" / mode / casename / "realtime" 
-            case_data_incmen_json_path = DATA_DIR / tool_id / "original" / mode / casename / "incmen" 
-            case_data_realtimeincmen_json_path = DATA_DIR / tool_id / "original" / mode / casename / "realtimeincmen" 
+            case_data_incmen_json_path = DATA_DIR / tool_id / "original" / mode / casename / "incmem" 
+            case_data_realtimeincmen_json_path = DATA_DIR / tool_id / "original" / mode / casename / "realtimeincmem" 
 
             if not case_data_cputime_json_path.exists():
                 case_data_cputime_json_path.mkdir(parents=True, exist_ok=True)
@@ -52,8 +52,8 @@ class MultiThreadParser:
                 self.increment_rule_data(rule_data["cputime"], case_data_cputime_json_path / f"{rule}.json")
                 self.increment_rule_data(rule_data["peakmem"], case_data_peakmem_json_path / f"{rule}.json")
                 self.increment_rule_data(rule_data["realtime"], case_data_realtime_json_path / f"{rule}.json")
-                self.increment_rule_data(rule_data["incmen"], case_data_incmen_json_path / f"{rule}.json")
-                self.increment_rule_data(rule_data["realtimeincmen"], case_data_realtimeincmen_json_path / f"{rule}.json")
+                self.increment_rule_data(rule_data["incmem"], case_data_incmen_json_path / f"{rule}.json")
+                self.increment_rule_data(rule_data["realtimeincmem"], case_data_realtimeincmen_json_path / f"{rule}.json")
 
                 rule_dates_cputime[rule] = {
                     "dates": rule_data["cputime"].get("dates", []),
@@ -68,15 +68,15 @@ class MultiThreadParser:
                     "all_threads": rule_data["realtime"].get("all_threads", []),
                 }
                 rule_dates_incmen[rule] = {
-                    "dates": rule_data["incmen"].get("dates", []),
-                    "all_threads": rule_data["incmen"].get("all_threads", []),
+                    "dates": rule_data["incmem"].get("dates", []),
+                    "all_threads": rule_data["incmem"].get("all_threads", []),
                 }
                 rule_dates_realtimeincmen[rule] = {
-                    "dates": rule_data["realtimeincmen"].get("dates", []),
-                    "all_threads": rule_data["realtimeincmen"].get("all_threads", []),
+                    "dates": rule_data["realtimeincmem"].get("dates", []),
+                    "all_threads": rule_data["realtimeincmem"].get("all_threads", []),
                 }
 
-            casename_rule_dates[casename] = {"cputime": rule_dates_cputime, "peakmem": rule_dates_peakmem, "realtime": rule_dates_realtime, "incmen": rule_dates_incmen, "realtimeincmen": rule_dates_realtimeincmen}
+            casename_rule_dates[casename] = {"cputime": rule_dates_cputime, "peakmem": rule_dates_peakmem, "realtime": rule_dates_realtime, "incmem": rule_dates_incmen, "realtimeincmem": rule_dates_realtimeincmen}
             for date, rule_data in threads_result.items():
                 for rule, thread_metrics in rule_data.items():
                     threads_json_path = DATA_DIR / tool_id / "original" / "thread" / casename / date / f"{rule}.json"
@@ -88,8 +88,8 @@ class MultiThreadParser:
                         "cputime": [thread_metrics["cputime"][thread_metrics["threads"].index(thread)] for thread in threads],
                         "peakmem": [thread_metrics["peakmem"][thread_metrics["threads"].index(thread)] for thread in threads],
                         "realtime": [thread_metrics["realtime"][thread_metrics["threads"].index(thread)] for thread in threads],
-                        "incmen": [thread_metrics["incmen"][thread_metrics["threads"].index(thread)] for thread in threads],
-                        "realtimeincmen": [thread_metrics["realtimeincmen"][thread_metrics["threads"].index(thread)] for thread in threads],
+                        "incmem": [thread_metrics["incmem"][thread_metrics["threads"].index(thread)] for thread in threads],
+                        "realtimeincmem": [thread_metrics["realtimeincmem"][thread_metrics["threads"].index(thread)] for thread in threads],
                     }
                     save_tool_data(threads_json_path, threads_result_sorted)
 
@@ -112,14 +112,14 @@ class MultiThreadParser:
 
             for rule, thread_metrics in metrics_rules.items():
                 if rule not in threads_result[date]:
-                    threads_result[date][rule] = {'threads': [], 'cputime': [], 'peakmem': [], 'realtime': [], 'incmen': [], 'realtimeincmen': []}
+                    threads_result[date][rule] = {'threads': [], 'cputime': [], 'peakmem': [], 'realtime': [], 'incmem': [], 'realtimeincmem': []}
                 if rule not in parse_result:
                     parse_result[rule] = {
                         "cputime": {"dates": [], "rules": {}, "crash_dates": [], "overall_data": None, "all_threads": []},
                         "peakmem": {"dates": [], "rules": {}, "crash_dates": [], "overall_data": None, "all_threads": []},
                         "realtime": {"dates": [], "rules": {}, "crash_dates": [], "overall_data": None, "all_threads": []},
-                        "incmen": {"dates": [], "rules": {}, "crash_dates": [], "overall_data": None, "all_threads": []},
-                        "realtimeincmen": {"dates": [], "rules": {}, "crash_dates": [], "overall_data": None, "all_threads": []},
+                        "incmem": {"dates": [], "rules": {}, "crash_dates": [], "overall_data": None, "all_threads": []},
+                        "realtimeincmem": {"dates": [], "rules": {}, "crash_dates": [], "overall_data": None, "all_threads": []},
                     }
 
                 parse_result[rule]["cputime"]["crash_dates"] = crash_dates
@@ -134,13 +134,13 @@ class MultiThreadParser:
                 parse_result[rule]["realtime"], threads_result[date][rule] = self.parse_rule_runtime_and_memory(
                     rule, thread_metrics, date, parse_result[rule]["realtime"], "realtime", threads_result[date][rule]
                 )
-                parse_result[rule]["incmen"]["crash_dates"] = crash_dates
-                parse_result[rule]["incmen"], threads_result[date][rule] = self.parse_rule_runtime_and_memory(
-                    rule, thread_metrics, date, parse_result[rule]["incmen"], "incmen", threads_result[date][rule]
+                parse_result[rule]["incmem"]["crash_dates"] = crash_dates
+                parse_result[rule]["incmem"], threads_result[date][rule] = self.parse_rule_runtime_and_memory(
+                    rule, thread_metrics, date, parse_result[rule]["incmem"], "incmem", threads_result[date][rule]
                 )
-                parse_result[rule]["realtimeincmen"]["crash_dates"] = crash_dates
-                parse_result[rule]["realtimeincmen"], threads_result[date][rule] = self.parse_rule_runtime_and_memory(
-                    rule, thread_metrics, date, parse_result[rule]["realtimeincmen"], "realtimeincmen", threads_result[date][rule]
+                parse_result[rule]["realtimeincmem"]["crash_dates"] = crash_dates
+                parse_result[rule]["realtimeincmem"], threads_result[date][rule] = self.parse_rule_runtime_and_memory(
+                    rule, thread_metrics, date, parse_result[rule]["realtimeincmem"], "realtimeincmem", threads_result[date][rule]
                 )
 
         return parse_result, threads_result
@@ -162,8 +162,8 @@ class MultiThreadParser:
                 threads_result['cputime'].append(thread_data.get('cputime'))
                 threads_result['peakmem'].append(thread_data.get('peakmem'))
                 threads_result['realtime'].append(thread_data.get('realtime'))
-                threads_result['incmen'].append(thread_data.get('incmen'))
-                threads_result['realtimeincmen'].append(thread_data.get('realtimeincmen'))
+                threads_result['incmem'].append(thread_data.get('incmem'))
+                threads_result['realtimeincmem'].append(thread_data.get('realtimeincmem'))
 
         return parse_result, threads_result
 

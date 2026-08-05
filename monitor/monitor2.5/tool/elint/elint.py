@@ -77,28 +77,28 @@ def gen_dict_data(caseData, data, thread, type):
             realtime = float(item[2])
             peakmem = float(item[3])
             if item[4] == "NA":
-                incmen = "NA"
+                incmem = "NA"
             else:
-                incmen = float(item[4])
+                incmem = float(item[4])
             if item[5] == "NA":
-                realtimeincmen = item[5]
+                realtimeincmem = item[5]
             else:
-                realtimeincmen = float(item[5])
+                realtimeincmem = float(item[5])
         if rulename in rules:
             rule_data[rulename] = {
                     "cputime": cputime,
                     "peakmem": peakmem,
                     "realtime": -1 if type == 1 else realtime,
-                    "incmen": -1 if type == 1 else incmen,
-                    "realtimeincmen": -1 if type == 1 else realtimeincmen
+                    "incmem": -1 if type == 1 else incmem,
+                    "realtimeincmem": -1 if type == 1 else realtimeincmem
                 }
         else:    
             rule_data[rulename] = {
                 "cputime": cputime,
                 "peakmem": peakmem,
                 "realtime": -1 if type == 1 else realtime,
-                "incmen": -1 if type == 1 else incmen,
-                "realtimeincmen": -1 if type == 1 else realtimeincmen
+                "incmem": -1 if type == 1 else incmem,
+                "realtimeincmem": -1 if type == 1 else realtimeincmem
             }
     
     return rule_data

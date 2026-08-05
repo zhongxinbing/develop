@@ -5,38 +5,38 @@
         "20260515"
     ],
     "rules": {
-        "check_lint(2)": {
+        "read_design(2)": {
             "dates": [
                 "20260511",
                 "20260513",
                 "20260515"
             ],
             "values": [
-                0.0,
-                0.0,
-                0.0
+                -1,
+                -1,
+                -1
             ],
             "type": "line",
-            "name": "check_lint(2)",
+            "name": "read_design(2)",
             "thread": 2,
             "color": "#A855F7",
-            "rule_name": "check_lint",
+            "rule_name": "read_design",
             "is_multi": true
         },
-        "check_lint(4)": {
+        "read_design(4)": {
             "dates": [
                 "20260511",
                 "20260515"
             ],
             "values": [
-                0.0,
-                0.0
+                -1,
+                -1
             ],
             "type": "line",
-            "name": "check_lint(4)",
+            "name": "read_design(4)",
             "thread": 4,
             "color": "#10B981",
-            "rule_name": "check_lint",
+            "rule_name": "read_design",
             "is_multi": true
         }
     },
