@@ -244,12 +244,13 @@
                     <label style="font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 4px;">📅 日期1 <span style="color: var(--danger);">*</span></label>
                     <div id="threadCompDate1Select" class="searchable-select"></div>
                 </div>
-                <div class="filter-group" style="margin-bottom: 0;">
+                <!-- 修改：日期2容器添加 id，以便 JS 控制显隐 -->
+                <div class="filter-group" id="threadCompDate2Group" style="margin-bottom: 0;">
                     <label style="font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 4px;">📅 日期2 <span style="color: var(--danger);">*</span></label>
                     <div id="threadCompDate2Select" class="searchable-select"></div>
                 </div>
             </div>
-            <!-- 第二行 -->
+            <!-- 第二行（保持不变） -->
             <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr 1fr; gap: 14px; align-items: end;">
                 <div class="filter-group" style="margin-bottom: 0;">
                     <label style="font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 4px;">📊 误差模式</label>

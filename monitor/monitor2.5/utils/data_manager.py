@@ -584,29 +584,19 @@ class DataManager:
         compare_type: str = 'version') -> Dict:
         """
         数据对比 - 支持单线程和多线程
-        
-        参数:
-            tool_id: 工具ID
-            mode: single 或 multi
-            casename: 用例名称
-            date1: 日期1
-            date2: 日期2
-            compare_mode: 对比模式 - 'all' 或具体 rule
-            dimension: 对比维度 - cputime/realtime/peakmem/incmem/realtimeincmem
-            runtime_threshold: Runtime 阈值
-            memory_threshold: Memory 阈值
-            error_mode: absolute 或 percentage
-            threads: 线程列表 (多线程时使用)
-            compare_type: version 或 thread
         """
         # 验证必填参数
         if not casename:
             return {'success': False, 'error': '请选择 Casename'}
         
-        if not date1 or not date2:
-            return {'success': False, 'error': '请选择两个日期'}
+        if not date1:
+            return {'success': False, 'error': '请选择日期1'}
         
-        # 获取数据
+        # 如果是版本对比（单线程或单线程数），需要 date2
+        if compare_type == 'version' and not date2:
+            return {'success': False, 'error': '版本对比需要两个日期'}
+        
+        # 获取数据路径
         data_path = DATA_DIR / tool_id / "original" / mode / casename
         if not data_path.exists():
             return {'success': False, 'error': f'找不到 casename: {casename} 的数据'}
@@ -615,9 +605,7 @@ class DataManager:
         if dimension:
             dimensions = [dimension]
         else:
-            # 如果没有指定维度，使用所有可用维度
             dimensions = ['cputime', 'realtime', 'peakmem', 'incmem', 'realtimeincmem']
-            # 只取存在的维度
             dimensions = [d for d in dimensions if (data_path / d).exists()]
         
         # 确定对比的规则列表
@@ -632,16 +620,18 @@ class DataManager:
         elif mode == 'multi':
             thread_list = self._get_all_threads(data_path, casename, dimensions, rules)
         else:
-            thread_list = [-1]  # 单线程使用 -1 表示单线程
+            thread_list = [-1]  # 单线程
         
         # 执行对比
         result = self._perform_comparison(
             data_path, casename, dimensions, rules, thread_list,
-            date1, date2, runtime_threshold, memory_threshold, error_mode,
+            date1, date2 if compare_type == 'version' else None,
+            runtime_threshold, memory_threshold, error_mode,
             mode, compare_type
         )
         
         return {'success': True, 'data': result}
+
 
     def _get_all_rules(self, data_path: Path, dimensions: List[str]) -> List[str]:
         """获取所有规则"""
@@ -676,6 +666,7 @@ class DataManager:
                            runtime_threshold: float, memory_threshold: float,
                            error_mode: str, mode: str, compare_type: str) -> Dict:
         """执行对比计算"""
+        is_thread_compare = (compare_type == 'thread')
         comparison_results = []
         statistics = {
             'runtime_increased': {},
@@ -689,37 +680,30 @@ class DataManager:
             'max_memory_increased': {'name': '', 'value': 0},
             'max_memory_decreased': {'name': '', 'value': 0},
         }
-        
         total_runtime_change = 0
         total_runtime_count = 0
         total_memory_change = 0
         total_memory_count = 0
-        
+
         for rule in rules:
             row = [rule]
             has_runtime = False
             has_memory = False
-            
+
             for dim in dimensions:
                 rule_file = data_path / dim / f"{rule}.json"
                 if not rule_file.exists():
                     continue
-                
                 rule_data = load_tool_data(rule_file)
                 if not rule_data or 'rules' not in rule_data:
                     continue
-                
-                # 获取该 rule 下的所有线程数据
+
                 for rule_key, rule_info in rule_data['rules'].items():
-                    # 判断是否匹配线程
+                    # 线程过滤
                     if mode == 'single':
-                        # 单线程：只取非线程标记的数据
-                        if 'is_single' in rule_info and rule_info['is_single']:
-                            pass
-                        else:
+                        if not rule_info.get('is_single', False):
                             continue
                     else:
-                        # 多线程：匹配线程列表
                         thread_match = False
                         for t in thread_list:
                             if f"({t})" in rule_key:
@@ -727,11 +711,30 @@ class DataManager:
                                 break
                         if not thread_match:
                             continue
-                    
+
                     dates = rule_info.get('dates', [])
                     values = rule_info.get('values', [])
-                    
-                    # 获取两个日期的值
+
+                    if is_thread_compare:
+                        # 多线程对比：只取 date1 的数据
+                        try:
+                            idx = dates.index(date1)
+                            val = values[idx] if idx < len(values) else None
+                        except ValueError:
+                            continue
+                        if val is None:
+                            continue
+                        thread_num = rule_info.get('thread', 0)
+                        row.append(f"{thread_num}线程")
+                        row.append(round(val, 2))
+                        # 标记是否有 runtime/memory 数据（仅用于后续可能扩展）
+                        if dim in ['cputime', 'realtime']:
+                            has_runtime = True
+                        elif dim in ['peakmem', 'incmem', 'realtimeincmem']:
+                            has_memory = True
+                        continue
+
+                    # 版本对比：使用两个日期
                     val1 = None
                     val2 = None
                     try:
@@ -743,24 +746,17 @@ class DataManager:
                             val2 = values[idx2]
                     except ValueError:
                         continue
-                    
                     if val1 is None or val2 is None:
                         continue
-                    
-                    # 计算差值
+
                     diff = val2 - val1
                     diff_percent = 0 if val1 == 0 else round((diff / val1) * 100, 2)
-                    
-                    # 判断维度类型
                     is_runtime = dim in ['cputime', 'realtime']
                     is_memory = dim in ['peakmem', 'incmem', 'realtimeincmem']
-                    
                     diff_key = "diff_percent" if error_mode == 'percentage' else "diff"
                     diff_value = diff_percent if error_mode == 'percentage' else diff
-                    
-                    # 确定状态
                     status = self._get_status(diff_value, is_runtime, runtime_threshold, memory_threshold)
-                    
+
                     if is_runtime:
                         has_runtime = True
                         total_runtime_change += abs(diff_value)
@@ -771,43 +767,50 @@ class DataManager:
                         total_memory_change += abs(diff_value)
                         total_memory_count += 1
                         self._update_statistics(statistics, 'memory', status, rule, diff_value)
-                    
-                    # 构建行数据
+
                     display_diff = diff_percent if error_mode == 'percentage' else diff
                     row.extend([round(val1, 2), round(val2, 2), round(display_diff, 2), status])
-            
-            # 只添加有数据的行
-            if has_runtime or has_memory:
-                comparison_results.append(row)
-        
-        # 计算平均值
-        if total_runtime_count > 0:
-            statistics['avg_runtime_change'] = round(total_runtime_change / total_runtime_count, 2)
-        if total_memory_count > 0:
-            statistics['avg_memory_change'] = round(total_memory_change / total_memory_count, 2)
-        
-        # 转换统计结果
-        statistics['runtime_increased'] = sorted(
-            statistics['runtime_increased'].items(), 
-            key=lambda x: x[1], reverse=True
-        )
-        statistics['runtime_decreased'] = sorted(
-            statistics['runtime_decreased'].items(),
-            key=lambda x: x[1], reverse=True
-        )
-        statistics['memory_increased'] = sorted(
-            statistics['memory_increased'].items(),
-            key=lambda x: x[1], reverse=True
-        )
-        statistics['memory_decreased'] = sorted(
-            statistics['memory_decreased'].items(),
-            key=lambda x: x[1], reverse=True
-        )
-        
+
+            # 添加行
+            if is_thread_compare:
+                if len(row) > 1:  # 至少有一个线程数据
+                    comparison_results.append(row)
+            else:
+                if has_runtime or has_memory:
+                    comparison_results.append(row)
+
+        # 统计信息（仅版本对比）
+        if not is_thread_compare:
+            if total_runtime_count > 0:
+                statistics['avg_runtime_change'] = round(total_runtime_change / total_runtime_count, 2)
+            if total_memory_count > 0:
+                statistics['avg_memory_change'] = round(total_memory_change / total_memory_count, 2)
+
+            statistics['runtime_increased'] = sorted(
+                statistics['runtime_increased'].items(),
+                key=lambda x: x[1], reverse=True
+            )
+            statistics['runtime_decreased'] = sorted(
+                statistics['runtime_decreased'].items(),
+                key=lambda x: x[1], reverse=True
+            )
+            statistics['memory_increased'] = sorted(
+                statistics['memory_increased'].items(),
+                key=lambda x: x[1], reverse=True
+            )
+            statistics['memory_decreased'] = sorted(
+                statistics['memory_decreased'].items(),
+                key=lambda x: x[1], reverse=True
+            )
+        else:
+            # 多线程对比的统计信息（可选），这里置空
+            statistics = {}
+
         return {
             'statistics': statistics,
             'comparisons': comparison_results
         }
+
 
     def _get_status(self, diff_value: float, is_runtime: bool, runtime_threshold: float, memory_threshold: float) -> str:
         """获取变化状态"""
@@ -824,8 +827,6 @@ class DataManager:
         key = f"{type_name}_increased" if status == '⬆️增加' else f"{type_name}_decreased"
         if status != '· 无变化':
             statistics[key][rule] = abs(diff_value)
-            
-            # 更新最大值
             max_key = f"max_{type_name}_increased" if status == '⬆️增加' else f"max_{type_name}_decreased"
             if statistics[max_key]['value'] < abs(diff_value):
                 statistics[max_key] = {'name': rule, 'value': abs(diff_value)}

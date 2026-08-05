@@ -205,7 +205,10 @@ class ComparisonManager {
             placeholder: '请选择日期...',
             onChange: (value) => {
                 this.multiSelectedDate1 = value;
-                this._updateMultiDate2Options();
+                // 只有在版本对比模式（单线程）时才联动更新日期2
+                if (this.multiSelectedThreads.length <= 1) {
+                    this._updateMultiDate2Options();
+                }
             }
         });
         
@@ -216,7 +219,9 @@ class ComparisonManager {
             placeholder: '请选择日期...',
             onChange: (value) => {
                 this.multiSelectedDate2 = value;
-                this._updateMultiDate1Options();
+                if (this.multiSelectedThreads.length <= 1) {
+                    this._updateMultiDate1Options();
+                }
             }
         });
         
@@ -301,7 +306,6 @@ class ComparisonManager {
         }
         
         const caseData = allData[casename];
-        // console.log(caseData)
         if (!caseData) {
             // 该 Casename 无数据，清空所有下拉选项
             this.singleDimensionSelect.setOptions([]);
@@ -323,7 +327,6 @@ class ComparisonManager {
         
         // 筛选有数据的维度
         for (const dim of this.singleAllDimensions) {
-            // console.warn(dim, caseData[dim])
             if (caseData[dim] && Object.keys(caseData[dim]).length > 0) {
                 availableDimensions.push({ value: dim, label: dimensionMap[dim] || dim });
             }
@@ -338,7 +341,6 @@ class ComparisonManager {
             this._loadSingleRules(availableDimensions[0].value);
         }
         console.log('======================= _loadSingleData =======================')
-
     }
 
     /**
@@ -448,7 +450,7 @@ class ComparisonManager {
                 .map(d => ({ value: d, label: formatDate(d) }));
             this.singleDate1Select.setOptions(options);
             if (options.length > 0) {
-                this.singleDate1Select.setValue(options[0].value, true);  // 静默
+                this.singleDate1Select.setValue(options[0].value, true);
                 this.singleSelectedDate1 = options[0].value;
             }
         }
@@ -465,7 +467,7 @@ class ComparisonManager {
                 .map(d => ({ value: d, label: formatDate(d) }));
             this.singleDate2Select.setOptions(options);
             if (options.length > 0) {
-                this.singleDate2Select.setValue(options[0].value, true);  // 静默
+                this.singleDate2Select.setValue(options[0].value, true);
                 this.singleSelectedDate2 = options[0].value;
             }
         }
@@ -601,6 +603,8 @@ class ComparisonManager {
         if (this.multiSelectedDimension && this.multiSelectedCasename) {
             this._loadMultiDates();
         }
+        // 根据线程数量动态调整日期选择器显示
+        this._updateMultiDateVisibility();
     }
 
     /**
@@ -665,8 +669,6 @@ class ComparisonManager {
      * @param {string} dimension - 对比维度
      */
     _loadMultiThreadsAndRules(dimension) {
-        // console.log('======================= _loadMultiThreadsAndRules =======================')
-
         const allData = window.multiData || {};
         const caseData = allData[this.multiSelectedCasename];   
         if (!caseData || !caseData[dimension]) {
@@ -684,7 +686,6 @@ class ComparisonManager {
         for (const rule of rules) {
             const ruleData = dimData[rule];
             if (ruleData) {
-                // console.warn(ruleData.all_threads)
                 ruleData.all_threads.forEach(item => {
                     threadSet.add(item);
                 });
@@ -714,6 +715,8 @@ class ComparisonManager {
         
         // 加载日期列表
         this._loadMultiDates();
+        // 更新日期可见性
+        this._updateMultiDateVisibility();
     }
 
     /**
@@ -730,86 +733,65 @@ class ComparisonManager {
      * 3. 收集所有匹配 Rule 的日期并集，去重排序后填充到日期下拉选择器
      */
     _loadMultiDates() {
-        // 调试日志：标记方法入口
         console.log('======================= _loadMultiDates =======================')
 
-        // 从全局 multiData 中获取当前 Casename 对应的数据
         const allData = window.multiData || {};
         const caseData = allData[this.multiSelectedCasename];
-        // 前置检查：Casename 或维度数据不存在则直接返回
         if (!caseData || !caseData[this.multiSelectedDimension]) {
             return;
         }
         
-        // 获取当前维度下的所有 Rule 数据
         const dimData = caseData[this.multiSelectedDimension];
-        // 使用 Set 收集日期，自动去重
         const dateSet = new Set();
-        // 将选中的线程数转为字符串，便于与 Rule 名称中的 "(线程数)" 格式匹配
         const selectedThreads = this.multiSelectedThreads.map(t => String(t));
         
-        // ========== 核心筛选逻辑：遍历所有 Rule ==========
         for (const rule of this.multiAllRules) {
-            // 步骤 1：Rule 筛选 —— 如果用户指定了特定 Rule（非 'all'），跳过不匹配的 Rule
             if (this.multiSelectedRule !== 'all' && rule !== this.multiSelectedRule) {
                 continue;
             }
-
-            // 获取该 Rule 的数据对象，数据格式为 { dates: [...] }
             const ruleData = dimData[rule];
             if (!ruleData) {
                 continue;
             }
             
-            // 步骤 2：线程数匹配 —— 检查 Rule 名称中是否包含用户选中的线程数
-            // Rule 命名格式示例: "myRule(4)" 表示 4 线程的规则
             let matched = false;
-
             for (const thread of selectedThreads) {
-                // 调试日志：打印每个线程数的匹配结果
-                // console.warn(ruleData.all_threads, thread)
                 if (ruleData.all_threads.includes(parseInt(thread))) {
                     matched = true;
                     break;
                 }
             }
-            // console.warn(matched)
-            // 步骤 3：如果没有匹配到任何线程数且用户选了线程，则跳过该 Rule
             if (!matched && selectedThreads.length > 0) {
-                // console.log(99999999999999999999)
                 continue;
             }
-
-            // 步骤 4：将该 Rule 下所有日期加入集合
             ruleData.dates.forEach(d => dateSet.add(d));
         }
         
-        // 将 Set 转为数组并排序（日期字符串按字典序排列，符合日期格式 YYYY-MM-DD 的时间顺序）
         this.multiAllDates = Array.from(dateSet).sort();
-        // 构建下拉选项，将每个日期通过 formatDate 格式化为友好显示格式
         const options = this.multiAllDates.map(d => ({ value: d, label: formatDate(d) }));
         
-        // 同时更新日期 1 和日期 2 的下拉选项
         this.multiDate1Select.setOptions(options);
         this.multiDate2Select.setOptions(options);
         
-        // 默认选择最近两个日期作为对比基准
-        if (this.multiAllDates.length >= 2) {
+        // 默认选择最近两个日期作为对比基准（仅当至少有两个日期且为版本对比模式）
+        if (this.multiAllDates.length >= 2 && this.multiSelectedThreads.length <= 1) {
             this.multiDate1Select.setValue(this.multiAllDates[this.multiAllDates.length - 2], true);
             this.multiSelectedDate1 = this.multiAllDates[this.multiAllDates.length - 2];
             this.multiDate2Select.setValue(this.multiAllDates[this.multiAllDates.length - 1], true);
             this.multiSelectedDate2 = this.multiAllDates[this.multiAllDates.length - 1];
-        } else if (this.multiAllDates.length === 1) {
-            this.multiDate1Select.setValue(this.multiAllDates[0], true);
-            this.multiSelectedDate1 = this.multiAllDates[0];
+        } else if (this.multiAllDates.length >= 1) {
+            // 多线程对比时，默认选最新日期
+            this.multiDate1Select.setValue(this.multiAllDates[this.multiAllDates.length - 1], true);
+            this.multiSelectedDate1 = this.multiAllDates[this.multiAllDates.length - 1];
         }
     }
 
     /**
      * 更新多线程日期 1 的可选列表（排除日期 2）
+     * 仅在版本对比模式下调用（线程数 <= 1）
      */
     _updateMultiDate1Options() {
-        if (this.multiSelectedDate2) {
+        if (this.multiSelectedDate2 && this.multiSelectedThreads.length <= 1) {
             const options = this.multiAllDates
                 .filter(d => d !== this.multiSelectedDate2)
                 .map(d => ({ value: d, label: formatDate(d) }));
@@ -820,11 +802,13 @@ class ComparisonManager {
             }
         }
     }
+
     /**
      * 更新多线程日期 2 的可选列表（排除日期 1）
+     * 仅在版本对比模式下调用（线程数 <= 1）
      */
     _updateMultiDate2Options() {
-        if (this.multiSelectedDate1) {
+        if (this.multiSelectedDate1 && this.multiSelectedThreads.length <= 1) {
             const options = this.multiAllDates
                 .filter(d => d !== this.multiSelectedDate1)
                 .map(d => ({ value: d, label: formatDate(d) }));
@@ -833,6 +817,38 @@ class ComparisonManager {
                 this.multiDate2Select.setValue(options[0].value, true);
                 this.multiSelectedDate2 = options[0].value;
             }
+        }
+    }
+
+    /**
+     * 根据选中的线程数量更新日期选择器的显示
+     * 单线程（<=1）→ 显示两个日期；多线程（>1）→ 仅显示一个日期
+     */
+    _updateMultiDateVisibility() {
+        const date2Group = document.getElementById('threadCompDate2Group');
+        const date1Label = document.querySelector('#threadComparisonPanel .filter-group label[for="threadCompDate1Select"]');
+        if (!date2Group) return;
+
+        const threadCount = this.multiSelectedThreads ? this.multiSelectedThreads.length : 0;
+        if (threadCount <= 1) {
+            // 单线程：显示日期1和日期2
+            date2Group.style.display = '';
+            if (date1Label) {
+                date1Label.textContent = '📅 日期1 *';
+            }
+            // 确保日期2有值
+            if (!this.multiSelectedDate2 && this.multiAllDates.length > 1) {
+                this.multiDate2Select.setValue(this.multiAllDates[this.multiAllDates.length - 1], true);
+                this.multiSelectedDate2 = this.multiAllDates[this.multiAllDates.length - 1];
+            }
+        } else {
+            // 多线程：隐藏日期2，日期1改为“日期”
+            date2Group.style.display = 'none';
+            if (date1Label) {
+                date1Label.textContent = '📅 日期 *';
+            }
+            // 清空日期2的值，避免误传
+            this.multiSelectedDate2 = '';
         }
     }
 
@@ -847,8 +863,8 @@ class ComparisonManager {
             return;
         }
         
-        if (!this.multiSelectedDate1 || !this.multiSelectedDate2) {
-            showToast('请选择两个日期', 'error');
+        if (!this.multiSelectedDate1) {
+            showToast('请选择日期', 'error');
             return;
         }
         
@@ -866,6 +882,10 @@ class ComparisonManager {
         const compareMode = (this.multiSelectedRule === 'all' || !this.multiSelectedRule) ? 'all' : this.multiSelectedRule;
         const errorMode = this.multiSelectedErrorMode || 'absolute';
         
+        // 确定对比类型：线程数<=1为版本对比，>1为线程对比
+        const isMultiThread = this.multiSelectedThreads.length > 1;
+        const compareType = isMultiThread ? 'thread' : 'version';
+        
         // 提示用户当前使用的默认参数
         if (!this.multiSelectedDimension) {
             showToast('将对比所有维度', 'info');
@@ -876,27 +896,34 @@ class ComparisonManager {
         if (!this.multiSelectedErrorMode) {
             showToast('将使用默认误差模式: 绝对值', 'info');
         }
+        if (isMultiThread) {
+            showToast('多线程对比模式：将对比同一日期下不同线程的性能', 'info');
+        } else {
+            showToast('版本对比模式：将对比同一线程在不同日期的性能', 'info');
+        }
         
         // 更新按钮为加载状态
         this.multiConfirmBtn.textContent = '对比中...';
         this.multiConfirmBtn.disabled = true;
         
         try {
-            // 发送多线程对比请求到后端
-            const response = await axios.post('/api/comparison', {
+            // 构建请求参数
+            const payload = {
                 tool_id: this.toolId,
                 mode: 'multi',
                 casename: this.multiSelectedCasename,
                 date1: this.multiSelectedDate1,
-                date2: this.multiSelectedDate2,
+                date2: isMultiThread ? '' : this.multiSelectedDate2,  // 多线程对比时不传 date2
                 compare_mode: compareMode,
                 dimension: dimension,
                 runtime_threshold: this.multiRuntimeThresholdValue,
                 memory_threshold: this.multiMemoryThresholdValue,
                 error_mode: errorMode,
                 threads: this.multiSelectedThreads,
-                compare_type: 'thread'
-            });
+                compare_type: compareType
+            };
+            
+            const response = await axios.post('/api/comparison', payload);
             
             if (response.data.success) {
                 this.multiComparisonData = response.data.data;
@@ -1049,6 +1076,7 @@ class ComparisonManager {
      * 渲染对比结果表格
      * 根据对比数据动态生成表头和表格行
      * 数据格式: [rule, date1_val, date2_val, diff, status, date1_val_mem, date2_val_mem, diff_mem, status_mem]
+     * 对于多线程对比，数据格式为: [rule, thread1_name, thread1_val, thread2_name, thread2_val, ...]
      * @param {string} headId - 表头元素 ID
      * @param {string} bodyId - 表体元素 ID
      * @param {Array} comparisons - 对比数据数组
@@ -1070,17 +1098,29 @@ class ComparisonManager {
         let headers = ['Rule'];
         let colCount = 1;
         
-        // 分析首行数据，确定是否包含 Runtime 和 Memory 数据
-        const hasRuntime = firstRow.length >= 5;
-        const hasMemory = firstRow.length >= 9;
+        // 检测是否为多线程对比模式（第一列后跟着 "N线程" 这样的字符串）
+        const isThreadCompare = firstRow.length > 1 && typeof firstRow[1] === 'string' && /^\d+线程$/.test(firstRow[1]);
         
-        if (hasRuntime) {
-            headers.push('R(日期1)', 'R(日期2)', 'R 差值', 'R 状态');
-            colCount += 4;
-        }
-        if (hasMemory) {
-            headers.push('M(日期1)', 'M(日期2)', 'M 差值', 'M 状态');
-            colCount += 4;
+        if (isThreadCompare) {
+            // 多线程对比：每两个单元格为一组（线程名 + 值）
+            for (let i = 1; i < firstRow.length; i += 2) {
+                const threadName = firstRow[i] || `线程${(i-1)/2+1}`;
+                headers.push(threadName, `${threadName} 值`);
+                colCount += 2;
+            }
+        } else {
+            // 版本对比：检测是否包含 Runtime 和 Memory 数据
+            const hasRuntime = firstRow.length >= 5;
+            const hasMemory = firstRow.length >= 9;
+            
+            if (hasRuntime) {
+                headers.push('R(日期1)', 'R(日期2)', 'R 差值', 'R 状态');
+                colCount += 4;
+            }
+            if (hasMemory) {
+                headers.push('M(日期1)', 'M(日期2)', 'M 差值', 'M 状态');
+                colCount += 4;
+            }
         }
         
         headEl.innerHTML = `<tr>${headers.map(h => `<th>${h}</th>`).join('')}</tr>`;
@@ -1094,29 +1134,38 @@ class ComparisonManager {
             // Rule 列
             rowHtml += `<td>${escapeHtml(row[idx++])}</td>`;
             
-            // Runtime 数据列（值、对比值、差值、状态）
-            if (hasRuntime) {
-                for (let i = 0; i < 4; i++) {
-                    const val = row[idx++];
-                    if (i === 3) {
-                        // 状态列：根据增减标记不同样式
-                        const statusClass = val === '⬆️增加' ? 'increased' : (val === '⬇️减少' ? 'decreased' : '');
-                        rowHtml += `<td><span class="status-badge ${statusClass}">${escapeHtml(val)}</span></td>`;
-                    } else {
-                        rowHtml += `<td>${val !== undefined && val !== null ? val : '-'}</td>`;
+            if (isThreadCompare) {
+                // 多线程对比：遍历后续的线程名和值
+                for (let i = idx; i < row.length; i += 2) {
+                    const threadName = row[i] || '';
+                    const value = row[i+1] !== undefined ? row[i+1] : '-';
+                    rowHtml += `<td>${escapeHtml(threadName)}</td>`;
+                    rowHtml += `<td>${value !== null && value !== undefined ? Number(value).toFixed(2) : '-'}</td>`;
+                }
+            } else {
+                // 版本对比：原有逻辑
+                if (row.length >= 5) {
+                    // Runtime 数据
+                    for (let i = 0; i < 4; i++) {
+                        const val = row[idx++];
+                        if (i === 3) {
+                            const statusClass = val === '⬆️增加' ? 'increased' : (val === '⬇️减少' ? 'decreased' : '');
+                            rowHtml += `<td><span class="status-badge ${statusClass}">${escapeHtml(val)}</span></td>`;
+                        } else {
+                            rowHtml += `<td>${val !== undefined && val !== null ? Number(val).toFixed(2) : '-'}</td>`;
+                        }
                     }
                 }
-            }
-            
-            // Memory 数据列（值、对比值、差值、状态）
-            if (hasMemory) {
-                for (let i = 0; i < 4; i++) {
-                    const val = row[idx++];
-                    if (i === 3) {
-                        const statusClass = val === '⬆️增加' ? 'increased' : (val === '⬇️减少' ? 'decreased' : '');
-                        rowHtml += `<td><span class="status-badge ${statusClass}">${escapeHtml(val)}</span></td>`;
-                    } else {
-                        rowHtml += `<td>${val !== undefined && val !== null ? val : '-'}</td>`;
+                if (row.length >= 9) {
+                    // Memory 数据
+                    for (let i = 0; i < 4; i++) {
+                        const val = row[idx++];
+                        if (i === 3) {
+                            const statusClass = val === '⬆️增加' ? 'increased' : (val === '⬇️减少' ? 'decreased' : '');
+                            rowHtml += `<td><span class="status-badge ${statusClass}">${escapeHtml(val)}</span></td>`;
+                        } else {
+                            rowHtml += `<td>${val !== undefined && val !== null ? Number(val).toFixed(2) : '-'}</td>`;
+                        }
                     }
                 }
             }
@@ -1151,7 +1200,6 @@ class ComparisonManager {
             const rows = tableBody.querySelectorAll('tr');
             let visibleCount = 0;
             
-            // 遍历所有行，根据搜索词过滤显示
             rows.forEach(row => {
                 const text = row.textContent.toLowerCase();
                 if (term === '' || text.includes(term)) {
@@ -1162,12 +1210,10 @@ class ComparisonManager {
                 }
             });
             
-            // 更新结果计数
             if (resultCount) {
                 resultCount.textContent = `共 ${visibleCount} 条`;
             }
             
-            // 显示或移除 "无匹配结果" 提示
             const noResult = document.getElementById('comparisonNoResult');
             if (term && visibleCount === 0) {
                 if (!noResult) {
@@ -1265,7 +1311,6 @@ class ComparisonManager {
         const threadPanel = document.getElementById('threadComparisonPanel');
         const tabs = document.querySelectorAll('.comparison-tab');
         
-        // 更新选项卡样式
         tabs.forEach(tab => {
             const mode = tab.dataset.submode;
             const isActive = mode === submode;
@@ -1274,7 +1319,6 @@ class ComparisonManager {
             tab.style.color = isActive ? 'var(--bg-deep)' : 'var(--text-secondary)';
         });
         
-        // 切换面板显示
         if (versionPanel) {
             versionPanel.style.display = (submode === 'version') ? 'block' : 'none';
         }
@@ -1290,14 +1334,12 @@ class ComparisonManager {
      * - 多线程对比确认/导出按钮事件
      */
     _bindEvents() {
-        // 对比选项卡切换事件
         document.querySelectorAll('.comparison-tab').forEach(tab => {
             tab.addEventListener('click', () => {
                 this.showSubMode(tab.dataset.submode);
             });
         });
         
-        // 单线程对比按钮事件
         if (this.singleConfirmBtn) {
             this.singleConfirmBtn.addEventListener('click', () => this._performSingleComparison());
         }
@@ -1305,7 +1347,6 @@ class ComparisonManager {
             this.singleExportBtn.addEventListener('click', () => this._exportSingleComparison());
         }
         
-        // 多线程对比按钮事件
         if (this.multiConfirmBtn) {
             this.multiConfirmBtn.addEventListener('click', () => this._performMultiComparison());
         }
@@ -1319,18 +1360,15 @@ class ComparisonManager {
      * 分别从 window.singleData 和 window.multiData 获取
      */
     _populateCasenameOptions() {
-        // 从全局数据中获取 casename 列表
         const singleData = window.singleData || {};
         const multiData = window.multiData || {};
         
-        // 填充单线程 Casename 选项
         const singleCasenames = Object.keys(singleData);
         const singleOptions = singleCasenames.map(name => ({ value: name, label: name }));
         if (this.singleCasenameSelect) {
             this.singleCasenameSelect.setOptions(singleOptions);
         }
         
-        // 填充多线程 Casename 选项
         const multiCasenames = Object.keys(multiData);
         const multiOptions = multiCasenames.map(name => ({ value: name, label: name }));
         if (this.multiCasenameSelect) {
@@ -1340,12 +1378,10 @@ class ComparisonManager {
 
     /**
      * 销毁方法（预留）
-     * 用于清理资源和事件监听
      */
     dispose() {
         // 清理资源
     }
 }
 
-// 将 ComparisonManager 注册到全局作用域，供其他脚本访问
 window.ComparisonManager = ComparisonManager;
