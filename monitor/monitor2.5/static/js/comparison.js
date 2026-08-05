@@ -30,6 +30,7 @@ class ComparisonManager {
         this.threadRuleSelect = null;
     }
 
+
     init(toolId, getCurrentMode) {
         this.toolId = toolId;
         this.getCurrentMode = getCurrentMode;

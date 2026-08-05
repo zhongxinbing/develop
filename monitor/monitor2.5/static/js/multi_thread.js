@@ -36,6 +36,8 @@ class MultiThreadManager {
         this.clearAllThreads = this.clearAllThreads.bind(this);
     }
 
+    
+
     async init(rawData, userAddedData, extraData) {
         console.log('MultiThreadManager.init 开始', rawData);
 
