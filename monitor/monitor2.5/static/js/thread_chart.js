@@ -89,7 +89,6 @@ class ThreadChartManager {
             }
         });
         
-        // ========== 移除 initChartContainer ==========
         await this.updateCasenameSelect();
         await this.updateRules();
         await this.updateDates();
@@ -106,18 +105,6 @@ class ThreadChartManager {
             }
         }
     }
-    // initChartContainer() {
-    //     const container = document.getElementById('mainChart');
-    //     if (container) {
-    //         if (this.chart) {
-    //             this.chart.dispose();
-    //         }
-    //         this.chart = echarts.init(container);
-    //         console.log('线程曲线图图表容器初始化成功');
-    //     } else {
-    //         console.error('找不到图表容器 #mainChart');
-    //     }
-    // }
 
     async updateCasenameSelect() {
         if (!this.casenameSelect) return;
@@ -280,6 +267,16 @@ class ThreadChartManager {
         const isRuntime = normalizedType === 'runtime' || normalizedType === 'cputime' || normalizedType === 'realtime';
         const yAxisName = isRuntime ? 'Runtime (s)' : 'Memory (MB)';
 
+        // 图表标题映射
+        const titleMap = {
+            'cputime': 'CPU Time',
+            'realtime': 'Real Time',
+            'peakmem': '峰值内存',
+            'incmem': '增量内存',
+            'realtimeincmem': '实时增量内存'
+        };
+        const chartTitle = titleMap[this.currentChartType] || this.currentChartType;
+
         const seriesData = chartData[normalizedType];
         const seriesName = isRuntime ? 'Runtime' : 'Memory';
         const color = isRuntime ? '#00E5FF' : '#A855F7';
@@ -336,6 +333,16 @@ class ThreadChartManager {
         }
         
         const option = {
+            title: {
+                text: chartTitle,
+                left: 'center',
+                top: 0,
+                textStyle: {
+                    color: '#F1F5F9',
+                    fontSize: 16,
+                    fontWeight: 600
+                }
+            },
             backgroundColor: 'transparent',
             tooltip: {
                 trigger: 'axis',
@@ -372,14 +379,14 @@ class ThreadChartManager {
                 data: series.map(s => s.name),
                 textStyle: { color: '#F1F5F9' },
                 left: 10,
-                top: 0,
+                top: 40,
                 backgroundColor: 'rgba(11, 15, 26, 0.8)',
                 borderRadius: 8
             },
             grid: {
                 left: '3%',
                 right: '5%',
-                top: '15%',
+                top: '18%',
                 bottom: '8%',
                 containLabel: true,
                 backgroundColor: 'transparent'

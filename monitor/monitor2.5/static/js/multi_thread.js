@@ -36,8 +36,6 @@ class MultiThreadManager {
         this.clearAllThreads = this.clearAllThreads.bind(this);
     }
 
-    
-
     async init(rawData, userAddedData, extraData) {
         console.log('MultiThreadManager.init 开始', rawData);
 
@@ -134,7 +132,6 @@ class MultiThreadManager {
         }
         this.updateRuleSelect();
 
-        // 获取所有日期
         const allDatesSet = new Set();
         this.allRules.forEach(rule => {
             const ruleInfo = caseData[this.currentChartType]?.[rule];
@@ -144,7 +141,6 @@ class MultiThreadManager {
         });
         this.allDates = Array.from(allDatesSet).sort();
         
-        // 获取所有线程
         const threadsSet = new Set();
         this.allRules.forEach(rule => {
             const ruleInfo = caseData[this.currentChartType]?.[rule];
@@ -275,19 +271,6 @@ class MultiThreadManager {
         this.renderChart();
     }
 
-    // initChartContainer() {
-    //     const container = document.getElementById('mainChart');
-    //     if (container) {
-    //         if (this.chart) {
-    //             this.chart.dispose();
-    //         }
-    //         this.chart = echarts.init(container);
-    //         console.log('多线程图表容器初始化成功');
-    //     } else {
-    //         console.error('找不到图表容器 #mainChart');
-    //     }
-    // }
-
     async renderChart(chartInstance) {
         const chart = chartInstance || window.mainChart || echarts.getInstanceByDom(document.getElementById('mainChart'));
         
@@ -365,6 +348,16 @@ class MultiThreadManager {
         const normalizedType = (this.currentChartType || 'runtime').toLowerCase();
         const isRuntime = normalizedType === 'runtime' || normalizedType === 'cputime' || normalizedType === 'realtime';
         const yAxisName = isRuntime ? 'Runtime (s)' : 'Memory (MB)';
+
+        // 图表标题映射
+        const titleMap = {
+            'cputime': 'CPU Time',
+            'realtime': 'Real Time',
+            'peakmem': '峰值内存',
+            'incmem': '增量内存',
+            'realtimeincmem': '实时增量内存'
+        };
+        const chartTitle = titleMap[this.currentChartType] || this.currentChartType;
 
         const crashDatesSet = new Set(crash_dates || []);
         const formattedDates = dates.map(d => this.formatDate(d));
@@ -454,6 +447,16 @@ class MultiThreadManager {
         }
 
         const option = {
+            title: {
+                text: chartTitle,
+                left: 'center',
+                top: 0,
+                textStyle: {
+                    color: '#F1F5F9',
+                    fontSize: 16,
+                    fontWeight: 600
+                }
+            },
             backgroundColor: 'transparent',
             tooltip: {
                 trigger: 'axis',
@@ -506,7 +509,7 @@ class MultiThreadManager {
                 textStyle: { color: '#F1F5F9' },
                 type: 'scroll',
                 left: 10,
-                top: 0,
+                top: 40,
                 backgroundColor: 'rgba(11, 15, 26, 0.8)',
                 borderRadius: 8,
                 pageIconColor: '#00E5FF',
@@ -517,7 +520,7 @@ class MultiThreadManager {
             grid: {
                 left: '3%',
                 right: '8%',
-                top: '15%',
+                top: '18%',
                 bottom: '8%',
                 containLabel: true,
                 backgroundColor: 'transparent'
@@ -696,7 +699,6 @@ class MultiThreadManager {
 
         if (confirmBtn) {
             confirmBtn.addEventListener('click', () => {
-                // ========== 关键修复：只有当前模式是 multi 时才执行 ==========
                 if (window.currentMode !== 'multi') {
                     console.log('日期选择确认被忽略：当前模式不是 multi');
                     closeModal();
@@ -736,7 +738,7 @@ class MultiThreadManager {
         if (!dateList) return;
         
         dateList.innerHTML = this.allDates.map(date => `
-            <div class="date-item">
+            <div class="date-item" onclick="this.querySelector('.date-checkbox').click();">
                 <input type="checkbox" class="date-checkbox" value="${date}" 
                     ${this.selectedDates.includes(date) ? 'checked' : ''}>
                 <span>${this.formatDate(date)}</span>
@@ -810,7 +812,7 @@ class MultiThreadManager {
             this.showToast('添加数据失败', 'error');
         }
     }
-// ========== showNoDataMessage 接收图表实例作为参数 ==========
+
     showNoDataMessage(chart) {
         if (chart && !chart.isDisposed()) {
             chart.clear();
@@ -829,7 +831,6 @@ class MultiThreadManager {
         }
     }
 
-    // ========== showErrorMessage 接收图表实例作为参数 ==========
     showErrorMessage(chart, message) {
         if (chart && !chart.isDisposed()) {
             chart.setOption({

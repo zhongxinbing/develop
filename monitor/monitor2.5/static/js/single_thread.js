@@ -3,7 +3,7 @@
  */
 class SingleThreadManager {
     constructor() {
-        this.chart = null;  // 将存储外部传入的图表实例
+        this.chart = null;
         this.currentChartType = 'cputime';
         this.selectedCasename = '';
         this.selectedRules = ['Overall'];
@@ -40,7 +40,6 @@ class SingleThreadManager {
         this.allData = { ...this.rawData, ...this.userAddedData };
         this.extraData = extraData;
 
-        // 初始化可搜索下拉框
         this.casenameSelect = new SearchableSelect({
             container: document.getElementById(`${this.idPrefix}CasenameSelect`),
             options: [],
@@ -51,7 +50,6 @@ class SingleThreadManager {
                     await this.updateRulesAndDates();
                     this.selectedRules = ['Overall'];
                     this.selectedDates = this.allDates.slice(-50);
-                    // 使用全局图表实例
                     const chart = window.mainChart || echarts.getInstanceByDom(document.getElementById('mainChart'));
                     if (chart) {
                         await this.renderChart(chart);
@@ -66,7 +64,6 @@ class SingleThreadManager {
             options: [],
             placeholder: '请选择 Rule...',
             onChange: (values) => {
-
                 this.selectedRules = values.length > 0 ? [values] : ['Overall'];
                 const chart = window.mainChart || echarts.getInstanceByDom(document.getElementById('mainChart'));
                 if (chart) {
@@ -86,19 +83,6 @@ class SingleThreadManager {
         }
         this.updateOverview();
     }
-
-    // initChartContainer() {
-    //     const container = document.getElementById('mainChart');
-    //     if (container) {
-    //         if (this.chart) {
-    //             this.chart.dispose();
-    //         }
-    //         this.chart = echarts.init(container);
-    //         console.log('图表容器初始化成功');
-    //     } else {
-    //         console.error('找不到图表容器 #mainChart');
-    //     }
-    // }
 
     updateCasenameSelect() {
         if (!this.casenameSelect) return;
@@ -144,7 +128,6 @@ class SingleThreadManager {
         
         this.allDates = Array.from(allDatesSet).sort();
 
-        // console.warn(this.allDates)
         this.updateRuleSelect();
         this.updateOverview();
     }
@@ -174,16 +157,13 @@ class SingleThreadManager {
         this.renderChart();
     }
 
-    
     async renderChart(chartInstance) {
-        // 如果传入了图表实例，使用传入的；否则尝试获取全局实例
         const chart = chartInstance || window.mainChart || echarts.getInstanceByDom(document.getElementById('mainChart'));
         
         if (!chart) {
             console.error('renderChart: 图表实例不存在');
             return;
         }
-        // 存储引用供其他方法使用
         this.chart = chart;
 
         if (!this.selectedCasename) {
@@ -239,7 +219,6 @@ class SingleThreadManager {
         }
     }
 
-    
     drawChart(chart, chartData) {
         if (!chart || chart.isDisposed()) {
             console.error('drawChart: 图表实例无效');
@@ -250,6 +229,16 @@ class SingleThreadManager {
         const normalizedType = (this.currentChartType || 'cputime').toLowerCase();
         const isRuntime = normalizedType === 'runtime' || normalizedType === 'cputime' || normalizedType === 'realtime';
         const yAxisName = isRuntime ? 'Runtime (s)' : 'Memory (MB)';
+
+        // 图表标题映射
+        const titleMap = {
+            'cputime': 'CPU Time',
+            'realtime': 'Real Time',
+            'peakmem': '峰值内存',
+            'incmem': '增量内存',
+            'realtimeincmem': '实时增量内存'
+        };
+        const chartTitle = titleMap[this.currentChartType] || this.currentChartType;
 
         const crashDatesSet = new Set(crash_dates || []);
         const formattedDates = dates.map(d => this.formatDate(d));
@@ -335,6 +324,16 @@ class SingleThreadManager {
         }
 
         const option = {
+            title: {
+                text: chartTitle,
+                left: 'center',
+                top: 0,
+                textStyle: {
+                    color: '#F1F5F9',
+                    fontSize: 16,
+                    fontWeight: 600
+                }
+            },
             backgroundColor: 'transparent',
             tooltip: {
                 trigger: 'axis',
@@ -387,7 +386,7 @@ class SingleThreadManager {
                 textStyle: { color: '#F1F5F9' },
                 type: 'scroll',
                 left: 10,
-                top: 0,
+                top: 40,
                 backgroundColor: 'rgba(11, 15, 26, 0.8)',
                 borderRadius: 8,
                 pageIconColor: '#00E5FF',
@@ -398,7 +397,7 @@ class SingleThreadManager {
             grid: {
                 left: '3%',
                 right: '8%',
-                top: '15%',
+                top: '18%',
                 bottom: '8%',
                 containLabel: true,
                 backgroundColor: 'transparent'
@@ -461,7 +460,6 @@ class SingleThreadManager {
             window.addEventListener('resize', this._resizeHandler);
         }
     }
-
 
     updateStatistics(chartData) {
         const { dates, overall_data } = chartData;
@@ -589,9 +587,7 @@ class SingleThreadManager {
         if (cancelBtn) cancelBtn.addEventListener('click', closeModal);
 
         if (confirmBtn) {
-
             confirmBtn.addEventListener('click', () => {
-                // ========== 关键修复：只有当前模式是 single 时才执行 ==========
                 if (window.currentMode !== 'single') {
                     console.log('日期选择确认被忽略：当前模式不是 single');
                     closeModal();
@@ -630,7 +626,7 @@ class SingleThreadManager {
         const dateList = document.getElementById('dateList');
         if (!dateList) return;
         dateList.innerHTML = this.allDates.map(date =>
-            `<div class="date-item">
+            `<div class="date-item" onclick="this.querySelector('.date-checkbox').click();">
                 <input type="checkbox" class="date-checkbox" value="${date}"
                     ${this.selectedDates.includes(date) ? 'checked' : ''}>
                 <span>${this.formatDate(date)}</span>
@@ -703,7 +699,6 @@ class SingleThreadManager {
         }
     }
 
-    // ========== showNoDataMessage 接收图表实例作为参数 ==========
     showNoDataMessage(chart) {
         if (chart && !chart.isDisposed()) {
             chart.clear();
@@ -722,7 +717,6 @@ class SingleThreadManager {
         }
     }
 
-    // ========== showErrorMessage 接收图表实例作为参数 ==========
     showErrorMessage(chart, message) {
         if (chart && !chart.isDisposed()) {
             chart.setOption({
@@ -780,7 +774,6 @@ class SingleThreadManager {
             window.removeEventListener('resize', this._resizeHandler);
             this._resizeHandler = null;
         }
-        // 不再销毁图表实例，由全局管理
         this.chart = null;
     }
 }

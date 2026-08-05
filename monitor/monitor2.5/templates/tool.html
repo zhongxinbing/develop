@@ -149,165 +149,165 @@
                 <!-- ===== 对比容器（默认隐藏，由 tool.js 控制显示） ===== -->
 <!-- tool.html - 更新对比容器部分 -->
 
-<!-- ===== 对比容器 ===== -->
-<div id="comparisonContainer" style="display: none; width: 100%;">
-    <!-- 子选项卡 -->
-    <div class="comparison-tabs" style="display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 1px solid var(--border-subtle); padding-bottom: 10px;">
-        <button class="comparison-tab active" data-submode="version" style="padding: 8px 20px; background: var(--primary); color: var(--bg-deep); border: none; border-radius: 20px; cursor: pointer; font-weight: 600;">单线程对比</button>
-        <button class="comparison-tab" data-submode="thread" style="padding: 8px 20px; background: transparent; color: var(--text-secondary); border: none; border-radius: 20px; cursor: pointer;">多线程对比</button>
-    </div>
+                <!-- ===== 对比容器 ===== -->
+                <div id="comparisonContainer" style="display: none; width: 100%;">
+                    <!-- 子选项卡 -->
+                    <div class="comparison-tabs" style="display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 1px solid var(--border-subtle); padding-bottom: 10px;">
+                        <button class="comparison-tab active" data-submode="version" style="padding: 8px 20px; background: var(--primary); color: var(--bg-deep); border: none; border-radius: 20px; cursor: pointer; font-weight: 600;">单线程对比</button>
+                        <button class="comparison-tab" data-submode="thread" style="padding: 8px 20px; background: transparent; color: var(--text-secondary); border: none; border-radius: 20px; cursor: pointer;">多线程对比</button>
+                    </div>
 
-    <!-- ====== 单线程对比面板 ====== -->
-    <div id="versionComparisonPanel">
-        <div class="comparison-form" style="display: flex; flex-direction: column; gap: 16px; background: var(--bg-surface); padding: 20px 24px; border-radius: var(--radius-lg); margin-bottom: 20px;">
-            <!-- 第一行 -->
-            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr 1fr; gap: 14px; align-items: start;">
-                <div class="filter-group" style="margin-bottom: 0;">
-                    <label style="font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 4px;">🏷 Casename <span style="color: var(--danger);">*</span></label>
-                    <div id="compCasenameSelect" class="searchable-select"></div>
-                </div>
-                <div class="filter-group" style="margin-bottom: 0;">
-                    <label style="font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 4px;">📊 对比维度</label>
-                    <div id="compDimensionSelect" class="searchable-select"></div>
-                </div>
-                <div class="filter-group" style="margin-bottom: 0;">
-                    <label style="font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 4px;">📜 Rule</label>
-                    <div id="compRuleSelect" class="searchable-select"></div>
-                </div>
-                <div class="filter-group" style="margin-bottom: 0;">
-                    <label style="font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 4px;">📅 日期1 <span style="color: var(--danger);">*</span></label>
-                    <div id="compDate1Select" class="searchable-select"></div>
-                </div>
-                <div class="filter-group" style="margin-bottom: 0;">
-                    <label style="font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 4px;">📅 日期2 <span style="color: var(--danger);">*</span></label>
-                    <div id="compDate2Select" class="searchable-select"></div>
-                </div>
-            </div>
-            <!-- 第二行 -->
-            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr 1fr; gap: 14px; align-items: end;">
-                <div class="filter-group" style="margin-bottom: 0;">
-                    <label style="font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 4px;">📊 误差模式</label>
-                    <div id="compErrorModeSelect" class="searchable-select"></div>
-                </div>
-                <div class="filter-group" style="margin-bottom: 0;">
-                    <label style="font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 4px;">⏱️ Runtime 阈值</label>
-                    <input type="number" id="compRuntimeThreshold" class="filter-input" value="0" step="0.1" style="width:100%; height: 36px; padding: 4px 10px; font-size: 13px;">
-                </div>
-                <div class="filter-group" style="margin-bottom: 0;">
-                    <label style="font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 4px;">🧠 Memory 阈值</label>
-                    <input type="number" id="compMemoryThreshold" class="filter-input" value="0" step="0.1" style="width:100%; height: 36px; padding: 4px 10px; font-size: 13px;">
-                </div>
-                <button class="btn-primary" id="compConfirmBtn" style="height: 36px; white-space: nowrap; padding: 0 16px; font-size: 13px; border-radius: var(--radius-sm); width: 100%;">确认对比</button>
-                <button class="btn-secondary" id="compExportBtn" style="height: 36px; white-space: nowrap; padding: 0 16px; font-size: 13px; border-radius: var(--radius-sm); width: 100%;">导出结果</button>
-            </div>
-        </div>
-        <!-- 结果展示 -->
-        <div id="versionComparisonResults">
-            <div class="comparison-stats-grid" id="versionStatsGrid"></div>
-            <div class="comparison-table-container">
-                <div class="table-header">
-                    <input type="text" id="versionComparisonSearch" placeholder="搜索 rule..." class="filter-input">
-                    <span class="result-count" id="versionResultCount">共 0 条</span>
-                </div>
-                <div class="table-wrapper">
-                    <table class="comparison-table">
-                        <thead id="versionTableHead"></thead>
-                        <tbody id="versionTableBody"></tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </div>
+                    <!-- ====== 单线程对比面板 ====== -->
+                    <div id="versionComparisonPanel">
+                        <div class="comparison-form" style="display: flex; flex-direction: column; gap: 16px; background: var(--bg-surface); padding: 20px 24px; border-radius: var(--radius-lg); margin-bottom: 20px;">
+                            <!-- 第一行 -->
+                            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr 1fr; gap: 14px; align-items: start;">
+                                <div class="filter-group" style="margin-bottom: 0;">
+                                    <label style="font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 4px;">🏷 Casename <span style="color: var(--danger);">*</span></label>
+                                    <div id="compCasenameSelect" class="searchable-select"></div>
+                                </div>
+                                <div class="filter-group" style="margin-bottom: 0;">
+                                    <label style="font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 4px;">📊 对比维度</label>
+                                    <div id="compDimensionSelect" class="searchable-select"></div>
+                                </div>
+                                <div class="filter-group" style="margin-bottom: 0;">
+                                    <label style="font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 4px;">📜 Rule</label>
+                                    <div id="compRuleSelect" class="searchable-select"></div>
+                                </div>
+                                <div class="filter-group" style="margin-bottom: 0;">
+                                    <label style="font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 4px;">📅 日期1 <span style="color: var(--danger);">*</span></label>
+                                    <div id="compDate1Select" class="searchable-select"></div>
+                                </div>
+                                <div class="filter-group" style="margin-bottom: 0;">
+                                    <label style="font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 4px;">📅 日期2 <span style="color: var(--danger);">*</span></label>
+                                    <div id="compDate2Select" class="searchable-select"></div>
+                                </div>
+                            </div>
+                            <!-- 第二行 -->
+                            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr 1fr; gap: 14px; align-items: end;">
+                                <div class="filter-group" style="margin-bottom: 0;">
+                                    <label style="font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 4px;">📊 误差模式</label>
+                                    <div id="compErrorModeSelect" class="searchable-select"></div>
+                                </div>
+                                <div class="filter-group" style="margin-bottom: 0;">
+                                    <label style="font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 4px;">⏱️ Runtime 阈值</label>
+                                    <input type="number" id="compRuntimeThreshold" class="filter-input" value="0" step="0.1" style="width:100%; height: 36px; padding: 4px 10px; font-size: 13px;">
+                                </div>
+                                <div class="filter-group" style="margin-bottom: 0;">
+                                    <label style="font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 4px;">🧠 Memory 阈值</label>
+                                    <input type="number" id="compMemoryThreshold" class="filter-input" value="0" step="0.1" style="width:100%; height: 36px; padding: 4px 10px; font-size: 13px;">
+                                </div>
+                                <button class="btn-primary" id="compConfirmBtn" style="height: 36px; white-space: nowrap; padding: 0 16px; font-size: 13px; border-radius: var(--radius-sm); width: 100%;">确认对比</button>
+                                <button class="btn-secondary" id="compExportBtn" style="height: 36px; white-space: nowrap; padding: 0 16px; font-size: 13px; border-radius: var(--radius-sm); width: 100%;">导出结果</button>
+                            </div>
+                        </div>
+                        <!-- 结果展示 -->
+                        <div id="versionComparisonResults">
+                            <div class="comparison-stats-grid" id="versionStatsGrid"></div>
+                            <div class="comparison-table-container">
+                                <div class="table-header">
+                                    <input type="text" id="versionComparisonSearch" placeholder="搜索 rule..." class="filter-input">
+                                    <span class="result-count" id="versionResultCount">共 0 条</span>
+                                </div>
+                                <div class="table-wrapper">
+                                    <table class="comparison-table">
+                                        <thead id="versionTableHead"></thead>
+                                        <tbody id="versionTableBody"></tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
-    <!-- ====== 多线程对比面板 ====== -->
-    <div id="threadComparisonPanel" style="display: none;">
-        <div class="comparison-form" style="display: flex; flex-direction: column; gap: 16px; background: var(--bg-surface); padding: 20px 24px; border-radius: var(--radius-lg); margin-bottom: 20px;">
-        <!-- 第一行：flex 换行 -->
-        <div style="display: flex; flex-wrap: wrap; gap: 14px; align-items: start;">
-            <div style="flex: 1 1 150px; min-width: 120px;">
-                <div class="filter-group" style="margin-bottom: 0;">
-                    <label style="font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 4px;">🏷 Casename <span style="color: var(--danger);">*</span></label>
-                    <div id="threadCompCasenameSelect" class="searchable-select"></div>
+                    <!-- ====== 多线程对比面板 ====== -->
+                    <div id="threadComparisonPanel" style="display: none;">
+                        <div class="comparison-form" style="display: flex; flex-direction: column; gap: 16px; background: var(--bg-surface); padding: 20px 24px; border-radius: var(--radius-lg); margin-bottom: 20px;">
+                        <!-- 第一行：flex 换行 -->
+                        <div style="display: flex; flex-wrap: wrap; gap: 14px; align-items: start;">
+                            <div style="flex: 1 1 150px; min-width: 120px;">
+                                <div class="filter-group" style="margin-bottom: 0;">
+                                    <label style="font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 4px;">🏷 Casename <span style="color: var(--danger);">*</span></label>
+                                    <div id="threadCompCasenameSelect" class="searchable-select"></div>
+                                </div>
+                            </div>
+                            <div style="flex: 1 1 150px; min-width: 120px;">
+                                <div class="filter-group" style="margin-bottom: 0;">
+                                    <label style="font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 4px;">📊 对比维度</label>
+                                    <div id="threadCompDimensionSelect" class="searchable-select"></div>
+                                </div>
+                            </div>
+                            <div style="flex: 1 1 150px; min-width: 120px;">
+                                <div class="filter-group" style="margin-bottom: 0;">
+                                    <label style="font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 4px;">🧵 线程数</label>
+                                    <div id="threadCompThreadSelect" class="searchable-select multi-select"></div>
+                                </div>
+                            </div>
+                            <div style="flex: 1 1 150px; min-width: 120px;">
+                                <div class="filter-group" style="margin-bottom: 0;">
+                                    <label style="font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 4px;">📜 Rule</label>
+                                    <div id="threadCompRuleSelect" class="searchable-select"></div>
+                                </div>
+                            </div>
+                            <div style="flex: 1 1 150px; min-width: 120px;">
+                                <div class="filter-group" style="margin-bottom: 0;">
+                                    <label style="font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 4px;">📅 日期1 <span style="color: var(--danger);">*</span></label>
+                                    <div id="threadCompDate1Select" class="searchable-select"></div>
+                                </div>
+                            </div>
+                            <!-- 日期2容器，隐藏时由 flex 自动调整 -->
+                            <div style="flex: 1 1 150px; min-width: 120px;" id="threadCompDate2Group">
+                                <div class="filter-group" style="margin-bottom: 0;">
+                                    <label style="font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 4px;">📅 日期2 <span style="color: var(--danger);">*</span></label>
+                                    <div id="threadCompDate2Select" class="searchable-select"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- 第二行：同理 -->
+                        <div style="display: flex; flex-wrap: wrap; gap: 14px; align-items: end;">
+                            <div style="flex: 1 1 150px; min-width: 120px;">
+                                <div class="filter-group" style="margin-bottom: 0;">
+                                    <label style="font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 4px;">📊 误差模式</label>
+                                    <div id="threadCompErrorModeSelect" class="searchable-select"></div>
+                                </div>
+                            </div>
+                            <div style="flex: 1 1 150px; min-width: 120px;">
+                                <div class="filter-group" style="margin-bottom: 0;">
+                                    <label style="font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 4px;">⏱️ Runtime 阈值</label>
+                                    <input type="number" id="threadCompRuntimeThreshold" class="filter-input" value="0" step="0.1" style="width:100%; height: 36px; padding: 4px 10px; font-size: 13px;">
+                                </div>
+                            </div>
+                            <div style="flex: 1 1 150px; min-width: 120px;">
+                                <div class="filter-group" style="margin-bottom: 0;">
+                                    <label style="font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 4px;">🧠 Memory 阈值</label>
+                                    <input type="number" id="threadCompMemoryThreshold" class="filter-input" value="0" step="0.1" style="width:100%; height: 36px; padding: 4px 10px; font-size: 13px;">
+                                </div>
+                            </div>
+                            <div style="flex: 1 1 150px; min-width: 120px;">
+                                <button class="btn-primary" id="threadCompConfirmBtn" style="height: 36px; white-space: nowrap; padding: 0 16px; font-size: 13px; border-radius: var(--radius-sm); width: 100%;">确认对比</button>
+                            </div>
+                            <div style="flex: 1 1 150px; min-width: 120px;">
+                                <button class="btn-secondary" id="threadCompExportBtn" style="height: 36px; white-space: nowrap; padding: 0 16px; font-size: 13px; border-radius: var(--radius-sm); width: 100%;">导出结果</button>
+                            </div>
+                        </div>
+                    </div>
+                        <!-- 结果展示 -->
+                        <div id="threadComparisonResults">
+                            <div class="comparison-stats-grid" id="threadStatsGrid"></div>
+                            <div class="comparison-table-container">
+                                <div class="table-header">
+                                    <input type="text" id="threadComparisonSearch" placeholder="搜索 rule..." class="filter-input">
+                                    <span class="result-count" id="threadResultCount">共 0 条</span>
+                                </div>
+                                <div class="table-wrapper">
+                                    <table class="comparison-table">
+                                        <thead id="threadTableHead"></thead>
+                                        <tbody id="threadTableBody"></tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-            </div>
-            <div style="flex: 1 1 150px; min-width: 120px;">
-                <div class="filter-group" style="margin-bottom: 0;">
-                    <label style="font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 4px;">📊 对比维度</label>
-                    <div id="threadCompDimensionSelect" class="searchable-select"></div>
-                </div>
-            </div>
-            <div style="flex: 1 1 150px; min-width: 120px;">
-                <div class="filter-group" style="margin-bottom: 0;">
-                    <label style="font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 4px;">🧵 线程数</label>
-                    <div id="threadCompThreadSelect" class="searchable-select multi-select"></div>
-                </div>
-            </div>
-            <div style="flex: 1 1 150px; min-width: 120px;">
-                <div class="filter-group" style="margin-bottom: 0;">
-                    <label style="font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 4px;">📜 Rule</label>
-                    <div id="threadCompRuleSelect" class="searchable-select"></div>
-                </div>
-            </div>
-            <div style="flex: 1 1 150px; min-width: 120px;">
-                <div class="filter-group" style="margin-bottom: 0;">
-                    <label style="font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 4px;">📅 日期1 <span style="color: var(--danger);">*</span></label>
-                    <div id="threadCompDate1Select" class="searchable-select"></div>
-                </div>
-            </div>
-            <!-- 日期2容器，隐藏时由 flex 自动调整 -->
-            <div style="flex: 1 1 150px; min-width: 120px;" id="threadCompDate2Group">
-                <div class="filter-group" style="margin-bottom: 0;">
-                    <label style="font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 4px;">📅 日期2 <span style="color: var(--danger);">*</span></label>
-                    <div id="threadCompDate2Select" class="searchable-select"></div>
-                </div>
-            </div>
-        </div>
-        <!-- 第二行：同理 -->
-        <div style="display: flex; flex-wrap: wrap; gap: 14px; align-items: end;">
-            <div style="flex: 1 1 150px; min-width: 120px;">
-                <div class="filter-group" style="margin-bottom: 0;">
-                    <label style="font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 4px;">📊 误差模式</label>
-                    <div id="threadCompErrorModeSelect" class="searchable-select"></div>
-                </div>
-            </div>
-            <div style="flex: 1 1 150px; min-width: 120px;">
-                <div class="filter-group" style="margin-bottom: 0;">
-                    <label style="font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 4px;">⏱️ Runtime 阈值</label>
-                    <input type="number" id="threadCompRuntimeThreshold" class="filter-input" value="0" step="0.1" style="width:100%; height: 36px; padding: 4px 10px; font-size: 13px;">
-                </div>
-            </div>
-            <div style="flex: 1 1 150px; min-width: 120px;">
-                <div class="filter-group" style="margin-bottom: 0;">
-                    <label style="font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 4px;">🧠 Memory 阈值</label>
-                    <input type="number" id="threadCompMemoryThreshold" class="filter-input" value="0" step="0.1" style="width:100%; height: 36px; padding: 4px 10px; font-size: 13px;">
-                </div>
-            </div>
-            <div style="flex: 1 1 150px; min-width: 120px;">
-                <button class="btn-primary" id="threadCompConfirmBtn" style="height: 36px; white-space: nowrap; padding: 0 16px; font-size: 13px; border-radius: var(--radius-sm); width: 100%;">确认对比</button>
-            </div>
-            <div style="flex: 1 1 150px; min-width: 120px;">
-                <button class="btn-secondary" id="threadCompExportBtn" style="height: 36px; white-space: nowrap; padding: 0 16px; font-size: 13px; border-radius: var(--radius-sm); width: 100%;">导出结果</button>
-            </div>
-        </div>
-    </div>
-        <!-- 结果展示 -->
-        <div id="threadComparisonResults">
-            <div class="comparison-stats-grid" id="threadStatsGrid"></div>
-            <div class="comparison-table-container">
-                <div class="table-header">
-                    <input type="text" id="threadComparisonSearch" placeholder="搜索 rule..." class="filter-input">
-                    <span class="result-count" id="threadResultCount">共 0 条</span>
-                </div>
-                <div class="table-wrapper">
-                    <table class="comparison-table">
-                        <thead id="threadTableHead"></thead>
-                        <tbody id="threadTableBody"></tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
 
                 <!-- ===== 原有内容（非对比模式） ===== -->
                 <div id="normalContent">
@@ -386,7 +386,9 @@
                         <span>全选</span>
                     </label>
                 </div>
-                <div class="date-list" id="dateList"></div>
+                <div class="date-list" id="dateList">
+                    <!-- 动态生成，每个 .date-item 可点击切换 checkbox -->
+                </div>
             </div>
             <div class="modal-footer">
                 <button class="btn-secondary" id="cancelDateBtn">取消</button>
