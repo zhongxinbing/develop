@@ -426,12 +426,12 @@ class ComparisonManager {
         
         // 默认选择最近两个日期作为对比基准
         if (dates.length >= 2) {
-            this.singleDate1Select.setValue(dates[dates.length - 2]);
+            this.singleDate1Select.setValue(dates[dates.length - 2], true);
             this.singleSelectedDate1 = dates[dates.length - 2];
-            this.singleDate2Select.setValue(dates[dates.length - 1]);
+            this.singleDate2Select.setValue(dates[dates.length - 1], true);
             this.singleSelectedDate2 = dates[dates.length - 1];
         } else if (dates.length === 1) {
-            this.singleDate1Select.setValue(dates[0]);
+            this.singleDate1Select.setValue(dates[0], true);
             this.singleSelectedDate1 = dates[0];
         }
         console.log('======================= _loadSingleDates =======================')
@@ -448,7 +448,7 @@ class ComparisonManager {
                 .map(d => ({ value: d, label: formatDate(d) }));
             this.singleDate1Select.setOptions(options);
             if (options.length > 0) {
-                this.singleDate1Select.setValue(options[0].value);
+                this.singleDate1Select.setValue(options[0].value, true);  // 静默
                 this.singleSelectedDate1 = options[0].value;
             }
         }
@@ -465,7 +465,7 @@ class ComparisonManager {
                 .map(d => ({ value: d, label: formatDate(d) }));
             this.singleDate2Select.setOptions(options);
             if (options.length > 0) {
-                this.singleDate2Select.setValue(options[0].value);
+                this.singleDate2Select.setValue(options[0].value, true);  // 静默
                 this.singleSelectedDate2 = options[0].value;
             }
         }
@@ -767,16 +767,16 @@ class ComparisonManager {
 
             for (const thread of selectedThreads) {
                 // 调试日志：打印每个线程数的匹配结果
-                console.warn(ruleData.all_threads, thread)
+                // console.warn(ruleData.all_threads, thread)
                 if (ruleData.all_threads.includes(parseInt(thread))) {
                     matched = true;
                     break;
                 }
             }
-            console.warn(matched)
+            // console.warn(matched)
             // 步骤 3：如果没有匹配到任何线程数且用户选了线程，则跳过该 Rule
             if (!matched && selectedThreads.length > 0) {
-                console.log(99999999999999999999)
+                // console.log(99999999999999999999)
                 continue;
             }
 
@@ -795,15 +795,12 @@ class ComparisonManager {
         
         // 默认选择最近两个日期作为对比基准
         if (this.multiAllDates.length >= 2) {
-            // 选择倒数第二个日期作为基准日期（日期 1）
-            this.multiDate1Select.setValue(this.multiAllDates[this.multiAllDates.length - 2]);
+            this.multiDate1Select.setValue(this.multiAllDates[this.multiAllDates.length - 2], true);
             this.multiSelectedDate1 = this.multiAllDates[this.multiAllDates.length - 2];
-            // 选择最后一个日期作为对比日期（日期 2）
-            this.multiDate2Select.setValue(this.multiAllDates[this.multiAllDates.length - 1]);
+            this.multiDate2Select.setValue(this.multiAllDates[this.multiAllDates.length - 1], true);
             this.multiSelectedDate2 = this.multiAllDates[this.multiAllDates.length - 1];
         } else if (this.multiAllDates.length === 1) {
-            // 只有一个日期时，仅设置日期 1
-            this.multiDate1Select.setValue(this.multiAllDates[0]);
+            this.multiDate1Select.setValue(this.multiAllDates[0], true);
             this.multiSelectedDate1 = this.multiAllDates[0];
         }
     }
@@ -818,12 +815,11 @@ class ComparisonManager {
                 .map(d => ({ value: d, label: formatDate(d) }));
             this.multiDate1Select.setOptions(options);
             if (options.length > 0) {
-                this.multiDate1Select.setValue(options[0].value);
+                this.multiDate1Select.setValue(options[0].value, true);
                 this.multiSelectedDate1 = options[0].value;
             }
         }
     }
-
     /**
      * 更新多线程日期 2 的可选列表（排除日期 1）
      */
@@ -834,7 +830,7 @@ class ComparisonManager {
                 .map(d => ({ value: d, label: formatDate(d) }));
             this.multiDate2Select.setOptions(options);
             if (options.length > 0) {
-                this.multiDate2Select.setValue(options[0].value);
+                this.multiDate2Select.setValue(options[0].value, true);
                 this.multiSelectedDate2 = options[0].value;
             }
         }
