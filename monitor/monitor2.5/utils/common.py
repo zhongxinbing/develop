@@ -7,6 +7,8 @@ from typing import Dict, List, Any, Optional, Tuple
 from utils.log import *
 import os
 from pathlib import Path
+from flask import session
+import uuid
 
 # 线程颜色映射（公共）
 THREAD_COLORS = {
@@ -116,3 +118,10 @@ def deep_merge(dict1, dict2):
         else:
             result[key] = value
     return result
+
+def get_user_id() -> str:
+    """获取或创建用户ID（用于数据隔离）"""
+    if 'user_id' not in session:
+        session['user_id'] = str(uuid.uuid4())
+        logger.info(f"新用户加入 {session['user_id']}")
+    return session['user_id']
