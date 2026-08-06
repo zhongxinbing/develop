@@ -6890,3 +6890,99 @@ NameError: name 're' is not defined
 2026-08-06 22:36:30 - INFO - __main__ - app.py:92 - 启动性能监控平台后端服务
 2026-08-06 22:36:30 - WARN - werkzeug - _internal.py:97 -  * Debugger is active!
 2026-08-06 22:36:30 - INFO - werkzeug - _internal.py:97 -  * Debugger PIN: 644-902-559
+2026-08-06 22:36:34 - INFO - utils.file_watcher - file_watcher.py:131 - 文件监听器初始化: watch_paths=['E:\\git\\develop\\monitor\\test\\multi', 'E:\\git\\develop\\monitor\\test\\signal']
+2026-08-06 22:36:34 - INFO - utils.file_watcher - file_watcher.py:51 - 文件变更处理器初始化
+2026-08-06 22:36:34 - INFO - utils.file_watcher - file_watcher.py:148 - 添加监听路径: E:\git\develop\monitor\test\multi
+2026-08-06 22:36:34 - INFO - utils.file_watcher - file_watcher.py:148 - 添加监听路径: E:\git\develop\monitor\test\signal
+2026-08-06 22:36:34 - INFO - utils.file_watcher - file_watcher.py:155 - 文件监听器已启动，监听 2 个路径
+2026-08-06 22:36:34 - INFO - utils.data_manager - data_manager.py:1206 - 文件监听器已启动，监听路径: ['E:\\git\\develop\\monitor\\test\\multi', 'E:\\git\\develop\\monitor\\test\\signal']
+2026-08-06 22:36:34 - INFO - api.compare - app.py:60 - 文件监听器初始化完成，监听 1 个工具
+2026-08-06 22:36:34 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [06/Aug/2026 22:36:34] "GET /tool/elint/performance HTTP/1.1" 200 -
+2026-08-06 22:36:34 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [06/Aug/2026 22:36:34] "[36mGET /static/js/echarts.min.js HTTP/1.1[0m" 304 -
+2026-08-06 22:36:34 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [06/Aug/2026 22:36:34] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2026-08-06 22:36:34 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [06/Aug/2026 22:36:34] "[36mGET /static/css/select.css HTTP/1.1[0m" 304 -
+2026-08-06 22:36:34 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [06/Aug/2026 22:36:34] "[36mGET /static/js/axios.min.js HTTP/1.1[0m" 304 -
+2026-08-06 22:36:34 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [06/Aug/2026 22:36:34] "[36mGET /static/css/compare.css HTTP/1.1[0m" 304 -
+2026-08-06 22:36:34 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [06/Aug/2026 22:36:34] "[36mGET /static/js/select.js HTTP/1.1[0m" 304 -
+2026-08-06 22:36:34 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [06/Aug/2026 22:36:34] "[36mGET /static/js/single_thread.js HTTP/1.1[0m" 304 -
+2026-08-06 22:36:34 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [06/Aug/2026 22:36:34] "[36mGET /static/js/thread_chart.js HTTP/1.1[0m" 304 -
+2026-08-06 22:36:34 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [06/Aug/2026 22:36:34] "[36mGET /static/js/multi_thread.js HTTP/1.1[0m" 304 -
+2026-08-06 22:36:34 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [06/Aug/2026 22:36:34] "[36mGET /static/js/comparison.js HTTP/1.1[0m" 304 -
+2026-08-06 22:36:34 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [06/Aug/2026 22:36:34] "[36mGET /static/js/tool.js HTTP/1.1[0m" 304 -
+2026-08-06 22:36:34 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [06/Aug/2026 22:36:34] "GET /api/tools HTTP/1.1" 200 -
+2026-08-06 22:36:34 - INFO - utils.data_manager - data_manager.py:1331 - 加载工具 elint 单线程数据
+2026-08-06 22:36:34 - INFO - utils.file_scanner - file_scanner.py:100 - 文件扫描器初始化: root=E:\git\develop\monitor\test\signal, max_depth=4
+2026-08-06 22:36:34 - INFO - utils.common - common.py:97 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\single_version.json
+2026-08-06 22:36:34 - INFO - utils.file_scanner - file_scanner.py:117 - 开始扫描目录: E:\git\develop\monitor\test\signal
+2026-08-06 22:36:34 - INFO - utils.file_scanner - file_scanner.py:125 - 扫描完成: 找到 6 个文件
+2026-08-06 22:36:34 - INFO - utils.data_manager - data_manager.py:1109 - 无文件变更，返回缓存数据
+2026-08-06 22:36:34 - INFO - utils.common - common.py:97 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\single.json
+2026-08-06 22:36:34 - INFO - utils.data_manager - data_manager.py:1338 - 加载工具 elint 多线程数据
+2026-08-06 22:36:34 - INFO - utils.file_scanner - file_scanner.py:100 - 文件扫描器初始化: root=E:\git\develop\monitor\test\multi, max_depth=4
+2026-08-06 22:36:34 - WARN - utils.common - common.py:100 - 加载工具数据失败, 文件不存在: E:\git\develop\monitor\monitor2.5\data\elint\multi_version.json
+2026-08-06 22:36:34 - INFO - utils.file_scanner - file_scanner.py:117 - 开始扫描目录: E:\git\develop\monitor\test\multi
+2026-08-06 22:36:34 - INFO - utils.file_scanner - file_scanner.py:125 - 扫描完成: 找到 0 个文件
+2026-08-06 22:36:34 - INFO - utils.data_manager - data_manager.py:1109 - 无文件变更，返回缓存数据
+2026-08-06 22:36:34 - WARN - utils.common - common.py:100 - 加载工具数据失败, 文件不存在: E:\git\develop\monitor\monitor2.5\data\elint\multi.json
+2026-08-06 22:36:34 - INFO - utils.data_manager - data_manager.py:1345 - 加载工具 elint 额外数据
+2026-08-06 22:36:34 - ERROR - dynamic_module_elint_654245648087942544 - elint.py:826 - 读取CSV文件失败 C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\test\lint_mem.csv: [Errno 2] No such file or directory: 'C:\\Users\\xbzhong\\Desktop\\lint\\script\\monitor\\develop\\monitor\\test\\lint_mem.csv'
+2026-08-06 22:36:34 - ERROR - dynamic_module_elint_654245648087942544 - elint.py:826 - 读取CSV文件失败 C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\test\lint_cpu.csv: [Errno 2] No such file or directory: 'C:\\Users\\xbzhong\\Desktop\\lint\\script\\monitor\\develop\\monitor\\test\\lint_cpu.csv'
+2026-08-06 22:36:34 - INFO - dynamic_module_elint_654245648087942544 - elint.py:835 - 解析 MR 数据: cpu:0 mem:0
+2026-08-06 22:36:34 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [06/Aug/2026 22:36:34] "POST /api/tools/elint/data HTTP/1.1" 200 -
+2026-08-06 22:36:46 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [06/Aug/2026 22:36:46] "GET / HTTP/1.1" 200 -
+2026-08-06 22:36:46 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [06/Aug/2026 22:36:46] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2026-08-06 22:36:46 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [06/Aug/2026 22:36:46] "[36mGET /static/js/axios.min.js HTTP/1.1[0m" 304 -
+2026-08-06 22:36:46 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [06/Aug/2026 22:36:46] "[36mGET /static/js/main.js HTTP/1.1[0m" 304 -
+2026-08-06 22:36:46 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [06/Aug/2026 22:36:46] "GET /api/tools HTTP/1.1" 200 -
+2026-08-06 22:36:48 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [06/Aug/2026 22:36:48] "GET /config HTTP/1.1" 200 -
+2026-08-06 22:36:48 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [06/Aug/2026 22:36:48] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2026-08-06 22:36:48 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [06/Aug/2026 22:36:48] "[36mGET /static/css/select.css HTTP/1.1[0m" 304 -
+2026-08-06 22:36:48 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [06/Aug/2026 22:36:48] "[36mGET /static/js/axios.min.js HTTP/1.1[0m" 304 -
+2026-08-06 22:36:48 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [06/Aug/2026 22:36:48] "[36mGET /static/js/config.js HTTP/1.1[0m" 304 -
+2026-08-06 22:36:48 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [06/Aug/2026 22:36:48] "GET /api/tools HTTP/1.1" 200 -
+2026-08-06 22:36:54 - DEBUG - utils.tool_manager - tool_manager.py:93 - 尝试更新工具: elint 配置: {'tool_name': 'elint', 'description': '', 'single_path': 'E:\\git\\develop\\monitor\\test\\signal', 'single_func': 'get_single_data', 'multi_path': '', 'multi_func': '', 'extra_display_path': 'C:\\Users\\xbzhong\\Desktop\\lint\\script\\monitor\\develop\\monitor\\test', 'extra_display_func': 'get_perf', 'custom_curve_func': ''}
+2026-08-06 22:36:54 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [06/Aug/2026 22:36:54] "PUT /api/tools/elint HTTP/1.1" 200 -
+2026-08-06 22:36:54 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [06/Aug/2026 22:36:54] "GET /tool/elint HTTP/1.1" 200 -
+2026-08-06 22:36:54 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [06/Aug/2026 22:36:54] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2026-08-06 22:36:54 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [06/Aug/2026 22:36:54] "[36mGET /static/css/select.css HTTP/1.1[0m" 304 -
+2026-08-06 22:36:55 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [06/Aug/2026 22:36:55] "GET /tool/elint/performance HTTP/1.1" 200 -
+2026-08-06 22:36:55 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [06/Aug/2026 22:36:55] "[36mGET /static/js/echarts.min.js HTTP/1.1[0m" 304 -
+2026-08-06 22:36:55 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [06/Aug/2026 22:36:55] "[36mGET /static/js/axios.min.js HTTP/1.1[0m" 304 -
+2026-08-06 22:36:55 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [06/Aug/2026 22:36:55] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2026-08-06 22:36:55 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [06/Aug/2026 22:36:55] "[36mGET /static/css/select.css HTTP/1.1[0m" 304 -
+2026-08-06 22:36:55 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [06/Aug/2026 22:36:55] "[36mGET /static/css/compare.css HTTP/1.1[0m" 304 -
+2026-08-06 22:36:55 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [06/Aug/2026 22:36:55] "[36mGET /static/js/select.js HTTP/1.1[0m" 304 -
+2026-08-06 22:36:55 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [06/Aug/2026 22:36:55] "[36mGET /static/js/single_thread.js HTTP/1.1[0m" 304 -
+2026-08-06 22:36:55 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [06/Aug/2026 22:36:55] "[36mGET /static/js/multi_thread.js HTTP/1.1[0m" 304 -
+2026-08-06 22:36:55 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [06/Aug/2026 22:36:55] "[36mGET /static/js/thread_chart.js HTTP/1.1[0m" 304 -
+2026-08-06 22:36:55 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [06/Aug/2026 22:36:55] "[36mGET /static/js/comparison.js HTTP/1.1[0m" 304 -
+2026-08-06 22:36:55 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [06/Aug/2026 22:36:55] "[36mGET /static/js/tool.js HTTP/1.1[0m" 304 -
+2026-08-06 22:36:55 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [06/Aug/2026 22:36:55] "GET /api/tools HTTP/1.1" 200 -
+2026-08-06 22:36:55 - INFO - utils.data_manager - data_manager.py:1331 - 加载工具 elint 单线程数据
+2026-08-06 22:36:55 - INFO - utils.data_manager - data_manager.py:1345 - 加载工具 elint 额外数据
+2026-08-06 22:36:55 - ERROR - dynamic_module_elint_654245648087942544 - elint.py:826 - 读取CSV文件失败 C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\test\lint_mem.csv: [Errno 2] No such file or directory: 'C:\\Users\\xbzhong\\Desktop\\lint\\script\\monitor\\develop\\monitor\\test\\lint_mem.csv'
+2026-08-06 22:36:55 - ERROR - dynamic_module_elint_654245648087942544 - elint.py:826 - 读取CSV文件失败 C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\test\lint_cpu.csv: [Errno 2] No such file or directory: 'C:\\Users\\xbzhong\\Desktop\\lint\\script\\monitor\\develop\\monitor\\test\\lint_cpu.csv'
+2026-08-06 22:36:55 - INFO - dynamic_module_elint_654245648087942544 - elint.py:835 - 解析 MR 数据: cpu:0 mem:0
+2026-08-06 22:36:55 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [06/Aug/2026 22:36:55] "POST /api/tools/elint/data HTTP/1.1" 200 -
+2026-08-06 22:37:30 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'e:\\git\\develop\\monitor\\monitor2.5\\api\\compare.py', reloading
+2026-08-06 22:37:31 - INFO - utils.file_watcher - file_watcher.py:167 - 文件监听器已停止
+2026-08-06 22:37:31 - INFO - utils.data_manager - data_manager.py:1214 - 文件监听器已停止
+2026-08-06 22:37:31 - INFO - __main__ - app.py:69 - 文件监听器已停止
+2026-08-06 22:37:31 - INFO - utils.data_manager - data_manager.py:1214 - 文件监听器已停止
+2026-08-06 22:37:31 - INFO - api.compare - app.py:69 - 文件监听器已停止
+2026-08-06 22:37:31 - INFO - werkzeug - _internal.py:97 -  * Restarting with watchdog (windowsapi)
+2026-08-06 22:37:32 - INFO - utils.data_parser - data_parser.py:22 - 数据管理器初始化
+2026-08-06 22:37:32 - INFO - utils.tool_manager - tool_manager.py:54 - 加载工具配置文件: E:\git\develop\monitor\monitor2.5\data\tools.json
+2026-08-06 22:37:32 - INFO - utils.tool_manager - tool_manager.py:45 - 工具管理器初始化完成
+2026-08-06 22:37:32 - INFO - utils.data_manager - data_manager.py:909 - 数据管理器初始化完成
+2026-08-06 22:37:32 - INFO - __main__ - app.py:92 - 启动性能监控平台后端服务
+2026-08-06 22:37:32 - WARN - werkzeug - _internal.py:97 -  * Debugger is active!
+2026-08-06 22:37:32 - INFO - werkzeug - _internal.py:97 -  * Debugger PIN: 644-902-559
+2026-08-06 22:37:41 - INFO - utils.data_manager - data_manager.py:1214 - 文件监听器已停止
+2026-08-06 22:37:41 - INFO - __main__ - app.py:69 - 文件监听器已停止
+2026-08-06 22:37:41 - INFO - utils.data_manager - data_manager.py:1214 - 文件监听器已停止
+2026-08-06 22:37:41 - INFO - api.compare - app.py:69 - 文件监听器已停止
+2026-08-06 22:37:41 - INFO - utils.data_manager - data_manager.py:1214 - 文件监听器已停止
+2026-08-06 22:37:41 - INFO - __main__ - app.py:69 - 文件监听器已停止
+2026-08-06 22:37:41 - INFO - utils.data_manager - data_manager.py:1214 - 文件监听器已停止
+2026-08-06 22:37:41 - INFO - api.compare - app.py:69 - 文件监听器已停止
