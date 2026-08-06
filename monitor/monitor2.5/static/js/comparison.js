@@ -18,7 +18,7 @@ class ComparisonManager {
         this.toolId = null;
         this.currentMode = null;
         this.isInitialized = false;
-        
+        this.mode = 'single';
         // ========== 单线程对比：UI 组件引用 ==========
         this.singleCasenameSelect = null;      // Casename 下拉选择器
         this.singleDimensionSelect = null;     // 对比维度下拉选择器
@@ -94,7 +94,7 @@ class ComparisonManager {
     init(toolId, getCurrentMode) {
         this.toolId = toolId;
         this.getCurrentMode = getCurrentMode;
-        
+
         // ========== 初始化单线程对比组件 ==========
         // 初始化 Casename 选择器
         this.singleCasenameSelect = new SearchableSelect({
@@ -295,16 +295,13 @@ class ComparisonManager {
      * @param {string} casename - Casename 名称
      */
     _loadSingleData(casename) {
-        console.log('======================= _loadSingleData =======================')
+        // console.log('======================= _loadSingleData =======================')
         // 根据当前模式从全局数据中获取数据源
-        const mode = this.getCurrentMode();
+
         let allData = {};
-        if (mode === 'single') {
-            allData = window.singleData || {};
-        } else {
-            allData = window.multiData || {};
-        }
-        
+
+        allData = window.singleData || {};
+        // console.warn('allData', allData)
         const caseData = allData[casename];
         if (!caseData) {
             // 该 Casename 无数据，清空所有下拉选项
@@ -340,7 +337,7 @@ class ComparisonManager {
             this.singleSelectedDimension = availableDimensions[0].value;
             this._loadSingleRules(availableDimensions[0].value);
         }
-        console.log('======================= _loadSingleData =======================')
+        // console.log('======================= _loadSingleData =======================')
     }
 
     /**
@@ -348,15 +345,12 @@ class ComparisonManager {
      * @param {string} dimension - 对比维度
      */
     _loadSingleRules(dimension) {
-        console.log('======================= _loadSingleRules =======================')
+        // console.log('======================= _loadSingleRules =======================')
         const mode = this.getCurrentMode();
         let allData = {};
-        if (mode === 'single') {
-            allData = window.singleData || {};
-        } else {
-            allData = window.multiData || {};
-        }
-        
+
+        allData = window.singleData || {};
+
         const caseData = allData[this.singleSelectedCasename];
         if (!caseData || !caseData[dimension]) {
             this.singleRuleSelect.setOptions([]);
@@ -377,7 +371,7 @@ class ComparisonManager {
         this.singleRuleSelect.setValue('all');
         this.singleSelectedRule = 'all';
         this._loadSingleDates('all');
-        console.log('======================= _loadSingleRules =======================')
+        // console.log('======================= _loadSingleRules =======================')
     }
 
     /**
@@ -386,26 +380,24 @@ class ComparisonManager {
      * @param {string} rule - Rule 名称或 'all'
      */
     _loadSingleDates(rule) {
-        console.log('======================= _loadSingleDates =======================')
+        // console.log('======================= _loadSingleDates =======================')
         const mode = this.getCurrentMode();
         let allData = {};
-        if (mode === 'single') {
-            allData = window.singleData || {};
-        } else {
-            allData = window.multiData || {};
-        }
+        allData = window.singleData || {};
         
         const caseData = allData[this.singleSelectedCasename];
         if (!caseData || !caseData[this.singleSelectedDimension]) {
             return;
         }
-        
+
         let dates = [];
         if (rule === 'all') {
             // 获取所有规则的日期并集
             const dateSet = new Set();
+            // console.warn('this.singleAllRules', this.singleSelectedDimension)
             for (const r of this.singleAllRules) {
-                const ruleData = caseData[this.singleSelectedDimension][r].dates;
+                const ruleData = caseData[this.singleSelectedDimension][r];
+                // console.warn('ruleData', ruleData)
                 if (ruleData && Array.isArray(ruleData)) {
                     ruleData.forEach(d => dateSet.add(d));
                 }
@@ -413,7 +405,7 @@ class ComparisonManager {
             dates = Array.from(dateSet).sort();
         } else {
             // 获取指定规则的日期列表
-            const ruleData = caseData[this.singleSelectedDimension][rule].dates;
+            const ruleData = caseData[this.singleSelectedDimension][rule];
             if (ruleData && Array.isArray(ruleData)) {
                 dates = ruleData.sort();
             }
@@ -436,7 +428,7 @@ class ComparisonManager {
             this.singleDate1Select.setValue(dates[0], true);
             this.singleSelectedDate1 = dates[0];
         }
-        console.log('======================= _loadSingleDates =======================')
+        // console.log('======================= _loadSingleDates =======================')
     }
 
     /**
@@ -526,7 +518,7 @@ class ComparisonManager {
                 runtime_threshold: this.singleRuntimeThresholdValue,
                 memory_threshold: this.singleMemoryThresholdValue,
                 error_mode: errorMode,
-                compare_type: 'version'
+                compare_type: 'single'
             });
             
             if (response.data.success) {
@@ -733,7 +725,7 @@ class ComparisonManager {
      * 3. 收集所有匹配 Rule 的日期并集，去重排序后填充到日期下拉选择器
      */
     _loadMultiDates() {
-        console.log('======================= _loadMultiDates =======================')
+        // console.log('======================= _loadMultiDates =======================')
 
         const allData = window.multiData || {};
         const caseData = allData[this.multiSelectedCasename];
@@ -884,7 +876,7 @@ class ComparisonManager {
         
         // 确定对比类型：线程数<=1为版本对比，>1为线程对比
         const isMultiThread = this.multiSelectedThreads.length > 1;
-        const compareType = isMultiThread ? 'thread' : 'version';
+        const compareType = isMultiThread ? 'thread' : 'single';
         
         // 提示用户当前使用的默认参数
         if (!this.multiSelectedDimension) {
@@ -1304,7 +1296,7 @@ class ComparisonManager {
 
     /**
      * 切换对比子模式（版本对比 / 线程对比）
-     * @param {string} submode - 子模式值 ('version' 或 'thread')
+     * @param {string} submode - 子模式值 ('single' 或 'thread')
      */
     showSubMode(submode) {
         const versionPanel = document.getElementById('versionComparisonPanel');
@@ -1320,7 +1312,7 @@ class ComparisonManager {
         });
         
         if (versionPanel) {
-            versionPanel.style.display = (submode === 'version') ? 'block' : 'none';
+            versionPanel.style.display = (submode === 'single') ? 'block' : 'none';
         }
         if (threadPanel) {
             threadPanel.style.display = (submode === 'thread') ? 'block' : 'none';
@@ -1336,6 +1328,7 @@ class ComparisonManager {
     _bindEvents() {
         document.querySelectorAll('.comparison-tab').forEach(tab => {
             tab.addEventListener('click', () => {
+                this.mode = tab.dataset.submode;
                 this.showSubMode(tab.dataset.submode);
             });
         });

@@ -183,7 +183,7 @@ def api_get_comparison():
     memory_threshold = float(data.get('memory_threshold', 0))
     error_mode = data.get('error_mode', 'absolute')
     threads = data.get('threads', [])
-    compare_type = data.get('compare_type', 'version')
+    compare_type = data.get('compare_type', 'single')
     
     logger.info(f"收到对比请求: tool_id={tool_id}, mode={mode}, casename={casename}, "
                 f"date1={date1}, date2={date2}, dimension={dimension}, "

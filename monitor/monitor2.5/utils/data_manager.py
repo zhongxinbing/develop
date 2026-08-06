@@ -581,7 +581,7 @@ class DataManager:
         memory_threshold: float = 0,
         error_mode: str = 'absolute',
         threads: List[int] = None,
-        compare_type: str = 'version') -> Dict:
+        compare_type: str = 'single') -> Dict:
         """
         数据对比 - 支持单线程和多线程
         """
@@ -593,7 +593,7 @@ class DataManager:
             return {'success': False, 'error': '请选择日期1'}
         
         # 如果是版本对比（单线程或单线程数），需要 date2
-        if compare_type == 'version' and not date2:
+        if compare_type == 'single' and not date2:
             return {'success': False, 'error': '版本对比需要两个日期'}
         
         # 获取数据路径
@@ -625,7 +625,7 @@ class DataManager:
         # 执行对比
         result = self._perform_comparison(
             data_path, casename, dimensions, rules, thread_list,
-            date1, date2 if compare_type == 'version' else None,
+            date1, date2 if compare_type == 'single' else None,
             runtime_threshold, memory_threshold, error_mode,
             mode, compare_type
         )
