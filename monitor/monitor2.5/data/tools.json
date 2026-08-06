@@ -3,15 +3,15 @@
     "elint": {
       "tool_name": "elint",
       "description": "",
-      "single_path": "C:\\Users\\xbzhong\\Desktop\\lint\\script\\monitor\\develop\\monitor\\test\\signal",
+      "single_path": "E:\\git\\develop\\monitor\\test\\signal",
       "single_func": "get_single_data",
-      "multi_path": "C:\\Users\\xbzhong\\Desktop\\lint\\script\\monitor\\develop\\monitor\\test\\multi",
-      "multi_func": "get_multi_data",
+      "multi_path": "",
+      "multi_func": "",
       "extra_display_path": "C:\\Users\\xbzhong\\Desktop\\lint\\script\\monitor\\develop\\monitor\\test",
       "extra_display_func": "get_perf",
       "custom_curve_func": "",
       "created_at": "2026-07-16T09:12:45.156404",
-      "updated_at": "2026-08-04T10:57:02.588829"
+      "updated_at": "2026-08-06T22:36:54.890312"
     }
   }
 }

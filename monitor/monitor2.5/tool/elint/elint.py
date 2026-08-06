@@ -1,72 +1,644 @@
-"""
-获取 elint 工具的数据、支持批量获取用户数据
-"""
+# """
+# 获取 elint 工具的数据、支持批量获取用户数据
+# """
 
+# import os
+# import re
+# import time
+# import json
+# import csv
+
+
+# from pathlib import Path
+# from datetime import datetime, timedelta
+# import subprocess
+# from typing import Dict, List, Any, Optional, Tuple
+# from utils.find_files import *
+# from utils.log import *
+
+# logger = get_logger(__name__)
+
+# def save_json(json_path, data):
+#     """
+#     保存数据到JSON文件
+    
+#     参数:
+#         json_path: JSON文件路径
+#         data: 要保存的数据
+#     """
+#     log(f"正在保存数据到 JSON 文件: {json_path}")
+#     with open(json_path, 'w', encoding='utf-8') as f:
+#         json.dump(data, f, ensure_ascii=False, indent=4)
+
+
+# def log(msg: str) -> None:
+#     """
+#     带时间戳的日志输出函数
+    
+#     参数:
+#         msg: str - 要输出的日志信息
+    
+#     输出格式:
+#         [YYYY-MM-DD HH:MM:SS]: 日志内容
+#     """
+#     print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}: {msg}")
+
+
+# def load_json(path):
+#     """
+#     加载JSON文件
+    
+#     参数:
+#         path: JSON文件路径
+    
+#     返回:
+#         dict: 解析后的JSON数据
+#     """
+#     with open(path, 'r', encoding='utf-8') as file:
+#         data = json.load(file)
+#     return data
+
+
+# ###################################################################################################################################################
+# ##    
+# ##    获取单线程的数据
+# ##    
+# ###################################################################################################################################################
+
+# def gen_dict_data(caseData, data, thread, type):
+#     """生成字典数据"""
+
+#     rules=["Overall", "read_design", "check_lint", "save_session"]
+#     rule_data = {}
+#     for item in data:
+#         rulename = item[0]
+#         cputime = float(item[1])
+#         if type == 1:
+#             peakmem = float(item[2])
+#         elif type == 2:
+#             realtime = float(item[2])
+#             peakmem = float(item[3])
+#             if item[4] == "NA":
+#                 incmem = "NA"
+#             else:
+#                 incmem = float(item[4])
+#             if item[5] == "NA":
+#                 realtimeincmem = item[5]
+#             else:
+#                 realtimeincmem = float(item[5])
+#         if rulename in rules:
+#             rule_data[rulename] = {
+#                     "cputime": cputime,
+#                     "peakmem": peakmem,
+#                     "realtime": -1 if type == 1 else realtime,
+#                     "incmem": -1 if type == 1 else incmem,
+#                     "realtimeincmem": -1 if type == 1 else realtimeincmem
+#                 }
+#         else:    
+#             rule_data[rulename] = {
+#                 "cputime": cputime,
+#                 "peakmem": peakmem,
+#                 "realtime": -1 if type == 1 else realtime,
+#                 "incmem": -1 if type == 1 else incmem,
+#                 "realtimeincmem": -1 if type == 1 else realtimeincmem
+#             }
+    
+#     return rule_data
+
+
+# def get_data_from_txt_single(txts, caseData):
+#     """从txt文件获取日期数据"""
+#     for txt in txts:
+#         txtname = Path(txt).name
+#         match = re.findall(r'(\d{8})_(.*)\.txt', txtname)
+#         if not match:
+#             continue
+#         date, casename = match[0]
+        
+#         # 判断 case 存在字典中, 并创建一个新的
+#         if casename not in caseData:
+#             caseData[casename] = {
+#                 "casename": casename,
+#                 "daily_metrics": {
+#                     date: {}
+#                 },
+#                 "available_dates": [date]
+#             }
+#         if date not in caseData[casename]["daily_metrics"]:
+#             caseData[casename]["daily_metrics"][date] = {}
+#         try:
+#             with open(txt, 'r', encoding='utf-8') as f:
+#                 content = f.read()
+#                 data = re.findall(r"dict set \d{8} ([^\s]+) {([0-9.,]+) ([0-9.,]+) ([0-9.,]+)}", content)
+#                 typeStr = 1
+#                 if not data:
+#                     data = re.findall(r"dict set \d{8} ([^\s]+) {([-0-9.,]+) ([-0-9.,]+) ([-0-9.,]+) ([-0-9.,NA]+) ([-0-9.,NA]+)}", content)
+#                     typeStr = 2
+#                 # 一个 case 一天的信息,并获取
+#                 caseData[casename]["daily_metrics"][date] = gen_dict_data(
+#                     caseData[casename]["daily_metrics"][date], data, 0, typeStr
+#                 )
+#                 if date not in caseData[casename]["available_dates"]:
+#                     caseData[casename]["available_dates"].append(date)
+#         except Exception as e:
+#             log(f"出现错误: get_date_from_txt: {date} {casename} {e}")
+#             break
+#     return caseData
+
+
+# def get_elint_performance(original_path, jsonDataFile) -> Tuple[Dict, List[str]]:
+#     """
+#     获取 elint 性能数据
+    
+#     返回:
+#         Tuple[Dict, List[str]]: (caseData, 数据文件列表)
+#     """
+#     start = time.time()
+#     dataFiles = find(original_path, maxdepth=3, name_pattern=r"^\d{8}_[^/]+\.txt$", file_type="f")
+#     caseData = {}
+#     caseData = get_data_from_txt_single(dataFiles, caseData)
+#     caseData["dataFiles"] = sorted(dataFiles)
+#     # if jsonDataFile:
+#     #     save_json(jsonDataFile, caseData)
+#     # else:
+#     #     log("未提供 JSON 保存路径，跳过保存 elint 数据")
+
+#     end = time.time()
+#     print(f"运行时间: {end - start:.4f} 秒")
+#     return caseData, sorted(dataFiles)
+
+
+# def get_incremental_data(
+#     existing_data: Dict,
+#     existing_files: List[str],
+#     new_files: List[str],
+#     json_path: Path
+# ) -> Tuple[Dict, List[str]]:
+#     """
+#     增量获取新增数据
+    
+#     参数:
+#         existing_data: 已有数据
+#         existing_files: 已有文件列表
+#         new_files: 新文件列表
+#         json_path: JSON文件路径
+        
+#     返回:
+#         Tuple[Dict, List[str]]: (更新后的数据, 合并后的文件列表)
+#     """
+#     if not new_files:
+#         return existing_data, existing_files
+    
+#     log(f"发现 {len(new_files)} 个新文件，进行增量更新")
+    
+#     # 只解析新增的文件
+#     new_data = get_data_from_txt_single(new_files, {})
+    
+#     # 合并数据
+#     for casename, case_info in new_data.items():
+#         if casename not in existing_data:
+#             existing_data[casename] = case_info
+#         else:
+#             # 合并 daily_metrics
+#             for date, metrics in case_info.get('daily_metrics', {}).items():
+#                 if date not in existing_data[casename]['daily_metrics']:
+#                     existing_data[casename]['daily_metrics'][date] = metrics
+#                 else:
+#                     # 合并同一天不同阶段的metrics
+#                     for rule, rule_data in metrics.items():
+#                         if rule not in existing_data[casename]['daily_metrics'][date]:
+#                             existing_data[casename]['daily_metrics'][date][rule] = rule_data
+            
+#             # 合并 available_dates
+#             existing_dates = set(existing_data[casename].get('available_dates', []))
+#             new_dates = set(case_info.get('available_dates', []))
+#             existing_data[casename]['available_dates'] = sorted(existing_dates | new_dates)
+    
+#     # 合并文件列表
+#     merged_files = list(dict.fromkeys(existing_files + new_files))
+#     merged_files.sort()
+    
+#     # 保存更新后的数据
+#     existing_data["dataFiles"] = merged_files
+#     # save_json(json_path, existing_data)
+    
+#     return existing_data, merged_files
+
+
+# def get_elint_data(jsonDataFile, original_path) -> Dict:
+#     """
+#     获取 elint 数据，支持增量更新
+
+#     参数:
+#         jsonDataFile: JSON数据文件路径（可以是字符串或Path对象）
+#         original_path: 原始数据文件路径
+
+#     返回:
+#         dict: 项目数据
+#     """
+#     print("开始获取工具单线程的数据")
+#     # 统一转换为 Path 对象
+#     jsonDataFile = Path(jsonDataFile) if isinstance(jsonDataFile, str) else jsonDataFile
+#     jsonPath = jsonDataFile.resolve() if jsonDataFile else None
+
+#     # 获取当前所有的 txt 文件
+#     currentDataFiles = sorted(find(original_path, maxdepth=3, name_pattern=r"^\d{8}_[^/]+\.txt$", file_type="f"))
+
+#     # 检查文件是否存在
+#     if jsonPath and jsonPath.exists():
+#         try:
+#             lastCaseData = load_json(jsonPath)
+#             lastDataFiles = lastCaseData.get("dataFiles", [])
+
+#             # 计算新增的文件
+#             addDataFiles = list(set(currentDataFiles) - set(lastDataFiles))
+#             print(addDataFiles)
+#             if addDataFiles:
+#                 # 有新增文件，进行增量更新
+#                 newCaseData, merged_files = get_incremental_data(
+#                     lastCaseData, lastDataFiles, addDataFiles, jsonPath
+#                 )
+#             else:
+#                 log("数据不需要更新")
+#                 newCaseData = lastCaseData
+#         except Exception as e:
+#             log(f"读取JSON文件失败: {e}，将重新获取")
+#             newCaseData, _ = get_elint_performance(original_path, jsonPath)
+#     else:
+#         if jsonPath:
+#             log("JSON文件不存在，将创建新文件")
+#         else:
+#             log("JSON路径未配置，将直接从原始数据读取，不保存JSON")
+#         newCaseData, _ = get_elint_performance(original_path, jsonPath)
+
+#     # if "dataFiles" in newCaseData:
+#     #     del newCaseData["dataFiles"]
+
+#     return newCaseData
+
+
+# def read_csv(path):
+#     """
+#     读取CSV文件，返回日期到评论的映射
+    
+#     参数:
+#         path: CSV文件路径
+    
+#     返回:
+#         dict: {日期: 评论}
+#     """
+#     data = {}
+#     try:
+#         with open(path, 'r', encoding='utf-8') as f:
+#             reader = csv.DictReader(f)
+#             for row in reader:
+#                 time_str = row['Date']
+#                 time_str = datetime.strptime(time_str, "%Y-%m-%d").strftime("%Y%m%d")
+#                 data[time_str] = row['comment']
+#     except Exception as e:
+#         log(f"读取CSV文件失败 {path}: {e}")
+#     return data
+
+
+# def get_perf(mrPath):
+#     """
+#     获取性能数据（MR更新信息）
+    
+#     参数:
+#         mem: 内存性能CSV文件路径
+#         cpu: CPU性能CSV文件路径
+    
+#     返回:
+#         dict: 性能数据字典
+#     """
+#     try:
+
+#         mem_data = read_csv(Path(mrPath) / "lint_mem.csv")
+#         cpu_data = read_csv(Path(mrPath) / "lint_cpu.csv")
+#         print(f"解析数据 MR 数据中: cpu:{len(cpu_data)} mem: {len(mem_data)}")
+        
+#         perf = {
+#             "mem": mem_data,
+#             "cpu": cpu_data
+#         }
+
+#         return perf
+#     except Exception as e:
+#         log(f"执行异常: {e}")
+#         return {
+#             "mem": {},
+#             "cpu": {}
+#         }
+
+
+
+# def get_user_data(case_path):
+#     """
+#     获取用户自定义数据
+    
+#     参数:
+#         case_path: 用户输入的路径
+    
+#     返回:
+#         dict: 符合 elint.json 格式的数据
+#     """
+#     result = {}
+#     try:
+#         result = load_json(case_path)
+#         log(f"成功加载用户数据: {case_path}")
+#     except Exception as e:
+#         log(f"加载用户数据失败 {case_path}: {e}")
+#         result = {}
+#     return result
+
+# def get_user_data_batch(case_paths: list):
+#     """
+#     批量获取用户自定义数据
+    
+#     参数:
+#         case_paths: 用户输入路径列表
+    
+#     返回:
+#         dict: 合并后的数据，符合 elint.json 格式
+#     """
+#     merged_result = {}
+    
+#     for case_path in case_paths:
+#         if not case_path or not case_path.strip():
+#             continue
+        
+#         case_path = case_path.strip()
+#         data = get_user_data(case_path)
+        
+#         if data:
+#             # 合并数据，避免覆盖
+#             for project_id, project_data in data.items():
+#                 if project_id not in merged_result:
+#                     merged_result[project_id] = project_data
+#                 else:
+#                     # 合并 daily_metrics
+#                     existing_metrics = merged_result[project_id].get('daily_metrics', {})
+#                     new_metrics = project_data.get('daily_metrics', {})
+                    
+#                     for date, metrics in new_metrics.items():
+#                         if date not in existing_metrics:
+#                             existing_metrics[date] = metrics
+#                         else:
+#                             # 合并同一天的不同阶段
+#                             for rule, rule_data in metrics.items():
+#                                 if rule not in existing_metrics[date]:
+#                                     existing_metrics[date][rule] = rule_data
+                    
+#                     merged_result[project_id]['daily_metrics'] = existing_metrics
+                    
+#                     # 合并 available_dates
+#                     existing_dates = set(merged_result[project_id].get('available_dates', []))
+#                     new_dates = set(project_data.get('available_dates', []))
+#                     merged_result[project_id]['available_dates'] = sorted(existing_dates | new_dates)
+                    
+#                     log(f"合并项目 {project_id}: 新增 {len(new_metrics)} 天数据")
+    
+#     log(f"批量加载完成，共加载 {len(merged_result)} 个项目")
+#     return merged_result
+
+
+
+
+# ##########################################################################################################################################################################################
+# ## 多线程数据加载
+# ##########################################################################################################################################################################################
+
+# def get_data_json(rule_data, data, thread):
+#     """
+#     从多线程日志中解析性能数据
+    
+#     参数:
+#         rule_data: 当前规则数据（会被修改）
+#         data: 解析出的性能数据列表
+#         thread: 线程数
+    
+#     返回:
+#         dict: 更新后的 rule_data
+#     """
+#     for item in data:
+#         if len(item) == 0:
+#             continue
+#         rule = item[0]
+#         print(item)
+#         if rule == "sched(local)]":
+#             continue
+#         rules=["Overall", "read_design", "check_lint", "save_session"]
+
+#         cputime = float(item[1].replace(',', ''))
+#         realtime = float(item[2].replace(',', ''))
+#         peakmem = float(item[3].replace(',', ''))
+#         incmem = -1 if rule in rules else float(item[4].replace(',', ''))
+#         realtimeincmem = -1 if rule in rules else float(item[5].replace(',', ''))
+        
+#         if re.fullmatch(r'^\[.*', rule):
+#             rule = re.findall(r'\[.*\]\[(.*)\]', rule)[0]
+#         if rule not in rule_data:
+#             rule_data[rule] = {
+#                 "thread_metrics": {
+#                     thread: {
+#                         "cputime": cputime,
+#                         "peakmem": peakmem,
+#                         "incmem": incmem,
+#                         "realtime": realtime,
+#                         "realtimeincmem": realtimeincmem
+#                     }
+#                 }
+#             }
+#         else:
+#             rule_data[rule]["thread_metrics"][thread] = {
+#                 "cputime": cputime,
+#                 "peakmem": peakmem,
+#                 "incmem": incmem,
+#                 "realtime": realtime,
+#                 "realtimeincmem": realtimeincmem
+#             }
+
+#     return rule_data
+
+# def get_data_from_log(files, caseData):
+#     for log_path in files:
+#         caseData = get_perf_data_from_log(caseData, log_path)
+#     return caseData
+
+# def get_perf_data_from_log(caseData, log_path):
+#     """
+#     从单个日志文件解析性能数据
+    
+#     参数:
+#         caseData: 已有的项目数据字典
+#         log_path: 日志文件路径
+    
+#     返回:
+#         dict: 更新后的 caseData
+#     """
+#     # 提取 casename 和 date
+#     # 路径格式示例: /path/to/elint.log 或 /path/to/project/elint.log
+#     path_str = str(log_path)
+
+#     # 尝试从路径中提取 casename
+#     parts = Path(path_str).parts
+#     if len(parts) >= 2:
+#         casename = parts[-2]  # 取上一级目录名作为 casename
+#     else:
+#         casename = "unknown"
+    
+#     # 提取日期 - 多种格式支持
+#     date_match = re.search(r'(\d{8})|(\d{4}-\d{2}-\d{2})', path_str)
+#     if date_match:
+#         date_str = date_match.group(1) or date_match.group(2)
+#         if '-' in date_str:
+#             date = datetime.strptime(date_str, "%Y-%m-%d").strftime("%Y%m%d")
+#         else:
+#             date = date_str
+#     else:
+#         try:
+#             mtime = Path(log_path).stat().st_mtime
+#             date = datetime.fromtimestamp(mtime).strftime("%Y%m%d")
+#             log(f"未从日志路径提取到日期，使用文件修改时间作为日期: {date}")
+#         except Exception:
+#             date = datetime.now().strftime("%Y%m%d")
+#             log(f"未从日志路径提取到日期，使用当前日期作为日期: {date}")
+
+#     with open(log_path, "r", errors='ignore') as f:
+#         content = f.read()
+#         rulePerf = re.findall(r' ([^\s\]]+) done: CpuTime\(([0-9.,]+)s\); RealTime\(([0-9.,]+)s\); PeakMem\(([0-9.,]+)M\); IncMem\(([0-9.,]+)M\); RealTimeIncMem\(([-0-9.,]+)M\)', content)
+#         rulePerf = rulePerf + get_runtime(content)
+    
+#     thread = re.findall(r'Current Threads : (\d+)', content)
+#     if len(thread) == 0:
+#         if re.match(r'.*/single/*', log_path) or re.match(r'.*/signal/*', log_path):
+#             thread = 1
+#         else:
+#             thread = re.findall(r'thread_(\d+)', log_path)[0]
+#     else:
+#         thread = int(thread[0])
+
+#     if casename not in caseData:
+#         caseData[casename] = {
+#             "casename": casename,
+#             "daily_metrics": {
+#                 date: {}
+#             },
+#             "available_dates": [date]
+#         }
+#     else:
+#         if date not in caseData[casename]["daily_metrics"]:
+#             caseData[casename]["daily_metrics"][date] = {}
+#         if date not in caseData[casename]["available_dates"]:
+#             caseData[casename]["available_dates"].append(date)
+    
+#     caseData[casename]["daily_metrics"][date] = get_data_json(
+#         caseData[casename]["daily_metrics"][date], rulePerf, thread
+#     )
+
+#     return caseData
+
+# def time_to_seconds(time_str):
+#     """将时间字符串转换为秒数"""
+#     hours = mins = secs = 0
+    
+#     hour_match = re.search(r'(\d+(?:\.\d+)?)\s*hours?', time_str, re.IGNORECASE)
+#     if hour_match:
+#         hours = float(hour_match.group(1))
+    
+#     min_match = re.search(r'(\d+(?:\.\d+)?)\s*mins?', time_str, re.IGNORECASE)
+#     if min_match:
+#         mins = float(min_match.group(1))
+    
+#     sec_match = re.search(r'(\d+(?:\.\d+)?)\s*secs?', time_str, re.IGNORECASE)
+#     if sec_match:
+#         secs = float(sec_match.group(1))
+    
+#     return timedelta(hours=hours, minutes=mins, seconds=secs).total_seconds()
+
+
+
+# def get_runtime (content):
+#     overall = re.findall(r'(Overall|read_design|check_lint|save_session)\s+\|\s([^|]+)\s\|\s([^|]+)\s\|\s([^|]+)\s\|', content)
+#     new = []
+#     for command in overall:
+#         name = command[0]
+#         elapse = time_to_seconds(command[1])
+#         cpu = time_to_seconds(command[2])
+#         peak = command[3].strip()
+#         new = new + [(name, f"{cpu}", f"{elapse}", f"{peak}", "null")]
+#     return new
+
+def get_single_data(files, flag):
+    """
+        single: 单线程的数据
+        flag: 0 表示只获取文件路径，1 表示解析全量数据
+    """
+    files = [info.path for info in files if info.path.endswith('.txt')]
+    if flag == 0:
+        return find(files, maxdepth=3, name_pattern=r"^\d{8}_[^/]+\.txt$", file_type="f")
+    else:
+        all_data = get_data_from_txt_single(files, {})
+        logger.info(f"从单线程文件解析到的数据: {all_data}")
+        save_json("data.json", all_data)
+        return all_data
+
+# # 获取多线程数据, flag: 0 表示只获取文件路径，1 表示解析全量数据
+# def get_multi_data(files, flag):
+#     if flag == 0:
+#         return find(files, maxdepth=6, name_pattern=r"elint.log", file_type="f")
+#     else:
+#         all_data = get_data_from_log(files, {})
+#         return all_data
+
+
+"""
+获取 elint 工具的数据 - 支持增量解析
+"""
 import os
 import re
 import time
 import json
 import csv
-
-
 from pathlib import Path
 from datetime import datetime, timedelta
-import subprocess
-from typing import Dict, List, Any, Optional, Tuple
+from typing import Dict, List, Any, Optional, Tuple, Union
+
 from utils.find_files import *
 from utils.log import *
 
-def save_json(json_path, data):
-    """
-    保存数据到JSON文件
-    
-    参数:
-        json_path: JSON文件路径
-        data: 要保存的数据
-    """
-    log(f"正在保存数据到 JSON 文件: {json_path}")
-    with open(json_path, 'w', encoding='utf-8') as f:
-        json.dump(data, f, ensure_ascii=False, indent=4)
+logger = get_logger(__name__)
 
 
 def log(msg: str) -> None:
-    """
-    带时间戳的日志输出函数
-    
-    参数:
-        msg: str - 要输出的日志信息
-    
-    输出格式:
-        [YYYY-MM-DD HH:MM:SS]: 日志内容
-    """
+    """带时间戳的日志输出"""
     print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}: {msg}")
 
 
-def load_json(path):
-    """
-    加载JSON文件
-    
-    参数:
-        path: JSON文件路径
-    
-    返回:
-        dict: 解析后的JSON数据
-    """
-    with open(path, 'r', encoding='utf-8') as file:
-        data = json.load(file)
-    return data
+def load_json(path) -> Dict:
+    """加载JSON文件"""
+    try:
+        with open(path, 'r', encoding='utf-8') as f:
+            return json.load(f)
+    except Exception as e:
+        logger.error(f"加载JSON失败 {path}: {e}")
+        return {}
 
 
-###################################################################################################################################################
-##    
-##    获取单线程的数据
-##    
-###################################################################################################################################################
+def save_json(json_path, data):
+    """保存数据到JSON文件"""
+    try:
+        with open(json_path, 'w', encoding='utf-8') as f:
+            json.dump(data, f, ensure_ascii=False, indent=4)
+    except Exception as e:
+        logger.error(f"保存JSON失败 {json_path}: {e}")
+
+
+# ==================== 单线程数据解析 ====================
 
 def gen_dict_data(caseData, data, thread, type):
     """生成字典数据"""
-
-    rules=["Overall", "read_design", "check_lint", "save_session"]
+    rules = ["Overall", "read_design", "check_lint", "save_session"]
     rule_data = {}
     for item in data:
         rulename = item[0]
@@ -76,23 +648,10 @@ def gen_dict_data(caseData, data, thread, type):
         elif type == 2:
             realtime = float(item[2])
             peakmem = float(item[3])
-            if item[4] == "NA":
-                incmem = "NA"
-            else:
-                incmem = float(item[4])
-            if item[5] == "NA":
-                realtimeincmem = item[5]
-            else:
-                realtimeincmem = float(item[5])
+            incmem = float(item[4]) if item[4] != "NA" else -1
+            realtimeincmem = float(item[5]) if item[5] != "NA" else -1
+
         if rulename in rules:
-            rule_data[rulename] = {
-                    "cputime": cputime,
-                    "peakmem": peakmem,
-                    "realtime": -1 if type == 1 else realtime,
-                    "incmem": -1 if type == 1 else incmem,
-                    "realtimeincmem": -1 if type == 1 else realtimeincmem
-                }
-        else:    
             rule_data[rulename] = {
                 "cputime": cputime,
                 "peakmem": peakmem,
@@ -100,191 +659,161 @@ def gen_dict_data(caseData, data, thread, type):
                 "incmem": -1 if type == 1 else incmem,
                 "realtimeincmem": -1 if type == 1 else realtimeincmem
             }
-    
+        else:
+            rule_data[rulename] = {
+                "cputime": cputime,
+                "peakmem": peakmem,
+                "realtime": -1 if type == 1 else realtime,
+                "incmem": -1 if type == 1 else incmem,
+                "realtimeincmem": -1 if type == 1 else realtimeincmem
+            }
     return rule_data
 
 
-def get_data_from_txt_single(txts, caseData):
-    """从txt文件获取日期数据"""
-    for txt in txts:
+def get_data_from_txt_single(file_paths: List[str], existing_data: Dict = None) -> Dict:
+    """
+    从txt文件获取日期数据（增量解析）
+    
+    Args:
+        file_paths: 要解析的文件路径列表
+        existing_data: 已有的数据（用于增量合并）
+    
+    Returns:
+        解析后的数据
+    """
+    case_data = existing_data or {}
+    
+    for txt in file_paths:
         txtname = Path(txt).name
         match = re.findall(r'(\d{8})_(.*)\.txt', txtname)
         if not match:
             continue
         date, casename = match[0]
-        
-        # 判断 case 存在字典中, 并创建一个新的
-        if casename not in caseData:
-            caseData[casename] = {
+
+        if casename not in case_data:
+            case_data[casename] = {
                 "casename": casename,
-                "daily_metrics": {
-                    date: {}
-                },
-                "available_dates": [date]
+                "daily_metrics": {},
+                "available_dates": []
             }
-        if date not in caseData[casename]["daily_metrics"]:
-            caseData[casename]["daily_metrics"][date] = {}
+        if date not in case_data[casename]["daily_metrics"]:
+            case_data[casename]["daily_metrics"][date] = {}
+
         try:
             with open(txt, 'r', encoding='utf-8') as f:
                 content = f.read()
                 data = re.findall(r"dict set \d{8} ([^\s]+) {([0-9.,]+) ([0-9.,]+) ([0-9.,]+)}", content)
                 typeStr = 1
                 if not data:
-                    data = re.findall(r"dict set \d{8} ([^\s]+) {([-0-9.,]+) ([-0-9.,]+) ([-0-9.,]+) ([-0-9.,NA]+) ([-0-9.,NA]+)}", content)
+                    data = re.findall(
+                        r"dict set \d{8} ([^\s]+) {([-0-9.,]+) ([-0-9.,]+) ([-0-9.,]+) ([-0-9.,NA]+) ([-0-9.,NA]+)}",
+                        content
+                    )
                     typeStr = 2
-                # 一个 case 一天的信息,并获取
-                caseData[casename]["daily_metrics"][date] = gen_dict_data(
-                    caseData[casename]["daily_metrics"][date], data, 0, typeStr
+                case_data[casename]["daily_metrics"][date] = gen_dict_data(
+                    case_data[casename]["daily_metrics"][date], data, 0, typeStr
                 )
-                if date not in caseData[casename]["available_dates"]:
-                    caseData[casename]["available_dates"].append(date)
+                if date not in case_data[casename]["available_dates"]:
+                    case_data[casename]["available_dates"].append(date)
         except Exception as e:
-            log(f"出现错误: get_date_from_txt: {date} {casename} {e}")
-            break
-    return caseData
+            logger.error(f"解析文件失败 {txt}: {e}")
+
+    return case_data
 
 
-def get_elint_performance(original_path, jsonDataFile) -> Tuple[Dict, List[str]]:
+def get_elint_performance(original_path: Union[str, List[str]], flag: int = 0) -> Union[List[str], Dict]:
     """
     获取 elint 性能数据
     
-    返回:
-        Tuple[Dict, List[str]]: (caseData, 数据文件列表)
+    Args:
+        original_path: 文件路径或目录路径
+        flag: 0-返回文件列表, 1-解析数据
+    
+    Returns:
+        文件列表或解析后的数据
     """
-    start = time.time()
-    dataFiles = find(original_path, maxdepth=3, name_pattern=r"^\d{8}_[^/]+\.txt$", file_type="f")
-    caseData = {}
-    caseData = get_data_from_txt_single(dataFiles, caseData)
-    caseData["dataFiles"] = sorted(dataFiles)
-    # if jsonDataFile:
-    #     save_json(jsonDataFile, caseData)
-    # else:
-    #     log("未提供 JSON 保存路径，跳过保存 elint 数据")
-
-    end = time.time()
-    print(f"运行时间: {end - start:.4f} 秒")
-    return caseData, sorted(dataFiles)
+    if flag == 0:
+        # 返回文件列表
+        if isinstance(original_path, str):
+            return find(original_path, maxdepth=3, name_pattern=r"^\d{8}_[^/]+\.txt$", file_type="f")
+        return []
+    else:
+        # 解析数据
+        if isinstance(original_path, list):
+            return get_data_from_txt_single(original_path)
+        return {}
 
 
-def get_incremental_data(
-    existing_data: Dict,
-    existing_files: List[str],
-    new_files: List[str],
-    json_path: Path
-) -> Tuple[Dict, List[str]]:
+def get_incremental_data(existing_data: Dict, new_files: List[str]) -> Tuple[Dict, List[str]]:
     """
     增量获取新增数据
     
-    参数:
+    Args:
         existing_data: 已有数据
-        existing_files: 已有文件列表
         new_files: 新文件列表
-        json_path: JSON文件路径
-        
-    返回:
-        Tuple[Dict, List[str]]: (更新后的数据, 合并后的文件列表)
+    
+    Returns:
+        (更新后的数据, 合并后的文件列表)
     """
     if not new_files:
-        return existing_data, existing_files
+        return existing_data, []
     
-    log(f"发现 {len(new_files)} 个新文件，进行增量更新")
+    logger.info(f"发现 {len(new_files)} 个新文件，进行增量更新")
+    new_data = get_data_from_txt_single(new_files)
+    merged_data = deep_merge(existing_data, new_data)
     
-    # 只解析新增的文件
-    new_data = get_data_from_txt_single(new_files, {})
-    
-    # 合并数据
-    for casename, case_info in new_data.items():
-        if casename not in existing_data:
-            existing_data[casename] = case_info
-        else:
-            # 合并 daily_metrics
-            for date, metrics in case_info.get('daily_metrics', {}).items():
-                if date not in existing_data[casename]['daily_metrics']:
-                    existing_data[casename]['daily_metrics'][date] = metrics
-                else:
-                    # 合并同一天不同阶段的metrics
-                    for rule, rule_data in metrics.items():
-                        if rule not in existing_data[casename]['daily_metrics'][date]:
-                            existing_data[casename]['daily_metrics'][date][rule] = rule_data
-            
-            # 合并 available_dates
-            existing_dates = set(existing_data[casename].get('available_dates', []))
-            new_dates = set(case_info.get('available_dates', []))
-            existing_data[casename]['available_dates'] = sorted(existing_dates | new_dates)
-    
-    # 合并文件列表
-    merged_files = list(dict.fromkeys(existing_files + new_files))
-    merged_files.sort()
-    
-    # 保存更新后的数据
-    existing_data["dataFiles"] = merged_files
-    # save_json(json_path, existing_data)
-    
-    return existing_data, merged_files
+    return merged_data, new_files
 
 
 def get_elint_data(jsonDataFile, original_path) -> Dict:
     """
     获取 elint 数据，支持增量更新
-
-    参数:
-        jsonDataFile: JSON数据文件路径（可以是字符串或Path对象）
+    
+    Args:
+        jsonDataFile: JSON数据文件路径
         original_path: 原始数据文件路径
-
-    返回:
+    
+    Returns:
         dict: 项目数据
     """
-    print("开始获取工具单线程的数据")
-    # 统一转换为 Path 对象
-    jsonDataFile = Path(jsonDataFile) if isinstance(jsonDataFile, str) else jsonDataFile
-    jsonPath = jsonDataFile.resolve() if jsonDataFile else None
+    logger.info("开始获取工具单线程的数据")
+    json_path = Path(jsonDataFile) if jsonDataFile else None
 
-    # 获取当前所有的 txt 文件
-    currentDataFiles = sorted(find(original_path, maxdepth=3, name_pattern=r"^\d{8}_[^/]+\.txt$", file_type="f"))
+    current_data_files = sorted(find(original_path, maxdepth=3, name_pattern=r"^\d{8}_[^/]+\.txt$", file_type="f"))
 
-    # 检查文件是否存在
-    if jsonPath and jsonPath.exists():
+    if json_path and json_path.exists():
         try:
-            lastCaseData = load_json(jsonPath)
-            lastDataFiles = lastCaseData.get("dataFiles", [])
-
-            # 计算新增的文件
-            addDataFiles = list(set(currentDataFiles) - set(lastDataFiles))
-            print(addDataFiles)
-            if addDataFiles:
-                # 有新增文件，进行增量更新
-                newCaseData, merged_files = get_incremental_data(
-                    lastCaseData, lastDataFiles, addDataFiles, jsonPath
-                )
+            last_case_data = load_json(json_path)
+            last_data_files = last_case_data.get("dataFiles", [])
+            add_data_files = list(set(current_data_files) - set(last_data_files))
+            
+            if add_data_files:
+                logger.info(f"发现 {len(add_data_files)} 个新文件")
+                new_case_data, merged_files = get_incremental_data(last_case_data, add_data_files)
+                new_case_data["dataFiles"] = merged_files
+                save_json(json_path, new_case_data)
+                return new_case_data
             else:
-                log("数据不需要更新")
-                newCaseData = lastCaseData
+                logger.info("数据不需要更新")
+                return last_case_data
         except Exception as e:
-            log(f"读取JSON文件失败: {e}，将重新获取")
-            newCaseData, _ = get_elint_performance(original_path, jsonPath)
+            logger.error(f"读取JSON文件失败: {e}，将重新获取")
+            new_case_data, _ = get_elint_performance(original_path, 1)
+            if json_path:
+                save_json(json_path, new_case_data)
+            return new_case_data
     else:
-        if jsonPath:
-            log("JSON文件不存在，将创建新文件")
-        else:
-            log("JSON路径未配置，将直接从原始数据读取，不保存JSON")
-        newCaseData, _ = get_elint_performance(original_path, jsonPath)
+        logger.info("JSON文件不存在，将创建新文件")
+        new_case_data, _ = get_elint_performance(original_path, 1)
+        if json_path:
+            save_json(json_path, new_case_data)
+        return new_case_data
 
-    # if "dataFiles" in newCaseData:
-    #     del newCaseData["dataFiles"]
 
-    return newCaseData
-
+# ==================== MR更新数据 ====================
 
 def read_csv(path):
-    """
-    读取CSV文件，返回日期到评论的映射
-    
-    参数:
-        path: CSV文件路径
-    
-    返回:
-        dict: {日期: 评论}
-    """
+    """读取CSV文件，返回日期到评论的映射"""
     data = {}
     try:
         with open(path, 'r', encoding='utf-8') as f:
@@ -294,295 +823,211 @@ def read_csv(path):
                 time_str = datetime.strptime(time_str, "%Y-%m-%d").strftime("%Y%m%d")
                 data[time_str] = row['comment']
     except Exception as e:
-        log(f"读取CSV文件失败 {path}: {e}")
+        logger.error(f"读取CSV文件失败 {path}: {e}")
     return data
 
 
 def get_perf(mrPath):
-    """
-    获取性能数据（MR更新信息）
-    
-    参数:
-        mem: 内存性能CSV文件路径
-        cpu: CPU性能CSV文件路径
-    
-    返回:
-        dict: 性能数据字典
-    """
+    """获取性能数据（MR更新信息）"""
     try:
-
         mem_data = read_csv(Path(mrPath) / "lint_mem.csv")
         cpu_data = read_csv(Path(mrPath) / "lint_cpu.csv")
-        print(f"解析数据 MR 数据中: cpu:{len(cpu_data)} mem: {len(mem_data)}")
-        
-        perf = {
-            "mem": mem_data,
-            "cpu": cpu_data
-        }
-
-        return perf
+        logger.info(f"解析 MR 数据: cpu:{len(cpu_data)} mem:{len(mem_data)}")
+        return {"mem": mem_data, "cpu": cpu_data}
     except Exception as e:
-        log(f"执行异常: {e}")
-        return {
-            "mem": {},
-            "cpu": {}
-        }
+        logger.error(f"获取MR数据失败: {e}")
+        return {"mem": {}, "cpu": {}}
 
 
-
-def get_user_data(case_path):
-    """
-    获取用户自定义数据
-    
-    参数:
-        case_path: 用户输入的路径
-    
-    返回:
-        dict: 符合 elint.json 格式的数据
-    """
-    result = {}
-    try:
-        result = load_json(case_path)
-        log(f"成功加载用户数据: {case_path}")
-    except Exception as e:
-        log(f"加载用户数据失败 {case_path}: {e}")
-        result = {}
-    return result
-
-def get_user_data_batch(case_paths: list):
-    """
-    批量获取用户自定义数据
-    
-    参数:
-        case_paths: 用户输入路径列表
-    
-    返回:
-        dict: 合并后的数据，符合 elint.json 格式
-    """
-    merged_result = {}
-    
-    for case_path in case_paths:
-        if not case_path or not case_path.strip():
-            continue
-        
-        case_path = case_path.strip()
-        data = get_user_data(case_path)
-        
-        if data:
-            # 合并数据，避免覆盖
-            for project_id, project_data in data.items():
-                if project_id not in merged_result:
-                    merged_result[project_id] = project_data
-                else:
-                    # 合并 daily_metrics
-                    existing_metrics = merged_result[project_id].get('daily_metrics', {})
-                    new_metrics = project_data.get('daily_metrics', {})
-                    
-                    for date, metrics in new_metrics.items():
-                        if date not in existing_metrics:
-                            existing_metrics[date] = metrics
-                        else:
-                            # 合并同一天的不同阶段
-                            for rule, rule_data in metrics.items():
-                                if rule not in existing_metrics[date]:
-                                    existing_metrics[date][rule] = rule_data
-                    
-                    merged_result[project_id]['daily_metrics'] = existing_metrics
-                    
-                    # 合并 available_dates
-                    existing_dates = set(merged_result[project_id].get('available_dates', []))
-                    new_dates = set(project_data.get('available_dates', []))
-                    merged_result[project_id]['available_dates'] = sorted(existing_dates | new_dates)
-                    
-                    log(f"合并项目 {project_id}: 新增 {len(new_metrics)} 天数据")
-    
-    log(f"批量加载完成，共加载 {len(merged_result)} 个项目")
-    return merged_result
-
-
-
-
-##########################################################################################################################################################################################
-## 多线程数据加载
-##########################################################################################################################################################################################
+# ==================== 多线程数据解析 ====================
 
 def get_data_json(rule_data, data, thread):
-    """
-    从多线程日志中解析性能数据
-    
-    参数:
-        rule_data: 当前规则数据（会被修改）
-        data: 解析出的性能数据列表
-        thread: 线程数
-    
-    返回:
-        dict: 更新后的 rule_data
-    """
+    """从多线程日志中解析性能数据"""
     for item in data:
         if len(item) == 0:
             continue
         rule = item[0]
-        print(item)
-        if rule == "sched(local)]":
-            continue
-        rules=["Overall", "read_design", "check_lint", "save_session"]
+        rules = ["Overall", "read_design", "check_lint", "save_session"]
 
         cputime = float(item[1].replace(',', ''))
         realtime = float(item[2].replace(',', ''))
         peakmem = float(item[3].replace(',', ''))
         incmem = -1 if rule in rules else float(item[4].replace(',', ''))
         realtimeincmem = -1 if rule in rules else float(item[5].replace(',', ''))
-        
+
         if re.fullmatch(r'^\[.*', rule):
             rule = re.findall(r'\[.*\]\[(.*)\]', rule)[0]
         if rule not in rule_data:
-            rule_data[rule] = {
-                "thread_metrics": {
-                    thread: {
-                        "cputime": cputime,
-                        "peakmem": peakmem,
-                        "incmem": incmem,
-                        "realtime": realtime,
-                        "realtimeincmem": realtimeincmem
-                    }
-                }
-            }
-        else:
-            rule_data[rule]["thread_metrics"][thread] = {
-                "cputime": cputime,
-                "peakmem": peakmem,
-                "incmem": incmem,
-                "realtime": realtime,
-                "realtimeincmem": realtimeincmem
-            }
-
+            rule_data[rule] = {"thread_metrics": {}}
+        rule_data[rule]["thread_metrics"][thread] = {
+            "cputime": cputime,
+            "peakmem": peakmem,
+            "incmem": incmem,
+            "realtime": realtime,
+            "realtimeincmem": realtimeincmem
+        }
     return rule_data
 
-def get_data_from_log(files, caseData):
-    for log_path in files:
-        caseData = get_perf_data_from_log(caseData, log_path)
-    return caseData
 
-def get_perf_data_from_log(caseData, log_path):
-    """
-    从单个日志文件解析性能数据
-    
-    参数:
-        caseData: 已有的项目数据字典
-        log_path: 日志文件路径
-    
-    返回:
-        dict: 更新后的 caseData
-    """
-    # 提取 casename 和 date
-    # 路径格式示例: /path/to/elint.log 或 /path/to/project/elint.log
-    path_str = str(log_path)
-
-    # 尝试从路径中提取 casename
-    parts = Path(path_str).parts
-    if len(parts) >= 2:
-        casename = parts[-2]  # 取上一级目录名作为 casename
-    else:
-        casename = "unknown"
-    
-    # 提取日期 - 多种格式支持
-    date_match = re.search(r'(\d{8})|(\d{4}-\d{2}-\d{2})', path_str)
-    if date_match:
-        date_str = date_match.group(1) or date_match.group(2)
-        if '-' in date_str:
-            date = datetime.strptime(date_str, "%Y-%m-%d").strftime("%Y%m%d")
-        else:
-            date = date_str
-    else:
-        try:
-            mtime = Path(log_path).stat().st_mtime
-            date = datetime.fromtimestamp(mtime).strftime("%Y%m%d")
-            log(f"未从日志路径提取到日期，使用文件修改时间作为日期: {date}")
-        except Exception:
-            date = datetime.now().strftime("%Y%m%d")
-            log(f"未从日志路径提取到日期，使用当前日期作为日期: {date}")
-
-    with open(log_path, "r", errors='ignore') as f:
-        content = f.read()
-        rulePerf = re.findall(r' ([^\s\]]+) done: CpuTime\(([0-9.,]+)s\); RealTime\(([0-9.,]+)s\); PeakMem\(([0-9.,]+)M\); IncMem\(([0-9.,]+)M\); RealTimeIncMem\(([-0-9.,]+)M\)', content)
-        rulePerf = rulePerf + get_runtime(content)
-    
-    thread = re.findall(r'Current Threads : (\d+)', content)
-    if len(thread) == 0:
-        if re.match(r'.*/single/*', log_path) or re.match(r'.*/signal/*', log_path):
-            thread = 1
-        else:
-            thread = re.findall(r'thread_(\d+)', log_path)[0]
-    else:
-        thread = int(thread[0])
-
-    if casename not in caseData:
-        caseData[casename] = {
-            "casename": casename,
-            "daily_metrics": {
-                date: {}
-            },
-            "available_dates": [date]
-        }
-    else:
-        if date not in caseData[casename]["daily_metrics"]:
-            caseData[casename]["daily_metrics"][date] = {}
-        if date not in caseData[casename]["available_dates"]:
-            caseData[casename]["available_dates"].append(date)
-    
-    caseData[casename]["daily_metrics"][date] = get_data_json(
-        caseData[casename]["daily_metrics"][date], rulePerf, thread
-    )
-
-    return caseData
-
-def time_to_seconds(time_str):
+def time_to_seconds(time_str: str) -> float:
     """将时间字符串转换为秒数"""
     hours = mins = secs = 0
-    
     hour_match = re.search(r'(\d+(?:\.\d+)?)\s*hours?', time_str, re.IGNORECASE)
     if hour_match:
         hours = float(hour_match.group(1))
-    
     min_match = re.search(r'(\d+(?:\.\d+)?)\s*mins?', time_str, re.IGNORECASE)
     if min_match:
         mins = float(min_match.group(1))
-    
     sec_match = re.search(r'(\d+(?:\.\d+)?)\s*secs?', time_str, re.IGNORECASE)
     if sec_match:
         secs = float(sec_match.group(1))
-    
     return timedelta(hours=hours, minutes=mins, seconds=secs).total_seconds()
 
 
-
-def get_runtime (content):
-    overall = re.findall(r'(Overall|read_design|check_lint|save_session)\s+\|\s([^|]+)\s\|\s([^|]+)\s\|\s([^|]+)\s\|', content)
+def get_runtime(content: str) -> List[tuple]:
+    """从日志内容中提取运行时数据"""
+    overall = re.findall(
+        r'(Overall|read_design|check_lint|save_session)\s+\|\s([^|]+)\s\|\s([^|]+)\s\|\s([^|]+)\s\|',
+        content
+    )
     new = []
     for command in overall:
         name = command[0]
         elapse = time_to_seconds(command[1])
         cpu = time_to_seconds(command[2])
         peak = command[3].strip()
-        new = new + [(name, f"{cpu}", f"{elapse}", f"{peak}", "null")]
+        new.append((name, f"{cpu}", f"{elapse}", f"{peak}", "null"))
     return new
 
-def get_single_data(files, flag):
-    """
-        single: 单线程的数据
-        flag: 0 表示只获取文件路径，1 表示解析全量数据
-    """
 
-    if flag == 0:
-        return find(files, maxdepth=3, name_pattern=r"^\d{8}_[^/]+\.txt$", file_type="f")
-    else:
-        all_data = get_data_from_txt_single(files, {})
-        return all_data
+def get_data_from_log(file_paths: List[str], existing_data: Dict = None) -> Dict:
+    """从日志文件解析多线程数据（增量解析）"""
+    case_data = existing_data or {}
+    
+    for log_path in file_paths:
+        path_str = str(log_path)
+        parts = Path(path_str).parts
+        casename = parts[-2] if len(parts) >= 2 else "unknown"
 
-# 获取多线程数据, flag: 0 表示只获取文件路径，1 表示解析全量数据
-def get_multi_data(files, flag):
+        date_match = re.search(r'(\d{8})|(\d{4}-\d{2}-\d{2})', path_str)
+        if date_match:
+            date_str = date_match.group(1) or date_match.group(2)
+            if '-' in date_str:
+                date = datetime.strptime(date_str, "%Y-%m-%d").strftime("%Y%m%d")
+            else:
+                date = date_str
+        else:
+            try:
+                mtime = Path(log_path).stat().st_mtime
+                date = datetime.fromtimestamp(mtime).strftime("%Y%m%d")
+            except Exception:
+                date = datetime.now().strftime("%Y%m%d")
+
+        try:
+            with open(log_path, "r", errors='ignore') as f:
+                content = f.read()
+                rulePerf = re.findall(
+                    r' ([^\s\]]+) done: CpuTime\(([0-9.,]+)s\); RealTime\(([0-9.,]+)s\); PeakMem\(([0-9.,]+)M\); IncMem\(([0-9.,]+)M\); RealTimeIncMem\(([-0-9.,]+)M\)',
+                    content
+                )
+                rulePerf = rulePerf + get_runtime(content)
+        except Exception as e:
+            logger.error(f"读取日志文件失败 {log_path}: {e}")
+            continue
+
+        thread_match = re.findall(r'Current Threads : (\d+)', content)
+        if thread_match:
+            thread = int(thread_match[0])
+        else:
+            if re.match(r'.*/single/*', path_str) or re.match(r'.*/signal/*', path_str):
+                thread = 1
+            else:
+                thread_match2 = re.findall(r'thread_(\d+)', path_str)
+                thread = int(thread_match2[0]) if thread_match2 else 0
+
+        if casename not in case_data:
+            case_data[casename] = {
+                "casename": casename,
+                "daily_metrics": {},
+                "available_dates": []
+            }
+        if date not in case_data[casename]["daily_metrics"]:
+            case_data[casename]["daily_metrics"][date] = {}
+        if date not in case_data[casename]["available_dates"]:
+            case_data[casename]["available_dates"].append(date)
+
+        case_data[casename]["daily_metrics"][date] = get_data_json(
+            case_data[casename]["daily_metrics"][date], rulePerf, thread
+        )
+
+    return case_data
+
+
+def get_multi_data(original_path: Union[str, List[str]], flag: int = 0) -> Union[List[str], Dict]:
+    """获取多线程数据"""
+
+    print(original_path)
     if flag == 0:
-        return find(files, maxdepth=6, name_pattern=r"elint.log", file_type="f")
+        if isinstance(original_path, str):
+            return find(original_path, maxdepth=6, name_pattern=r"elint\.log", file_type="f")
+        return []
     else:
-        all_data = get_data_from_log(files, {})
-        return all_data
+        if isinstance(original_path, list):
+            return get_data_from_log(original_path)
+        return {}
+
+
+# ==================== 用户数据 ====================
+
+def get_user_data(case_path: str) -> Dict:
+    """获取用户自定义数据"""
+    try:
+        return load_json(case_path)
+    except Exception as e:
+        logger.error(f"加载用户数据失败 {case_path}: {e}")
+        return {}
+
+
+def get_user_data_batch(case_paths: list) -> Dict:
+    """批量获取用户自定义数据"""
+    merged_result = {}
+    for case_path in case_paths:
+        if not case_path or not case_path.strip():
+            continue
+        data = get_user_data(case_path.strip())
+        if data:
+            for project_id, project_data in data.items():
+                if project_id not in merged_result:
+                    merged_result[project_id] = project_data
+                else:
+                    existing_metrics = merged_result[project_id].get('daily_metrics', {})
+                    new_metrics = project_data.get('daily_metrics', {})
+                    for date, metrics in new_metrics.items():
+                        if date not in existing_metrics:
+                            existing_metrics[date] = metrics
+                        else:
+                            for rule, rule_data in metrics.items():
+                                if rule not in existing_metrics[date]:
+                                    existing_metrics[date][rule] = rule_data
+                    merged_result[project_id]['daily_metrics'] = existing_metrics
+                    existing_dates = set(merged_result[project_id].get('available_dates', []))
+                    new_dates = set(project_data.get('available_dates', []))
+                    merged_result[project_id]['available_dates'] = sorted(existing_dates | new_dates)
+    logger.info(f"批量加载完成，共加载 {len(merged_result)} 个项目")
+    return merged_result
+
+
+def deep_merge(dict1: Dict, dict2: Dict) -> Dict:
+    """递归合并两个字典"""
+    result = dict1.copy()
+    for key, value in dict2.items():
+        if key in result:
+            if isinstance(result[key], dict) and isinstance(value, dict):
+                result[key] = deep_merge(result[key], value)
+            elif isinstance(result[key], list) and isinstance(value, list):
+                result[key] = list(dict.fromkeys(result[key] + value))
+            else:
+                result[key] = value
+        else:
+            result[key] = value
+    return result

@@ -8,6 +8,14 @@ from utils.log import get_logger
 
 logger = get_logger(__name__)
 
+
+
+@app.route('/api/compare', methods=['GET'])
+def api_compare():
+    """对比接口"""
+    return jsonify({"message": "对比接口"}), 200
+
+
 @app.route('/api/comparison', methods=['POST'])
 def api_get_comparison():
     """获取对比数据（单线程对比 & 多线程对比）"""
