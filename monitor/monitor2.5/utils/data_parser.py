@@ -1,6 +1,8 @@
 """
 数据解析器 - 统一入口，根据模式调用对应的解析器
 """
+
+
 from typing import Dict, List, Any, Optional
 from unittest import result
 import json
@@ -22,24 +24,59 @@ class DataParser:
         self.logger.info("数据管理器初始化")
 
     # 解析工具的数据，并放在对应的目录下；方便用户直接获取数据
-    def parse_all_data(self, tool_id, all_data, mode):
+    def parse_all_data(self, all_data: Dict, flag: int):
+        """"
+            解析工具的数据，并放在对应的目录下；方便用户直接获取数据
+            参数:
+                all_data: 原始数据
+                flag: 标志位 - 0 单线程，1 多线程
+            返回数据结构：{
+                    'single': { 
+                        "casename": {
+                            "cputime" : {
+                                rule: [dates]
+                            }
+                        }
+                    },
+                    'multi': {
+                        "casename": {
+                            "cputime" : {
+                                rule: {
+                                    date: [threads]
+                                }
+                            }
+                        }
+                    }
+                }
         """
-        解析工具的数据，并放在对应的目录下；方便用户直接获取数据
-        
-        参数:
-            tool_id: 工具ID
-            data: 原始数据
-            mode: 模式 - 'single' 或 'multi'
-        """
-        if mode == 'single':
-            self.logger.info(f"解析单线程数据 - {tool_id}")
-            single_parser = SingleThreadParser()
-            return single_parser.parse_single_data(tool_id, mode, all_data)
-        elif mode == 'multi':
-            self.logger.info(f"解析多线程数据 - {tool_id}")
-            multi_parser = MultiThreadParser()
-            print(json.dumps(all_data, ensure_ascii=False, indent=4))
-            return multi_parser.parse_multi_data(tool_id, mode, all_data)
+
+        single = {}
+        multi = {}
+        for casename, case_data in all_data.items():
+            if casename not in single:
+                single[casename] = {}
+            types = case_data['metrics']
+            rules = case_data['rules_data'].keys()
+
+            for rule in rules:
+                dates = case_data['rules_data'][rule]['date']
+                date_datas = case_data['rules_data'][rule]['date_data']
+                for date, thread_data in date_datas.items():
+                    for thread, data in thread_data.items():
+                        for i in range(len(types)):
+                            if data[i] > 0:
+                                if date in dates:
+                                    if thread == -1:
+                                        single[casename][types[i]][rule].append(date)
+                                    else:
+                                        if rule in multi[casename][types[i]]:
+                                            multi[casename][types[i]][rule][date].append(thread)
+                                        else:
+                                            multi[casename][types[i]][rule][date] = [thread]
+
+        return {'single': single, 'multi': multi}
+
+
 
 # 全局实例
 data_parser = DataParser()

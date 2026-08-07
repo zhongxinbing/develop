@@ -578,10 +578,10 @@ def get_elint_data_from_log(file_path: str, elint_data: Dict, thread: int) -> No
         return
 
 # 获取elint工具的数据
-def get_elint_data(filepaths: str) -> Dict:
+def get_elint_data(elint_data: Dict, filepaths: str) -> Dict:
     """获取elint数据"""
     filepaths = [info.path for info in filepaths if info.path.endswith('.txt') or info.path.endswith('.log')]
-    elint_data = {}
+
     for file_path in filepaths:
         logger.info(f"从文件获取性能数据: {file_path}")
         # 获取是几线程的

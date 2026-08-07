@@ -12534,3 +12534,682 @@ KeyError: 'aes'
 2026-08-07 16:00:25 - INFO - __main__ - app.py:92 - 启动性能监控平台后端服务
 2026-08-07 16:00:25 - WARN - werkzeug - _internal.py:97 -  * Debugger is active!
 2026-08-07 16:00:25 - INFO - werkzeug - _internal.py:97 -  * Debugger PIN: 144-814-780
+2026-08-07 16:19:03 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'c:\\Users\\xbzhong\\Desktop\\lint\\script\\develop\\monitor\\monitor2.5\\utils\\data_manager.py', reloading
+2026-08-07 16:19:03 - INFO - utils.data_manager - data_manager.py:1228 - 文件监听器已停止
+2026-08-07 16:19:03 - INFO - __main__ - app.py:69 - 文件监听器已停止
+2026-08-07 16:19:03 - INFO - utils.data_manager - data_manager.py:1228 - 文件监听器已停止
+2026-08-07 16:19:03 - INFO - api.compare - app.py:69 - 文件监听器已停止
+2026-08-07 16:19:03 - INFO - werkzeug - _internal.py:97 -  * Restarting with watchdog (windowsapi)
+2026-08-07 16:19:03 - INFO - utils.data_parser - data_parser.py:22 - 数据管理器初始化
+2026-08-07 16:19:03 - INFO - utils.tool_manager - tool_manager.py:54 - 加载工具配置文件: C:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\data\tools.json
+2026-08-07 16:19:03 - INFO - utils.tool_manager - tool_manager.py:45 - 工具管理器初始化完成
+2026-08-07 16:19:03 - INFO - utils.data_manager - data_manager.py:909 - 数据管理器初始化完成
+2026-08-07 16:19:03 - INFO - __main__ - app.py:92 - 启动性能监控平台后端服务
+2026-08-07 16:19:03 - WARN - werkzeug - _internal.py:97 -  * Debugger is active!
+2026-08-07 16:19:03 - INFO - werkzeug - _internal.py:97 -  * Debugger PIN: 144-814-780
+2026-08-07 16:21:11 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'c:\\Users\\xbzhong\\Desktop\\lint\\script\\develop\\monitor\\monitor2.5\\utils\\data_manager.py', reloading
+2026-08-07 16:21:11 - INFO - utils.data_manager - data_manager.py:1228 - 文件监听器已停止
+2026-08-07 16:21:11 - INFO - __main__ - app.py:69 - 文件监听器已停止
+2026-08-07 16:21:11 - INFO - utils.data_manager - data_manager.py:1228 - 文件监听器已停止
+2026-08-07 16:21:11 - INFO - api.compare - app.py:69 - 文件监听器已停止
+2026-08-07 16:21:11 - INFO - werkzeug - _internal.py:97 -  * Restarting with watchdog (windowsapi)
+2026-08-07 16:21:12 - INFO - utils.data_parser - data_parser.py:22 - 数据管理器初始化
+2026-08-07 16:21:12 - INFO - utils.tool_manager - tool_manager.py:54 - 加载工具配置文件: C:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\data\tools.json
+2026-08-07 16:21:12 - INFO - utils.tool_manager - tool_manager.py:45 - 工具管理器初始化完成
+2026-08-07 16:21:12 - INFO - utils.data_manager - data_manager.py:909 - 数据管理器初始化完成
+2026-08-07 16:21:12 - INFO - __main__ - app.py:92 - 启动性能监控平台后端服务
+2026-08-07 16:21:12 - WARN - werkzeug - _internal.py:97 -  * Debugger is active!
+2026-08-07 16:21:12 - INFO - werkzeug - _internal.py:97 -  * Debugger PIN: 144-814-780
+2026-08-07 16:21:21 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'c:\\Users\\xbzhong\\Desktop\\lint\\script\\develop\\monitor\\monitor2.5\\utils\\data_manager.py', reloading
+2026-08-07 16:21:21 - INFO - utils.data_manager - data_manager.py:1228 - 文件监听器已停止
+2026-08-07 16:21:21 - INFO - __main__ - app.py:69 - 文件监听器已停止
+2026-08-07 16:21:21 - INFO - utils.data_manager - data_manager.py:1228 - 文件监听器已停止
+2026-08-07 16:21:21 - INFO - api.compare - app.py:69 - 文件监听器已停止
+2026-08-07 16:21:22 - INFO - werkzeug - _internal.py:97 -  * Restarting with watchdog (windowsapi)
+2026-08-07 16:21:22 - INFO - utils.data_parser - data_parser.py:22 - 数据管理器初始化
+2026-08-07 16:21:22 - INFO - utils.tool_manager - tool_manager.py:54 - 加载工具配置文件: C:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\data\tools.json
+2026-08-07 16:21:22 - INFO - utils.tool_manager - tool_manager.py:45 - 工具管理器初始化完成
+2026-08-07 16:21:22 - INFO - utils.data_manager - data_manager.py:909 - 数据管理器初始化完成
+2026-08-07 16:21:22 - INFO - __main__ - app.py:92 - 启动性能监控平台后端服务
+2026-08-07 16:21:22 - WARN - werkzeug - _internal.py:97 -  * Debugger is active!
+2026-08-07 16:21:22 - INFO - werkzeug - _internal.py:97 -  * Debugger PIN: 144-814-780
+2026-08-07 16:21:43 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'c:\\Users\\xbzhong\\Desktop\\lint\\script\\develop\\monitor\\monitor2.5\\utils\\data_manager.py', reloading
+2026-08-07 16:21:43 - INFO - utils.data_manager - data_manager.py:1228 - 文件监听器已停止
+2026-08-07 16:21:43 - INFO - __main__ - app.py:69 - 文件监听器已停止
+2026-08-07 16:21:43 - INFO - utils.data_manager - data_manager.py:1228 - 文件监听器已停止
+2026-08-07 16:21:43 - INFO - api.compare - app.py:69 - 文件监听器已停止
+2026-08-07 16:21:43 - INFO - werkzeug - _internal.py:97 -  * Restarting with watchdog (windowsapi)
+2026-08-07 16:21:43 - INFO - utils.data_parser - data_parser.py:22 - 数据管理器初始化
+2026-08-07 16:21:43 - INFO - utils.tool_manager - tool_manager.py:54 - 加载工具配置文件: C:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\data\tools.json
+2026-08-07 16:21:43 - INFO - utils.tool_manager - tool_manager.py:45 - 工具管理器初始化完成
+2026-08-07 16:21:43 - INFO - utils.data_manager - data_manager.py:909 - 数据管理器初始化完成
+2026-08-07 16:21:43 - INFO - __main__ - app.py:92 - 启动性能监控平台后端服务
+2026-08-07 16:21:43 - WARN - werkzeug - _internal.py:97 -  * Debugger is active!
+2026-08-07 16:21:43 - INFO - werkzeug - _internal.py:97 -  * Debugger PIN: 144-814-780
+2026-08-07 16:21:52 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'c:\\Users\\xbzhong\\Desktop\\lint\\script\\develop\\monitor\\monitor2.5\\utils\\data_manager.py', reloading
+2026-08-07 16:21:52 - INFO - utils.data_manager - data_manager.py:1228 - 文件监听器已停止
+2026-08-07 16:21:52 - INFO - __main__ - app.py:69 - 文件监听器已停止
+2026-08-07 16:21:52 - INFO - utils.data_manager - data_manager.py:1228 - 文件监听器已停止
+2026-08-07 16:21:52 - INFO - api.compare - app.py:69 - 文件监听器已停止
+2026-08-07 16:21:52 - INFO - werkzeug - _internal.py:97 -  * Restarting with watchdog (windowsapi)
+2026-08-07 16:21:52 - INFO - utils.data_parser - data_parser.py:22 - 数据管理器初始化
+2026-08-07 16:21:52 - INFO - utils.tool_manager - tool_manager.py:54 - 加载工具配置文件: C:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\data\tools.json
+2026-08-07 16:21:52 - INFO - utils.tool_manager - tool_manager.py:45 - 工具管理器初始化完成
+2026-08-07 16:21:52 - INFO - utils.data_manager - data_manager.py:909 - 数据管理器初始化完成
+2026-08-07 16:21:52 - INFO - __main__ - app.py:92 - 启动性能监控平台后端服务
+2026-08-07 16:21:52 - WARN - werkzeug - _internal.py:97 -  * Debugger is active!
+2026-08-07 16:21:52 - INFO - werkzeug - _internal.py:97 -  * Debugger PIN: 144-814-780
+2026-08-07 16:22:10 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'c:\\Users\\xbzhong\\Desktop\\lint\\script\\develop\\monitor\\monitor2.5\\utils\\data_manager.py', reloading
+2026-08-07 16:22:10 - INFO - utils.data_manager - data_manager.py:1228 - 文件监听器已停止
+2026-08-07 16:22:10 - INFO - __main__ - app.py:69 - 文件监听器已停止
+2026-08-07 16:22:10 - INFO - utils.data_manager - data_manager.py:1228 - 文件监听器已停止
+2026-08-07 16:22:10 - INFO - api.compare - app.py:69 - 文件监听器已停止
+2026-08-07 16:22:10 - INFO - werkzeug - _internal.py:97 -  * Restarting with watchdog (windowsapi)
+2026-08-07 16:22:10 - INFO - utils.data_parser - data_parser.py:22 - 数据管理器初始化
+2026-08-07 16:22:11 - INFO - utils.tool_manager - tool_manager.py:54 - 加载工具配置文件: C:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\data\tools.json
+2026-08-07 16:22:11 - INFO - utils.tool_manager - tool_manager.py:45 - 工具管理器初始化完成
+2026-08-07 16:22:11 - INFO - utils.data_manager - data_manager.py:909 - 数据管理器初始化完成
+2026-08-07 16:22:11 - INFO - __main__ - app.py:92 - 启动性能监控平台后端服务
+2026-08-07 16:22:11 - WARN - werkzeug - _internal.py:97 -  * Debugger is active!
+2026-08-07 16:22:11 - INFO - werkzeug - _internal.py:97 -  * Debugger PIN: 144-814-780
+2026-08-07 16:22:18 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'c:\\Users\\xbzhong\\Desktop\\lint\\script\\develop\\monitor\\monitor2.5\\utils\\data_manager.py', reloading
+2026-08-07 16:22:18 - INFO - utils.data_manager - data_manager.py:1228 - 文件监听器已停止
+2026-08-07 16:22:18 - INFO - __main__ - app.py:69 - 文件监听器已停止
+2026-08-07 16:22:18 - INFO - utils.data_manager - data_manager.py:1228 - 文件监听器已停止
+2026-08-07 16:22:18 - INFO - api.compare - app.py:69 - 文件监听器已停止
+2026-08-07 16:22:18 - INFO - werkzeug - _internal.py:97 -  * Restarting with watchdog (windowsapi)
+2026-08-07 16:22:19 - INFO - utils.data_parser - data_parser.py:22 - 数据管理器初始化
+2026-08-07 16:22:19 - INFO - utils.tool_manager - tool_manager.py:54 - 加载工具配置文件: C:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\data\tools.json
+2026-08-07 16:22:19 - INFO - utils.tool_manager - tool_manager.py:45 - 工具管理器初始化完成
+2026-08-07 16:22:19 - INFO - utils.data_manager - data_manager.py:909 - 数据管理器初始化完成
+2026-08-07 16:22:19 - INFO - __main__ - app.py:92 - 启动性能监控平台后端服务
+2026-08-07 16:22:19 - WARN - werkzeug - _internal.py:97 -  * Debugger is active!
+2026-08-07 16:22:19 - INFO - werkzeug - _internal.py:97 -  * Debugger PIN: 144-814-780
+2026-08-07 16:25:25 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'c:\\Users\\xbzhong\\Desktop\\lint\\script\\develop\\monitor\\monitor2.5\\utils\\data_manager.py', reloading
+2026-08-07 16:25:25 - INFO - utils.data_manager - data_manager.py:1228 - 文件监听器已停止
+2026-08-07 16:25:25 - INFO - __main__ - app.py:69 - 文件监听器已停止
+2026-08-07 16:25:25 - INFO - utils.data_manager - data_manager.py:1228 - 文件监听器已停止
+2026-08-07 16:25:25 - INFO - api.compare - app.py:69 - 文件监听器已停止
+2026-08-07 16:25:25 - INFO - werkzeug - _internal.py:97 -  * Restarting with watchdog (windowsapi)
+2026-08-07 16:25:25 - INFO - utils.data_parser - data_parser.py:22 - 数据管理器初始化
+2026-08-07 16:25:25 - INFO - utils.tool_manager - tool_manager.py:54 - 加载工具配置文件: C:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\data\tools.json
+2026-08-07 16:25:25 - INFO - utils.tool_manager - tool_manager.py:45 - 工具管理器初始化完成
+2026-08-07 16:25:25 - INFO - utils.data_manager - data_manager.py:909 - 数据管理器初始化完成
+2026-08-07 16:25:25 - INFO - __main__ - app.py:92 - 启动性能监控平台后端服务
+2026-08-07 16:25:25 - WARN - werkzeug - _internal.py:97 -  * Debugger is active!
+2026-08-07 16:25:25 - INFO - werkzeug - _internal.py:97 -  * Debugger PIN: 144-814-780
+2026-08-07 16:27:26 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'c:\\Users\\xbzhong\\Desktop\\lint\\script\\develop\\monitor\\monitor2.5\\utils\\data_manager.py', reloading
+2026-08-07 16:27:26 - INFO - utils.data_manager - data_manager.py:1228 - 文件监听器已停止
+2026-08-07 16:27:26 - INFO - __main__ - app.py:69 - 文件监听器已停止
+2026-08-07 16:27:26 - INFO - utils.data_manager - data_manager.py:1228 - 文件监听器已停止
+2026-08-07 16:27:26 - INFO - api.compare - app.py:69 - 文件监听器已停止
+2026-08-07 16:27:26 - INFO - werkzeug - _internal.py:97 -  * Restarting with watchdog (windowsapi)
+2026-08-07 16:27:26 - INFO - utils.data_parser - data_parser.py:22 - 数据管理器初始化
+2026-08-07 16:27:26 - INFO - utils.tool_manager - tool_manager.py:54 - 加载工具配置文件: C:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\data\tools.json
+2026-08-07 16:27:26 - INFO - utils.tool_manager - tool_manager.py:45 - 工具管理器初始化完成
+2026-08-07 16:27:26 - INFO - utils.data_manager - data_manager.py:909 - 数据管理器初始化完成
+2026-08-07 16:27:26 - INFO - __main__ - app.py:92 - 启动性能监控平台后端服务
+2026-08-07 16:27:26 - WARN - werkzeug - _internal.py:97 -  * Debugger is active!
+2026-08-07 16:27:26 - INFO - werkzeug - _internal.py:97 -  * Debugger PIN: 144-814-780
+2026-08-07 16:27:57 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'c:\\Users\\xbzhong\\Desktop\\lint\\script\\develop\\monitor\\monitor2.5\\utils\\data_manager.py', reloading
+2026-08-07 16:27:57 - INFO - utils.data_manager - data_manager.py:1228 - 文件监听器已停止
+2026-08-07 16:27:57 - INFO - __main__ - app.py:69 - 文件监听器已停止
+2026-08-07 16:27:57 - INFO - utils.data_manager - data_manager.py:1228 - 文件监听器已停止
+2026-08-07 16:27:57 - INFO - api.compare - app.py:69 - 文件监听器已停止
+2026-08-07 16:27:57 - INFO - werkzeug - _internal.py:97 -  * Restarting with watchdog (windowsapi)
+2026-08-07 16:27:57 - INFO - utils.data_parser - data_parser.py:22 - 数据管理器初始化
+2026-08-07 16:27:57 - INFO - utils.tool_manager - tool_manager.py:54 - 加载工具配置文件: C:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\data\tools.json
+2026-08-07 16:27:57 - INFO - utils.tool_manager - tool_manager.py:45 - 工具管理器初始化完成
+2026-08-07 16:27:57 - INFO - utils.data_manager - data_manager.py:909 - 数据管理器初始化完成
+2026-08-07 16:27:57 - INFO - __main__ - app.py:92 - 启动性能监控平台后端服务
+2026-08-07 16:27:57 - WARN - werkzeug - _internal.py:97 -  * Debugger is active!
+2026-08-07 16:27:57 - INFO - werkzeug - _internal.py:97 -  * Debugger PIN: 144-814-780
+2026-08-07 16:28:18 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'c:\\Users\\xbzhong\\Desktop\\lint\\script\\develop\\monitor\\monitor2.5\\utils\\data_manager.py', reloading
+2026-08-07 16:28:18 - INFO - utils.data_manager - data_manager.py:1228 - 文件监听器已停止
+2026-08-07 16:28:18 - INFO - __main__ - app.py:69 - 文件监听器已停止
+2026-08-07 16:28:18 - INFO - utils.data_manager - data_manager.py:1228 - 文件监听器已停止
+2026-08-07 16:28:18 - INFO - api.compare - app.py:69 - 文件监听器已停止
+2026-08-07 16:28:18 - INFO - werkzeug - _internal.py:97 -  * Restarting with watchdog (windowsapi)
+2026-08-07 16:28:18 - INFO - utils.data_parser - data_parser.py:22 - 数据管理器初始化
+2026-08-07 16:28:18 - INFO - utils.tool_manager - tool_manager.py:54 - 加载工具配置文件: C:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\data\tools.json
+2026-08-07 16:28:18 - INFO - utils.tool_manager - tool_manager.py:45 - 工具管理器初始化完成
+2026-08-07 16:28:18 - INFO - utils.data_manager - data_manager.py:909 - 数据管理器初始化完成
+2026-08-07 16:28:18 - INFO - __main__ - app.py:92 - 启动性能监控平台后端服务
+2026-08-07 16:28:18 - WARN - werkzeug - _internal.py:97 -  * Debugger is active!
+2026-08-07 16:28:18 - INFO - werkzeug - _internal.py:97 -  * Debugger PIN: 144-814-780
+2026-08-07 16:28:45 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'c:\\Users\\xbzhong\\Desktop\\lint\\script\\develop\\monitor\\monitor2.5\\utils\\data_manager.py', reloading
+2026-08-07 16:28:45 - INFO - utils.data_manager - data_manager.py:1228 - 文件监听器已停止
+2026-08-07 16:28:45 - INFO - __main__ - app.py:69 - 文件监听器已停止
+2026-08-07 16:28:45 - INFO - utils.data_manager - data_manager.py:1228 - 文件监听器已停止
+2026-08-07 16:28:45 - INFO - api.compare - app.py:69 - 文件监听器已停止
+2026-08-07 16:28:45 - INFO - werkzeug - _internal.py:97 -  * Restarting with watchdog (windowsapi)
+2026-08-07 16:28:46 - INFO - utils.data_parser - data_parser.py:22 - 数据管理器初始化
+2026-08-07 16:28:46 - INFO - utils.tool_manager - tool_manager.py:54 - 加载工具配置文件: C:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\data\tools.json
+2026-08-07 16:28:46 - INFO - utils.tool_manager - tool_manager.py:45 - 工具管理器初始化完成
+2026-08-07 16:28:46 - INFO - utils.data_manager - data_manager.py:909 - 数据管理器初始化完成
+2026-08-07 16:28:46 - INFO - __main__ - app.py:92 - 启动性能监控平台后端服务
+2026-08-07 16:28:46 - WARN - werkzeug - _internal.py:97 -  * Debugger is active!
+2026-08-07 16:28:46 - INFO - werkzeug - _internal.py:97 -  * Debugger PIN: 144-814-780
+2026-08-07 16:29:15 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'c:\\Users\\xbzhong\\Desktop\\lint\\script\\develop\\monitor\\monitor2.5\\utils\\data_manager.py', reloading
+2026-08-07 16:29:15 - INFO - utils.data_manager - data_manager.py:1228 - 文件监听器已停止
+2026-08-07 16:29:15 - INFO - __main__ - app.py:69 - 文件监听器已停止
+2026-08-07 16:29:15 - INFO - utils.data_manager - data_manager.py:1228 - 文件监听器已停止
+2026-08-07 16:29:15 - INFO - api.compare - app.py:69 - 文件监听器已停止
+2026-08-07 16:29:15 - INFO - werkzeug - _internal.py:97 -  * Restarting with watchdog (windowsapi)
+2026-08-07 16:29:15 - INFO - utils.data_parser - data_parser.py:22 - 数据管理器初始化
+2026-08-07 16:29:15 - INFO - utils.tool_manager - tool_manager.py:54 - 加载工具配置文件: C:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\data\tools.json
+2026-08-07 16:29:15 - INFO - utils.tool_manager - tool_manager.py:45 - 工具管理器初始化完成
+2026-08-07 16:29:15 - INFO - utils.data_manager - data_manager.py:909 - 数据管理器初始化完成
+2026-08-07 16:29:15 - INFO - __main__ - app.py:92 - 启动性能监控平台后端服务
+2026-08-07 16:29:15 - WARN - werkzeug - _internal.py:97 -  * Debugger is active!
+2026-08-07 16:29:15 - INFO - werkzeug - _internal.py:97 -  * Debugger PIN: 144-814-780
+2026-08-07 16:29:21 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'c:\\Users\\xbzhong\\Desktop\\lint\\script\\develop\\monitor\\monitor2.5\\utils\\data_manager.py', reloading
+2026-08-07 16:29:21 - INFO - utils.data_manager - data_manager.py:1228 - 文件监听器已停止
+2026-08-07 16:29:21 - INFO - __main__ - app.py:69 - 文件监听器已停止
+2026-08-07 16:29:21 - INFO - utils.data_manager - data_manager.py:1228 - 文件监听器已停止
+2026-08-07 16:29:21 - INFO - api.compare - app.py:69 - 文件监听器已停止
+2026-08-07 16:29:21 - INFO - werkzeug - _internal.py:97 -  * Restarting with watchdog (windowsapi)
+2026-08-07 16:29:22 - INFO - utils.data_parser - data_parser.py:22 - 数据管理器初始化
+2026-08-07 16:29:22 - INFO - utils.tool_manager - tool_manager.py:54 - 加载工具配置文件: C:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\data\tools.json
+2026-08-07 16:29:22 - INFO - utils.tool_manager - tool_manager.py:45 - 工具管理器初始化完成
+2026-08-07 16:29:22 - INFO - utils.data_manager - data_manager.py:909 - 数据管理器初始化完成
+2026-08-07 16:29:22 - INFO - __main__ - app.py:92 - 启动性能监控平台后端服务
+2026-08-07 16:29:22 - WARN - werkzeug - _internal.py:97 -  * Debugger is active!
+2026-08-07 16:29:22 - INFO - werkzeug - _internal.py:97 -  * Debugger PIN: 144-814-780
+2026-08-07 16:29:23 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'c:\\Users\\xbzhong\\Desktop\\lint\\script\\develop\\monitor\\monitor2.5\\utils\\data_manager.py', reloading
+2026-08-07 16:29:23 - INFO - utils.data_manager - data_manager.py:1228 - 文件监听器已停止
+2026-08-07 16:29:23 - INFO - __main__ - app.py:69 - 文件监听器已停止
+2026-08-07 16:29:23 - INFO - utils.data_manager - data_manager.py:1228 - 文件监听器已停止
+2026-08-07 16:29:23 - INFO - api.compare - app.py:69 - 文件监听器已停止
+2026-08-07 16:29:23 - INFO - werkzeug - _internal.py:97 -  * Restarting with watchdog (windowsapi)
+2026-08-07 16:29:23 - INFO - utils.data_parser - data_parser.py:22 - 数据管理器初始化
+2026-08-07 16:29:23 - INFO - utils.tool_manager - tool_manager.py:54 - 加载工具配置文件: C:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\data\tools.json
+2026-08-07 16:29:23 - INFO - utils.tool_manager - tool_manager.py:45 - 工具管理器初始化完成
+2026-08-07 16:29:23 - INFO - utils.data_manager - data_manager.py:909 - 数据管理器初始化完成
+2026-08-07 16:29:23 - INFO - __main__ - app.py:92 - 启动性能监控平台后端服务
+2026-08-07 16:29:23 - WARN - werkzeug - _internal.py:97 -  * Debugger is active!
+2026-08-07 16:29:23 - INFO - werkzeug - _internal.py:97 -  * Debugger PIN: 144-814-780
+2026-08-07 16:30:58 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'c:\\Users\\xbzhong\\Desktop\\lint\\script\\develop\\monitor\\monitor2.5\\utils\\data_parser.py', reloading
+2026-08-07 16:30:58 - INFO - utils.data_manager - data_manager.py:1228 - 文件监听器已停止
+2026-08-07 16:30:58 - INFO - __main__ - app.py:69 - 文件监听器已停止
+2026-08-07 16:30:58 - INFO - utils.data_manager - data_manager.py:1228 - 文件监听器已停止
+2026-08-07 16:30:58 - INFO - api.compare - app.py:69 - 文件监听器已停止
+2026-08-07 16:30:58 - INFO - werkzeug - _internal.py:97 -  * Restarting with watchdog (windowsapi)
+2026-08-07 16:30:58 - INFO - utils.data_parser - data_parser.py:22 - 数据管理器初始化
+2026-08-07 16:30:58 - INFO - utils.tool_manager - tool_manager.py:54 - 加载工具配置文件: C:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\data\tools.json
+2026-08-07 16:30:58 - INFO - utils.tool_manager - tool_manager.py:45 - 工具管理器初始化完成
+2026-08-07 16:30:58 - INFO - utils.data_manager - data_manager.py:909 - 数据管理器初始化完成
+2026-08-07 16:30:58 - INFO - __main__ - app.py:92 - 启动性能监控平台后端服务
+2026-08-07 16:30:59 - WARN - werkzeug - _internal.py:97 -  * Debugger is active!
+2026-08-07 16:30:59 - INFO - werkzeug - _internal.py:97 -  * Debugger PIN: 144-814-780
+2026-08-07 16:31:11 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'c:\\Users\\xbzhong\\Desktop\\lint\\script\\develop\\monitor\\monitor2.5\\utils\\file_watcher.py', reloading
+2026-08-07 16:31:11 - INFO - utils.data_manager - data_manager.py:1228 - 文件监听器已停止
+2026-08-07 16:31:11 - INFO - __main__ - app.py:69 - 文件监听器已停止
+2026-08-07 16:31:11 - INFO - utils.data_manager - data_manager.py:1228 - 文件监听器已停止
+2026-08-07 16:31:11 - INFO - api.compare - app.py:69 - 文件监听器已停止
+2026-08-07 16:31:11 - INFO - werkzeug - _internal.py:97 -  * Restarting with watchdog (windowsapi)
+2026-08-07 16:31:12 - INFO - utils.data_parser - data_parser.py:22 - 数据管理器初始化
+2026-08-07 16:31:12 - INFO - utils.tool_manager - tool_manager.py:54 - 加载工具配置文件: C:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\data\tools.json
+2026-08-07 16:31:12 - INFO - utils.tool_manager - tool_manager.py:45 - 工具管理器初始化完成
+2026-08-07 16:31:12 - INFO - utils.data_manager - data_manager.py:909 - 数据管理器初始化完成
+2026-08-07 16:31:12 - INFO - __main__ - app.py:92 - 启动性能监控平台后端服务
+2026-08-07 16:31:12 - WARN - werkzeug - _internal.py:97 -  * Debugger is active!
+2026-08-07 16:31:12 - INFO - werkzeug - _internal.py:97 -  * Debugger PIN: 144-814-780
+2026-08-07 16:31:12 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'c:\\Users\\xbzhong\\Desktop\\lint\\script\\develop\\monitor\\monitor2.5\\utils\\log.py', reloading
+2026-08-07 16:31:12 - INFO - utils.data_manager - data_manager.py:1228 - 文件监听器已停止
+2026-08-07 16:31:12 - INFO - __main__ - app.py:69 - 文件监听器已停止
+2026-08-07 16:31:12 - INFO - utils.data_manager - data_manager.py:1228 - 文件监听器已停止
+2026-08-07 16:31:12 - INFO - api.compare - app.py:69 - 文件监听器已停止
+2026-08-07 16:31:12 - INFO - werkzeug - _internal.py:97 -  * Restarting with watchdog (windowsapi)
+2026-08-07 16:31:12 - INFO - utils.data_parser - data_parser.py:22 - 数据管理器初始化
+2026-08-07 16:31:12 - INFO - utils.tool_manager - tool_manager.py:54 - 加载工具配置文件: C:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\data\tools.json
+2026-08-07 16:31:12 - INFO - utils.tool_manager - tool_manager.py:45 - 工具管理器初始化完成
+2026-08-07 16:31:12 - INFO - utils.data_manager - data_manager.py:909 - 数据管理器初始化完成
+2026-08-07 16:31:12 - INFO - __main__ - app.py:92 - 启动性能监控平台后端服务
+2026-08-07 16:31:12 - WARN - werkzeug - _internal.py:97 -  * Debugger is active!
+2026-08-07 16:31:12 - INFO - werkzeug - _internal.py:97 -  * Debugger PIN: 144-814-780
+2026-08-07 16:32:04 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'c:\\Users\\xbzhong\\Desktop\\lint\\script\\develop\\monitor\\monitor2.5\\utils\\data_parser.py', reloading
+2026-08-07 16:32:04 - INFO - utils.data_manager - data_manager.py:1228 - 文件监听器已停止
+2026-08-07 16:32:04 - INFO - __main__ - app.py:69 - 文件监听器已停止
+2026-08-07 16:32:04 - INFO - utils.data_manager - data_manager.py:1228 - 文件监听器已停止
+2026-08-07 16:32:04 - INFO - api.compare - app.py:69 - 文件监听器已停止
+2026-08-07 16:32:04 - INFO - werkzeug - _internal.py:97 -  * Restarting with watchdog (windowsapi)
+2026-08-07 16:32:04 - INFO - utils.data_parser - data_parser.py:22 - 数据管理器初始化
+2026-08-07 16:32:04 - INFO - utils.tool_manager - tool_manager.py:54 - 加载工具配置文件: C:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\data\tools.json
+2026-08-07 16:32:04 - INFO - utils.tool_manager - tool_manager.py:45 - 工具管理器初始化完成
+2026-08-07 16:32:04 - INFO - utils.data_manager - data_manager.py:909 - 数据管理器初始化完成
+2026-08-07 16:32:04 - INFO - __main__ - app.py:92 - 启动性能监控平台后端服务
+2026-08-07 16:32:04 - WARN - werkzeug - _internal.py:97 -  * Debugger is active!
+2026-08-07 16:32:04 - INFO - werkzeug - _internal.py:97 -  * Debugger PIN: 144-814-780
+2026-08-07 16:38:50 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'c:\\Users\\xbzhong\\Desktop\\lint\\script\\develop\\monitor\\monitor2.5\\utils\\data_parser.py', reloading
+2026-08-07 16:38:50 - INFO - utils.data_manager - data_manager.py:1228 - 文件监听器已停止
+2026-08-07 16:38:50 - INFO - __main__ - app.py:69 - 文件监听器已停止
+2026-08-07 16:38:50 - INFO - utils.data_manager - data_manager.py:1228 - 文件监听器已停止
+2026-08-07 16:38:50 - INFO - api.compare - app.py:69 - 文件监听器已停止
+2026-08-07 16:38:50 - INFO - werkzeug - _internal.py:97 -  * Restarting with watchdog (windowsapi)
+2026-08-07 16:38:50 - INFO - utils.data_parser - data_parser.py:22 - 数据管理器初始化
+2026-08-07 16:38:50 - INFO - utils.tool_manager - tool_manager.py:54 - 加载工具配置文件: C:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\data\tools.json
+2026-08-07 16:38:50 - INFO - utils.tool_manager - tool_manager.py:45 - 工具管理器初始化完成
+2026-08-07 16:38:50 - INFO - utils.data_manager - data_manager.py:909 - 数据管理器初始化完成
+2026-08-07 16:38:51 - INFO - __main__ - app.py:92 - 启动性能监控平台后端服务
+2026-08-07 16:38:51 - WARN - werkzeug - _internal.py:97 -  * Debugger is active!
+2026-08-07 16:38:51 - INFO - werkzeug - _internal.py:97 -  * Debugger PIN: 144-814-780
+2026-08-07 16:38:58 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'c:\\Users\\xbzhong\\Desktop\\lint\\script\\develop\\monitor\\monitor2.5\\utils\\data_parser.py', reloading
+2026-08-07 16:38:58 - INFO - utils.data_manager - data_manager.py:1228 - 文件监听器已停止
+2026-08-07 16:38:58 - INFO - __main__ - app.py:69 - 文件监听器已停止
+2026-08-07 16:38:58 - INFO - utils.data_manager - data_manager.py:1228 - 文件监听器已停止
+2026-08-07 16:38:58 - INFO - api.compare - app.py:69 - 文件监听器已停止
+2026-08-07 16:38:58 - INFO - werkzeug - _internal.py:97 -  * Restarting with watchdog (windowsapi)
+2026-08-07 16:38:59 - INFO - utils.data_parser - data_parser.py:22 - 数据管理器初始化
+2026-08-07 16:38:59 - INFO - utils.tool_manager - tool_manager.py:54 - 加载工具配置文件: C:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\data\tools.json
+2026-08-07 16:38:59 - INFO - utils.tool_manager - tool_manager.py:45 - 工具管理器初始化完成
+2026-08-07 16:38:59 - INFO - utils.data_manager - data_manager.py:909 - 数据管理器初始化完成
+2026-08-07 16:38:59 - INFO - __main__ - app.py:92 - 启动性能监控平台后端服务
+2026-08-07 16:38:59 - WARN - werkzeug - _internal.py:97 -  * Debugger is active!
+2026-08-07 16:38:59 - INFO - werkzeug - _internal.py:97 -  * Debugger PIN: 144-814-780
+2026-08-07 16:39:08 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'c:\\Users\\xbzhong\\Desktop\\lint\\script\\develop\\monitor\\monitor2.5\\utils\\data_parser.py', reloading
+2026-08-07 16:39:08 - INFO - utils.data_manager - data_manager.py:1228 - 文件监听器已停止
+2026-08-07 16:39:08 - INFO - __main__ - app.py:69 - 文件监听器已停止
+2026-08-07 16:39:08 - INFO - utils.data_manager - data_manager.py:1228 - 文件监听器已停止
+2026-08-07 16:39:08 - INFO - api.compare - app.py:69 - 文件监听器已停止
+2026-08-07 16:39:08 - INFO - werkzeug - _internal.py:97 -  * Restarting with watchdog (windowsapi)
+2026-08-07 16:39:09 - INFO - utils.data_parser - data_parser.py:22 - 数据管理器初始化
+2026-08-07 16:39:09 - INFO - utils.tool_manager - tool_manager.py:54 - 加载工具配置文件: C:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\data\tools.json
+2026-08-07 16:39:09 - INFO - utils.tool_manager - tool_manager.py:45 - 工具管理器初始化完成
+2026-08-07 16:39:09 - INFO - utils.data_manager - data_manager.py:909 - 数据管理器初始化完成
+2026-08-07 16:39:09 - INFO - __main__ - app.py:92 - 启动性能监控平台后端服务
+2026-08-07 16:39:09 - WARN - werkzeug - _internal.py:97 -  * Debugger is active!
+2026-08-07 16:39:09 - INFO - werkzeug - _internal.py:97 -  * Debugger PIN: 144-814-780
+2026-08-07 16:39:11 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'c:\\Users\\xbzhong\\Desktop\\lint\\script\\develop\\monitor\\monitor2.5\\utils\\data_parser.py', reloading
+2026-08-07 16:39:11 - INFO - utils.data_manager - data_manager.py:1228 - 文件监听器已停止
+2026-08-07 16:39:11 - INFO - __main__ - app.py:69 - 文件监听器已停止
+2026-08-07 16:39:11 - INFO - utils.data_manager - data_manager.py:1228 - 文件监听器已停止
+2026-08-07 16:39:11 - INFO - api.compare - app.py:69 - 文件监听器已停止
+2026-08-07 16:39:11 - INFO - werkzeug - _internal.py:97 -  * Restarting with watchdog (windowsapi)
+2026-08-07 16:39:11 - INFO - utils.data_parser - data_parser.py:22 - 数据管理器初始化
+2026-08-07 16:39:11 - INFO - utils.tool_manager - tool_manager.py:54 - 加载工具配置文件: C:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\data\tools.json
+2026-08-07 16:39:11 - INFO - utils.tool_manager - tool_manager.py:45 - 工具管理器初始化完成
+2026-08-07 16:39:11 - INFO - utils.data_manager - data_manager.py:909 - 数据管理器初始化完成
+2026-08-07 16:39:11 - INFO - __main__ - app.py:92 - 启动性能监控平台后端服务
+2026-08-07 16:39:11 - WARN - werkzeug - _internal.py:97 -  * Debugger is active!
+2026-08-07 16:39:11 - INFO - werkzeug - _internal.py:97 -  * Debugger PIN: 144-814-780
+2026-08-07 16:41:10 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'c:\\Users\\xbzhong\\Desktop\\lint\\script\\develop\\monitor\\monitor2.5\\utils\\data_parser.py', reloading
+2026-08-07 16:41:10 - INFO - utils.data_manager - data_manager.py:1228 - 文件监听器已停止
+2026-08-07 16:41:10 - INFO - __main__ - app.py:69 - 文件监听器已停止
+2026-08-07 16:41:10 - INFO - utils.data_manager - data_manager.py:1228 - 文件监听器已停止
+2026-08-07 16:41:10 - INFO - api.compare - app.py:69 - 文件监听器已停止
+2026-08-07 16:41:10 - INFO - werkzeug - _internal.py:97 -  * Restarting with watchdog (windowsapi)
+2026-08-07 16:41:10 - INFO - utils.data_manager - data_manager.py:1227 - 文件监听器已停止
+2026-08-07 16:41:10 - INFO - __main__ - app.py:69 - 文件监听器已停止
+2026-08-07 16:41:10 - INFO - utils.data_manager - data_manager.py:1227 - 文件监听器已停止
+2026-08-07 16:41:10 - INFO - api.compare - app.py:69 - 文件监听器已停止
+2026-08-07 17:34:30 - INFO - utils.data_parser - data_parser.py:24 - 数据管理器初始化
+2026-08-07 17:34:30 - INFO - utils.tool_manager - tool_manager.py:54 - 加载工具配置文件: C:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\data\tools.json
+2026-08-07 17:34:30 - INFO - utils.tool_manager - tool_manager.py:45 - 工具管理器初始化完成
+2026-08-07 17:34:30 - INFO - utils.data_manager - data_manager.py:71 - 数据管理器初始化完成
+2026-08-07 17:34:30 - INFO - __main__ - app.py:92 - 启动性能监控平台后端服务
+2026-08-07 17:34:30 - INFO - werkzeug - _internal.py:97 - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5020
+ * Running on http://192.168.0.112:5020
+2026-08-07 17:34:30 - INFO - werkzeug - _internal.py:97 - [33mPress CTRL+C to quit[0m
+2026-08-07 17:34:30 - INFO - werkzeug - _internal.py:97 -  * Restarting with watchdog (windowsapi)
+2026-08-07 17:34:31 - INFO - utils.data_parser - data_parser.py:24 - 数据管理器初始化
+2026-08-07 17:34:31 - INFO - utils.tool_manager - tool_manager.py:54 - 加载工具配置文件: C:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\data\tools.json
+2026-08-07 17:34:31 - INFO - utils.tool_manager - tool_manager.py:45 - 工具管理器初始化完成
+2026-08-07 17:34:31 - INFO - utils.data_manager - data_manager.py:71 - 数据管理器初始化完成
+2026-08-07 17:34:31 - INFO - __main__ - app.py:92 - 启动性能监控平台后端服务
+2026-08-07 17:34:31 - WARN - werkzeug - _internal.py:97 -  * Debugger is active!
+2026-08-07 17:34:31 - INFO - werkzeug - _internal.py:97 -  * Debugger PIN: 144-814-780
+2026-08-07 17:34:45 - INFO - utils.file_watcher - file_watcher.py:131 - 文件监听器初始化: watch_paths=['C:\\Users\\xbzhong\\Desktop\\lint\\script\\develop\\monitor\\test\\multi', 'C:\\Users\\xbzhong\\Desktop\\lint\\script\\develop\\monitor\\test\\signal']
+2026-08-07 17:34:45 - INFO - utils.file_watcher - file_watcher.py:51 - 文件变更处理器初始化
+2026-08-07 17:34:45 - INFO - utils.file_watcher - file_watcher.py:148 - 添加监听路径: C:\Users\xbzhong\Desktop\lint\script\develop\monitor\test\multi
+2026-08-07 17:34:45 - INFO - utils.file_watcher - file_watcher.py:148 - 添加监听路径: C:\Users\xbzhong\Desktop\lint\script\develop\monitor\test\signal
+2026-08-07 17:34:45 - INFO - utils.file_watcher - file_watcher.py:155 - 文件监听器已启动，监听 2 个路径
+2026-08-07 17:34:45 - INFO - utils.data_manager - data_manager.py:382 - 文件监听器已启动，监听路径: ['C:\\Users\\xbzhong\\Desktop\\lint\\script\\develop\\monitor\\test\\multi', 'C:\\Users\\xbzhong\\Desktop\\lint\\script\\develop\\monitor\\test\\signal']
+2026-08-07 17:34:45 - INFO - api.compare - app.py:60 - 文件监听器初始化完成，监听 1 个工具
+2026-08-07 17:34:45 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [07/Aug/2026 17:34:45] "GET /tool/elint/performance HTTP/1.1" 200 -
+2026-08-07 17:34:45 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'C:\\Program Files\\WindowsApps\\PythonSoftwareFoundation.Python.3.13_3.13.3568.0_x64__qbz5n2kfra8p0\\Lib\\encodings\\unicode_escape.py', reloading
+2026-08-07 17:34:45 - INFO - utils.file_watcher - file_watcher.py:167 - 文件监听器已停止
+2026-08-07 17:34:45 - INFO - utils.data_manager - data_manager.py:390 - 文件监听器已停止
+2026-08-07 17:34:45 - INFO - __main__ - app.py:69 - 文件监听器已停止
+2026-08-07 17:34:45 - INFO - utils.data_manager - data_manager.py:390 - 文件监听器已停止
+2026-08-07 17:34:45 - INFO - api.compare - app.py:69 - 文件监听器已停止
+2026-08-07 17:34:45 - INFO - werkzeug - _internal.py:97 -  * Restarting with watchdog (windowsapi)
+2026-08-07 17:34:45 - INFO - utils.data_parser - data_parser.py:24 - 数据管理器初始化
+2026-08-07 17:34:45 - INFO - utils.tool_manager - tool_manager.py:54 - 加载工具配置文件: C:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\data\tools.json
+2026-08-07 17:34:45 - INFO - utils.tool_manager - tool_manager.py:45 - 工具管理器初始化完成
+2026-08-07 17:34:45 - INFO - utils.data_manager - data_manager.py:71 - 数据管理器初始化完成
+2026-08-07 17:34:45 - INFO - __main__ - app.py:92 - 启动性能监控平台后端服务
+2026-08-07 17:34:45 - WARN - werkzeug - _internal.py:97 -  * Debugger is active!
+2026-08-07 17:34:45 - INFO - werkzeug - _internal.py:97 -  * Debugger PIN: 144-814-780
+2026-08-07 17:34:45 - INFO - utils.file_watcher - file_watcher.py:131 - 文件监听器初始化: watch_paths=['C:\\Users\\xbzhong\\Desktop\\lint\\script\\develop\\monitor\\test\\signal', 'C:\\Users\\xbzhong\\Desktop\\lint\\script\\develop\\monitor\\test\\multi']
+2026-08-07 17:34:45 - INFO - utils.file_watcher - file_watcher.py:51 - 文件变更处理器初始化
+2026-08-07 17:34:45 - INFO - utils.file_watcher - file_watcher.py:148 - 添加监听路径: C:\Users\xbzhong\Desktop\lint\script\develop\monitor\test\signal
+2026-08-07 17:34:45 - INFO - utils.file_watcher - file_watcher.py:148 - 添加监听路径: C:\Users\xbzhong\Desktop\lint\script\develop\monitor\test\multi
+2026-08-07 17:34:45 - INFO - utils.file_watcher - file_watcher.py:155 - 文件监听器已启动，监听 2 个路径
+2026-08-07 17:34:45 - INFO - utils.data_manager - data_manager.py:382 - 文件监听器已启动，监听路径: ['C:\\Users\\xbzhong\\Desktop\\lint\\script\\develop\\monitor\\test\\signal', 'C:\\Users\\xbzhong\\Desktop\\lint\\script\\develop\\monitor\\test\\multi']
+2026-08-07 17:34:45 - INFO - api.compare - app.py:60 - 文件监听器初始化完成，监听 1 个工具
+2026-08-07 17:34:46 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [07/Aug/2026 17:34:46] "[36mGET /static/css/select.css HTTP/1.1[0m" 304 -
+2026-08-07 17:34:46 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [07/Aug/2026 17:34:46] "[36mGET /static/js/multi_thread.js HTTP/1.1[0m" 304 -
+2026-08-07 17:34:46 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [07/Aug/2026 17:34:46] "[36mGET /static/js/thread_chart.js HTTP/1.1[0m" 304 -
+2026-08-07 17:34:46 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [07/Aug/2026 17:34:46] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2026-08-07 17:34:46 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [07/Aug/2026 17:34:46] "[36mGET /static/js/comparison.js HTTP/1.1[0m" 304 -
+2026-08-07 17:34:46 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [07/Aug/2026 17:34:46] "[36mGET /static/js/tool.js HTTP/1.1[0m" 304 -
+2026-08-07 17:34:46 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [07/Aug/2026 17:34:46] "[36mGET /static/js/echarts.min.js HTTP/1.1[0m" 304 -
+2026-08-07 17:34:46 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [07/Aug/2026 17:34:46] "[36mGET /static/js/single_thread.js HTTP/1.1[0m" 304 -
+2026-08-07 17:34:46 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [07/Aug/2026 17:34:46] "[36mGET /static/js/axios.min.js HTTP/1.1[0m" 304 -
+2026-08-07 17:34:46 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [07/Aug/2026 17:34:46] "[36mGET /static/css/compare.css HTTP/1.1[0m" 304 -
+2026-08-07 17:34:46 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [07/Aug/2026 17:34:46] "[36mGET /static/js/select.js HTTP/1.1[0m" 304 -
+2026-08-07 17:34:46 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [07/Aug/2026 17:34:46] "GET /api/tools HTTP/1.1" 200 -
+2026-08-07 17:34:46 - INFO - utils.data_manager - data_manager.py:124 - 创建用户数据目录: C:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\data\elint\5c144dec-4d30-4c72-931b-ffdf199401aa
+2026-08-07 17:34:46 - INFO - utils.data_manager - data_manager.py:507 - 加载工具 elint 单线程数据
+2026-08-07 17:34:46 - INFO - utils.data_manager - data_manager.py:217 - 开始加载 single 数据: ('elint', 'single')
+2026-08-07 17:34:46 - INFO - utils.file_scanner - file_scanner.py:100 - 文件扫描器初始化: root=C:\Users\xbzhong\Desktop\lint\script\develop\monitor\test\signal, max_depth=6
+2026-08-07 17:34:46 - WARN - utils.common - common.py:100 - 加载工具数据失败, 文件不存在: C:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\data\elint\single_version.json
+2026-08-07 17:34:46 - INFO - utils.file_scanner - file_scanner.py:118 - 开始扫描目录: C:\Users\xbzhong\Desktop\lint\script\develop\monitor\test\signal
+2026-08-07 17:34:46 - INFO - utils.file_scanner - file_scanner.py:126 - 扫描完成: 找到 6 个文件
+2026-08-07 17:34:46 - INFO - utils.data_manager - data_manager.py:189 - ========================================== 发现 6 个文件需要处理
+2026-08-07 17:34:46 - INFO - utils.data_manager - data_manager.py:256 - 发现 6 个文件需要处理 +++++++++++++++++++++++++
+2026-08-07 17:34:46 - WARN - utils.common - common.py:100 - 加载工具数据失败, 文件不存在: C:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\data\elint\single.json
+2026-08-07 17:34:46 - INFO - dynamic_module_elint_4994102008033282152 - elint.py:586 - 从文件获取性能数据: C:\Users\xbzhong\Desktop\lint\script\develop\monitor\test\signal\2026-05-10-06\performance\20260510_aes.txt
+2026-08-07 17:34:46 - INFO - dynamic_module_elint_4994102008033282152 - elint.py:586 - 从文件获取性能数据: C:\Users\xbzhong\Desktop\lint\script\develop\monitor\test\signal\2026-05-10-06\performance\20260510_nv.txt
+2026-08-07 17:34:46 - DEBUG - utils.file_watcher - file_watcher.py:70 - 事件入队: FileChangeEvent(type=modified, path=C:\Users\xbzhong\Desktop\lint\script\develop\monitor\test\signal\2026-05-10-06\performance\20260510_aes.txt)
+2026-08-07 17:34:46 - INFO - utils.data_manager - data_manager.py:328 - 文件变更触发更新: 1 个文件
+2026-08-07 17:34:46 - INFO - utils.data_manager - data_manager.py:344 - 缓存已清除，等待下次请求时重新加载
+2026-08-07 17:34:46 - INFO - dynamic_module_elint_4994102008033282152 - elint.py:586 - 从文件获取性能数据: C:\Users\xbzhong\Desktop\lint\script\develop\monitor\test\signal\2026-05-11-06\performance\20260511_aes.txt
+2026-08-07 17:34:46 - INFO - utils.file_watcher - file_watcher.py:243 - 处理了 1 个文件变更事件
+2026-08-07 17:34:46 - DEBUG - utils.file_watcher - file_watcher.py:70 - 事件入队: FileChangeEvent(type=modified, path=C:\Users\xbzhong\Desktop\lint\script\develop\monitor\test\signal\2026-05-10-06\performance\20260510_nv.txt)
+2026-08-07 17:34:46 - INFO - dynamic_module_elint_4994102008033282152 - elint.py:586 - 从文件获取性能数据: C:\Users\xbzhong\Desktop\lint\script\develop\monitor\test\signal\2026-05-11-06\performance\20260511_nv.txt
+2026-08-07 17:34:46 - INFO - dynamic_module_elint_4994102008033282152 - elint.py:586 - 从文件获取性能数据: C:\Users\xbzhong\Desktop\lint\script\develop\monitor\test\signal\2026-05-12-06\performance\20260512_aes.txt
+2026-08-07 17:34:46 - INFO - dynamic_module_elint_4994102008033282152 - elint.py:586 - 从文件获取性能数据: C:\Users\xbzhong\Desktop\lint\script\develop\monitor\test\signal\2026-05-12-06\performance\20260512_nv.txt
+2026-08-07 17:34:46 - INFO - utils.common - common.py:87 - 成功保存工具数据到 elint.json
+2026-08-07 17:34:46 - INFO - utils.data_manager - data_manager.py:514 - 加载工具 elint 多线程数据
+2026-08-07 17:34:46 - INFO - utils.data_manager - data_manager.py:217 - 开始加载 multi 数据: ('elint', 'multi')
+2026-08-07 17:34:46 - INFO - utils.file_scanner - file_scanner.py:100 - 文件扫描器初始化: root=C:\Users\xbzhong\Desktop\lint\script\develop\monitor\test\multi, max_depth=6
+2026-08-07 17:34:46 - WARN - utils.common - common.py:100 - 加载工具数据失败, 文件不存在: C:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\data\elint\multi_version.json
+2026-08-07 17:34:46 - INFO - utils.file_scanner - file_scanner.py:118 - 开始扫描目录: C:\Users\xbzhong\Desktop\lint\script\develop\monitor\test\multi
+2026-08-07 17:34:46 - INFO - utils.common - common.py:87 - 成功保存工具数据到 C:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\data\elint\single.json
+2026-08-07 17:34:46 - INFO - utils.common - common.py:87 - 成功保存工具数据到 C:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\data\elint\single_version.json
+2026-08-07 17:34:46 - INFO - utils.data_manager - data_manager.py:303 - 数据保存完成: C:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\data\elint\single.json
+2026-08-07 17:34:46 - INFO - utils.file_scanner - file_scanner.py:126 - 扫描完成: 找到 12 个文件
+2026-08-07 17:34:46 - INFO - utils.data_manager - data_manager.py:189 - ========================================== 发现 12 个文件需要处理
+2026-08-07 17:34:46 - INFO - utils.data_manager - data_manager.py:256 - 发现 12 个文件需要处理 +++++++++++++++++++++++++
+2026-08-07 17:34:46 - WARN - utils.common - common.py:100 - 加载工具数据失败, 文件不存在: C:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\data\elint\multi.json
+2026-08-07 17:34:46 - INFO - dynamic_module_elint_4994102008033282152 - elint.py:586 - 从文件获取性能数据: C:\Users\xbzhong\Desktop\lint\script\develop\monitor\test\multi\2026-05-11-06\multi\case\thread_2\aes\elint.log
+2026-08-07 17:34:46 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'C:\\Program Files\\WindowsApps\\PythonSoftwareFoundation.Python.3.13_3.13.3568.0_x64__qbz5n2kfra8p0\\Lib\\_strptime.py', reloading
+2026-08-07 17:34:46 - INFO - utils.file_watcher - file_watcher.py:167 - 文件监听器已停止
+2026-08-07 17:34:46 - INFO - utils.data_manager - data_manager.py:390 - 文件监听器已停止
+2026-08-07 17:34:46 - INFO - __main__ - app.py:69 - 文件监听器已停止
+2026-08-07 17:34:46 - INFO - dynamic_module_elint_4994102008033282152 - elint.py:586 - 从文件获取性能数据: C:\Users\xbzhong\Desktop\lint\script\develop\monitor\test\multi\2026-05-11-06\multi\case\thread_2\pcie\elint.log
+2026-08-07 17:34:46 - INFO - utils.data_manager - data_manager.py:390 - 文件监听器已停止
+2026-08-07 17:34:46 - INFO - api.compare - app.py:69 - 文件监听器已停止
+2026-08-07 17:34:46 - INFO - werkzeug - _internal.py:97 -  * Restarting with watchdog (windowsapi)
+2026-08-07 17:34:46 - INFO - utils.data_parser - data_parser.py:24 - 数据管理器初始化
+2026-08-07 17:34:46 - INFO - utils.tool_manager - tool_manager.py:54 - 加载工具配置文件: C:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\data\tools.json
+2026-08-07 17:34:46 - INFO - utils.tool_manager - tool_manager.py:45 - 工具管理器初始化完成
+2026-08-07 17:34:46 - INFO - utils.data_manager - data_manager.py:71 - 数据管理器初始化完成
+2026-08-07 17:34:46 - INFO - __main__ - app.py:92 - 启动性能监控平台后端服务
+2026-08-07 17:34:46 - WARN - werkzeug - _internal.py:97 -  * Debugger is active!
+2026-08-07 17:34:46 - INFO - werkzeug - _internal.py:97 -  * Debugger PIN: 144-814-780
+2026-08-07 17:35:17 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'c:\\Users\\xbzhong\\Desktop\\lint\\script\\develop\\monitor\\monitor2.5\\utils\\data_manager.py', reloading
+2026-08-07 17:35:17 - INFO - utils.data_manager - data_manager.py:390 - 文件监听器已停止
+2026-08-07 17:35:17 - INFO - __main__ - app.py:69 - 文件监听器已停止
+2026-08-07 17:35:17 - INFO - utils.data_manager - data_manager.py:390 - 文件监听器已停止
+2026-08-07 17:35:17 - INFO - api.compare - app.py:69 - 文件监听器已停止
+2026-08-07 17:35:17 - INFO - werkzeug - _internal.py:97 -  * Restarting with watchdog (windowsapi)
+2026-08-07 17:35:18 - INFO - utils.data_parser - data_parser.py:24 - 数据管理器初始化
+2026-08-07 17:35:18 - INFO - utils.tool_manager - tool_manager.py:54 - 加载工具配置文件: C:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\data\tools.json
+2026-08-07 17:35:18 - INFO - utils.tool_manager - tool_manager.py:45 - 工具管理器初始化完成
+2026-08-07 17:35:18 - INFO - utils.data_manager - data_manager.py:71 - 数据管理器初始化完成
+2026-08-07 17:35:18 - INFO - __main__ - app.py:92 - 启动性能监控平台后端服务
+2026-08-07 17:35:18 - WARN - werkzeug - _internal.py:97 -  * Debugger is active!
+2026-08-07 17:35:18 - INFO - werkzeug - _internal.py:97 -  * Debugger PIN: 144-814-780
+2026-08-07 17:35:20 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'c:\\Users\\xbzhong\\Desktop\\lint\\script\\develop\\monitor\\monitor2.5\\utils\\data_manager.py', reloading
+2026-08-07 17:35:20 - INFO - utils.data_manager - data_manager.py:390 - 文件监听器已停止
+2026-08-07 17:35:20 - INFO - __main__ - app.py:69 - 文件监听器已停止
+2026-08-07 17:35:20 - INFO - utils.data_manager - data_manager.py:390 - 文件监听器已停止
+2026-08-07 17:35:20 - INFO - api.compare - app.py:69 - 文件监听器已停止
+2026-08-07 17:35:20 - INFO - werkzeug - _internal.py:97 -  * Restarting with watchdog (windowsapi)
+2026-08-07 17:35:21 - INFO - utils.data_parser - data_parser.py:24 - 数据管理器初始化
+2026-08-07 17:35:21 - INFO - utils.tool_manager - tool_manager.py:54 - 加载工具配置文件: C:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\data\tools.json
+2026-08-07 17:35:21 - INFO - utils.tool_manager - tool_manager.py:45 - 工具管理器初始化完成
+2026-08-07 17:35:21 - INFO - utils.data_manager - data_manager.py:71 - 数据管理器初始化完成
+2026-08-07 17:35:21 - INFO - __main__ - app.py:92 - 启动性能监控平台后端服务
+2026-08-07 17:35:21 - WARN - werkzeug - _internal.py:97 -  * Debugger is active!
+2026-08-07 17:35:21 - INFO - werkzeug - _internal.py:97 -  * Debugger PIN: 144-814-780
+2026-08-07 17:36:02 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'c:\\Users\\xbzhong\\Desktop\\lint\\script\\develop\\monitor\\monitor2.5\\utils\\data_manager.py', reloading
+2026-08-07 17:36:02 - INFO - utils.data_manager - data_manager.py:390 - 文件监听器已停止
+2026-08-07 17:36:02 - INFO - __main__ - app.py:69 - 文件监听器已停止
+2026-08-07 17:36:02 - INFO - utils.data_manager - data_manager.py:390 - 文件监听器已停止
+2026-08-07 17:36:02 - INFO - api.compare - app.py:69 - 文件监听器已停止
+2026-08-07 17:36:02 - INFO - werkzeug - _internal.py:97 -  * Restarting with watchdog (windowsapi)
+2026-08-07 17:36:02 - INFO - utils.data_parser - data_parser.py:24 - 数据管理器初始化
+2026-08-07 17:36:02 - INFO - utils.tool_manager - tool_manager.py:54 - 加载工具配置文件: C:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\data\tools.json
+2026-08-07 17:36:02 - INFO - utils.tool_manager - tool_manager.py:45 - 工具管理器初始化完成
+2026-08-07 17:36:02 - INFO - utils.data_manager - data_manager.py:71 - 数据管理器初始化完成
+2026-08-07 17:36:02 - INFO - __main__ - app.py:92 - 启动性能监控平台后端服务
+2026-08-07 17:36:02 - WARN - werkzeug - _internal.py:97 -  * Debugger is active!
+2026-08-07 17:36:02 - INFO - werkzeug - _internal.py:97 -  * Debugger PIN: 144-814-780
+2026-08-07 17:36:09 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'c:\\Users\\xbzhong\\Desktop\\lint\\script\\develop\\monitor\\monitor2.5\\utils\\data_manager.py', reloading
+2026-08-07 17:36:09 - INFO - utils.data_manager - data_manager.py:390 - 文件监听器已停止
+2026-08-07 17:36:09 - INFO - __main__ - app.py:69 - 文件监听器已停止
+2026-08-07 17:36:09 - INFO - utils.data_manager - data_manager.py:390 - 文件监听器已停止
+2026-08-07 17:36:09 - INFO - api.compare - app.py:69 - 文件监听器已停止
+2026-08-07 17:36:09 - INFO - werkzeug - _internal.py:97 -  * Restarting with watchdog (windowsapi)
+2026-08-07 17:36:10 - INFO - utils.data_parser - data_parser.py:24 - 数据管理器初始化
+2026-08-07 17:36:10 - INFO - utils.tool_manager - tool_manager.py:54 - 加载工具配置文件: C:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\data\tools.json
+2026-08-07 17:36:10 - INFO - utils.tool_manager - tool_manager.py:45 - 工具管理器初始化完成
+2026-08-07 17:36:10 - INFO - utils.data_manager - data_manager.py:71 - 数据管理器初始化完成
+2026-08-07 17:36:10 - INFO - __main__ - app.py:92 - 启动性能监控平台后端服务
+2026-08-07 17:36:10 - WARN - werkzeug - _internal.py:97 -  * Debugger is active!
+2026-08-07 17:36:10 - INFO - werkzeug - _internal.py:97 -  * Debugger PIN: 144-814-780
+2026-08-07 17:42:42 - INFO - utils.data_manager - data_manager.py:390 - 文件监听器已停止
+2026-08-07 17:42:42 - INFO - __main__ - app.py:69 - 文件监听器已停止
+2026-08-07 17:42:42 - INFO - utils.data_manager - data_manager.py:390 - 文件监听器已停止
+2026-08-07 17:42:42 - INFO - api.compare - app.py:69 - 文件监听器已停止
+2026-08-07 17:42:42 - INFO - utils.data_manager - data_manager.py:390 - 文件监听器已停止
+2026-08-07 17:42:42 - INFO - __main__ - app.py:69 - 文件监听器已停止
+2026-08-07 17:42:42 - INFO - utils.data_manager - data_manager.py:390 - 文件监听器已停止
+2026-08-07 17:42:42 - INFO - api.compare - app.py:69 - 文件监听器已停止
+2026-08-07 17:42:44 - INFO - utils.data_parser - data_parser.py:24 - 数据管理器初始化
+2026-08-07 17:42:44 - INFO - utils.tool_manager - tool_manager.py:54 - 加载工具配置文件: C:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\data\tools.json
+2026-08-07 17:42:44 - INFO - utils.tool_manager - tool_manager.py:45 - 工具管理器初始化完成
+2026-08-07 17:42:44 - INFO - utils.data_manager - data_manager.py:71 - 数据管理器初始化完成
+2026-08-07 17:42:44 - INFO - __main__ - app.py:92 - 启动性能监控平台后端服务
+2026-08-07 17:42:44 - INFO - werkzeug - _internal.py:97 - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5020
+ * Running on http://192.168.0.112:5020
+2026-08-07 17:42:44 - INFO - werkzeug - _internal.py:97 - [33mPress CTRL+C to quit[0m
+2026-08-07 17:42:44 - INFO - werkzeug - _internal.py:97 -  * Restarting with watchdog (windowsapi)
+2026-08-07 17:42:45 - INFO - utils.data_parser - data_parser.py:24 - 数据管理器初始化
+2026-08-07 17:42:45 - INFO - utils.tool_manager - tool_manager.py:54 - 加载工具配置文件: C:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\data\tools.json
+2026-08-07 17:42:45 - INFO - utils.tool_manager - tool_manager.py:45 - 工具管理器初始化完成
+2026-08-07 17:42:45 - INFO - utils.data_manager - data_manager.py:71 - 数据管理器初始化完成
+2026-08-07 17:42:45 - INFO - __main__ - app.py:92 - 启动性能监控平台后端服务
+2026-08-07 17:42:45 - WARN - werkzeug - _internal.py:97 -  * Debugger is active!
+2026-08-07 17:42:45 - INFO - werkzeug - _internal.py:97 -  * Debugger PIN: 144-814-780
+2026-08-07 17:42:57 - INFO - utils.file_watcher - file_watcher.py:131 - 文件监听器初始化: watch_paths=['C:\\Users\\xbzhong\\Desktop\\lint\\script\\develop\\monitor\\test\\signal', 'C:\\Users\\xbzhong\\Desktop\\lint\\script\\develop\\monitor\\test\\multi']
+2026-08-07 17:42:57 - INFO - utils.file_watcher - file_watcher.py:51 - 文件变更处理器初始化
+2026-08-07 17:42:57 - INFO - utils.file_watcher - file_watcher.py:148 - 添加监听路径: C:\Users\xbzhong\Desktop\lint\script\develop\monitor\test\signal
+2026-08-07 17:42:57 - INFO - utils.file_watcher - file_watcher.py:148 - 添加监听路径: C:\Users\xbzhong\Desktop\lint\script\develop\monitor\test\multi
+2026-08-07 17:42:57 - INFO - utils.file_watcher - file_watcher.py:155 - 文件监听器已启动，监听 2 个路径
+2026-08-07 17:42:57 - INFO - utils.data_manager - data_manager.py:382 - 文件监听器已启动，监听路径: ['C:\\Users\\xbzhong\\Desktop\\lint\\script\\develop\\monitor\\test\\signal', 'C:\\Users\\xbzhong\\Desktop\\lint\\script\\develop\\monitor\\test\\multi']
+2026-08-07 17:42:57 - INFO - api.compare - app.py:60 - 文件监听器初始化完成，监听 1 个工具
+2026-08-07 17:42:57 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [07/Aug/2026 17:42:57] "GET /tool/elint/performance HTTP/1.1" 200 -
+2026-08-07 17:42:57 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [07/Aug/2026 17:42:57] "[36mGET /static/js/select.js HTTP/1.1[0m" 304 -
+2026-08-07 17:42:57 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [07/Aug/2026 17:42:57] "[36mGET /static/js/single_thread.js HTTP/1.1[0m" 304 -
+2026-08-07 17:42:57 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [07/Aug/2026 17:42:57] "[36mGET /static/js/multi_thread.js HTTP/1.1[0m" 304 -
+2026-08-07 17:42:57 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [07/Aug/2026 17:42:57] "[36mGET /static/js/thread_chart.js HTTP/1.1[0m" 304 -
+2026-08-07 17:42:57 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [07/Aug/2026 17:42:57] "[36mGET /static/js/comparison.js HTTP/1.1[0m" 304 -
+2026-08-07 17:42:57 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [07/Aug/2026 17:42:57] "[36mGET /static/js/tool.js HTTP/1.1[0m" 304 -
+2026-08-07 17:42:57 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [07/Aug/2026 17:42:57] "[36mGET /static/js/echarts.min.js HTTP/1.1[0m" 304 -
+2026-08-07 17:42:57 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [07/Aug/2026 17:42:57] "[36mGET /static/css/compare.css HTTP/1.1[0m" 304 -
+2026-08-07 17:42:57 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [07/Aug/2026 17:42:57] "[36mGET /static/css/select.css HTTP/1.1[0m" 304 -
+2026-08-07 17:42:57 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [07/Aug/2026 17:42:57] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2026-08-07 17:42:57 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [07/Aug/2026 17:42:57] "[36mGET /static/js/axios.min.js HTTP/1.1[0m" 304 -
+2026-08-07 17:42:57 - INFO - werkzeug - _internal.py:97 - 192.168.0.112 - - [07/Aug/2026 17:42:57] "GET /api/tools HTTP/1.1" 200 -
+2026-08-07 17:42:57 - INFO - utils.data_manager - data_manager.py:124 - 创建用户数据目录: C:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\data\elint\5c144dec-4d30-4c72-931b-ffdf199401aa
+2026-08-07 17:42:57 - INFO - utils.data_manager - data_manager.py:507 - 加载工具 elint 单线程数据
+2026-08-07 17:42:57 - INFO - utils.data_manager - data_manager.py:217 - 开始加载 single 数据: ('elint', 'single')
+2026-08-07 17:42:57 - INFO - utils.file_scanner - file_scanner.py:100 - 文件扫描器初始化: root=C:\Users\xbzhong\Desktop\lint\script\develop\monitor\test\signal, max_depth=6
+2026-08-07 17:42:57 - WARN - utils.common - common.py:100 - 加载工具数据失败, 文件不存在: C:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\data\elint\single_version.json
+2026-08-07 17:42:57 - INFO - utils.file_scanner - file_scanner.py:118 - 开始扫描目录: C:\Users\xbzhong\Desktop\lint\script\develop\monitor\test\signal
+2026-08-07 17:42:57 - INFO - utils.file_scanner - file_scanner.py:126 - 扫描完成: 找到 6 个文件
+2026-08-07 17:42:57 - INFO - utils.data_manager - data_manager.py:189 - ========================================== 发现 6 个文件需要处理
+2026-08-07 17:42:57 - INFO - utils.data_manager - data_manager.py:256 - 发现 6 个文件需要处理 +++++++++++++++++++++++++
+2026-08-07 17:42:57 - WARN - utils.common - common.py:100 - 加载工具数据失败, 文件不存在: C:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\data\elint\single.json
+2026-08-07 17:42:57 - INFO - dynamic_module_elint_1141898131202947816 - elint.py:586 - 从文件获取性能数据: C:\Users\xbzhong\Desktop\lint\script\develop\monitor\test\signal\2026-05-10-06\performance\20260510_aes.txt
+2026-08-07 17:42:57 - INFO - dynamic_module_elint_1141898131202947816 - elint.py:586 - 从文件获取性能数据: C:\Users\xbzhong\Desktop\lint\script\develop\monitor\test\signal\2026-05-10-06\performance\20260510_nv.txt
+2026-08-07 17:42:57 - INFO - dynamic_module_elint_1141898131202947816 - elint.py:586 - 从文件获取性能数据: C:\Users\xbzhong\Desktop\lint\script\develop\monitor\test\signal\2026-05-11-06\performance\20260511_aes.txt
+2026-08-07 17:42:57 - INFO - dynamic_module_elint_1141898131202947816 - elint.py:586 - 从文件获取性能数据: C:\Users\xbzhong\Desktop\lint\script\develop\monitor\test\signal\2026-05-11-06\performance\20260511_nv.txt
+2026-08-07 17:42:57 - INFO - dynamic_module_elint_1141898131202947816 - elint.py:586 - 从文件获取性能数据: C:\Users\xbzhong\Desktop\lint\script\develop\monitor\test\signal\2026-05-12-06\performance\20260512_aes.txt
+2026-08-07 17:42:57 - INFO - dynamic_module_elint_1141898131202947816 - elint.py:586 - 从文件获取性能数据: C:\Users\xbzhong\Desktop\lint\script\develop\monitor\test\signal\2026-05-12-06\performance\20260512_nv.txt
+2026-08-07 17:42:57 - INFO - utils.common - common.py:87 - 成功保存工具数据到 elint.json
+2026-08-07 17:42:57 - INFO - utils.data_manager - data_manager.py:514 - 加载工具 elint 多线程数据
+2026-08-07 17:42:57 - INFO - utils.data_manager - data_manager.py:217 - 开始加载 multi 数据: ('elint', 'multi')
+2026-08-07 17:42:57 - INFO - utils.file_scanner - file_scanner.py:100 - 文件扫描器初始化: root=C:\Users\xbzhong\Desktop\lint\script\develop\monitor\test\multi, max_depth=6
+2026-08-07 17:42:57 - INFO - utils.common - common.py:87 - 成功保存工具数据到 C:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\data\elint\single.json
+2026-08-07 17:42:57 - WARN - utils.common - common.py:100 - 加载工具数据失败, 文件不存在: C:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\data\elint\multi_version.json
+2026-08-07 17:42:57 - INFO - utils.file_scanner - file_scanner.py:118 - 开始扫描目录: C:\Users\xbzhong\Desktop\lint\script\develop\monitor\test\multi
+2026-08-07 17:42:57 - INFO - utils.file_scanner - file_scanner.py:126 - 扫描完成: 找到 12 个文件
+2026-08-07 17:42:57 - INFO - utils.data_manager - data_manager.py:189 - ========================================== 发现 12 个文件需要处理
+2026-08-07 17:42:57 - INFO - utils.data_manager - data_manager.py:256 - 发现 12 个文件需要处理 +++++++++++++++++++++++++
+2026-08-07 17:42:57 - WARN - utils.common - common.py:100 - 加载工具数据失败, 文件不存在: C:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\data\elint\multi.json
+2026-08-07 17:42:57 - INFO - dynamic_module_elint_1141898131202947816 - elint.py:586 - 从文件获取性能数据: C:\Users\xbzhong\Desktop\lint\script\develop\monitor\test\multi\2026-05-11-06\multi\case\thread_2\aes\elint.log
+2026-08-07 17:42:57 - INFO - utils.common - common.py:87 - 成功保存工具数据到 C:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\data\elint\single_version.json
+2026-08-07 17:42:57 - INFO - utils.data_manager - data_manager.py:303 - 数据保存完成: C:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\data\elint\single.json
+2026-08-07 17:42:57 - INFO - dynamic_module_elint_1141898131202947816 - elint.py:586 - 从文件获取性能数据: C:\Users\xbzhong\Desktop\lint\script\develop\monitor\test\multi\2026-05-11-06\multi\case\thread_2\pcie\elint.log
+2026-08-07 17:42:57 - INFO - dynamic_module_elint_1141898131202947816 - elint.py:586 - 从文件获取性能数据: C:\Users\xbzhong\Desktop\lint\script\develop\monitor\test\multi\2026-05-11-06\multi\case\thread_4\aes\elint.log
+2026-08-07 17:42:57 - INFO - dynamic_module_elint_1141898131202947816 - elint.py:586 - 从文件获取性能数据: C:\Users\xbzhong\Desktop\lint\script\develop\monitor\test\multi\2026-05-11-06\multi\case\thread_4\pcie\elint.log
+2026-08-07 17:42:57 - DEBUG - utils.file_watcher - file_watcher.py:70 - 事件入队: FileChangeEvent(type=modified, path=C:\Users\xbzhong\Desktop\lint\script\develop\monitor\test\multi\2026-05-11-06\multi\case\thread_4\aes\elint.log)
+2026-08-07 17:42:57 - INFO - utils.data_manager - data_manager.py:328 - 文件变更触发更新: 1 个文件
+2026-08-07 17:42:57 - INFO - utils.file_watcher - file_watcher.py:243 - 处理了 1 个文件变更事件
+2026-08-07 17:42:57 - INFO - utils.data_manager - data_manager.py:344 - 缓存已清除，等待下次请求时重新加载
+2026-08-07 17:42:57 - INFO - dynamic_module_elint_1141898131202947816 - elint.py:586 - 从文件获取性能数据: C:\Users\xbzhong\Desktop\lint\script\develop\monitor\test\multi\2026-05-13-06\multi\case\thread_2\aes\elint.log
+2026-08-07 17:42:57 - DEBUG - utils.file_watcher - file_watcher.py:70 - 事件入队: FileChangeEvent(type=modified, path=C:\Users\xbzhong\Desktop\lint\script\develop\monitor\test\multi\2026-05-11-06\multi\case\thread_4\pcie\elint.log)
+2026-08-07 17:42:57 - INFO - dynamic_module_elint_1141898131202947816 - elint.py:586 - 从文件获取性能数据: C:\Users\xbzhong\Desktop\lint\script\develop\monitor\test\multi\2026-05-13-06\multi\case\thread_2\pcie\elint.log
+2026-08-07 17:42:57 - DEBUG - utils.file_watcher - file_watcher.py:70 - 事件入队: FileChangeEvent(type=modified, path=C:\Users\xbzhong\Desktop\lint\script\develop\monitor\test\multi\2026-05-13-06\multi\case\thread_2\aes\elint.log)
+2026-08-07 17:42:57 - INFO - dynamic_module_elint_1141898131202947816 - elint.py:586 - 从文件获取性能数据: C:\Users\xbzhong\Desktop\lint\script\develop\monitor\test\multi\2026-05-13-06\multi\case\thread_4\aes\elint.log
+2026-08-07 17:42:57 - DEBUG - utils.file_watcher - file_watcher.py:70 - 事件入队: FileChangeEvent(type=modified, path=C:\Users\xbzhong\Desktop\lint\script\develop\monitor\test\multi\2026-05-13-06\multi\case\thread_2\pcie\elint.log)
+2026-08-07 17:42:57 - INFO - dynamic_module_elint_1141898131202947816 - elint.py:586 - 从文件获取性能数据: C:\Users\xbzhong\Desktop\lint\script\develop\monitor\test\multi\2026-05-13-06\multi\case\thread_4\pcie\elint.log
+2026-08-07 17:42:57 - DEBUG - utils.file_watcher - file_watcher.py:70 - 事件入队: FileChangeEvent(type=modified, path=C:\Users\xbzhong\Desktop\lint\script\develop\monitor\test\multi\2026-05-13-06\multi\case\thread_4\aes\elint.log)
+2026-08-07 17:42:57 - INFO - dynamic_module_elint_1141898131202947816 - elint.py:586 - 从文件获取性能数据: C:\Users\xbzhong\Desktop\lint\script\develop\monitor\test\multi\2026-05-15-06\multi\case\thread_2\aes\elint.log
+2026-08-07 17:42:57 - DEBUG - utils.file_watcher - file_watcher.py:70 - 事件入队: FileChangeEvent(type=modified, path=C:\Users\xbzhong\Desktop\lint\script\develop\monitor\test\multi\2026-05-13-06\multi\case\thread_4\pcie\elint.log)
+2026-08-07 17:42:57 - INFO - dynamic_module_elint_1141898131202947816 - elint.py:586 - 从文件获取性能数据: C:\Users\xbzhong\Desktop\lint\script\develop\monitor\test\multi\2026-05-15-06\multi\case\thread_2\pcie\elint.log
+2026-08-07 17:42:57 - DEBUG - utils.file_watcher - file_watcher.py:70 - 事件入队: FileChangeEvent(type=modified, path=C:\Users\xbzhong\Desktop\lint\script\develop\monitor\test\multi\2026-05-15-06\multi\case\thread_2\aes\elint.log)
+2026-08-07 17:42:57 - INFO - dynamic_module_elint_1141898131202947816 - elint.py:586 - 从文件获取性能数据: C:\Users\xbzhong\Desktop\lint\script\develop\monitor\test\multi\2026-05-15-06\multi\case\thread_4\aes\elint.log
+2026-08-07 17:42:57 - DEBUG - utils.file_watcher - file_watcher.py:70 - 事件入队: FileChangeEvent(type=modified, path=C:\Users\xbzhong\Desktop\lint\script\develop\monitor\test\multi\2026-05-15-06\multi\case\thread_2\pcie\elint.log)
+2026-08-07 17:42:57 - INFO - dynamic_module_elint_1141898131202947816 - elint.py:586 - 从文件获取性能数据: C:\Users\xbzhong\Desktop\lint\script\develop\monitor\test\multi\2026-05-15-06\multi\case\thread_4\pcie\elint.log
+2026-08-07 17:42:57 - DEBUG - utils.file_watcher - file_watcher.py:70 - 事件入队: FileChangeEvent(type=modified, path=C:\Users\xbzhong\Desktop\lint\script\develop\monitor\test\multi\2026-05-15-06\multi\case\thread_4\aes\elint.log)
+2026-08-07 17:42:57 - DEBUG - utils.file_watcher - file_watcher.py:70 - 事件入队: FileChangeEvent(type=modified, path=C:\Users\xbzhong\Desktop\lint\script\develop\monitor\test\multi\2026-05-15-06\multi\case\thread_4\pcie\elint.log)
+2026-08-07 17:42:57 - INFO - utils.common - common.py:87 - 成功保存工具数据到 elint.json
+2026-08-07 17:42:57 - INFO - utils.common - common.py:87 - 成功保存工具数据到 C:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\data\elint\multi.json
+2026-08-07 17:42:57 - INFO - utils.common - common.py:87 - 成功保存工具数据到 C:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\data\elint\multi_version.json
+2026-08-07 17:42:57 - INFO - utils.data_manager - data_manager.py:303 - 数据保存完成: C:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\data\elint\multi.json
+2026-08-07 17:42:57 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'C:\\Users\\xbzhong\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python313\\site-packages\\flask\\app.py', reloading
+2026-08-07 17:42:57 - INFO - utils.file_watcher - file_watcher.py:167 - 文件监听器已停止
+2026-08-07 17:42:57 - INFO - utils.data_manager - data_manager.py:390 - 文件监听器已停止
+2026-08-07 17:42:57 - INFO - __main__ - app.py:69 - 文件监听器已停止
+2026-08-07 17:42:57 - INFO - utils.data_manager - data_manager.py:390 - 文件监听器已停止
+2026-08-07 17:42:57 - INFO - api.compare - app.py:69 - 文件监听器已停止
+2026-08-07 17:42:58 - INFO - werkzeug - _internal.py:97 -  * Restarting with watchdog (windowsapi)
+2026-08-07 17:42:58 - INFO - utils.data_parser - data_parser.py:24 - 数据管理器初始化
+2026-08-07 17:42:58 - INFO - utils.tool_manager - tool_manager.py:54 - 加载工具配置文件: C:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\data\tools.json
+2026-08-07 17:42:58 - INFO - utils.tool_manager - tool_manager.py:45 - 工具管理器初始化完成
+2026-08-07 17:42:58 - INFO - utils.data_manager - data_manager.py:71 - 数据管理器初始化完成
+2026-08-07 17:42:58 - INFO - __main__ - app.py:92 - 启动性能监控平台后端服务
+2026-08-07 17:42:58 - WARN - werkzeug - _internal.py:97 -  * Debugger is active!
+2026-08-07 17:42:58 - INFO - werkzeug - _internal.py:97 -  * Debugger PIN: 144-814-780
+2026-08-07 17:53:37 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'c:\\Users\\xbzhong\\Desktop\\lint\\script\\develop\\monitor\\monitor2.5\\utils\\data_manager.py', reloading
+2026-08-07 17:53:37 - INFO - utils.data_manager - data_manager.py:390 - 文件监听器已停止
+2026-08-07 17:53:37 - INFO - __main__ - app.py:69 - 文件监听器已停止
+2026-08-07 17:53:37 - INFO - utils.data_manager - data_manager.py:390 - 文件监听器已停止
+2026-08-07 17:53:37 - INFO - api.compare - app.py:69 - 文件监听器已停止
+2026-08-07 17:53:37 - INFO - werkzeug - _internal.py:97 -  * Restarting with watchdog (windowsapi)
+2026-08-07 17:53:38 - INFO - utils.data_parser - data_parser.py:24 - 数据管理器初始化
+2026-08-07 17:53:38 - INFO - utils.tool_manager - tool_manager.py:54 - 加载工具配置文件: C:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\data\tools.json
+2026-08-07 17:53:38 - INFO - utils.tool_manager - tool_manager.py:45 - 工具管理器初始化完成
+2026-08-07 17:53:38 - INFO - utils.data_manager - data_manager.py:71 - 数据管理器初始化完成
+2026-08-07 17:53:38 - INFO - __main__ - app.py:92 - 启动性能监控平台后端服务
+2026-08-07 17:53:38 - WARN - werkzeug - _internal.py:97 -  * Debugger is active!
+2026-08-07 17:53:38 - INFO - werkzeug - _internal.py:97 -  * Debugger PIN: 144-814-780
+2026-08-07 17:53:46 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'c:\\Users\\xbzhong\\Desktop\\lint\\script\\develop\\monitor\\monitor2.5\\tool\\elint\\elint.py', reloading
+2026-08-07 17:53:46 - INFO - utils.data_manager - data_manager.py:390 - 文件监听器已停止
+2026-08-07 17:53:46 - INFO - __main__ - app.py:69 - 文件监听器已停止
+2026-08-07 17:53:46 - INFO - utils.data_manager - data_manager.py:390 - 文件监听器已停止
+2026-08-07 17:53:46 - INFO - api.compare - app.py:69 - 文件监听器已停止
+2026-08-07 17:53:46 - INFO - werkzeug - _internal.py:97 -  * Restarting with watchdog (windowsapi)
+2026-08-07 17:53:47 - INFO - utils.data_parser - data_parser.py:24 - 数据管理器初始化
+2026-08-07 17:53:47 - INFO - utils.tool_manager - tool_manager.py:54 - 加载工具配置文件: C:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\data\tools.json
+2026-08-07 17:53:47 - INFO - utils.tool_manager - tool_manager.py:45 - 工具管理器初始化完成
+2026-08-07 17:53:47 - INFO - utils.data_manager - data_manager.py:71 - 数据管理器初始化完成
+2026-08-07 17:53:47 - INFO - __main__ - app.py:92 - 启动性能监控平台后端服务
+2026-08-07 17:53:47 - WARN - werkzeug - _internal.py:97 -  * Debugger is active!
+2026-08-07 17:53:47 - INFO - werkzeug - _internal.py:97 -  * Debugger PIN: 144-814-780
+2026-08-07 17:54:05 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'c:\\Users\\xbzhong\\Desktop\\lint\\script\\develop\\monitor\\monitor2.5\\tool\\elint\\elint.py', reloading
+2026-08-07 17:54:05 - INFO - utils.data_manager - data_manager.py:390 - 文件监听器已停止
+2026-08-07 17:54:05 - INFO - __main__ - app.py:69 - 文件监听器已停止
+2026-08-07 17:54:05 - INFO - utils.data_manager - data_manager.py:390 - 文件监听器已停止
+2026-08-07 17:54:05 - INFO - api.compare - app.py:69 - 文件监听器已停止
+2026-08-07 17:54:05 - INFO - werkzeug - _internal.py:97 -  * Restarting with watchdog (windowsapi)
+2026-08-07 17:54:06 - INFO - utils.data_parser - data_parser.py:24 - 数据管理器初始化
+2026-08-07 17:54:06 - INFO - utils.tool_manager - tool_manager.py:54 - 加载工具配置文件: C:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\data\tools.json
+2026-08-07 17:54:06 - INFO - utils.tool_manager - tool_manager.py:45 - 工具管理器初始化完成
+2026-08-07 17:54:06 - INFO - utils.data_manager - data_manager.py:71 - 数据管理器初始化完成
+2026-08-07 17:54:06 - INFO - __main__ - app.py:92 - 启动性能监控平台后端服务
+2026-08-07 17:54:06 - WARN - werkzeug - _internal.py:97 -  * Debugger is active!
+2026-08-07 17:54:06 - INFO - werkzeug - _internal.py:97 -  * Debugger PIN: 144-814-780
+2026-08-07 17:54:13 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'c:\\Users\\xbzhong\\Desktop\\lint\\script\\develop\\monitor\\monitor2.5\\utils\\data_manager.py', reloading
+2026-08-07 17:54:13 - INFO - utils.data_manager - data_manager.py:390 - 文件监听器已停止
+2026-08-07 17:54:13 - INFO - __main__ - app.py:69 - 文件监听器已停止
+2026-08-07 17:54:13 - INFO - utils.data_manager - data_manager.py:390 - 文件监听器已停止
+2026-08-07 17:54:13 - INFO - api.compare - app.py:69 - 文件监听器已停止
+2026-08-07 17:54:13 - INFO - werkzeug - _internal.py:97 -  * Restarting with watchdog (windowsapi)
+2026-08-07 17:54:14 - INFO - utils.data_parser - data_parser.py:24 - 数据管理器初始化
+2026-08-07 17:54:14 - INFO - utils.tool_manager - tool_manager.py:54 - 加载工具配置文件: C:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\data\tools.json
+2026-08-07 17:54:14 - INFO - utils.tool_manager - tool_manager.py:45 - 工具管理器初始化完成
+2026-08-07 17:54:14 - INFO - utils.data_manager - data_manager.py:71 - 数据管理器初始化完成
+2026-08-07 17:54:14 - INFO - __main__ - app.py:92 - 启动性能监控平台后端服务
+2026-08-07 17:54:14 - WARN - werkzeug - _internal.py:97 -  * Debugger is active!
+2026-08-07 17:54:14 - INFO - werkzeug - _internal.py:97 -  * Debugger PIN: 144-814-780
+2026-08-07 17:54:38 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'c:\\Users\\xbzhong\\Desktop\\lint\\script\\develop\\monitor\\monitor2.5\\utils\\data_manager.py', reloading
+2026-08-07 17:54:38 - INFO - utils.data_manager - data_manager.py:390 - 文件监听器已停止
+2026-08-07 17:54:38 - INFO - __main__ - app.py:69 - 文件监听器已停止
+2026-08-07 17:54:38 - INFO - utils.data_manager - data_manager.py:390 - 文件监听器已停止
+2026-08-07 17:54:38 - INFO - api.compare - app.py:69 - 文件监听器已停止
+2026-08-07 17:54:38 - INFO - werkzeug - _internal.py:97 -  * Restarting with watchdog (windowsapi)
+2026-08-07 17:54:39 - INFO - utils.data_parser - data_parser.py:24 - 数据管理器初始化
+2026-08-07 17:54:39 - INFO - utils.tool_manager - tool_manager.py:54 - 加载工具配置文件: C:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\data\tools.json
+2026-08-07 17:54:39 - INFO - utils.tool_manager - tool_manager.py:45 - 工具管理器初始化完成
+2026-08-07 17:54:39 - INFO - utils.data_manager - data_manager.py:71 - 数据管理器初始化完成
+2026-08-07 17:54:39 - INFO - __main__ - app.py:92 - 启动性能监控平台后端服务
+2026-08-07 17:54:39 - WARN - werkzeug - _internal.py:97 -  * Debugger is active!
+2026-08-07 17:54:39 - INFO - werkzeug - _internal.py:97 -  * Debugger PIN: 144-814-780
+2026-08-07 17:57:21 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'c:\\Users\\xbzhong\\Desktop\\lint\\script\\develop\\monitor\\monitor2.5\\utils\\data_manager.py', reloading
+2026-08-07 17:57:21 - INFO - utils.data_manager - data_manager.py:391 - 文件监听器已停止
+2026-08-07 17:57:21 - INFO - __main__ - app.py:69 - 文件监听器已停止
+2026-08-07 17:57:21 - INFO - utils.data_manager - data_manager.py:391 - 文件监听器已停止
+2026-08-07 17:57:21 - INFO - api.compare - app.py:69 - 文件监听器已停止
+2026-08-07 17:57:21 - INFO - werkzeug - _internal.py:97 -  * Restarting with watchdog (windowsapi)
+2026-08-07 17:57:21 - INFO - utils.data_parser - data_parser.py:24 - 数据管理器初始化
+2026-08-07 17:57:21 - INFO - utils.tool_manager - tool_manager.py:54 - 加载工具配置文件: C:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\data\tools.json
+2026-08-07 17:57:21 - INFO - utils.tool_manager - tool_manager.py:45 - 工具管理器初始化完成
+2026-08-07 17:57:21 - INFO - utils.data_manager - data_manager.py:71 - 数据管理器初始化完成
+2026-08-07 17:57:21 - INFO - __main__ - app.py:92 - 启动性能监控平台后端服务
+2026-08-07 17:57:21 - WARN - werkzeug - _internal.py:97 -  * Debugger is active!
+2026-08-07 17:57:21 - INFO - werkzeug - _internal.py:97 -  * Debugger PIN: 144-814-780
+2026-08-07 17:57:24 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'c:\\Users\\xbzhong\\Desktop\\lint\\script\\develop\\monitor\\monitor2.5\\utils\\data_manager.py', reloading
+2026-08-07 17:57:24 - INFO - utils.data_manager - data_manager.py:391 - 文件监听器已停止
+2026-08-07 17:57:24 - INFO - __main__ - app.py:69 - 文件监听器已停止
+2026-08-07 17:57:24 - INFO - utils.data_manager - data_manager.py:391 - 文件监听器已停止
+2026-08-07 17:57:24 - INFO - api.compare - app.py:69 - 文件监听器已停止
+2026-08-07 17:57:24 - INFO - werkzeug - _internal.py:97 -  * Restarting with watchdog (windowsapi)
+2026-08-07 17:57:24 - INFO - utils.data_parser - data_parser.py:24 - 数据管理器初始化
+2026-08-07 17:57:24 - INFO - utils.tool_manager - tool_manager.py:54 - 加载工具配置文件: C:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\data\tools.json
+2026-08-07 17:57:24 - INFO - utils.tool_manager - tool_manager.py:45 - 工具管理器初始化完成
+2026-08-07 17:57:24 - INFO - utils.data_manager - data_manager.py:71 - 数据管理器初始化完成
+2026-08-07 17:57:24 - INFO - __main__ - app.py:92 - 启动性能监控平台后端服务
+2026-08-07 17:57:24 - WARN - werkzeug - _internal.py:97 -  * Debugger is active!
+2026-08-07 17:57:24 - INFO - werkzeug - _internal.py:97 -  * Debugger PIN: 144-814-780
