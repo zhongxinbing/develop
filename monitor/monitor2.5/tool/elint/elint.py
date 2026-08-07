@@ -581,6 +581,7 @@ def get_single_data(files, flag):
         all_data = get_data_from_txt_single(files, {})
         logger.info(f"从单线程文件解析到的数据: {all_data}")
         save_json("data.json", all_data)
+        print("411111111111111",all_data)
         return all_data
 
 # # 获取多线程数据, flag: 0 表示只获取文件路径，1 表示解析全量数据
@@ -966,7 +967,8 @@ def get_data_from_log(file_paths: List[str], existing_data: Dict = None) -> Dict
 def get_multi_data(original_path: Union[str, List[str]], flag: int = 0) -> Union[List[str], Dict]:
     """获取多线程数据"""
 
-    print(original_path)
+
+    original_path = [info.path for info in original_path if info.path.endswith('.txt')]
     if flag == 0:
         if isinstance(original_path, str):
             return find(original_path, maxdepth=6, name_pattern=r"elint\.log", file_type="f")

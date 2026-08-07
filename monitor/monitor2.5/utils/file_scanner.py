@@ -109,6 +109,7 @@ class FileSystemScanner:
         Returns:
             文件信息列表
         """
+        print("==============================================================================")
         if self.use_cache and not force_refresh and self._cache is not None:
             if (datetime.now().timestamp() - self._cache_time) < self.cache_ttl:
                 logger.debug(f"使用缓存扫描结果: {len(self._cache)} 个文件")
@@ -159,9 +160,10 @@ class FileSystemScanner:
 
     def _walk(self, current_path: Path, depth: int, results: List[FileInfo]):
         """递归遍历目录"""
+        print(type(current_path))
         if self.max_depth is not None and depth > self.max_depth:
             return
-
+        
         try:
             # 应用排除规则
             if any(p.search(current_path.name) for p in self.exclude_patterns):

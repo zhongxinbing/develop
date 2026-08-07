@@ -1015,7 +1015,7 @@ class DataManager:
         
         # 扫描当前文件系统
         all_files = scanner.scan()
-        
+
         # 计算增量
         files_to_process = []
         for f in all_files:
@@ -1024,7 +1024,7 @@ class DataManager:
                 files_to_process.append(f)
             elif old_info.get('mtime') != f.mtime or old_info.get('size') != f.size:
                 files_to_process.append(f)
-        
+        self.logger.info(f"========================================== 发现 {len(files_to_process)} 个文件需要处理")
         return files_to_process, all_files
 
     def get_all_data(self, tool_id: str, user_id: str, data_type: str):
@@ -1040,10 +1040,11 @@ class DataManager:
             解析后的数据
         """
         cache_key = (user_id, tool_id, data_type)
-        
+        self.logger.info(f"开始加载 {data_type} 数据: {cache_key}")
         # 检查缓存
         with self._cache_lock:
             cached_entry = self._data_cache.get(cache_key)
+
             if cached_entry is not None:
                 cached_at, cached_value = cached_entry
                 if time.time() - cached_at < self._cache_ttl_seconds:
@@ -1068,8 +1069,8 @@ class DataManager:
         # 创建文件扫描器
         scanner = FileSystemScanner(
             data_root,
-            max_depth=4,
-            include_patterns=[r"^\d{8}_[^/]+\.txt$", r"elint\.log$"],
+            max_depth=6,
+            include_patterns=[r"^\d{8}_[^\s]+\.txt", r"elint\.log$"],
             exclude_patterns=[r"\.tmp$", r"\.swp$"]
         )
 

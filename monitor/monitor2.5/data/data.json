@@ -1,3 +1,4 @@
+//  总的数据
 {
     "casename": "name",
     "metrics": ["cputime", "realtime", "peakmem", "incmem", "realtimeincmem"],
@@ -22,4 +23,33 @@
             }
         }
     }
+}
+
+// 解析后的数据
+
+{
+    "casename": "name",
+    "metrics": ["cputime", "realtime", "peakmem", "incmem", "realtimeincmem"],
+    "rules": {
+        "E0001": {
+            "threads": [0, 1],
+            "dates": ["20260801", "20260802"],
+            "data": {
+                "20260801": {
+                    "0": [0.5, 0.2, 0.2, 0.1, 0.1],
+                    "1": [0.5, 0.2, 0.2, 0.1, 0.1]
+                }
+            }
+        },
+        "E0002": {
+            "threads": [2, 4],
+            "dates": ["20260801", "20260802"],
+            "data": {
+                "20260801": {
+                    "2": [0.5, 0.2, 0.2, 0.1, 0.1],
+                    "4": [0.5, 0.2, 0.2, 0.1, 0.1]
+                }
+            }
+        }
+    },
 }

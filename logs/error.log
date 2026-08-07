@@ -12485,3 +12485,89 @@ KeyError: 'cputime'
 2026-08-04 10:57:03 - ERROR - utils.data_manager - data_manager.py:199 - 获取图表数据失败 {'toolID': 'elint', 'casename': 'aes', 'rules': ['Overall'], 'dates': ['20260511', '20260512'], 'mode': 'single', 'chart_type': 'cputime', 'selected_threads': [-1]}
 2026-08-04 10:57:14 - ERROR - utils.data_manager - data_manager.py:199 - 获取图表数据失败 {'toolID': 'elint', 'casename': 'aes', 'rules': ['Overall'], 'dates': ['20260511', '20260512'], 'mode': 'single', 'chart_type': 'cputime', 'selected_threads': [-1]}
 2026-08-04 10:57:14 - ERROR - utils.data_manager - data_manager.py:199 - 获取图表数据失败 {'toolID': 'elint', 'casename': 'aes', 'rules': ['Overall'], 'dates': ['20260511', '20260512'], 'mode': 'single', 'chart_type': 'cputime', 'selected_threads': [-1]}
+2026-08-07 08:41:45 - ERROR - utils.data_manager - data_manager.py:1208 - 启动文件监听器失败: [WinError 3] 系统找不到指定的路径。: 'E:\\'
+Traceback (most recent call last):
+  File "c:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\utils\data_manager.py", line 1205, in init_file_watcher
+    watcher.start()
+    ~~~~~~~~~~~~~^^
+  File "c:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\utils\file_watcher.py", line 146, in start
+    os.makedirs(path, exist_ok=True)
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen os>", line 218, in makedirs
+  File "<frozen os>", line 218, in makedirs
+  File "<frozen os>", line 218, in makedirs
+  [Previous line repeated 2 more times]
+  File "<frozen os>", line 228, in makedirs
+FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'E:\\'
+2026-08-07 08:41:46 - ERROR - utils.data_manager - data_manager.py:1208 - 启动文件监听器失败: [WinError 3] 系统找不到指定的路径。: 'E:\\'
+Traceback (most recent call last):
+  File "c:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\utils\data_manager.py", line 1205, in init_file_watcher
+    watcher.start()
+    ~~~~~~~~~~~~~^^
+  File "c:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\utils\file_watcher.py", line 146, in start
+    os.makedirs(path, exist_ok=True)
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen os>", line 218, in makedirs
+  File "<frozen os>", line 218, in makedirs
+  File "<frozen os>", line 218, in makedirs
+  [Previous line repeated 2 more times]
+  File "<frozen os>", line 228, in makedirs
+FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'E:\\'
+2026-08-07 08:41:47 - ERROR - utils.data_manager - data_manager.py:1208 - 启动文件监听器失败: [WinError 3] 系统找不到指定的路径。: 'E:\\'
+Traceback (most recent call last):
+  File "c:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\utils\data_manager.py", line 1205, in init_file_watcher
+    watcher.start()
+    ~~~~~~~~~~~~~^^
+  File "c:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\utils\file_watcher.py", line 146, in start
+    os.makedirs(path, exist_ok=True)
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen os>", line 218, in makedirs
+  File "<frozen os>", line 218, in makedirs
+  File "<frozen os>", line 218, in makedirs
+  [Previous line repeated 2 more times]
+  File "<frozen os>", line 228, in makedirs
+FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'E:\\'
+2026-08-07 08:41:47 - ERROR - dynamic_module_elint_-6986349035216366153 - elint.py:826 - 读取CSV文件失败 C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\test\lint_mem.csv: [Errno 2] No such file or directory: 'C:\\Users\\xbzhong\\Desktop\\lint\\script\\monitor\\develop\\monitor\\test\\lint_mem.csv'
+2026-08-07 08:41:47 - ERROR - dynamic_module_elint_-6986349035216366153 - elint.py:826 - 读取CSV文件失败 C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\test\lint_cpu.csv: [Errno 2] No such file or directory: 'C:\\Users\\xbzhong\\Desktop\\lint\\script\\monitor\\develop\\monitor\\test\\lint_cpu.csv'
+2026-08-07 08:42:10 - ERROR - utils.data_manager - data_manager.py:1208 - 启动文件监听器失败: [WinError 3] 系统找不到指定的路径。: 'E:\\'
+Traceback (most recent call last):
+  File "c:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\utils\data_manager.py", line 1205, in init_file_watcher
+    watcher.start()
+    ~~~~~~~~~~~~~^^
+  File "c:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\utils\file_watcher.py", line 146, in start
+    os.makedirs(path, exist_ok=True)
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen os>", line 218, in makedirs
+  File "<frozen os>", line 218, in makedirs
+  File "<frozen os>", line 218, in makedirs
+  [Previous line repeated 2 more times]
+  File "<frozen os>", line 228, in makedirs
+FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'E:\\'
+2026-08-07 08:42:10 - ERROR - dynamic_module_elint_-6986349035216366153 - elint.py:826 - 读取CSV文件失败 C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\test\lint_mem.csv: [Errno 2] No such file or directory: 'C:\\Users\\xbzhong\\Desktop\\lint\\script\\monitor\\develop\\monitor\\test\\lint_mem.csv'
+2026-08-07 08:42:10 - ERROR - dynamic_module_elint_-6986349035216366153 - elint.py:826 - 读取CSV文件失败 C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\test\lint_cpu.csv: [Errno 2] No such file or directory: 'C:\\Users\\xbzhong\\Desktop\\lint\\script\\monitor\\develop\\monitor\\test\\lint_cpu.csv'
+2026-08-07 08:42:47 - ERROR - dynamic_module_elint_-8104631103082955128 - elint.py:826 - 读取CSV文件失败 C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\test\lint_mem.csv: [Errno 2] No such file or directory: 'C:\\Users\\xbzhong\\Desktop\\lint\\script\\monitor\\develop\\monitor\\test\\lint_mem.csv'
+2026-08-07 08:42:47 - ERROR - dynamic_module_elint_-8104631103082955128 - elint.py:826 - 读取CSV文件失败 C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\test\lint_cpu.csv: [Errno 2] No such file or directory: 'C:\\Users\\xbzhong\\Desktop\\lint\\script\\monitor\\develop\\monitor\\test\\lint_cpu.csv'
+2026-08-07 08:44:01 - ERROR - dynamic_module_elint_9049001772448695127 - elint.py:826 - 读取CSV文件失败 C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\test\lint_mem.csv: [Errno 2] No such file or directory: 'C:\\Users\\xbzhong\\Desktop\\lint\\script\\monitor\\develop\\monitor\\test\\lint_mem.csv'
+2026-08-07 08:44:01 - ERROR - dynamic_module_elint_9049001772448695127 - elint.py:826 - 读取CSV文件失败 C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\test\lint_cpu.csv: [Errno 2] No such file or directory: 'C:\\Users\\xbzhong\\Desktop\\lint\\script\\monitor\\develop\\monitor\\test\\lint_cpu.csv'
+2026-08-07 08:49:04 - ERROR - dynamic_module_elint_1454107419629578992 - elint.py:826 - 读取CSV文件失败 C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\test\lint_mem.csv: [Errno 2] No such file or directory: 'C:\\Users\\xbzhong\\Desktop\\lint\\script\\monitor\\develop\\monitor\\test\\lint_mem.csv'
+2026-08-07 08:49:04 - ERROR - dynamic_module_elint_1454107419629578992 - elint.py:826 - 读取CSV文件失败 C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\test\lint_cpu.csv: [Errno 2] No such file or directory: 'C:\\Users\\xbzhong\\Desktop\\lint\\script\\monitor\\develop\\monitor\\test\\lint_cpu.csv'
+2026-08-07 08:50:14 - ERROR - dynamic_module_elint_8883515901011751348 - elint.py:826 - 读取CSV文件失败 C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\test\lint_mem.csv: [Errno 2] No such file or directory: 'C:\\Users\\xbzhong\\Desktop\\lint\\script\\monitor\\develop\\monitor\\test\\lint_mem.csv'
+2026-08-07 08:50:14 - ERROR - dynamic_module_elint_8883515901011751348 - elint.py:826 - 读取CSV文件失败 C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\test\lint_cpu.csv: [Errno 2] No such file or directory: 'C:\\Users\\xbzhong\\Desktop\\lint\\script\\monitor\\develop\\monitor\\test\\lint_cpu.csv'
+2026-08-07 08:50:45 - ERROR - dynamic_module_elint_-6489752307264459086 - elint.py:826 - 读取CSV文件失败 C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\test\lint_mem.csv: [Errno 2] No such file or directory: 'C:\\Users\\xbzhong\\Desktop\\lint\\script\\monitor\\develop\\monitor\\test\\lint_mem.csv'
+2026-08-07 08:50:45 - ERROR - dynamic_module_elint_-6489752307264459086 - elint.py:826 - 读取CSV文件失败 C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\test\lint_cpu.csv: [Errno 2] No such file or directory: 'C:\\Users\\xbzhong\\Desktop\\lint\\script\\monitor\\develop\\monitor\\test\\lint_cpu.csv'
+2026-08-07 08:51:32 - ERROR - dynamic_module_elint_6847991849728869385 - elint.py:826 - 读取CSV文件失败 C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\test\lint_mem.csv: [Errno 2] No such file or directory: 'C:\\Users\\xbzhong\\Desktop\\lint\\script\\monitor\\develop\\monitor\\test\\lint_mem.csv'
+2026-08-07 08:51:32 - ERROR - dynamic_module_elint_6847991849728869385 - elint.py:826 - 读取CSV文件失败 C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\test\lint_cpu.csv: [Errno 2] No such file or directory: 'C:\\Users\\xbzhong\\Desktop\\lint\\script\\monitor\\develop\\monitor\\test\\lint_cpu.csv'
+2026-08-07 08:51:48 - ERROR - dynamic_module_elint_7652035262872898365 - elint.py:826 - 读取CSV文件失败 C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\test\lint_mem.csv: [Errno 2] No such file or directory: 'C:\\Users\\xbzhong\\Desktop\\lint\\script\\monitor\\develop\\monitor\\test\\lint_mem.csv'
+2026-08-07 08:51:48 - ERROR - dynamic_module_elint_7652035262872898365 - elint.py:826 - 读取CSV文件失败 C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\test\lint_cpu.csv: [Errno 2] No such file or directory: 'C:\\Users\\xbzhong\\Desktop\\lint\\script\\monitor\\develop\\monitor\\test\\lint_cpu.csv'
+2026-08-07 08:52:12 - ERROR - dynamic_module_elint_7652035262872898365 - elint.py:826 - 读取CSV文件失败 C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\test\lint_mem.csv: [Errno 2] No such file or directory: 'C:\\Users\\xbzhong\\Desktop\\lint\\script\\monitor\\develop\\monitor\\test\\lint_mem.csv'
+2026-08-07 08:52:12 - ERROR - dynamic_module_elint_7652035262872898365 - elint.py:826 - 读取CSV文件失败 C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\test\lint_cpu.csv: [Errno 2] No such file or directory: 'C:\\Users\\xbzhong\\Desktop\\lint\\script\\monitor\\develop\\monitor\\test\\lint_cpu.csv'
+2026-08-07 08:52:58 - ERROR - dynamic_module_elint_374897516880187420 - elint.py:826 - 读取CSV文件失败 C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\test\lint_mem.csv: [Errno 2] No such file or directory: 'C:\\Users\\xbzhong\\Desktop\\lint\\script\\monitor\\develop\\monitor\\test\\lint_mem.csv'
+2026-08-07 08:52:58 - ERROR - dynamic_module_elint_374897516880187420 - elint.py:826 - 读取CSV文件失败 C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\test\lint_cpu.csv: [Errno 2] No such file or directory: 'C:\\Users\\xbzhong\\Desktop\\lint\\script\\monitor\\develop\\monitor\\test\\lint_cpu.csv'
+2026-08-07 08:53:56 - ERROR - dynamic_module_elint_8164058938874980715 - elint.py:826 - 读取CSV文件失败 C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\test\lint_mem.csv: [Errno 2] No such file or directory: 'C:\\Users\\xbzhong\\Desktop\\lint\\script\\monitor\\develop\\monitor\\test\\lint_mem.csv'
+2026-08-07 08:53:56 - ERROR - dynamic_module_elint_8164058938874980715 - elint.py:826 - 读取CSV文件失败 C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\test\lint_cpu.csv: [Errno 2] No such file or directory: 'C:\\Users\\xbzhong\\Desktop\\lint\\script\\monitor\\develop\\monitor\\test\\lint_cpu.csv'
+2026-08-07 08:54:13 - ERROR - dynamic_module_elint_-69766587471917481 - elint.py:826 - 读取CSV文件失败 C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\test\lint_mem.csv: [Errno 2] No such file or directory: 'C:\\Users\\xbzhong\\Desktop\\lint\\script\\monitor\\develop\\monitor\\test\\lint_mem.csv'
+2026-08-07 08:54:13 - ERROR - dynamic_module_elint_-69766587471917481 - elint.py:826 - 读取CSV文件失败 C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\test\lint_cpu.csv: [Errno 2] No such file or directory: 'C:\\Users\\xbzhong\\Desktop\\lint\\script\\monitor\\develop\\monitor\\test\\lint_cpu.csv'
+2026-08-07 08:55:31 - ERROR - dynamic_module_elint_-1802726744493771537 - elint.py:826 - 读取CSV文件失败 C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\test\lint_mem.csv: [Errno 2] No such file or directory: 'C:\\Users\\xbzhong\\Desktop\\lint\\script\\monitor\\develop\\monitor\\test\\lint_mem.csv'
+2026-08-07 08:55:31 - ERROR - dynamic_module_elint_-1802726744493771537 - elint.py:826 - 读取CSV文件失败 C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\test\lint_cpu.csv: [Errno 2] No such file or directory: 'C:\\Users\\xbzhong\\Desktop\\lint\\script\\monitor\\develop\\monitor\\test\\lint_cpu.csv'
+2026-08-07 08:55:54 - ERROR - dynamic_module_elint_-1512520303260192053 - elint.py:826 - 读取CSV文件失败 C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\test\lint_mem.csv: [Errno 2] No such file or directory: 'C:\\Users\\xbzhong\\Desktop\\lint\\script\\monitor\\develop\\monitor\\test\\lint_mem.csv'
+2026-08-07 08:55:54 - ERROR - dynamic_module_elint_-1512520303260192053 - elint.py:826 - 读取CSV文件失败 C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\test\lint_cpu.csv: [Errno 2] No such file or directory: 'C:\\Users\\xbzhong\\Desktop\\lint\\script\\monitor\\develop\\monitor\\test\\lint_cpu.csv'
