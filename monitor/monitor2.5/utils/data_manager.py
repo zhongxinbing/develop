@@ -187,7 +187,7 @@ class DataManager:
                 files_to_process.append(f)
             elif old_info.get('mtime') != f.mtime or old_info.get('size') != f.size:
                 files_to_process.append(f)
-        self.logger.info(f"========================================== 发现 {len(files_to_process)} 个文件需要处理")
+
         return files_to_process, all_files
 
     def duplicate_removal(self, data: Dict) -> Dict:
@@ -523,7 +523,7 @@ class DataManager:
             if cached_entry is not None:
                 cached_at, cached_value = cached_entry
                 if time.time() - cached_at < self._cache_ttl_seconds:
-                    print(cached_value)
+                    self.logger.warning(f"缓存命中，数据已经是最新的")
                     return cached_value, "数据已经是最新的"
                 self._data_cache.pop(cache_key, None)
         ############################################################################
@@ -535,7 +535,7 @@ class DataManager:
             all_data = {}
         ############################################################################
         # 获取新数据
-        filepaths = {}
+        filepaths = {'single': {}, 'multi': {}}
         tool_config = tool_manager.get_tool(tool_id) or {}
         # 单线程数据
         if Path(tool_config.get('single_path')):
@@ -566,11 +566,12 @@ class DataManager:
         # 解析数据 -> 先判断数据是否被更新，如果更新在解析，否则直接加载缓存
         data_parser_path = DATA_DIR / tool_id / f"{tool_id}_parser.json"
         message = []
-        if filepaths and ('single' in filepaths or 'multi' in filepaths):
+        if filepaths['single'] or filepaths['multi']:
             if 'single' in filepaths and filepaths['single']:
                 message.append('单线程')
             if 'multi' in filepaths and filepaths['multi']:
                 message.append('多线程')
+            self.logger.info(f"更新了：{message}")
             # 解析数据
             data_parsers = data_parser.parse_all_data(all_data)
             # 异步保存数据
@@ -579,6 +580,7 @@ class DataManager:
             with self._cache_lock:
                 self._data_cache[cache_key] = (time.time(), all_data)
         else:
+            self.logger.info(f"未更新数据，加载工具 {tool_id} 解析数据")
             data_parsers = load_tool_data(data_parser_path)
         
         ############################################################################

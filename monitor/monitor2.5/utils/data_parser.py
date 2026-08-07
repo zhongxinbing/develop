@@ -82,6 +82,10 @@ class DataParser:
                                             multi[casename][types[i]][rule][date] = []
                                         multi[casename][types[i]][rule][date].append(thread)
 
+        # 删除 casename 对应为空的值
+        single = {k: v for k, v in single.items() if v not in (None, '')}
+        multi = {k: v for k, v in multi.items() if v not in (None, '')}
+
         return {'single': single, 'multi': multi}
 
 
