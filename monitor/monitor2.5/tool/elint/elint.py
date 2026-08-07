@@ -504,7 +504,7 @@ def get_elint_data_from_txt(file_path: str, elint_data: Dict, thread: int) -> No
     if not match:
         return
     date, casename = match[0]
-
+    
     if casename not in elint_data:
         elint_data[casename] = {
             "casename": casename,
@@ -513,9 +513,10 @@ def get_elint_data_from_txt(file_path: str, elint_data: Dict, thread: int) -> No
         }
 
     # 获取所有数据
-    # try:
+    try:
         with open(file_path, 'r', encoding='utf-8') as f:
             content = f.read()
+
             # 之前的格式
             rule_datas = re.findall(r"dict set \d{8} ([^\s]+) {([0-9.,]+) ([0-9.,]+) ([0-9.,]+)}", content)
             flag = 1
@@ -526,10 +527,11 @@ def get_elint_data_from_txt(file_path: str, elint_data: Dict, thread: int) -> No
                     content
                 )
                 flag = 2
+
             elint_data[casename]["rules_data"] = gen_data(elint_data[casename]["rules_data"], rule_datas, date, thread, flag)
-            
-    # except Exception as e:
-    #     logger.error(f"解析文件失败 {file_path}: {e}")
+
+    except Exception as e:
+        logger.error(f"解析文件失败 {file_path}: {e}")
     
 def get_elint_data_from_log(file_path: str, elint_data: Dict, thread: int) -> None:
     # 获取 casename
@@ -591,6 +593,7 @@ def get_elint_data(elint_data: Dict, filepaths: str) -> Dict:
         else:
             # 单线程的线程数应该为 -1（跑工具的时候不设置 -thread）
             thread = -1
+        # 开始获取数据
         filename = Path(file_path).name
         if re.match(r'elint\.log', filename):
             # 从 log 中读取数据

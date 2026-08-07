@@ -79,7 +79,7 @@ class DataManager:
     def _load_version_info(self, tool_id: str, data_type: str) -> Dict:
         """加载版本信息"""
         version_file = self._get_version_file_path(tool_id, data_type)
-        cache_key = f"{tool_id}:{data_type}"
+        cache_key = f"{tool_id}"
         
         if cache_key in self._version_cache:
             return self._version_cache[cache_key]
@@ -90,13 +90,14 @@ class DataManager:
             'processed_files': {},
             'processed_dirs': {}
         }
+
         self._version_cache[cache_key] = version_info
         return version_info
 
     def _save_version_info(self, tool_id: str, data_type: str, version_info: Dict):
         """保存版本信息"""
         version_file = self._get_version_file_path(tool_id, data_type)
-        cache_key = f"{tool_id}:{data_type}"
+        cache_key = f"{tool_id}"
         self._version_cache[cache_key] = version_info
         save_tool_data(version_file, version_info)
 
@@ -194,8 +195,8 @@ class DataManager:
         for casename,casedata in data.items():
             rules_data = casedata["rules_data"]
             for rule_name,ruledata in rules_data.items():
-                rules_data[rule_name]["thread"] = list(set(rules_data[rule_name]["thread"]))
-                rules_data[rule_name]["dates"] = list(set(rules_data[rule_name]["dates"]))
+                rules_data[rule_name]["thread"] = sorted(list(set(rules_data[rule_name]["thread"])))
+                rules_data[rule_name]["dates"] = sorted(list(set(rules_data[rule_name]["dates"])))
             data[casename]["rules_data"] = rules_data
         return data
 
@@ -211,20 +212,6 @@ class DataManager:
         Returns:
             解析后的数据
         """
-        if data_type == "multi":
-            print("==========================================================================")
-        cache_key = (tool_id, data_type)
-        self.logger.info(f"开始加载 {data_type} 数据: {cache_key}")
-        # 检查缓存
-        with self._cache_lock:
-            cached_entry = self._data_cache.get(cache_key)
-
-            if cached_entry is not None:
-                cached_at, cached_value = cached_entry
-                if time.time() - cached_at < self._cache_ttl_seconds:
-                    return cached_value
-                self._data_cache.pop(cache_key, None)
-
         tool_config = tool_manager.get_tool(tool_id) or {}
         if not tool_config:
             self.logger.error(f"工具配置不存在: {tool_id}")
@@ -253,53 +240,30 @@ class DataManager:
 
         # 如果有文件需要处理
         if files_to_process:
-            self.logger.info(f"发现 {len(files_to_process)} 个文件需要处理 +++++++++++++++++++++++++")
-            
-            # 获取已有数据
-            # data_file = DATA_DIR / tool_id / f'{data_type}.json'
-            # existing_data = load_tool_data(data_file) or {}
-            
             # 解析增量数据
             try:
-                # incremental_data = func(files_to_process, 1) or {}
-                # merged_data = deep_merge(existing_data, incremental_data)
-                incremental_data = self.duplicate_removal(func(all_data, files_to_process)) or {}
-                # 合并数据
+                all_data = self.duplicate_removal(func(all_data, files_to_process)) or {}
 
-                save_tool_data("elint.json",merged_data)
-                # 异步保存
-                self._executor.submit(
-                    self._save_processed_data,
-                    tool_id, data_type, merged_data, all_files
-                )
-                
-                # 更新缓存
-                with self._cache_lock:
-                    self._data_cache[cache_key] = (time.time(), merged_data)
-                
-                return merged_data
+                return [all_data,files_to_process]
             except Exception as e:
                 self.logger.exception(f"解析数据失败: {e}")
-                return existing_data
+                return [all_data,files_to_process]
         
-        # 没有变更，返回缓存数据
-        self.logger.info("无文件变更，返回缓存数据")
-        data = load_tool_data(DATA_DIR / tool_id / f'{data_type}.json') or {}
-        
-        with self._cache_lock:
-            self._data_cache[cache_key] = (time.time(), data)
-        
-        return data
+        return [all_data, files_to_process]
 
-    def _save_processed_data(self, tool_id: str, data_type: str, data: Dict, files: List[FileInfo]):
+    def _save_processed_data(self, tool_id: str, data: Dict, files: List[FileInfo]):
         """保存处理后的数据和版本信息"""
         try:
             # 保存数据
-            data_file = DATA_DIR / tool_id / f'{data_type}.json'
+            data_file = DATA_DIR / tool_id / f'{tool_id}.json'
             save_tool_data(data_file, data)
-            
-            # 更新版本信息
-            self._update_version_info(tool_id, data_type, files)
+
+            if "single" in files:
+                # 更新版本信息
+                self._update_version_info(tool_id, "single", files["single"])
+            if "multi" in files:
+                # 更新版本信息
+                self._update_version_info(tool_id, "multi", files["multi"])
             
             self.logger.info(f"数据保存完成: {data_file}")
         except Exception as e:
@@ -506,16 +470,16 @@ class DataManager:
     def load_single_chart(self, tool_id: str, all_data: Dict):
         """加载单线程数据"""
         self.logger.info(f"加载工具 {tool_id} 单线程数据")
-        single_data = self.get_all_data(tool_id, all_data, "single")
-        message = '单线程数据已更新' if single_data else '单线程数据加载完成'
-        return single_data, message
+        single_data, filepaths = self.get_all_data(tool_id, all_data, "single")
+
+        return single_data, filepaths
 
     def load_multi_chart(self, tool_id: str, all_data: Dict):
         """加载多线程数据"""
         self.logger.info(f"加载工具 {tool_id} 多线程数据")
-        multi_data = self.get_all_data(tool_id, all_data, "multi")
-        message = '多线程数据已更新' if multi_data else '多线程数据加载完成'
-        return multi_data, message
+        multi_data, filepaths = self.get_all_data(tool_id, all_data, "multi")
+        # message = '多线程数据已更新' if multi_data else '多线程数据加载完成'
+        return multi_data, filepaths
 
     def load_extra_chart(self, tool_id: str, user_id: str):
         """加载额外数据"""
@@ -524,7 +488,7 @@ class DataManager:
         extra_display_path = tool_config.get('extra_display_path') or ''
         func = self._load_function(tool_config.get('extra_display_func'), tool_config)
         extra = func(extra_display_path) if func else {}
-        return extra, ''
+        return extra
 
     def load_thread_chart(self, request_data: Dict):
         casename = request_data.get('casename', '')
@@ -548,40 +512,88 @@ class DataManager:
         
         # 初始化文件监听器
         self.init_file_watcher(tool_id)
-        
-        all_data = {}
-        tool_config = tool_manager.get_tool(tool_id) or {}
+        ############################################################################
+        # 检查缓存是否在 TTL 内，命中则直接返回，实现快速响应
+        cache_key = (tool_id)
+        self.logger.info(f"开始加载工具 {tool_id} 数据")
+            # 检查缓存
+        with self._cache_lock:
+            cached_entry = self._data_cache.get(cache_key)
 
-        if Path(tool_config.get('single_path')):
-            all_data, message = self.load_single_chart(tool_id, all_data)
+            if cached_entry is not None:
+                cached_at, cached_value = cached_entry
+                if time.time() - cached_at < self._cache_ttl_seconds:
+                    print(cached_value)
+                    return cached_value, "数据已经是最新的"
+                self._data_cache.pop(cache_key, None)
+        ############################################################################
+        # 获取已有数据    工具以往保存的数据；如果存在则获取，否则返回空字典
+        data_file = DATA_DIR / tool_id / f'{tool_id}.json'
+        if data_file.exists():
+            all_data = load_tool_data(data_file) or {}
         else:
-            return all_data, "单线程路径不存在"
+            all_data = {}
+        ############################################################################
+        # 获取新数据
+        filepaths = {}
+        tool_config = tool_manager.get_tool(tool_id) or {}
+        # 单线程数据
+        if Path(tool_config.get('single_path')):
+            # 检查单线程路径是否为空，并且是否存在
+            self.logger.info(f"加载工具 {tool_id} 单线程数据")
+            all_data, filepaths['single'] = self.load_single_chart(tool_id, all_data)
+        else:
+            return {}, "单线程路径不存在"
 
-        # 检查多线程路径是否为空，并且是否存在
+        # 多线程数据
         if tool_config.get('multi_path'):
+            # 检查多线程路径是否为空，并且是否存在
             if Path(tool_config.get('multi_path')):
-                all_data, message = self.load_multi_chart(tool_id, all_data)
+                self.logger.info(f"加载工具 {tool_id} 多线程数据")
+                all_data, filepaths['multi'] = self.load_multi_chart(tool_id, all_data)
             else:
                 return all_data, "多线程路径不存在"
+
+        if tool_config.get('extra_display_path'):
+            if Path(tool_config.get('extra_display_path')):
+                self.logger.info(f"加载工具 {tool_id} 额外数据")
+                data_parsers['extra'] = self.load_extra_chart(tool_id, user_id)
+            else:
+                message = ''
         else:
             message = ''
-
-        # 将数据解析出来 parser
-        print("+++++++++++++++++++++++++++++++++++++++++++++++++++++")
-
-        all_data = data_parser.parse_data(all_data)
-        save_tool_data("all_data.json",all_data)
-        
-        if tool_config.get('extra_display_path'):
-            all_data['extra'], extra_message = self.load_extra_chart(tool_id, user_id)
+        ############################################################################
+        # 解析数据 -> 先判断数据是否被更新，如果更新在解析，否则直接加载缓存
+        data_parser_path = DATA_DIR / tool_id / f"{tool_id}_parser.json"
+        message = []
+        if filepaths and ('single' in filepaths or 'multi' in filepaths):
+            if 'single' in filepaths and filepaths['single']:
+                message.append('单线程')
+            if 'multi' in filepaths and filepaths['multi']:
+                message.append('多线程')
+            # 解析数据
+            data_parsers = data_parser.parse_all_data(all_data)
+            # 异步保存数据
+            self._executor.submit(save_tool_data, data_parser_path, data_parsers)
+            # 更新缓存
+            with self._cache_lock:
+                self._data_cache[cache_key] = (time.time(), all_data)
         else:
-            extra_message = ''
+            data_parsers = load_tool_data(data_parser_path)
+        
+        ############################################################################
+        # 异步保存数据 -> 保存总数据、文件路径
+        self._executor.submit(
+            self._save_processed_data,
+            tool_id, all_data, filepaths
+        )
 
-        message = f"{message}"
         if not message:
-            message = '数据已是最新'
+            message = "数据" + '、'.join(message) + "已更新"
+        else:
+            message = "数据已是最新"
 
-        return all_data, message
+        return data_parsers, message
 
     # ==================== 对比功能 ====================
 

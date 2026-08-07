@@ -24,7 +24,7 @@ class DataParser:
         self.logger.info("数据管理器初始化")
 
     # 解析工具的数据，并放在对应的目录下；方便用户直接获取数据
-    def parse_all_data(self, all_data: Dict, flag: int):
+    def parse_all_data(self, all_data: Dict):
         """"
             解析工具的数据，并放在对应的目录下；方便用户直接获取数据
             参数:
@@ -55,24 +55,32 @@ class DataParser:
         for casename, case_data in all_data.items():
             if casename not in single:
                 single[casename] = {}
+                multi[casename] = {}
             types = case_data['metrics']
             rules = case_data['rules_data'].keys()
 
             for rule in rules:
-                dates = case_data['rules_data'][rule]['date']
+                dates = case_data['rules_data'][rule]['dates']
                 date_datas = case_data['rules_data'][rule]['date_data']
                 for date, thread_data in date_datas.items():
                     for thread, data in thread_data.items():
                         for i in range(len(types)):
-                            if data[i] > 0:
+                            if float(data[i]) > 0:
                                 if date in dates:
                                     if thread == -1:
+                                        if types[i] not in single[casename]:
+                                            single[casename][types[i]] = {}
+                                        if rule not in single[casename][types[i]]:
+                                            single[casename][types[i]][rule] = []
                                         single[casename][types[i]][rule].append(date)
                                     else:
-                                        if rule in multi[casename][types[i]]:
-                                            multi[casename][types[i]][rule][date].append(thread)
-                                        else:
-                                            multi[casename][types[i]][rule][date] = [thread]
+                                        if types[i] not in multi[casename]:
+                                            multi[casename][types[i]] = {}
+                                        if rule not in multi[casename][types[i]]:
+                                            multi[casename][types[i]][rule] = {}
+                                        if date not in multi[casename][types[i]][rule]:
+                                            multi[casename][types[i]][rule][date] = []
+                                        multi[casename][types[i]][rule][date].append(thread)
 
         return {'single': single, 'multi': multi}
 
