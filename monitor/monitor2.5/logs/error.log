@@ -353,3 +353,91 @@ NameError: name 're' is not defined
 2026-08-07 10:29:45 - ERROR - dynamic_module_elint_5553402546019178623 - elint.py:936 - 读取日志文件失败 FileInfo(path=C:\Users\xbzhong\Desktop\lint\script\develop\monitor\test\multi\2026-05-11-06\multi\case\thread_2\aes\elint.log, mtime=1785981586.8039787): expected str, bytes or os.PathLike object, not FileInfo
 2026-08-07 10:29:45 - ERROR - dynamic_module_elint_5553402546019178623 - elint.py:936 - 读取日志文件失败 FileInfo(path=C:\Users\xbzhong\Desktop\lint\script\develop\monitor\test\multi\2026-05-11-06\multi\case\thread_2\pcie\elint.log, mtime=1785981586.8039787): expected str, bytes or os.PathLike object, not FileInfo
 2026-08-07 10:29:45 - ERROR - dynamic_module_elint_5553402546019178623 - elint.py:936 - 读取日志文件失败 FileInfo(path=C:\Users\xbzhong\Desktop\lint\script\develop\monitor\test\multi\2026-05-11-06\multi\case\thread_4\aes\elint.log, mtime=1785981586.8049788): expected str, bytes or os.PathLike object, not FileInfo
+2026-08-07 14:42:40 - ERROR - utils.data_manager - data_manager.py:1106 - 解析数据失败: get_elint_data() takes 1 positional argument but 2 were given
+Traceback (most recent call last):
+  File "c:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\utils\data_manager.py", line 1090, in get_all_data
+    incremental_data = func(files_to_process, 1) or {}
+                       ~~~~^^^^^^^^^^^^^^^^^^^^^
+TypeError: get_elint_data() takes 1 positional argument but 2 were given
+2026-08-07 14:43:00 - ERROR - utils.data_manager - data_manager.py:1107 - 解析数据失败: expected string or bytes-like object, got 'FileInfo'
+Traceback (most recent call last):
+  File "c:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\utils\data_manager.py", line 1091, in get_all_data
+    incremental_data = func(files_to_process) or {}
+                       ~~~~^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\tool\elint\elint.py", line 587, in get_elint_data
+    threadStr = re.findall(r'.*/[^\s]_thread_(\d+)', file_path)
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3568.0_x64__qbz5n2kfra8p0\Lib\re\__init__.py", line 278, in findall
+    return _compile(pattern, flags).findall(string)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^
+TypeError: expected string or bytes-like object, got 'FileInfo'
+2026-08-07 14:43:00 - ERROR - utils.data_manager - data_manager.py:1107 - 解析数据失败: expected string or bytes-like object, got 'FileInfo'
+Traceback (most recent call last):
+  File "c:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\utils\data_manager.py", line 1091, in get_all_data
+    incremental_data = func(files_to_process) or {}
+                       ~~~~^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\tool\elint\elint.py", line 587, in get_elint_data
+    threadStr = re.findall(r'.*/[^\s]_thread_(\d+)', file_path)
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3568.0_x64__qbz5n2kfra8p0\Lib\re\__init__.py", line 278, in findall
+    return _compile(pattern, flags).findall(string)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^
+TypeError: expected string or bytes-like object, got 'FileInfo'
+2026-08-07 14:49:06 - ERROR - dynamic_module_elint_3823130284631667469 - elint.py:533 - 解析文件失败 C:\Users\xbzhong\Desktop\lint\script\develop\monitor\test\signal\2026-05-10-06\performance\20260510_aes.txt: 'tuple' object has no attribute 'split'
+2026-08-07 14:49:06 - ERROR - dynamic_module_elint_3823130284631667469 - elint.py:533 - 解析文件失败 C:\Users\xbzhong\Desktop\lint\script\develop\monitor\test\signal\2026-05-10-06\performance\20260510_nv.txt: 'tuple' object has no attribute 'split'
+2026-08-07 14:49:06 - ERROR - dynamic_module_elint_3823130284631667469 - elint.py:533 - 解析文件失败 C:\Users\xbzhong\Desktop\lint\script\develop\monitor\test\signal\2026-05-11-06\performance\20260511_aes.txt: 'tuple' object has no attribute 'split'
+2026-08-07 14:49:06 - ERROR - dynamic_module_elint_3823130284631667469 - elint.py:533 - 解析文件失败 C:\Users\xbzhong\Desktop\lint\script\develop\monitor\test\signal\2026-05-11-06\performance\20260511_nv.txt: 'tuple' object has no attribute 'split'
+2026-08-07 14:49:06 - ERROR - dynamic_module_elint_3823130284631667469 - elint.py:533 - 解析文件失败 C:\Users\xbzhong\Desktop\lint\script\develop\monitor\test\signal\2026-05-12-06\performance\20260512_aes.txt: 'tuple' object has no attribute 'split'
+2026-08-07 14:49:06 - ERROR - dynamic_module_elint_3823130284631667469 - elint.py:533 - 解析文件失败 C:\Users\xbzhong\Desktop\lint\script\develop\monitor\test\signal\2026-05-12-06\performance\20260512_nv.txt: 'tuple' object has no attribute 'split'
+2026-08-07 14:49:57 - ERROR - dynamic_module_elint_4292798451830875524 - elint.py:533 - 解析文件失败 C:\Users\xbzhong\Desktop\lint\script\develop\monitor\test\signal\2026-05-10-06\performance\20260510_aes.txt: 'Analysis'
+2026-08-07 14:49:57 - ERROR - dynamic_module_elint_4292798451830875524 - elint.py:533 - 解析文件失败 C:\Users\xbzhong\Desktop\lint\script\develop\monitor\test\signal\2026-05-10-06\performance\20260510_nv.txt: 'Analysis'
+2026-08-07 14:49:57 - ERROR - dynamic_module_elint_4292798451830875524 - elint.py:533 - 解析文件失败 C:\Users\xbzhong\Desktop\lint\script\develop\monitor\test\signal\2026-05-11-06\performance\20260511_aes.txt: 'Analysis'
+2026-08-07 14:49:57 - ERROR - dynamic_module_elint_4292798451830875524 - elint.py:533 - 解析文件失败 C:\Users\xbzhong\Desktop\lint\script\develop\monitor\test\signal\2026-05-11-06\performance\20260511_nv.txt: 'Analysis'
+2026-08-07 14:49:57 - ERROR - dynamic_module_elint_4292798451830875524 - elint.py:533 - 解析文件失败 C:\Users\xbzhong\Desktop\lint\script\develop\monitor\test\signal\2026-05-12-06\performance\20260512_aes.txt: 'Analysis'
+2026-08-07 14:49:57 - ERROR - dynamic_module_elint_4292798451830875524 - elint.py:533 - 解析文件失败 C:\Users\xbzhong\Desktop\lint\script\develop\monitor\test\signal\2026-05-12-06\performance\20260512_nv.txt: 'Analysis'
+2026-08-07 14:52:12 - ERROR - dynamic_module_elint_8402446532803639412 - elint.py:534 - 解析文件失败 C:\Users\xbzhong\Desktop\lint\script\develop\monitor\test\signal\2026-05-10-06\performance\20260510_aes.txt: 'Analysis'
+2026-08-07 14:52:12 - ERROR - dynamic_module_elint_8402446532803639412 - elint.py:534 - 解析文件失败 C:\Users\xbzhong\Desktop\lint\script\develop\monitor\test\signal\2026-05-10-06\performance\20260510_nv.txt: 'Analysis'
+2026-08-07 14:52:12 - ERROR - dynamic_module_elint_8402446532803639412 - elint.py:534 - 解析文件失败 C:\Users\xbzhong\Desktop\lint\script\develop\monitor\test\signal\2026-05-11-06\performance\20260511_aes.txt: 'Analysis'
+2026-08-07 14:52:12 - ERROR - dynamic_module_elint_8402446532803639412 - elint.py:534 - 解析文件失败 C:\Users\xbzhong\Desktop\lint\script\develop\monitor\test\signal\2026-05-11-06\performance\20260511_nv.txt: 'Analysis'
+2026-08-07 14:52:12 - ERROR - dynamic_module_elint_8402446532803639412 - elint.py:534 - 解析文件失败 C:\Users\xbzhong\Desktop\lint\script\develop\monitor\test\signal\2026-05-12-06\performance\20260512_aes.txt: 'Analysis'
+2026-08-07 14:52:12 - ERROR - dynamic_module_elint_8402446532803639412 - elint.py:534 - 解析文件失败 C:\Users\xbzhong\Desktop\lint\script\develop\monitor\test\signal\2026-05-12-06\performance\20260512_nv.txt: 'Analysis'
+2026-08-07 14:52:35 - ERROR - utils.data_manager - data_manager.py:1107 - 解析数据失败: 'Analysis'
+Traceback (most recent call last):
+  File "c:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\utils\data_manager.py", line 1091, in get_all_data
+    incremental_data = func(files_to_process) or {}
+                       ~~~~^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\tool\elint\elint.py", line 600, in get_elint_data
+    get_elint_data_from_txt(file_path, elint_data, thread)
+    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\tool\elint\elint.py", line 531, in get_elint_data_from_txt
+    elint_data[casename]["rules_data"] = gen_data(elint_data[casename]["rules_data"], rule_datas, date, thread, flag)
+                                         ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\tool\elint\elint.py", line 478, in gen_data
+    if "thread" not in dataData[rule_name]:
+                       ~~~~~~~~^^^^^^^^^^^
+KeyError: 'Analysis'
+2026-08-07 14:54:58 - ERROR - dynamic_module_elint_4710804367220415267 - elint.py:533 - 解析文件失败 C:\Users\xbzhong\Desktop\lint\script\develop\monitor\test\signal\2026-05-10-06\performance\20260510_aes.txt: list index out of range
+2026-08-07 14:54:58 - ERROR - dynamic_module_elint_4710804367220415267 - elint.py:533 - 解析文件失败 C:\Users\xbzhong\Desktop\lint\script\develop\monitor\test\signal\2026-05-10-06\performance\20260510_nv.txt: list index out of range
+2026-08-07 14:54:58 - ERROR - dynamic_module_elint_4710804367220415267 - elint.py:533 - 解析文件失败 C:\Users\xbzhong\Desktop\lint\script\develop\monitor\test\signal\2026-05-11-06\performance\20260511_aes.txt: list index out of range
+2026-08-07 14:54:58 - ERROR - dynamic_module_elint_4710804367220415267 - elint.py:533 - 解析文件失败 C:\Users\xbzhong\Desktop\lint\script\develop\monitor\test\signal\2026-05-11-06\performance\20260511_nv.txt: list index out of range
+2026-08-07 14:54:58 - ERROR - dynamic_module_elint_4710804367220415267 - elint.py:533 - 解析文件失败 C:\Users\xbzhong\Desktop\lint\script\develop\monitor\test\signal\2026-05-12-06\performance\20260512_aes.txt: list index out of range
+2026-08-07 14:54:58 - ERROR - dynamic_module_elint_4710804367220415267 - elint.py:533 - 解析文件失败 C:\Users\xbzhong\Desktop\lint\script\develop\monitor\test\signal\2026-05-12-06\performance\20260512_nv.txt: list index out of range
+2026-08-07 14:55:39 - ERROR - dynamic_module_elint_-4824031698331746027 - elint.py:533 - 解析文件失败 C:\Users\xbzhong\Desktop\lint\script\develop\monitor\test\signal\2026-05-10-06\performance\20260510_aes.txt: list index out of range
+2026-08-07 14:55:39 - ERROR - dynamic_module_elint_-4824031698331746027 - elint.py:533 - 解析文件失败 C:\Users\xbzhong\Desktop\lint\script\develop\monitor\test\signal\2026-05-10-06\performance\20260510_nv.txt: list index out of range
+2026-08-07 14:55:39 - ERROR - dynamic_module_elint_-4824031698331746027 - elint.py:533 - 解析文件失败 C:\Users\xbzhong\Desktop\lint\script\develop\monitor\test\signal\2026-05-11-06\performance\20260511_aes.txt: list index out of range
+2026-08-07 14:55:39 - ERROR - dynamic_module_elint_-4824031698331746027 - elint.py:533 - 解析文件失败 C:\Users\xbzhong\Desktop\lint\script\develop\monitor\test\signal\2026-05-11-06\performance\20260511_nv.txt: list index out of range
+2026-08-07 14:55:39 - ERROR - dynamic_module_elint_-4824031698331746027 - elint.py:533 - 解析文件失败 C:\Users\xbzhong\Desktop\lint\script\develop\monitor\test\signal\2026-05-12-06\performance\20260512_aes.txt: list index out of range
+2026-08-07 14:55:39 - ERROR - dynamic_module_elint_-4824031698331746027 - elint.py:533 - 解析文件失败 C:\Users\xbzhong\Desktop\lint\script\develop\monitor\test\signal\2026-05-12-06\performance\20260512_nv.txt: list index out of range
+2026-08-07 14:56:12 - ERROR - utils.data_manager - data_manager.py:1107 - 解析数据失败: list index out of range
+Traceback (most recent call last):
+  File "c:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\utils\data_manager.py", line 1091, in get_all_data
+    incremental_data = func(files_to_process) or {}
+                       ~~~~^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\tool\elint\elint.py", line 599, in get_elint_data
+    get_elint_data_from_txt(file_path, elint_data, thread)
+    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\tool\elint\elint.py", line 530, in get_elint_data_from_txt
+    elint_data[casename]["rules_data"] = gen_data(elint_data[casename]["rules_data"], rule_datas, date, thread, flag)
+                                         ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\tool\elint\elint.py", line 487, in gen_data
+    dataData[rule_name]["thread"][thread].append(thread)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^
+IndexError: list index out of range

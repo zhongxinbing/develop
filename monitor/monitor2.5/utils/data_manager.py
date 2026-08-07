@@ -1039,6 +1039,8 @@ class DataManager:
         Returns:
             解析后的数据
         """
+        if data_type == "multi":
+            print("==========================================================================")
         cache_key = (user_id, tool_id, data_type)
         self.logger.info(f"开始加载 {data_type} 数据: {cache_key}")
         # 检查缓存
@@ -1079,7 +1081,7 @@ class DataManager:
 
         # 如果有文件需要处理
         if files_to_process:
-            self.logger.info(f"发现 {len(files_to_process)} 个文件需要处理")
+            self.logger.info(f"发现 {len(files_to_process)} 个文件需要处理 +++++++++++++++++++++++++")
             
             # 获取已有数据
             data_file = DATA_DIR / tool_id / f'{data_type}.json'
@@ -1087,7 +1089,9 @@ class DataManager:
             
             # 解析增量数据
             try:
-                incremental_data = func(files_to_process, 1) or {}
+                # incremental_data = func(files_to_process, 1) or {}
+                incremental_data = func(files_to_process) or {}
+                print(files_to_process)
                 # 合并数据
                 merged_data = deep_merge(existing_data, incremental_data)
                 
@@ -1384,7 +1388,7 @@ class DataManager:
         if tool_config.get('multi_path'):
             all_data['multi'], multi_message = self.load_multi_chart(tool_id, user_id)
         else:
-            multi_message = ''
+            multi_message = f"工具 {tool_id} 多线程数据不存在"
         
         if tool_config.get('extra_display_path'):
             all_data['extra'], extra_message = self.load_extra_chart(tool_id, user_id)
