@@ -15,6 +15,7 @@ logger = get_logger(__name__)
 @app.route('/api/tools/<tool_id>/data', methods=['POST'])
 def api_load_tool_data(tool_id):
     """加载工具数据（使用分层存储）"""
+    # 后端将数据发送给前端，前端根据数据类型进行处理
     user_id = get_user_id()
     all_data, message = data_manager.load_single_or_multi_chart(tool_id, user_id)
 

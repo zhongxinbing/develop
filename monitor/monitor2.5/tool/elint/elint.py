@@ -589,7 +589,8 @@ def get_elint_data(filepaths: str) -> Dict:
         if threadStr:
             thread = int(threadStr[0].strip())
         else:
-            thread = 1
+            # 单线程的线程数应该为 -1（跑工具的时候不设置 -thread）
+            thread = -1
         filename = Path(file_path).name
         if re.match(r'elint\.log', filename):
             # 从 log 中读取数据
@@ -598,6 +599,4 @@ def get_elint_data(filepaths: str) -> Dict:
             # 从 txt 中获取
             get_elint_data_from_txt(file_path, elint_data, thread)
 
-    print(999999999999999999999999999999)
-    save_tool_data("elint.json",elint_data,)
     return elint_data

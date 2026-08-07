@@ -1027,6 +1027,16 @@ class DataManager:
         self.logger.info(f"========================================== 发现 {len(files_to_process)} 个文件需要处理")
         return files_to_process, all_files
 
+    def duplicate_removal(self, data: Dict) -> Dict:
+        """去重"""
+        for casename,casedata in data.items():
+            rules_data = casedata["rules_data"]
+            for rule_name,ruledata in rules_data.items():
+                rules_data[rule_name]["thread"] = list(set(rules_data[rule_name]["thread"]))
+                rules_data[rule_name]["dates"] = list(set(rules_data[rule_name]["dates"]))
+            data[casename]["rules_data"] = rules_data
+        return data
+
     def get_all_data(self, tool_id: str, user_id: str, data_type: str):
         """
         加载工具数据，支持增量更新
@@ -1090,11 +1100,10 @@ class DataManager:
             # 解析增量数据
             try:
                 # incremental_data = func(files_to_process, 1) or {}
-                incremental_data = func(files_to_process) or {}
-                print(files_to_process)
+                incremental_data = self.duplicate_removal(func(files_to_process)) or {}
                 # 合并数据
                 merged_data = deep_merge(existing_data, incremental_data)
-                
+                save_tool_data("elint.json",merged_data)
                 # 异步保存
                 self._executor.submit(
                     self._save_processed_data,
@@ -1389,6 +1398,9 @@ class DataManager:
             all_data['multi'], multi_message = self.load_multi_chart(tool_id, user_id)
         else:
             multi_message = f"工具 {tool_id} 多线程数据不存在"
+        print("+++++++++++++++++++++++++++++++++++++++++++++++++++++")
+        save_tool_data("all_data.json",all_data)
+
         
         if tool_config.get('extra_display_path'):
             all_data['extra'], extra_message = self.load_extra_chart(tool_id, user_id)

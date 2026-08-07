@@ -441,3 +441,57 @@ Traceback (most recent call last):
     dataData[rule_name]["thread"][thread].append(thread)
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^
 IndexError: list index out of range
+2026-08-07 15:56:59 - ERROR - utils.data_manager - data_manager.py:1118 - 解析数据失败: 'nv'
+Traceback (most recent call last):
+  File "c:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\utils\data_manager.py", line 1102, in get_all_data
+    incremental_data = self.duplicate_removal(func(files_to_process)) or {}
+                       ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\utils\data_manager.py", line 1033, in duplicate_removal
+    data = data[casename]["rules_data"]
+           ~~~~^^^^^^^^^^
+KeyError: 'nv'
+2026-08-07 15:56:59 - ERROR - utils.data_manager - data_manager.py:1118 - 解析数据失败: 'pcie'
+Traceback (most recent call last):
+  File "c:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\utils\data_manager.py", line 1102, in get_all_data
+    incremental_data = self.duplicate_removal(func(files_to_process)) or {}
+                       ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\utils\data_manager.py", line 1033, in duplicate_removal
+    data = data[casename]["rules_data"]
+           ~~~~^^^^^^^^^^
+KeyError: 'pcie'
+2026-08-07 15:58:07 - ERROR - utils.data_manager - data_manager.py:1118 - 解析数据失败: unhashable type: 'dict'
+Traceback (most recent call last):
+  File "c:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\utils\data_manager.py", line 1102, in get_all_data
+    incremental_data = self.duplicate_removal(func(files_to_process)) or {}
+                       ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\utils\data_manager.py", line 1033, in duplicate_removal
+    data = data[casename]["rules_data"]
+           ~~~~^^^^^^^^^^
+TypeError: unhashable type: 'dict'
+2026-08-07 15:58:07 - ERROR - utils.data_manager - data_manager.py:1118 - 解析数据失败: unhashable type: 'dict'
+Traceback (most recent call last):
+  File "c:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\utils\data_manager.py", line 1102, in get_all_data
+    incremental_data = self.duplicate_removal(func(files_to_process)) or {}
+                       ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\utils\data_manager.py", line 1033, in duplicate_removal
+    data = data[casename]["rules_data"]
+           ~~~~^^^^^^^^^^
+TypeError: unhashable type: 'dict'
+2026-08-07 15:59:12 - ERROR - utils.data_manager - data_manager.py:1119 - 解析数据失败: 'aes'
+Traceback (most recent call last):
+  File "c:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\utils\data_manager.py", line 1103, in get_all_data
+    incremental_data = self.duplicate_removal(func(files_to_process)) or {}
+                       ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\utils\data_manager.py", line 1037, in duplicate_removal
+    data[casename]["rules_data"] = data
+    ~~~~^^^^^^^^^^
+KeyError: 'aes'
+2026-08-07 15:59:12 - ERROR - utils.data_manager - data_manager.py:1119 - 解析数据失败: 'aes'
+Traceback (most recent call last):
+  File "c:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\utils\data_manager.py", line 1103, in get_all_data
+    incremental_data = self.duplicate_removal(func(files_to_process)) or {}
+                       ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\utils\data_manager.py", line 1037, in duplicate_removal
+    data[casename]["rules_data"] = data
+    ~~~~^^^^^^^^^^
+KeyError: 'aes'
