@@ -25217,3 +25217,1215 @@
 2026-08-08 19:42:24 - INFO - __main__ - app.py:69 - 文件监听器已停止
 2026-08-08 19:42:24 - INFO - utils.data_manager - data_manager.py:356 - 文件监听器已停止
 2026-08-08 19:42:24 - INFO - api.compare - app.py:69 - 文件监听器已停止
+2026-08-08 19:42:29 - INFO - utils.data_parser - data_parser.py:24 - 数据管理器初始化
+2026-08-08 19:42:29 - INFO - utils.tool_manager - tool_manager.py:54 - 加载工具配置文件: E:\git\develop\monitor\monitor2.5\data\tools.json
+2026-08-08 19:42:29 - INFO - utils.tool_manager - tool_manager.py:45 - 工具管理器初始化完成
+2026-08-08 19:42:29 - INFO - utils.data_manager - data_manager.py:71 - 数据管理器初始化完成
+2026-08-08 19:42:29 - INFO - __main__ - app.py:92 - 启动性能监控平台后端服务
+2026-08-08 19:42:29 - INFO - werkzeug - _internal.py:97 - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5020
+ * Running on http://192.168.1.33:5020
+2026-08-08 19:42:29 - INFO - werkzeug - _internal.py:97 - [33mPress CTRL+C to quit[0m
+2026-08-08 19:42:29 - INFO - werkzeug - _internal.py:97 -  * Restarting with watchdog (windowsapi)
+2026-08-08 19:42:30 - INFO - utils.data_parser - data_parser.py:24 - 数据管理器初始化
+2026-08-08 19:42:30 - INFO - utils.tool_manager - tool_manager.py:54 - 加载工具配置文件: E:\git\develop\monitor\monitor2.5\data\tools.json
+2026-08-08 19:42:30 - INFO - utils.tool_manager - tool_manager.py:45 - 工具管理器初始化完成
+2026-08-08 19:42:30 - INFO - utils.data_manager - data_manager.py:71 - 数据管理器初始化完成
+2026-08-08 19:42:30 - INFO - __main__ - app.py:92 - 启动性能监控平台后端服务
+2026-08-08 19:42:30 - WARN - werkzeug - _internal.py:97 -  * Debugger is active!
+2026-08-08 19:42:30 - INFO - werkzeug - _internal.py:97 -  * Debugger PIN: 644-902-559
+2026-08-08 19:42:31 - INFO - utils.file_watcher - file_watcher.py:131 - 文件监听器初始化: watch_paths=['E:\\git\\develop\\monitor\\test\\signal']
+2026-08-08 19:42:31 - INFO - utils.file_watcher - file_watcher.py:51 - 文件变更处理器初始化
+2026-08-08 19:42:31 - INFO - utils.file_watcher - file_watcher.py:148 - 添加监听路径: E:\git\develop\monitor\test\signal
+2026-08-08 19:42:31 - INFO - utils.file_watcher - file_watcher.py:155 - 文件监听器已启动，监听 1 个路径
+2026-08-08 19:42:31 - INFO - utils.data_manager - data_manager.py:348 - 文件监听器已启动，监听路径: ['E:\\git\\develop\\monitor\\test\\signal']
+2026-08-08 19:42:31 - INFO - api.compare - app.py:60 - 文件监听器初始化完成，监听 1 个工具
+2026-08-08 19:42:31 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 19:42:31] "GET /tool/elint/performance HTTP/1.1" 200 -
+2026-08-08 19:42:31 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 19:42:31] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2026-08-08 19:42:31 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 19:42:31] "[36mGET /static/css/select.css HTTP/1.1[0m" 304 -
+2026-08-08 19:42:31 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 19:42:31] "[36mGET /static/js/echarts.min.js HTTP/1.1[0m" 304 -
+2026-08-08 19:42:31 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 19:42:31] "[36mGET /static/js/axios.min.js HTTP/1.1[0m" 304 -
+2026-08-08 19:42:31 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 19:42:31] "[36mGET /static/css/compare.css HTTP/1.1[0m" 304 -
+2026-08-08 19:42:31 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 19:42:31] "[36mGET /static/js/select.js HTTP/1.1[0m" 304 -
+2026-08-08 19:42:31 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 19:42:31] "[36mGET /static/js/single_thread.js HTTP/1.1[0m" 304 -
+2026-08-08 19:42:31 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 19:42:31] "[36mGET /static/js/multi_thread.js HTTP/1.1[0m" 304 -
+2026-08-08 19:42:31 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 19:42:31] "[36mGET /static/js/thread_chart.js HTTP/1.1[0m" 304 -
+2026-08-08 19:42:31 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 19:42:31] "[36mGET /static/js/comparison.js HTTP/1.1[0m" 304 -
+2026-08-08 19:42:31 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 19:42:31] "[36mGET /static/js/tool.js HTTP/1.1[0m" 304 -
+2026-08-08 19:42:31 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 19:42:31] "[33mGET /static/js/axios.min.js.map HTTP/1.1[0m" 404 -
+2026-08-08 19:42:31 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 19:42:31] "GET /api/tools HTTP/1.1" 200 -
+2026-08-08 19:42:31 - INFO - utils.data_manager - data_manager.py:125 - 创建用户数据目录: E:\git\develop\monitor\monitor2.5\data\elint\2e2a6287-4324-4002-9716-96fa44df3240
+2026-08-08 19:42:31 - INFO - utils.data_manager - data_manager.py:519 - 开始加载工具 elint 数据
+2026-08-08 19:42:31 - INFO - utils.data_manager - data_manager.py:544 - 加载工具 elint 单线程数据
+2026-08-08 19:42:31 - INFO - utils.data_manager - data_manager.py:473 - 加载工具 elint 单线程数据
+2026-08-08 19:42:31 - INFO - utils.file_scanner - file_scanner.py:100 - 文件扫描器初始化: root=E:\git\develop\monitor\test\signal, max_depth=3
+2026-08-08 19:42:31 - WARN - utils.common - common.py:100 - 加载工具数据失败, 文件不存在: E:\git\develop\monitor\monitor2.5\data\elint\single_version.json
+2026-08-08 19:42:31 - INFO - utils.file_scanner - file_scanner.py:118 - 开始扫描目录: E:\git\develop\monitor\test\signal
+2026-08-08 19:42:31 - INFO - utils.file_scanner - file_scanner.py:126 - 扫描完成: 找到 6 个文件
+2026-08-08 19:42:31 - INFO - dynamic_module_elint_2285255341674266334 - elint.py:588 - 从文件获取性能数据: E:\git\develop\monitor\test\signal\2026-05-10-06\performance\20260510_aes.txt
+2026-08-08 19:42:31 - INFO - dynamic_module_elint_2285255341674266334 - elint.py:588 - 从文件获取性能数据: E:\git\develop\monitor\test\signal\2026-05-10-06\performance\20260510_nv.txt
+2026-08-08 19:42:31 - INFO - dynamic_module_elint_2285255341674266334 - elint.py:588 - 从文件获取性能数据: E:\git\develop\monitor\test\signal\2026-05-11-06\performance\20260511_aes.txt
+2026-08-08 19:42:31 - INFO - dynamic_module_elint_2285255341674266334 - elint.py:588 - 从文件获取性能数据: E:\git\develop\monitor\test\signal\2026-05-11-06\performance\20260511_nv.txt
+2026-08-08 19:42:31 - INFO - dynamic_module_elint_2285255341674266334 - elint.py:588 - 从文件获取性能数据: E:\git\develop\monitor\test\signal\2026-05-12-06\performance\20260512_aes.txt
+2026-08-08 19:42:31 - INFO - dynamic_module_elint_2285255341674266334 - elint.py:588 - 从文件获取性能数据: E:\git\develop\monitor\test\signal\2026-05-12-06\performance\20260512_nv.txt
+2026-08-08 19:42:31 - INFO - utils.data_manager - data_manager.py:575 - 更新了：['单线程']
+2026-08-08 19:42:31 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 19:42:31] "POST /api/tools/elint/data HTTP/1.1" 200 -
+2026-08-08 19:42:31 - INFO - utils.common - common.py:87 - 成功保存工具数据到 E:\git\develop\monitor\monitor2.5\data\elint\elint_parser.json
+2026-08-08 19:42:31 - INFO - utils.common - common.py:87 - 成功保存工具数据到 E:\git\develop\monitor\monitor2.5\data\elint\elint.json
+2026-08-08 19:42:31 - INFO - utils.common - common.py:87 - 成功保存工具数据到 E:\git\develop\monitor\monitor2.5\data\elint\single_version.json
+2026-08-08 19:42:31 - INFO - utils.common - common.py:87 - 成功保存工具数据到 E:\git\develop\monitor\monitor2.5\data\elint\multi_version.json
+2026-08-08 19:42:31 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 19:42:31] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-08 19:42:31 - INFO - utils.data_manager - data_manager.py:269 - 数据保存完成: E:\git\develop\monitor\monitor2.5\data\elint\elint.json
+2026-08-08 19:42:31 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 19:42:31] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-08 19:42:31 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 19:42:31] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-08 19:42:31 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 19:42:31] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-08 19:42:31 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 19:42:31] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-08 19:42:31 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 19:42:31] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-08 19:42:31 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 19:42:31] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-08 19:42:31 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 19:42:31] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-08 19:43:08 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 19:43:08] "GET /tool/elint/performance HTTP/1.1" 200 -
+2026-08-08 19:43:08 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 19:43:08] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2026-08-08 19:43:08 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 19:43:08] "[36mGET /static/js/echarts.min.js HTTP/1.1[0m" 304 -
+2026-08-08 19:43:08 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 19:43:08] "[36mGET /static/css/select.css HTTP/1.1[0m" 304 -
+2026-08-08 19:43:08 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 19:43:08] "[36mGET /static/js/axios.min.js HTTP/1.1[0m" 304 -
+2026-08-08 19:43:08 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 19:43:08] "[36mGET /static/css/compare.css HTTP/1.1[0m" 304 -
+2026-08-08 19:43:08 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 19:43:08] "[36mGET /static/js/select.js HTTP/1.1[0m" 304 -
+2026-08-08 19:43:08 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 19:43:08] "[36mGET /static/js/single_thread.js HTTP/1.1[0m" 304 -
+2026-08-08 19:43:08 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 19:43:08] "[36mGET /static/js/multi_thread.js HTTP/1.1[0m" 304 -
+2026-08-08 19:43:08 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 19:43:08] "[36mGET /static/js/thread_chart.js HTTP/1.1[0m" 304 -
+2026-08-08 19:43:08 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 19:43:08] "[36mGET /static/js/comparison.js HTTP/1.1[0m" 304 -
+2026-08-08 19:43:08 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 19:43:08] "[36mGET /static/js/tool.js HTTP/1.1[0m" 304 -
+2026-08-08 19:43:08 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 19:43:08] "[33mGET /static/js/axios.min.js.map HTTP/1.1[0m" 404 -
+2026-08-08 19:43:08 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 19:43:08] "GET /api/tools HTTP/1.1" 200 -
+2026-08-08 19:43:08 - INFO - utils.data_manager - data_manager.py:519 - 开始加载工具 elint 数据
+2026-08-08 19:43:08 - INFO - utils.common - common.py:97 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\elint.json
+2026-08-08 19:43:08 - INFO - utils.data_manager - data_manager.py:544 - 加载工具 elint 单线程数据
+2026-08-08 19:43:08 - INFO - utils.data_manager - data_manager.py:473 - 加载工具 elint 单线程数据
+2026-08-08 19:43:08 - INFO - utils.file_scanner - file_scanner.py:100 - 文件扫描器初始化: root=E:\git\develop\monitor\test\signal, max_depth=3
+2026-08-08 19:43:08 - INFO - utils.file_scanner - file_scanner.py:118 - 开始扫描目录: E:\git\develop\monitor\test\signal
+2026-08-08 19:43:08 - INFO - utils.file_scanner - file_scanner.py:126 - 扫描完成: 找到 6 个文件
+2026-08-08 19:43:08 - INFO - utils.data_manager - data_manager.py:575 - 更新了：['单线程']
+2026-08-08 19:43:08 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 19:43:08] "POST /api/tools/elint/data HTTP/1.1" 200 -
+2026-08-08 19:43:08 - INFO - utils.common - common.py:87 - 成功保存工具数据到 E:\git\develop\monitor\monitor2.5\data\elint\elint_parser.json
+2026-08-08 19:43:08 - INFO - utils.common - common.py:87 - 成功保存工具数据到 E:\git\develop\monitor\monitor2.5\data\elint\elint.json
+2026-08-08 19:43:08 - INFO - utils.common - common.py:87 - 成功保存工具数据到 E:\git\develop\monitor\monitor2.5\data\elint\single_version.json
+2026-08-08 19:43:08 - INFO - utils.common - common.py:87 - 成功保存工具数据到 E:\git\develop\monitor\monitor2.5\data\elint\multi_version.json
+2026-08-08 19:43:08 - INFO - utils.data_manager - data_manager.py:269 - 数据保存完成: E:\git\develop\monitor\monitor2.5\data\elint\elint.json
+2026-08-08 19:44:22 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'e:\\git\\develop\\monitor\\monitor2.5\\utils\\data_manager.py', reloading
+2026-08-08 19:44:22 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'e:\\git\\develop\\monitor\\monitor2.5\\utils\\data_manager.py', reloading
+2026-08-08 19:44:23 - INFO - utils.file_watcher - file_watcher.py:167 - 文件监听器已停止
+2026-08-08 19:44:23 - INFO - utils.data_manager - data_manager.py:356 - 文件监听器已停止
+2026-08-08 19:44:23 - INFO - __main__ - app.py:69 - 文件监听器已停止
+2026-08-08 19:44:23 - INFO - utils.data_manager - data_manager.py:356 - 文件监听器已停止
+2026-08-08 19:44:23 - INFO - api.compare - app.py:69 - 文件监听器已停止
+2026-08-08 19:44:23 - INFO - werkzeug - _internal.py:97 -  * Restarting with watchdog (windowsapi)
+2026-08-08 19:44:23 - INFO - utils.data_parser - data_parser.py:24 - 数据管理器初始化
+2026-08-08 19:44:23 - INFO - utils.tool_manager - tool_manager.py:54 - 加载工具配置文件: E:\git\develop\monitor\monitor2.5\data\tools.json
+2026-08-08 19:44:23 - INFO - utils.tool_manager - tool_manager.py:45 - 工具管理器初始化完成
+2026-08-08 19:44:23 - INFO - utils.data_manager - data_manager.py:71 - 数据管理器初始化完成
+2026-08-08 19:44:23 - INFO - __main__ - app.py:92 - 启动性能监控平台后端服务
+2026-08-08 19:44:23 - WARN - werkzeug - _internal.py:97 -  * Debugger is active!
+2026-08-08 19:44:23 - INFO - werkzeug - _internal.py:97 -  * Debugger PIN: 644-902-559
+2026-08-08 19:44:25 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'e:\\git\\develop\\monitor\\monitor2.5\\utils\\data_manager.py', reloading
+2026-08-08 19:44:25 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'e:\\git\\develop\\monitor\\monitor2.5\\utils\\data_manager.py', reloading
+2026-08-08 19:44:25 - INFO - utils.data_manager - data_manager.py:356 - 文件监听器已停止
+2026-08-08 19:44:25 - INFO - __main__ - app.py:69 - 文件监听器已停止
+2026-08-08 19:44:25 - INFO - utils.data_manager - data_manager.py:356 - 文件监听器已停止
+2026-08-08 19:44:25 - INFO - api.compare - app.py:69 - 文件监听器已停止
+2026-08-08 19:44:25 - INFO - werkzeug - _internal.py:97 -  * Restarting with watchdog (windowsapi)
+2026-08-08 19:44:26 - INFO - utils.data_parser - data_parser.py:24 - 数据管理器初始化
+2026-08-08 19:44:26 - INFO - utils.tool_manager - tool_manager.py:54 - 加载工具配置文件: E:\git\develop\monitor\monitor2.5\data\tools.json
+2026-08-08 19:44:26 - INFO - utils.tool_manager - tool_manager.py:45 - 工具管理器初始化完成
+2026-08-08 19:44:26 - INFO - utils.data_manager - data_manager.py:71 - 数据管理器初始化完成
+2026-08-08 19:44:26 - INFO - __main__ - app.py:92 - 启动性能监控平台后端服务
+2026-08-08 19:44:26 - WARN - werkzeug - _internal.py:97 -  * Debugger is active!
+2026-08-08 19:44:26 - INFO - werkzeug - _internal.py:97 -  * Debugger PIN: 644-902-559
+2026-08-08 19:44:26 - INFO - utils.data_manager - data_manager.py:356 - 文件监听器已停止
+2026-08-08 19:44:26 - INFO - __main__ - app.py:69 - 文件监听器已停止
+2026-08-08 19:44:26 - INFO - utils.data_manager - data_manager.py:356 - 文件监听器已停止
+2026-08-08 19:44:26 - INFO - api.compare - app.py:69 - 文件监听器已停止
+2026-08-08 19:44:26 - INFO - utils.data_manager - data_manager.py:356 - 文件监听器已停止
+2026-08-08 19:44:26 - INFO - __main__ - app.py:69 - 文件监听器已停止
+2026-08-08 19:44:26 - INFO - utils.data_manager - data_manager.py:356 - 文件监听器已停止
+2026-08-08 19:44:26 - INFO - api.compare - app.py:69 - 文件监听器已停止
+2026-08-08 19:44:32 - INFO - utils.data_parser - data_parser.py:24 - 数据管理器初始化
+2026-08-08 19:44:32 - INFO - utils.tool_manager - tool_manager.py:54 - 加载工具配置文件: E:\git\develop\monitor\monitor2.5\data\tools.json
+2026-08-08 19:44:32 - INFO - utils.tool_manager - tool_manager.py:45 - 工具管理器初始化完成
+2026-08-08 19:44:32 - INFO - utils.data_manager - data_manager.py:71 - 数据管理器初始化完成
+2026-08-08 19:44:32 - INFO - __main__ - app.py:92 - 启动性能监控平台后端服务
+2026-08-08 19:44:32 - INFO - werkzeug - _internal.py:97 - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5020
+ * Running on http://192.168.1.33:5020
+2026-08-08 19:44:32 - INFO - werkzeug - _internal.py:97 - [33mPress CTRL+C to quit[0m
+2026-08-08 19:44:32 - INFO - werkzeug - _internal.py:97 -  * Restarting with watchdog (windowsapi)
+2026-08-08 19:44:32 - INFO - utils.data_parser - data_parser.py:24 - 数据管理器初始化
+2026-08-08 19:44:32 - INFO - utils.tool_manager - tool_manager.py:54 - 加载工具配置文件: E:\git\develop\monitor\monitor2.5\data\tools.json
+2026-08-08 19:44:32 - INFO - utils.tool_manager - tool_manager.py:45 - 工具管理器初始化完成
+2026-08-08 19:44:32 - INFO - utils.data_manager - data_manager.py:71 - 数据管理器初始化完成
+2026-08-08 19:44:32 - INFO - __main__ - app.py:92 - 启动性能监控平台后端服务
+2026-08-08 19:44:32 - WARN - werkzeug - _internal.py:97 -  * Debugger is active!
+2026-08-08 19:44:32 - INFO - werkzeug - _internal.py:97 -  * Debugger PIN: 644-902-559
+2026-08-08 19:44:35 - INFO - utils.file_watcher - file_watcher.py:131 - 文件监听器初始化: watch_paths=['E:\\git\\develop\\monitor\\test\\signal']
+2026-08-08 19:44:35 - INFO - utils.file_watcher - file_watcher.py:51 - 文件变更处理器初始化
+2026-08-08 19:44:35 - INFO - utils.file_watcher - file_watcher.py:148 - 添加监听路径: E:\git\develop\monitor\test\signal
+2026-08-08 19:44:35 - INFO - utils.file_watcher - file_watcher.py:155 - 文件监听器已启动，监听 1 个路径
+2026-08-08 19:44:35 - INFO - utils.data_manager - data_manager.py:348 - 文件监听器已启动，监听路径: ['E:\\git\\develop\\monitor\\test\\signal']
+2026-08-08 19:44:35 - INFO - api.compare - app.py:60 - 文件监听器初始化完成，监听 1 个工具
+2026-08-08 19:44:35 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 19:44:35] "GET /tool/elint/performance HTTP/1.1" 200 -
+2026-08-08 19:44:35 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 19:44:35] "[36mGET /static/js/echarts.min.js HTTP/1.1[0m" 304 -
+2026-08-08 19:44:35 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 19:44:35] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2026-08-08 19:44:35 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 19:44:35] "[36mGET /static/js/axios.min.js HTTP/1.1[0m" 304 -
+2026-08-08 19:44:35 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 19:44:35] "[36mGET /static/css/select.css HTTP/1.1[0m" 304 -
+2026-08-08 19:44:35 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 19:44:35] "[36mGET /static/css/compare.css HTTP/1.1[0m" 304 -
+2026-08-08 19:44:35 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 19:44:35] "[36mGET /static/js/select.js HTTP/1.1[0m" 304 -
+2026-08-08 19:44:35 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 19:44:35] "[36mGET /static/js/single_thread.js HTTP/1.1[0m" 304 -
+2026-08-08 19:44:35 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 19:44:35] "[36mGET /static/js/multi_thread.js HTTP/1.1[0m" 304 -
+2026-08-08 19:44:35 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 19:44:35] "[36mGET /static/js/thread_chart.js HTTP/1.1[0m" 304 -
+2026-08-08 19:44:35 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 19:44:35] "[36mGET /static/js/comparison.js HTTP/1.1[0m" 304 -
+2026-08-08 19:44:35 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 19:44:35] "[36mGET /static/js/tool.js HTTP/1.1[0m" 304 -
+2026-08-08 19:44:35 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 19:44:35] "[33mGET /static/js/axios.min.js.map HTTP/1.1[0m" 404 -
+2026-08-08 19:44:35 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 19:44:35] "GET /api/tools HTTP/1.1" 200 -
+2026-08-08 19:44:35 - INFO - utils.data_manager - data_manager.py:125 - 创建用户数据目录: E:\git\develop\monitor\monitor2.5\data\elint\2e2a6287-4324-4002-9716-96fa44df3240
+2026-08-08 19:44:35 - INFO - utils.data_manager - data_manager.py:519 - 开始加载工具 elint 数据
+2026-08-08 19:44:35 - INFO - utils.data_manager - data_manager.py:544 - 加载工具 elint 单线程数据
+2026-08-08 19:44:35 - INFO - utils.data_manager - data_manager.py:473 - 加载工具 elint 单线程数据
+2026-08-08 19:44:35 - INFO - utils.file_scanner - file_scanner.py:100 - 文件扫描器初始化: root=E:\git\develop\monitor\test\signal, max_depth=3
+2026-08-08 19:44:35 - WARN - utils.common - common.py:100 - 加载工具数据失败, 文件不存在: E:\git\develop\monitor\monitor2.5\data\elint\single_version.json
+2026-08-08 19:44:35 - INFO - utils.file_scanner - file_scanner.py:118 - 开始扫描目录: E:\git\develop\monitor\test\signal
+2026-08-08 19:44:35 - INFO - utils.file_scanner - file_scanner.py:126 - 扫描完成: 找到 6 个文件
+2026-08-08 19:44:35 - INFO - dynamic_module_elint_-8720277710558140265 - elint.py:588 - 从文件获取性能数据: E:\git\develop\monitor\test\signal\2026-05-10-06\performance\20260510_aes.txt
+2026-08-08 19:44:35 - INFO - dynamic_module_elint_-8720277710558140265 - elint.py:588 - 从文件获取性能数据: E:\git\develop\monitor\test\signal\2026-05-10-06\performance\20260510_nv.txt
+2026-08-08 19:44:35 - INFO - dynamic_module_elint_-8720277710558140265 - elint.py:588 - 从文件获取性能数据: E:\git\develop\monitor\test\signal\2026-05-11-06\performance\20260511_aes.txt
+2026-08-08 19:44:35 - INFO - dynamic_module_elint_-8720277710558140265 - elint.py:588 - 从文件获取性能数据: E:\git\develop\monitor\test\signal\2026-05-11-06\performance\20260511_nv.txt
+2026-08-08 19:44:35 - INFO - dynamic_module_elint_-8720277710558140265 - elint.py:588 - 从文件获取性能数据: E:\git\develop\monitor\test\signal\2026-05-12-06\performance\20260512_aes.txt
+2026-08-08 19:44:35 - INFO - dynamic_module_elint_-8720277710558140265 - elint.py:588 - 从文件获取性能数据: E:\git\develop\monitor\test\signal\2026-05-12-06\performance\20260512_nv.txt
+2026-08-08 19:44:35 - INFO - utils.data_manager - data_manager.py:576 - 更新了：['单线程']
+2026-08-08 19:44:35 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 19:44:35] "POST /api/tools/elint/data HTTP/1.1" 200 -
+2026-08-08 19:44:35 - INFO - utils.common - common.py:87 - 成功保存工具数据到 E:\git\develop\monitor\monitor2.5\data\elint\elint_parser.json
+2026-08-08 19:44:35 - INFO - utils.common - common.py:87 - 成功保存工具数据到 E:\git\develop\monitor\monitor2.5\data\elint\elint.json
+2026-08-08 19:44:35 - INFO - utils.common - common.py:87 - 成功保存工具数据到 E:\git\develop\monitor\monitor2.5\data\elint\single_version.json
+2026-08-08 19:44:35 - INFO - utils.common - common.py:87 - 成功保存工具数据到 E:\git\develop\monitor\monitor2.5\data\elint\multi_version.json
+2026-08-08 19:44:35 - INFO - utils.data_manager - data_manager.py:269 - 数据保存完成: E:\git\develop\monitor\monitor2.5\data\elint\elint.json
+2026-08-08 19:44:35 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 19:44:35] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-08 19:44:35 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 19:44:35] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-08 19:44:35 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 19:44:35] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-08 19:44:35 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 19:44:35] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-08 19:44:35 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 19:44:35] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-08 19:44:35 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 19:44:35] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-08 19:44:35 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 19:44:35] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-08 19:44:35 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 19:44:35] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-08 19:44:41 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'e:\\git\\develop\\monitor\\monitor2.5\\utils\\data_manager.py', reloading
+2026-08-08 19:44:41 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'e:\\git\\develop\\monitor\\monitor2.5\\utils\\data_manager.py', reloading
+2026-08-08 19:44:42 - INFO - utils.file_watcher - file_watcher.py:167 - 文件监听器已停止
+2026-08-08 19:44:42 - INFO - utils.data_manager - data_manager.py:356 - 文件监听器已停止
+2026-08-08 19:44:42 - INFO - __main__ - app.py:69 - 文件监听器已停止
+2026-08-08 19:44:42 - INFO - utils.data_manager - data_manager.py:356 - 文件监听器已停止
+2026-08-08 19:44:42 - INFO - api.compare - app.py:69 - 文件监听器已停止
+2026-08-08 19:44:42 - INFO - werkzeug - _internal.py:97 -  * Restarting with watchdog (windowsapi)
+2026-08-08 19:44:42 - INFO - utils.data_parser - data_parser.py:24 - 数据管理器初始化
+2026-08-08 19:44:42 - INFO - utils.tool_manager - tool_manager.py:54 - 加载工具配置文件: E:\git\develop\monitor\monitor2.5\data\tools.json
+2026-08-08 19:44:42 - INFO - utils.tool_manager - tool_manager.py:45 - 工具管理器初始化完成
+2026-08-08 19:44:42 - INFO - utils.data_manager - data_manager.py:71 - 数据管理器初始化完成
+2026-08-08 19:44:42 - INFO - __main__ - app.py:92 - 启动性能监控平台后端服务
+2026-08-08 19:44:42 - WARN - werkzeug - _internal.py:97 -  * Debugger is active!
+2026-08-08 19:44:42 - INFO - werkzeug - _internal.py:97 -  * Debugger PIN: 644-902-559
+2026-08-08 19:44:45 - INFO - utils.file_watcher - file_watcher.py:131 - 文件监听器初始化: watch_paths=['E:\\git\\develop\\monitor\\test\\signal']
+2026-08-08 19:44:45 - INFO - utils.file_watcher - file_watcher.py:51 - 文件变更处理器初始化
+2026-08-08 19:44:45 - INFO - utils.file_watcher - file_watcher.py:148 - 添加监听路径: E:\git\develop\monitor\test\signal
+2026-08-08 19:44:45 - INFO - utils.file_watcher - file_watcher.py:155 - 文件监听器已启动，监听 1 个路径
+2026-08-08 19:44:45 - INFO - utils.data_manager - data_manager.py:348 - 文件监听器已启动，监听路径: ['E:\\git\\develop\\monitor\\test\\signal']
+2026-08-08 19:44:45 - INFO - api.compare - app.py:60 - 文件监听器初始化完成，监听 1 个工具
+2026-08-08 19:44:45 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 19:44:45] "GET /tool/elint/performance HTTP/1.1" 200 -
+2026-08-08 19:44:45 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 19:44:45] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2026-08-08 19:44:45 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 19:44:45] "[36mGET /static/css/select.css HTTP/1.1[0m" 304 -
+2026-08-08 19:44:45 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 19:44:45] "[36mGET /static/js/axios.min.js HTTP/1.1[0m" 304 -
+2026-08-08 19:44:45 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 19:44:45] "[36mGET /static/js/echarts.min.js HTTP/1.1[0m" 304 -
+2026-08-08 19:44:45 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 19:44:45] "[36mGET /static/js/select.js HTTP/1.1[0m" 304 -
+2026-08-08 19:44:45 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 19:44:45] "[36mGET /static/css/compare.css HTTP/1.1[0m" 304 -
+2026-08-08 19:44:45 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 19:44:45] "[36mGET /static/js/single_thread.js HTTP/1.1[0m" 304 -
+2026-08-08 19:44:45 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 19:44:45] "[36mGET /static/js/multi_thread.js HTTP/1.1[0m" 304 -
+2026-08-08 19:44:45 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 19:44:45] "[36mGET /static/js/thread_chart.js HTTP/1.1[0m" 304 -
+2026-08-08 19:44:45 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 19:44:45] "[36mGET /static/js/comparison.js HTTP/1.1[0m" 304 -
+2026-08-08 19:44:45 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 19:44:45] "[36mGET /static/js/tool.js HTTP/1.1[0m" 304 -
+2026-08-08 19:44:45 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 19:44:45] "[33mGET /static/js/axios.min.js.map HTTP/1.1[0m" 404 -
+2026-08-08 19:44:45 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 19:44:45] "GET /api/tools HTTP/1.1" 200 -
+2026-08-08 19:44:45 - INFO - utils.data_manager - data_manager.py:519 - 开始加载工具 elint 数据
+2026-08-08 19:44:45 - INFO - utils.common - common.py:97 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\elint.json
+2026-08-08 19:44:45 - INFO - utils.data_manager - data_manager.py:544 - 加载工具 elint 单线程数据
+2026-08-08 19:44:45 - INFO - utils.data_manager - data_manager.py:473 - 加载工具 elint 单线程数据
+2026-08-08 19:44:45 - INFO - utils.file_scanner - file_scanner.py:100 - 文件扫描器初始化: root=E:\git\develop\monitor\test\signal, max_depth=3
+2026-08-08 19:44:45 - INFO - utils.common - common.py:97 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\single_version.json
+2026-08-08 19:44:45 - INFO - utils.file_scanner - file_scanner.py:118 - 开始扫描目录: E:\git\develop\monitor\test\signal
+2026-08-08 19:44:45 - INFO - utils.file_scanner - file_scanner.py:126 - 扫描完成: 找到 6 个文件
+2026-08-08 19:44:45 - INFO - utils.data_manager - data_manager.py:576 - 更新了：['单线程']
+2026-08-08 19:44:45 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 19:44:45] "POST /api/tools/elint/data HTTP/1.1" 200 -
+2026-08-08 19:44:45 - INFO - utils.common - common.py:87 - 成功保存工具数据到 E:\git\develop\monitor\monitor2.5\data\elint\elint_parser.json
+2026-08-08 19:44:45 - INFO - utils.common - common.py:87 - 成功保存工具数据到 E:\git\develop\monitor\monitor2.5\data\elint\elint.json
+2026-08-08 19:44:45 - INFO - utils.common - common.py:87 - 成功保存工具数据到 E:\git\develop\monitor\monitor2.5\data\elint\single_version.json
+2026-08-08 19:44:45 - INFO - utils.common - common.py:87 - 成功保存工具数据到 E:\git\develop\monitor\monitor2.5\data\elint\multi_version.json
+2026-08-08 19:44:45 - INFO - utils.data_manager - data_manager.py:269 - 数据保存完成: E:\git\develop\monitor\monitor2.5\data\elint\elint.json
+2026-08-08 20:04:51 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'e:\\git\\develop\\monitor\\monitor2.5\\utils\\data_manager.py', reloading
+2026-08-08 20:04:51 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'e:\\git\\develop\\monitor\\monitor2.5\\utils\\data_manager.py', reloading
+2026-08-08 20:04:51 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'e:\\git\\develop\\monitor\\monitor2.5\\utils\\data_manager.py', reloading
+2026-08-08 20:04:51 - INFO - utils.file_watcher - file_watcher.py:167 - 文件监听器已停止
+2026-08-08 20:04:51 - INFO - utils.data_manager - data_manager.py:356 - 文件监听器已停止
+2026-08-08 20:04:51 - INFO - __main__ - app.py:69 - 文件监听器已停止
+2026-08-08 20:04:51 - INFO - utils.data_manager - data_manager.py:356 - 文件监听器已停止
+2026-08-08 20:04:51 - INFO - api.compare - app.py:69 - 文件监听器已停止
+2026-08-08 20:04:51 - INFO - werkzeug - _internal.py:97 -  * Restarting with watchdog (windowsapi)
+2026-08-08 20:04:52 - INFO - utils.data_parser - data_parser.py:24 - 数据管理器初始化
+2026-08-08 20:04:52 - INFO - utils.tool_manager - tool_manager.py:54 - 加载工具配置文件: E:\git\develop\monitor\monitor2.5\data\tools.json
+2026-08-08 20:04:52 - INFO - utils.tool_manager - tool_manager.py:45 - 工具管理器初始化完成
+2026-08-08 20:04:52 - INFO - utils.data_manager - data_manager.py:71 - 数据管理器初始化完成
+2026-08-08 20:04:52 - INFO - __main__ - app.py:92 - 启动性能监控平台后端服务
+2026-08-08 20:04:52 - WARN - werkzeug - _internal.py:97 -  * Debugger is active!
+2026-08-08 20:04:52 - INFO - werkzeug - _internal.py:97 -  * Debugger PIN: 644-902-559
+2026-08-08 20:05:00 - INFO - utils.data_manager - data_manager.py:356 - 文件监听器已停止
+2026-08-08 20:05:00 - INFO - __main__ - app.py:69 - 文件监听器已停止
+2026-08-08 20:05:00 - INFO - utils.data_manager - data_manager.py:356 - 文件监听器已停止
+2026-08-08 20:05:00 - INFO - api.compare - app.py:69 - 文件监听器已停止
+2026-08-08 20:05:00 - INFO - utils.data_manager - data_manager.py:356 - 文件监听器已停止
+2026-08-08 20:05:00 - INFO - __main__ - app.py:69 - 文件监听器已停止
+2026-08-08 20:05:00 - INFO - utils.data_manager - data_manager.py:356 - 文件监听器已停止
+2026-08-08 20:05:00 - INFO - api.compare - app.py:69 - 文件监听器已停止
+2026-08-08 20:05:02 - INFO - utils.data_parser - data_parser.py:24 - 数据管理器初始化
+2026-08-08 20:05:02 - INFO - utils.tool_manager - tool_manager.py:54 - 加载工具配置文件: E:\git\develop\monitor\monitor2.5\data\tools.json
+2026-08-08 20:05:02 - INFO - utils.tool_manager - tool_manager.py:45 - 工具管理器初始化完成
+2026-08-08 20:05:02 - INFO - utils.data_manager - data_manager.py:71 - 数据管理器初始化完成
+2026-08-08 20:05:02 - INFO - __main__ - app.py:92 - 启动性能监控平台后端服务
+2026-08-08 20:05:02 - INFO - werkzeug - _internal.py:97 - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5020
+ * Running on http://192.168.1.33:5020
+2026-08-08 20:05:02 - INFO - werkzeug - _internal.py:97 - [33mPress CTRL+C to quit[0m
+2026-08-08 20:05:02 - INFO - werkzeug - _internal.py:97 -  * Restarting with watchdog (windowsapi)
+2026-08-08 20:05:02 - INFO - utils.data_parser - data_parser.py:24 - 数据管理器初始化
+2026-08-08 20:05:02 - INFO - utils.tool_manager - tool_manager.py:54 - 加载工具配置文件: E:\git\develop\monitor\monitor2.5\data\tools.json
+2026-08-08 20:05:02 - INFO - utils.tool_manager - tool_manager.py:45 - 工具管理器初始化完成
+2026-08-08 20:05:02 - INFO - utils.data_manager - data_manager.py:71 - 数据管理器初始化完成
+2026-08-08 20:05:02 - INFO - __main__ - app.py:92 - 启动性能监控平台后端服务
+2026-08-08 20:05:03 - WARN - werkzeug - _internal.py:97 -  * Debugger is active!
+2026-08-08 20:05:03 - INFO - werkzeug - _internal.py:97 -  * Debugger PIN: 644-902-559
+2026-08-08 20:05:05 - INFO - utils.file_watcher - file_watcher.py:131 - 文件监听器初始化: watch_paths=['E:\\git\\develop\\monitor\\test\\signal']
+2026-08-08 20:05:05 - INFO - utils.file_watcher - file_watcher.py:51 - 文件变更处理器初始化
+2026-08-08 20:05:05 - INFO - utils.file_watcher - file_watcher.py:148 - 添加监听路径: E:\git\develop\monitor\test\signal
+2026-08-08 20:05:05 - INFO - utils.file_watcher - file_watcher.py:155 - 文件监听器已启动，监听 1 个路径
+2026-08-08 20:05:05 - INFO - utils.data_manager - data_manager.py:348 - 文件监听器已启动，监听路径: ['E:\\git\\develop\\monitor\\test\\signal']
+2026-08-08 20:05:05 - INFO - api.compare - app.py:60 - 文件监听器初始化完成，监听 1 个工具
+2026-08-08 20:05:05 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:05:05] "GET /tool/elint/performance HTTP/1.1" 200 -
+2026-08-08 20:05:05 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:05:05] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2026-08-08 20:05:05 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:05:05] "[36mGET /static/js/echarts.min.js HTTP/1.1[0m" 304 -
+2026-08-08 20:05:05 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:05:05] "[36mGET /static/css/select.css HTTP/1.1[0m" 304 -
+2026-08-08 20:05:05 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:05:05] "[36mGET /static/js/axios.min.js HTTP/1.1[0m" 304 -
+2026-08-08 20:05:05 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:05:05] "[36mGET /static/css/compare.css HTTP/1.1[0m" 304 -
+2026-08-08 20:05:05 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:05:05] "[36mGET /static/js/select.js HTTP/1.1[0m" 304 -
+2026-08-08 20:05:05 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:05:05] "[36mGET /static/js/single_thread.js HTTP/1.1[0m" 304 -
+2026-08-08 20:05:05 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:05:05] "[36mGET /static/js/multi_thread.js HTTP/1.1[0m" 304 -
+2026-08-08 20:05:05 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:05:05] "[36mGET /static/js/comparison.js HTTP/1.1[0m" 304 -
+2026-08-08 20:05:05 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:05:05] "[36mGET /static/js/thread_chart.js HTTP/1.1[0m" 304 -
+2026-08-08 20:05:05 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:05:05] "[36mGET /static/js/tool.js HTTP/1.1[0m" 304 -
+2026-08-08 20:05:05 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:05:05] "[33mGET /static/js/axios.min.js.map HTTP/1.1[0m" 404 -
+2026-08-08 20:05:05 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:05:05] "GET /api/tools HTTP/1.1" 200 -
+2026-08-08 20:05:05 - INFO - utils.data_manager - data_manager.py:125 - 创建用户数据目录: E:\git\develop\monitor\monitor2.5\data\elint\2e2a6287-4324-4002-9716-96fa44df3240
+2026-08-08 20:05:05 - INFO - utils.data_manager - data_manager.py:519 - 开始加载工具 elint 数据
+2026-08-08 20:05:05 - INFO - utils.data_manager - data_manager.py:544 - 加载工具 elint 单线程数据
+2026-08-08 20:05:05 - INFO - utils.data_manager - data_manager.py:473 - 加载工具 elint 单线程数据
+2026-08-08 20:05:05 - INFO - utils.file_scanner - file_scanner.py:100 - 文件扫描器初始化: root=E:\git\develop\monitor\test\signal, max_depth=3
+2026-08-08 20:05:05 - WARN - utils.common - common.py:100 - 加载工具数据失败, 文件不存在: E:\git\develop\monitor\monitor2.5\data\elint\single_version.json
+2026-08-08 20:05:05 - INFO - utils.file_scanner - file_scanner.py:118 - 开始扫描目录: E:\git\develop\monitor\test\signal
+2026-08-08 20:05:05 - INFO - utils.file_scanner - file_scanner.py:126 - 扫描完成: 找到 6 个文件
+2026-08-08 20:05:05 - INFO - dynamic_module_elint_7002295340412336104 - elint.py:588 - 从文件获取性能数据: E:\git\develop\monitor\test\signal\2026-05-10-06\performance\20260510_aes.txt
+2026-08-08 20:05:05 - INFO - dynamic_module_elint_7002295340412336104 - elint.py:588 - 从文件获取性能数据: E:\git\develop\monitor\test\signal\2026-05-10-06\performance\20260510_nv.txt
+2026-08-08 20:05:05 - INFO - dynamic_module_elint_7002295340412336104 - elint.py:588 - 从文件获取性能数据: E:\git\develop\monitor\test\signal\2026-05-11-06\performance\20260511_aes.txt
+2026-08-08 20:05:05 - INFO - dynamic_module_elint_7002295340412336104 - elint.py:588 - 从文件获取性能数据: E:\git\develop\monitor\test\signal\2026-05-11-06\performance\20260511_nv.txt
+2026-08-08 20:05:05 - INFO - dynamic_module_elint_7002295340412336104 - elint.py:588 - 从文件获取性能数据: E:\git\develop\monitor\test\signal\2026-05-12-06\performance\20260512_aes.txt
+2026-08-08 20:05:05 - INFO - dynamic_module_elint_7002295340412336104 - elint.py:588 - 从文件获取性能数据: E:\git\develop\monitor\test\signal\2026-05-12-06\performance\20260512_nv.txt
+2026-08-08 20:05:05 - INFO - utils.data_manager - data_manager.py:577 - 更新了：['单线程']
+2026-08-08 20:05:05 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:05:05] "POST /api/tools/elint/data HTTP/1.1" 200 -
+2026-08-08 20:05:05 - INFO - utils.common - common.py:87 - 成功保存工具数据到 E:\git\develop\monitor\monitor2.5\data\elint\elint_parser.json
+2026-08-08 20:05:05 - INFO - utils.common - common.py:87 - 成功保存工具数据到 E:\git\develop\monitor\monitor2.5\data\elint\elint.json
+2026-08-08 20:05:05 - INFO - utils.common - common.py:87 - 成功保存工具数据到 E:\git\develop\monitor\monitor2.5\data\elint\single_version.json
+2026-08-08 20:05:05 - INFO - utils.common - common.py:87 - 成功保存工具数据到 E:\git\develop\monitor\monitor2.5\data\elint\multi_version.json
+2026-08-08 20:05:05 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:05:05] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-08 20:05:05 - INFO - utils.data_manager - data_manager.py:269 - 数据保存完成: E:\git\develop\monitor\monitor2.5\data\elint\elint.json
+2026-08-08 20:05:05 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:05:05] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-08 20:05:05 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:05:05] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-08 20:05:05 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:05:05] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-08 20:05:05 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:05:05] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-08 20:05:05 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:05:05] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-08 20:05:05 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:05:05] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-08 20:05:05 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:05:05] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-08 20:05:19 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:05:19] "GET /tool/elint/performance HTTP/1.1" 200 -
+2026-08-08 20:05:19 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:05:19] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2026-08-08 20:05:19 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:05:19] "[36mGET /static/js/echarts.min.js HTTP/1.1[0m" 304 -
+2026-08-08 20:05:19 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:05:19] "[36mGET /static/css/select.css HTTP/1.1[0m" 304 -
+2026-08-08 20:05:19 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:05:19] "[36mGET /static/css/compare.css HTTP/1.1[0m" 304 -
+2026-08-08 20:05:19 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:05:19] "[36mGET /static/js/axios.min.js HTTP/1.1[0m" 304 -
+2026-08-08 20:05:19 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:05:19] "[36mGET /static/js/single_thread.js HTTP/1.1[0m" 304 -
+2026-08-08 20:05:19 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:05:19] "[36mGET /static/js/select.js HTTP/1.1[0m" 304 -
+2026-08-08 20:05:19 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:05:19] "[36mGET /static/js/multi_thread.js HTTP/1.1[0m" 304 -
+2026-08-08 20:05:19 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:05:19] "[36mGET /static/js/thread_chart.js HTTP/1.1[0m" 304 -
+2026-08-08 20:05:19 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:05:19] "[36mGET /static/js/comparison.js HTTP/1.1[0m" 304 -
+2026-08-08 20:05:19 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:05:19] "[36mGET /static/js/tool.js HTTP/1.1[0m" 304 -
+2026-08-08 20:05:19 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:05:19] "[33mGET /static/js/axios.min.js.map HTTP/1.1[0m" 404 -
+2026-08-08 20:05:19 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:05:19] "GET /api/tools HTTP/1.1" 200 -
+2026-08-08 20:05:19 - INFO - utils.data_manager - data_manager.py:519 - 开始加载工具 elint 数据
+2026-08-08 20:05:19 - WARN - utils.data_manager - data_manager.py:527 - 缓存命中，数据已经是最新的
+2026-08-08 20:05:19 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:05:19] "POST /api/tools/elint/data HTTP/1.1" 200 -
+2026-08-08 20:05:34 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:05:34] "GET /tool/elint/performance HTTP/1.1" 200 -
+2026-08-08 20:05:34 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:05:34] "[36mGET /static/js/echarts.min.js HTTP/1.1[0m" 304 -
+2026-08-08 20:05:34 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:05:34] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2026-08-08 20:05:34 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:05:34] "[36mGET /static/css/select.css HTTP/1.1[0m" 304 -
+2026-08-08 20:05:34 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:05:34] "[36mGET /static/js/axios.min.js HTTP/1.1[0m" 304 -
+2026-08-08 20:05:34 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:05:34] "[36mGET /static/css/compare.css HTTP/1.1[0m" 304 -
+2026-08-08 20:05:34 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:05:34] "[36mGET /static/js/select.js HTTP/1.1[0m" 304 -
+2026-08-08 20:05:34 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:05:34] "[36mGET /static/js/single_thread.js HTTP/1.1[0m" 304 -
+2026-08-08 20:05:34 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:05:34] "[36mGET /static/js/multi_thread.js HTTP/1.1[0m" 304 -
+2026-08-08 20:05:34 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:05:34] "[36mGET /static/js/thread_chart.js HTTP/1.1[0m" 304 -
+2026-08-08 20:05:34 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:05:34] "[36mGET /static/js/comparison.js HTTP/1.1[0m" 304 -
+2026-08-08 20:05:34 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:05:34] "[36mGET /static/js/tool.js HTTP/1.1[0m" 304 -
+2026-08-08 20:05:34 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:05:34] "[33mGET /static/js/axios.min.js.map HTTP/1.1[0m" 404 -
+2026-08-08 20:05:34 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:05:34] "GET /api/tools HTTP/1.1" 200 -
+2026-08-08 20:05:34 - INFO - utils.data_manager - data_manager.py:519 - 开始加载工具 elint 数据
+2026-08-08 20:05:34 - WARN - utils.data_manager - data_manager.py:527 - 缓存命中，数据已经是最新的
+2026-08-08 20:05:34 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:05:34] "POST /api/tools/elint/data HTTP/1.1" 200 -
+2026-08-08 20:19:47 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:19:47] "GET /tool/elint/performance HTTP/1.1" 200 -
+2026-08-08 20:19:47 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:19:47] "[36mGET /static/js/echarts.min.js HTTP/1.1[0m" 304 -
+2026-08-08 20:19:47 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:19:47] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2026-08-08 20:19:47 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:19:47] "[36mGET /static/css/select.css HTTP/1.1[0m" 304 -
+2026-08-08 20:19:47 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:19:47] "[36mGET /static/js/axios.min.js HTTP/1.1[0m" 304 -
+2026-08-08 20:19:47 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:19:47] "[36mGET /static/css/compare.css HTTP/1.1[0m" 304 -
+2026-08-08 20:19:47 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:19:47] "[36mGET /static/js/single_thread.js HTTP/1.1[0m" 304 -
+2026-08-08 20:19:47 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:19:47] "[36mGET /static/js/select.js HTTP/1.1[0m" 304 -
+2026-08-08 20:19:47 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:19:47] "[36mGET /static/js/multi_thread.js HTTP/1.1[0m" 304 -
+2026-08-08 20:19:47 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:19:47] "[36mGET /static/js/thread_chart.js HTTP/1.1[0m" 304 -
+2026-08-08 20:19:47 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:19:47] "[36mGET /static/js/comparison.js HTTP/1.1[0m" 304 -
+2026-08-08 20:19:47 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:19:47] "[36mGET /static/js/tool.js HTTP/1.1[0m" 304 -
+2026-08-08 20:19:47 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:19:47] "[33mGET /static/js/axios.min.js.map HTTP/1.1[0m" 404 -
+2026-08-08 20:19:47 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:19:47] "GET /api/tools HTTP/1.1" 200 -
+2026-08-08 20:19:47 - INFO - utils.data_manager - data_manager.py:519 - 开始加载工具 elint 数据
+2026-08-08 20:19:47 - INFO - utils.common - common.py:97 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\elint.json
+2026-08-08 20:19:47 - INFO - utils.data_manager - data_manager.py:544 - 加载工具 elint 单线程数据
+2026-08-08 20:19:47 - INFO - utils.data_manager - data_manager.py:473 - 加载工具 elint 单线程数据
+2026-08-08 20:19:47 - INFO - utils.file_scanner - file_scanner.py:100 - 文件扫描器初始化: root=E:\git\develop\monitor\test\signal, max_depth=3
+2026-08-08 20:19:47 - INFO - utils.file_scanner - file_scanner.py:118 - 开始扫描目录: E:\git\develop\monitor\test\signal
+2026-08-08 20:19:47 - INFO - utils.file_scanner - file_scanner.py:126 - 扫描完成: 找到 6 个文件
+2026-08-08 20:19:47 - INFO - utils.data_manager - data_manager.py:577 - 更新了：['单线程']
+2026-08-08 20:19:47 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:19:47] "POST /api/tools/elint/data HTTP/1.1" 200 -
+2026-08-08 20:19:47 - INFO - utils.common - common.py:87 - 成功保存工具数据到 E:\git\develop\monitor\monitor2.5\data\elint\elint_parser.json
+2026-08-08 20:19:47 - INFO - utils.common - common.py:87 - 成功保存工具数据到 E:\git\develop\monitor\monitor2.5\data\elint\elint.json
+2026-08-08 20:19:47 - INFO - utils.common - common.py:87 - 成功保存工具数据到 E:\git\develop\monitor\monitor2.5\data\elint\single_version.json
+2026-08-08 20:19:47 - INFO - utils.common - common.py:87 - 成功保存工具数据到 E:\git\develop\monitor\monitor2.5\data\elint\multi_version.json
+2026-08-08 20:19:47 - INFO - utils.data_manager - data_manager.py:269 - 数据保存完成: E:\git\develop\monitor\monitor2.5\data\elint\elint.json
+2026-08-08 20:20:51 - INFO - utils.file_watcher - file_watcher.py:167 - 文件监听器已停止
+2026-08-08 20:20:51 - INFO - utils.data_manager - data_manager.py:356 - 文件监听器已停止
+2026-08-08 20:20:51 - INFO - __main__ - app.py:69 - 文件监听器已停止
+2026-08-08 20:20:51 - INFO - utils.data_manager - data_manager.py:356 - 文件监听器已停止
+2026-08-08 20:20:51 - INFO - api.compare - app.py:69 - 文件监听器已停止
+2026-08-08 20:20:51 - INFO - utils.data_manager - data_manager.py:356 - 文件监听器已停止
+2026-08-08 20:20:51 - INFO - __main__ - app.py:69 - 文件监听器已停止
+2026-08-08 20:20:51 - INFO - utils.data_manager - data_manager.py:356 - 文件监听器已停止
+2026-08-08 20:20:51 - INFO - api.compare - app.py:69 - 文件监听器已停止
+2026-08-08 20:21:30 - INFO - utils.data_parser - data_parser.py:24 - 数据管理器初始化
+2026-08-08 20:21:30 - INFO - utils.tool_manager - tool_manager.py:54 - 加载工具配置文件: E:\git\develop\monitor\monitor2.5\data\tools.json
+2026-08-08 20:21:30 - INFO - utils.tool_manager - tool_manager.py:45 - 工具管理器初始化完成
+2026-08-08 20:21:30 - INFO - utils.data_manager - data_manager.py:71 - 数据管理器初始化完成
+2026-08-08 20:21:30 - INFO - __main__ - app.py:92 - 启动性能监控平台后端服务
+2026-08-08 20:21:30 - INFO - werkzeug - _internal.py:97 - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5020
+ * Running on http://192.168.1.33:5020
+2026-08-08 20:21:30 - INFO - werkzeug - _internal.py:97 - [33mPress CTRL+C to quit[0m
+2026-08-08 20:21:30 - INFO - werkzeug - _internal.py:97 -  * Restarting with watchdog (windowsapi)
+2026-08-08 20:21:30 - INFO - utils.data_parser - data_parser.py:24 - 数据管理器初始化
+2026-08-08 20:21:30 - INFO - utils.tool_manager - tool_manager.py:54 - 加载工具配置文件: E:\git\develop\monitor\monitor2.5\data\tools.json
+2026-08-08 20:21:30 - INFO - utils.tool_manager - tool_manager.py:45 - 工具管理器初始化完成
+2026-08-08 20:21:30 - INFO - utils.data_manager - data_manager.py:71 - 数据管理器初始化完成
+2026-08-08 20:21:30 - INFO - __main__ - app.py:92 - 启动性能监控平台后端服务
+2026-08-08 20:21:31 - WARN - werkzeug - _internal.py:97 -  * Debugger is active!
+2026-08-08 20:21:31 - INFO - werkzeug - _internal.py:97 -  * Debugger PIN: 644-902-559
+2026-08-08 20:21:32 - INFO - utils.file_watcher - file_watcher.py:131 - 文件监听器初始化: watch_paths=['E:\\git\\develop\\monitor\\test\\signal']
+2026-08-08 20:21:32 - INFO - utils.file_watcher - file_watcher.py:51 - 文件变更处理器初始化
+2026-08-08 20:21:32 - INFO - utils.file_watcher - file_watcher.py:148 - 添加监听路径: E:\git\develop\monitor\test\signal
+2026-08-08 20:21:32 - INFO - utils.file_watcher - file_watcher.py:155 - 文件监听器已启动，监听 1 个路径
+2026-08-08 20:21:32 - INFO - utils.data_manager - data_manager.py:348 - 文件监听器已启动，监听路径: ['E:\\git\\develop\\monitor\\test\\signal']
+2026-08-08 20:21:32 - INFO - api.compare - app.py:60 - 文件监听器初始化完成，监听 1 个工具
+2026-08-08 20:21:32 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:21:32] "GET /tool/elint/performance HTTP/1.1" 200 -
+2026-08-08 20:21:32 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:21:32] "[36mGET /static/js/axios.min.js HTTP/1.1[0m" 304 -
+2026-08-08 20:21:32 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:21:32] "[36mGET /static/css/select.css HTTP/1.1[0m" 304 -
+2026-08-08 20:21:32 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:21:32] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2026-08-08 20:21:32 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:21:32] "[36mGET /static/js/echarts.min.js HTTP/1.1[0m" 304 -
+2026-08-08 20:21:32 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:21:32] "[36mGET /static/css/compare.css HTTP/1.1[0m" 304 -
+2026-08-08 20:21:32 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:21:32] "[36mGET /static/js/select.js HTTP/1.1[0m" 304 -
+2026-08-08 20:21:32 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:21:32] "[36mGET /static/js/single_thread.js HTTP/1.1[0m" 304 -
+2026-08-08 20:21:32 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:21:32] "[36mGET /static/js/multi_thread.js HTTP/1.1[0m" 304 -
+2026-08-08 20:21:32 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:21:32] "[36mGET /static/js/thread_chart.js HTTP/1.1[0m" 304 -
+2026-08-08 20:21:32 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:21:32] "[36mGET /static/js/comparison.js HTTP/1.1[0m" 304 -
+2026-08-08 20:21:32 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:21:32] "[36mGET /static/js/tool.js HTTP/1.1[0m" 304 -
+2026-08-08 20:21:32 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:21:32] "[33mGET /static/js/axios.min.js.map HTTP/1.1[0m" 404 -
+2026-08-08 20:21:32 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:21:32] "GET /api/tools HTTP/1.1" 200 -
+2026-08-08 20:21:32 - INFO - utils.data_manager - data_manager.py:125 - 创建用户数据目录: E:\git\develop\monitor\monitor2.5\data\elint\2e2a6287-4324-4002-9716-96fa44df3240
+2026-08-08 20:21:32 - INFO - utils.data_manager - data_manager.py:519 - 开始加载工具 elint 数据
+2026-08-08 20:21:32 - INFO - utils.data_manager - data_manager.py:544 - 加载工具 elint 单线程数据
+2026-08-08 20:21:32 - INFO - utils.data_manager - data_manager.py:473 - 加载工具 elint 单线程数据
+2026-08-08 20:21:32 - INFO - utils.file_scanner - file_scanner.py:100 - 文件扫描器初始化: root=E:\git\develop\monitor\test\signal, max_depth=3
+2026-08-08 20:21:32 - WARN - utils.common - common.py:100 - 加载工具数据失败, 文件不存在: E:\git\develop\monitor\monitor2.5\data\elint\single_version.json
+2026-08-08 20:21:32 - INFO - utils.file_scanner - file_scanner.py:118 - 开始扫描目录: E:\git\develop\monitor\test\signal
+2026-08-08 20:21:32 - INFO - utils.file_scanner - file_scanner.py:126 - 扫描完成: 找到 6 个文件
+2026-08-08 20:21:32 - INFO - dynamic_module_elint_-3963273553529448981 - elint.py:588 - 从文件获取性能数据: E:\git\develop\monitor\test\signal\2026-05-10-06\performance\20260510_aes.txt
+2026-08-08 20:21:32 - INFO - dynamic_module_elint_-3963273553529448981 - elint.py:588 - 从文件获取性能数据: E:\git\develop\monitor\test\signal\2026-05-10-06\performance\20260510_nv.txt
+2026-08-08 20:21:32 - INFO - dynamic_module_elint_-3963273553529448981 - elint.py:588 - 从文件获取性能数据: E:\git\develop\monitor\test\signal\2026-05-11-06\performance\20260511_aes.txt
+2026-08-08 20:21:32 - INFO - dynamic_module_elint_-3963273553529448981 - elint.py:588 - 从文件获取性能数据: E:\git\develop\monitor\test\signal\2026-05-11-06\performance\20260511_nv.txt
+2026-08-08 20:21:32 - INFO - dynamic_module_elint_-3963273553529448981 - elint.py:588 - 从文件获取性能数据: E:\git\develop\monitor\test\signal\2026-05-12-06\performance\20260512_aes.txt
+2026-08-08 20:21:32 - INFO - dynamic_module_elint_-3963273553529448981 - elint.py:588 - 从文件获取性能数据: E:\git\develop\monitor\test\signal\2026-05-12-06\performance\20260512_nv.txt
+2026-08-08 20:21:32 - INFO - utils.data_manager - data_manager.py:577 - 更新了：['单线程']
+2026-08-08 20:21:32 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:21:32] "POST /api/tools/elint/data HTTP/1.1" 200 -
+2026-08-08 20:21:32 - INFO - utils.common - common.py:87 - 成功保存工具数据到 E:\git\develop\monitor\monitor2.5\data\elint\elint_parser.json
+2026-08-08 20:21:32 - INFO - utils.common - common.py:87 - 成功保存工具数据到 E:\git\develop\monitor\monitor2.5\data\elint\elint.json
+2026-08-08 20:21:32 - INFO - utils.common - common.py:87 - 成功保存工具数据到 E:\git\develop\monitor\monitor2.5\data\elint\single_version.json
+2026-08-08 20:21:32 - INFO - utils.common - common.py:87 - 成功保存工具数据到 E:\git\develop\monitor\monitor2.5\data\elint\multi_version.json
+2026-08-08 20:21:32 - INFO - utils.data_manager - data_manager.py:269 - 数据保存完成: E:\git\develop\monitor\monitor2.5\data\elint\elint.json
+2026-08-08 20:21:32 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:21:32] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-08 20:21:32 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:21:32] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-08 20:21:32 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:21:32] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-08 20:21:32 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:21:32] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-08 20:21:32 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:21:32] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-08 20:21:32 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:21:32] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-08 20:21:32 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:21:32] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-08 20:21:32 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:21:32] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-08 20:22:04 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:22:04] "GET /tool/elint/performance HTTP/1.1" 200 -
+2026-08-08 20:22:04 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:22:04] "[36mGET /static/css/select.css HTTP/1.1[0m" 304 -
+2026-08-08 20:22:04 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:22:04] "[36mGET /static/js/echarts.min.js HTTP/1.1[0m" 304 -
+2026-08-08 20:22:04 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:22:04] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2026-08-08 20:22:04 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:22:04] "[36mGET /static/js/axios.min.js HTTP/1.1[0m" 304 -
+2026-08-08 20:22:04 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:22:04] "[36mGET /static/css/compare.css HTTP/1.1[0m" 304 -
+2026-08-08 20:22:04 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:22:04] "[36mGET /static/js/select.js HTTP/1.1[0m" 304 -
+2026-08-08 20:22:04 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:22:04] "[36mGET /static/js/single_thread.js HTTP/1.1[0m" 304 -
+2026-08-08 20:22:04 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:22:04] "[36mGET /static/js/multi_thread.js HTTP/1.1[0m" 304 -
+2026-08-08 20:22:04 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:22:04] "[36mGET /static/js/thread_chart.js HTTP/1.1[0m" 304 -
+2026-08-08 20:22:04 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:22:04] "[36mGET /static/js/comparison.js HTTP/1.1[0m" 304 -
+2026-08-08 20:22:04 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:22:04] "[36mGET /static/js/tool.js HTTP/1.1[0m" 304 -
+2026-08-08 20:22:05 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:22:05] "[33mGET /static/js/axios.min.js.map HTTP/1.1[0m" 404 -
+2026-08-08 20:22:05 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:22:05] "GET /api/tools HTTP/1.1" 200 -
+2026-08-08 20:22:05 - INFO - utils.data_manager - data_manager.py:519 - 开始加载工具 elint 数据
+2026-08-08 20:22:05 - INFO - utils.common - common.py:97 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\elint.json
+2026-08-08 20:22:05 - INFO - utils.data_manager - data_manager.py:544 - 加载工具 elint 单线程数据
+2026-08-08 20:22:05 - INFO - utils.data_manager - data_manager.py:473 - 加载工具 elint 单线程数据
+2026-08-08 20:22:05 - INFO - utils.file_scanner - file_scanner.py:100 - 文件扫描器初始化: root=E:\git\develop\monitor\test\signal, max_depth=3
+2026-08-08 20:22:05 - INFO - utils.file_scanner - file_scanner.py:118 - 开始扫描目录: E:\git\develop\monitor\test\signal
+2026-08-08 20:22:05 - INFO - utils.file_scanner - file_scanner.py:126 - 扫描完成: 找到 6 个文件
+2026-08-08 20:22:05 - INFO - utils.data_manager - data_manager.py:577 - 更新了：['单线程']
+2026-08-08 20:22:05 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:22:05] "POST /api/tools/elint/data HTTP/1.1" 200 -
+2026-08-08 20:22:05 - INFO - utils.common - common.py:87 - 成功保存工具数据到 E:\git\develop\monitor\monitor2.5\data\elint\elint.json
+2026-08-08 20:22:05 - INFO - utils.common - common.py:87 - 成功保存工具数据到 E:\git\develop\monitor\monitor2.5\data\elint\elint_parser.json
+2026-08-08 20:22:05 - INFO - utils.common - common.py:87 - 成功保存工具数据到 E:\git\develop\monitor\monitor2.5\data\elint\single_version.json
+2026-08-08 20:22:05 - INFO - utils.common - common.py:87 - 成功保存工具数据到 E:\git\develop\monitor\monitor2.5\data\elint\multi_version.json
+2026-08-08 20:22:05 - INFO - utils.data_manager - data_manager.py:269 - 数据保存完成: E:\git\develop\monitor\monitor2.5\data\elint\elint.json
+2026-08-08 20:22:07 - INFO - utils.file_watcher - file_watcher.py:167 - 文件监听器已停止
+2026-08-08 20:22:07 - INFO - utils.data_manager - data_manager.py:356 - 文件监听器已停止
+2026-08-08 20:22:07 - INFO - __main__ - app.py:69 - 文件监听器已停止
+2026-08-08 20:22:07 - INFO - utils.data_manager - data_manager.py:356 - 文件监听器已停止
+2026-08-08 20:22:07 - INFO - api.compare - app.py:69 - 文件监听器已停止
+2026-08-08 20:22:07 - INFO - utils.data_manager - data_manager.py:356 - 文件监听器已停止
+2026-08-08 20:22:07 - INFO - __main__ - app.py:69 - 文件监听器已停止
+2026-08-08 20:22:07 - INFO - utils.data_manager - data_manager.py:356 - 文件监听器已停止
+2026-08-08 20:22:07 - INFO - api.compare - app.py:69 - 文件监听器已停止
+2026-08-08 20:22:13 - INFO - utils.data_parser - data_parser.py:24 - 数据管理器初始化
+2026-08-08 20:22:13 - INFO - utils.tool_manager - tool_manager.py:54 - 加载工具配置文件: E:\git\develop\monitor\monitor2.5\data\tools.json
+2026-08-08 20:22:13 - INFO - utils.tool_manager - tool_manager.py:45 - 工具管理器初始化完成
+2026-08-08 20:22:13 - INFO - utils.data_manager - data_manager.py:71 - 数据管理器初始化完成
+2026-08-08 20:22:13 - INFO - __main__ - app.py:92 - 启动性能监控平台后端服务
+2026-08-08 20:22:13 - INFO - werkzeug - _internal.py:97 - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5020
+ * Running on http://192.168.1.33:5020
+2026-08-08 20:22:13 - INFO - werkzeug - _internal.py:97 - [33mPress CTRL+C to quit[0m
+2026-08-08 20:22:13 - INFO - werkzeug - _internal.py:97 -  * Restarting with watchdog (windowsapi)
+2026-08-08 20:22:14 - INFO - utils.data_parser - data_parser.py:24 - 数据管理器初始化
+2026-08-08 20:22:14 - INFO - utils.tool_manager - tool_manager.py:54 - 加载工具配置文件: E:\git\develop\monitor\monitor2.5\data\tools.json
+2026-08-08 20:22:14 - INFO - utils.tool_manager - tool_manager.py:45 - 工具管理器初始化完成
+2026-08-08 20:22:14 - INFO - utils.data_manager - data_manager.py:71 - 数据管理器初始化完成
+2026-08-08 20:22:14 - INFO - __main__ - app.py:92 - 启动性能监控平台后端服务
+2026-08-08 20:22:14 - WARN - werkzeug - _internal.py:97 -  * Debugger is active!
+2026-08-08 20:22:14 - INFO - werkzeug - _internal.py:97 -  * Debugger PIN: 644-902-559
+2026-08-08 20:22:17 - INFO - utils.file_watcher - file_watcher.py:131 - 文件监听器初始化: watch_paths=['E:\\git\\develop\\monitor\\test\\signal']
+2026-08-08 20:22:17 - INFO - utils.file_watcher - file_watcher.py:51 - 文件变更处理器初始化
+2026-08-08 20:22:17 - INFO - utils.file_watcher - file_watcher.py:148 - 添加监听路径: E:\git\develop\monitor\test\signal
+2026-08-08 20:22:17 - INFO - utils.file_watcher - file_watcher.py:155 - 文件监听器已启动，监听 1 个路径
+2026-08-08 20:22:17 - INFO - utils.data_manager - data_manager.py:348 - 文件监听器已启动，监听路径: ['E:\\git\\develop\\monitor\\test\\signal']
+2026-08-08 20:22:17 - INFO - api.compare - app.py:60 - 文件监听器初始化完成，监听 1 个工具
+2026-08-08 20:22:17 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:22:17] "GET /tool/elint/performance HTTP/1.1" 200 -
+2026-08-08 20:22:17 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:22:17] "[36mGET /static/js/echarts.min.js HTTP/1.1[0m" 304 -
+2026-08-08 20:22:17 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:22:17] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2026-08-08 20:22:17 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:22:17] "[36mGET /static/js/axios.min.js HTTP/1.1[0m" 304 -
+2026-08-08 20:22:17 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:22:17] "[36mGET /static/css/select.css HTTP/1.1[0m" 304 -
+2026-08-08 20:22:17 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:22:17] "[36mGET /static/css/compare.css HTTP/1.1[0m" 304 -
+2026-08-08 20:22:17 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:22:17] "[36mGET /static/js/select.js HTTP/1.1[0m" 304 -
+2026-08-08 20:22:17 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:22:17] "[36mGET /static/js/single_thread.js HTTP/1.1[0m" 304 -
+2026-08-08 20:22:17 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:22:17] "[36mGET /static/js/multi_thread.js HTTP/1.1[0m" 304 -
+2026-08-08 20:22:17 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:22:17] "[36mGET /static/js/thread_chart.js HTTP/1.1[0m" 304 -
+2026-08-08 20:22:17 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:22:17] "[36mGET /static/js/comparison.js HTTP/1.1[0m" 304 -
+2026-08-08 20:22:17 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:22:17] "[36mGET /static/js/tool.js HTTP/1.1[0m" 304 -
+2026-08-08 20:22:17 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:22:17] "[33mGET /static/js/axios.min.js.map HTTP/1.1[0m" 404 -
+2026-08-08 20:22:17 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:22:17] "GET /api/tools HTTP/1.1" 200 -
+2026-08-08 20:22:17 - INFO - utils.data_manager - data_manager.py:125 - 创建用户数据目录: E:\git\develop\monitor\monitor2.5\data\elint\2e2a6287-4324-4002-9716-96fa44df3240
+2026-08-08 20:22:17 - INFO - utils.data_manager - data_manager.py:519 - 开始加载工具 elint 数据
+2026-08-08 20:22:17 - INFO - utils.data_manager - data_manager.py:544 - 加载工具 elint 单线程数据
+2026-08-08 20:22:17 - INFO - utils.data_manager - data_manager.py:473 - 加载工具 elint 单线程数据
+2026-08-08 20:22:17 - INFO - utils.file_scanner - file_scanner.py:100 - 文件扫描器初始化: root=E:\git\develop\monitor\test\signal, max_depth=3
+2026-08-08 20:22:17 - WARN - utils.common - common.py:100 - 加载工具数据失败, 文件不存在: E:\git\develop\monitor\monitor2.5\data\elint\single_version.json
+2026-08-08 20:22:17 - INFO - utils.file_scanner - file_scanner.py:118 - 开始扫描目录: E:\git\develop\monitor\test\signal
+2026-08-08 20:22:17 - INFO - utils.file_scanner - file_scanner.py:126 - 扫描完成: 找到 6 个文件
+2026-08-08 20:22:17 - INFO - dynamic_module_elint_8554458879970710757 - elint.py:588 - 从文件获取性能数据: E:\git\develop\monitor\test\signal\2026-05-10-06\performance\20260510_aes.txt
+2026-08-08 20:22:17 - INFO - dynamic_module_elint_8554458879970710757 - elint.py:588 - 从文件获取性能数据: E:\git\develop\monitor\test\signal\2026-05-10-06\performance\20260510_nv.txt
+2026-08-08 20:22:17 - INFO - dynamic_module_elint_8554458879970710757 - elint.py:588 - 从文件获取性能数据: E:\git\develop\monitor\test\signal\2026-05-11-06\performance\20260511_aes.txt
+2026-08-08 20:22:17 - INFO - dynamic_module_elint_8554458879970710757 - elint.py:588 - 从文件获取性能数据: E:\git\develop\monitor\test\signal\2026-05-11-06\performance\20260511_nv.txt
+2026-08-08 20:22:17 - INFO - dynamic_module_elint_8554458879970710757 - elint.py:588 - 从文件获取性能数据: E:\git\develop\monitor\test\signal\2026-05-12-06\performance\20260512_aes.txt
+2026-08-08 20:22:17 - INFO - dynamic_module_elint_8554458879970710757 - elint.py:588 - 从文件获取性能数据: E:\git\develop\monitor\test\signal\2026-05-12-06\performance\20260512_nv.txt
+2026-08-08 20:22:17 - INFO - utils.data_manager - data_manager.py:577 - 更新了：['单线程']
+2026-08-08 20:22:17 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:22:17] "POST /api/tools/elint/data HTTP/1.1" 200 -
+2026-08-08 20:22:17 - INFO - utils.common - common.py:87 - 成功保存工具数据到 E:\git\develop\monitor\monitor2.5\data\elint\elint_parser.json
+2026-08-08 20:22:17 - INFO - utils.common - common.py:87 - 成功保存工具数据到 E:\git\develop\monitor\monitor2.5\data\elint\elint.json
+2026-08-08 20:22:17 - INFO - utils.common - common.py:87 - 成功保存工具数据到 E:\git\develop\monitor\monitor2.5\data\elint\single_version.json
+2026-08-08 20:22:17 - INFO - utils.common - common.py:87 - 成功保存工具数据到 E:\git\develop\monitor\monitor2.5\data\elint\multi_version.json
+2026-08-08 20:22:17 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:22:17] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-08 20:22:17 - INFO - utils.data_manager - data_manager.py:269 - 数据保存完成: E:\git\develop\monitor\monitor2.5\data\elint\elint.json
+2026-08-08 20:22:17 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:22:17] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-08 20:22:17 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:22:17] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-08 20:22:17 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:22:17] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-08 20:22:17 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:22:17] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-08 20:22:17 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:22:17] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-08 20:22:17 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:22:17] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-08 20:22:17 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:22:17] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-08 20:22:22 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'e:\\git\\develop\\monitor\\monitor2.5\\utils\\data_manager.py', reloading
+2026-08-08 20:22:22 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'e:\\git\\develop\\monitor\\monitor2.5\\utils\\data_manager.py', reloading
+2026-08-08 20:22:22 - INFO - utils.file_watcher - file_watcher.py:167 - 文件监听器已停止
+2026-08-08 20:22:22 - INFO - utils.data_manager - data_manager.py:356 - 文件监听器已停止
+2026-08-08 20:22:22 - INFO - __main__ - app.py:69 - 文件监听器已停止
+2026-08-08 20:22:22 - INFO - utils.data_manager - data_manager.py:356 - 文件监听器已停止
+2026-08-08 20:22:22 - INFO - api.compare - app.py:69 - 文件监听器已停止
+2026-08-08 20:22:22 - INFO - werkzeug - _internal.py:97 -  * Restarting with watchdog (windowsapi)
+2026-08-08 20:22:23 - INFO - utils.data_parser - data_parser.py:24 - 数据管理器初始化
+2026-08-08 20:22:23 - INFO - utils.tool_manager - tool_manager.py:54 - 加载工具配置文件: E:\git\develop\monitor\monitor2.5\data\tools.json
+2026-08-08 20:22:23 - INFO - utils.tool_manager - tool_manager.py:45 - 工具管理器初始化完成
+2026-08-08 20:22:23 - INFO - utils.data_manager - data_manager.py:71 - 数据管理器初始化完成
+2026-08-08 20:22:23 - INFO - __main__ - app.py:92 - 启动性能监控平台后端服务
+2026-08-08 20:22:23 - WARN - werkzeug - _internal.py:97 -  * Debugger is active!
+2026-08-08 20:22:23 - INFO - werkzeug - _internal.py:97 -  * Debugger PIN: 644-902-559
+2026-08-08 20:22:29 - INFO - utils.file_watcher - file_watcher.py:131 - 文件监听器初始化: watch_paths=['E:\\git\\develop\\monitor\\test\\signal']
+2026-08-08 20:22:29 - INFO - utils.file_watcher - file_watcher.py:51 - 文件变更处理器初始化
+2026-08-08 20:22:29 - INFO - utils.file_watcher - file_watcher.py:148 - 添加监听路径: E:\git\develop\monitor\test\signal
+2026-08-08 20:22:29 - INFO - utils.file_watcher - file_watcher.py:155 - 文件监听器已启动，监听 1 个路径
+2026-08-08 20:22:29 - INFO - utils.data_manager - data_manager.py:348 - 文件监听器已启动，监听路径: ['E:\\git\\develop\\monitor\\test\\signal']
+2026-08-08 20:22:29 - INFO - api.compare - app.py:60 - 文件监听器初始化完成，监听 1 个工具
+2026-08-08 20:22:29 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:22:29] "GET /tool/elint/performance HTTP/1.1" 200 -
+2026-08-08 20:22:29 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:22:29] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2026-08-08 20:22:29 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:22:29] "[36mGET /static/js/echarts.min.js HTTP/1.1[0m" 304 -
+2026-08-08 20:22:29 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:22:29] "[36mGET /static/js/axios.min.js HTTP/1.1[0m" 304 -
+2026-08-08 20:22:29 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:22:29] "[36mGET /static/css/select.css HTTP/1.1[0m" 304 -
+2026-08-08 20:22:29 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:22:29] "[36mGET /static/css/compare.css HTTP/1.1[0m" 304 -
+2026-08-08 20:22:29 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:22:29] "[36mGET /static/js/select.js HTTP/1.1[0m" 304 -
+2026-08-08 20:22:29 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:22:29] "[36mGET /static/js/multi_thread.js HTTP/1.1[0m" 304 -
+2026-08-08 20:22:29 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:22:29] "[36mGET /static/js/single_thread.js HTTP/1.1[0m" 304 -
+2026-08-08 20:22:29 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:22:29] "[36mGET /static/js/thread_chart.js HTTP/1.1[0m" 304 -
+2026-08-08 20:22:29 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:22:29] "[36mGET /static/js/comparison.js HTTP/1.1[0m" 304 -
+2026-08-08 20:22:29 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:22:29] "[36mGET /static/js/tool.js HTTP/1.1[0m" 304 -
+2026-08-08 20:22:29 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:22:29] "[33mGET /static/js/axios.min.js.map HTTP/1.1[0m" 404 -
+2026-08-08 20:22:29 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:22:29] "GET /api/tools HTTP/1.1" 200 -
+2026-08-08 20:22:29 - INFO - utils.data_manager - data_manager.py:519 - 开始加载工具 elint 数据
+2026-08-08 20:22:29 - INFO - utils.common - common.py:97 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\elint.json
+2026-08-08 20:22:29 - INFO - utils.data_manager - data_manager.py:544 - 加载工具 elint 单线程数据
+2026-08-08 20:22:29 - INFO - utils.data_manager - data_manager.py:473 - 加载工具 elint 单线程数据
+2026-08-08 20:22:29 - INFO - utils.file_scanner - file_scanner.py:100 - 文件扫描器初始化: root=E:\git\develop\monitor\test\signal, max_depth=3
+2026-08-08 20:22:29 - INFO - utils.common - common.py:97 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\single_version.json
+2026-08-08 20:22:29 - INFO - utils.file_scanner - file_scanner.py:118 - 开始扫描目录: E:\git\develop\monitor\test\signal
+2026-08-08 20:22:29 - INFO - utils.file_scanner - file_scanner.py:126 - 扫描完成: 找到 6 个文件
+2026-08-08 20:22:29 - INFO - utils.data_manager - data_manager.py:577 - 更新了：['单线程']
+2026-08-08 20:22:29 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:22:29] "POST /api/tools/elint/data HTTP/1.1" 200 -
+2026-08-08 20:22:29 - INFO - utils.common - common.py:87 - 成功保存工具数据到 E:\git\develop\monitor\monitor2.5\data\elint\elint_parser.json
+2026-08-08 20:22:29 - INFO - utils.common - common.py:87 - 成功保存工具数据到 E:\git\develop\monitor\monitor2.5\data\elint\elint.json
+2026-08-08 20:22:29 - INFO - utils.common - common.py:87 - 成功保存工具数据到 E:\git\develop\monitor\monitor2.5\data\elint\single_version.json
+2026-08-08 20:22:29 - INFO - utils.common - common.py:87 - 成功保存工具数据到 E:\git\develop\monitor\monitor2.5\data\elint\multi_version.json
+2026-08-08 20:22:29 - INFO - utils.data_manager - data_manager.py:269 - 数据保存完成: E:\git\develop\monitor\monitor2.5\data\elint\elint.json
+2026-08-08 20:22:49 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'e:\\git\\develop\\monitor\\monitor2.5\\utils\\data_manager.py', reloading
+2026-08-08 20:22:49 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'e:\\git\\develop\\monitor\\monitor2.5\\utils\\data_manager.py', reloading
+2026-08-08 20:22:49 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'e:\\git\\develop\\monitor\\monitor2.5\\utils\\data_manager.py', reloading
+2026-08-08 20:22:49 - INFO - utils.file_watcher - file_watcher.py:167 - 文件监听器已停止
+2026-08-08 20:22:49 - INFO - utils.data_manager - data_manager.py:356 - 文件监听器已停止
+2026-08-08 20:22:49 - INFO - __main__ - app.py:69 - 文件监听器已停止
+2026-08-08 20:22:49 - INFO - utils.data_manager - data_manager.py:356 - 文件监听器已停止
+2026-08-08 20:22:49 - INFO - api.compare - app.py:69 - 文件监听器已停止
+2026-08-08 20:22:50 - INFO - werkzeug - _internal.py:97 -  * Restarting with watchdog (windowsapi)
+2026-08-08 20:22:50 - INFO - utils.data_parser - data_parser.py:24 - 数据管理器初始化
+2026-08-08 20:22:50 - INFO - utils.tool_manager - tool_manager.py:54 - 加载工具配置文件: E:\git\develop\monitor\monitor2.5\data\tools.json
+2026-08-08 20:22:50 - INFO - utils.tool_manager - tool_manager.py:45 - 工具管理器初始化完成
+2026-08-08 20:22:50 - INFO - utils.data_manager - data_manager.py:71 - 数据管理器初始化完成
+2026-08-08 20:22:50 - INFO - __main__ - app.py:92 - 启动性能监控平台后端服务
+2026-08-08 20:22:50 - WARN - werkzeug - _internal.py:97 -  * Debugger is active!
+2026-08-08 20:22:50 - INFO - werkzeug - _internal.py:97 -  * Debugger PIN: 644-902-559
+2026-08-08 20:23:53 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'e:\\git\\develop\\monitor\\monitor2.5\\utils\\data_manager.py', reloading
+2026-08-08 20:23:53 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'e:\\git\\develop\\monitor\\monitor2.5\\utils\\data_manager.py', reloading
+2026-08-08 20:23:53 - INFO - utils.data_manager - data_manager.py:356 - 文件监听器已停止
+2026-08-08 20:23:53 - INFO - __main__ - app.py:69 - 文件监听器已停止
+2026-08-08 20:23:53 - INFO - utils.data_manager - data_manager.py:356 - 文件监听器已停止
+2026-08-08 20:23:53 - INFO - api.compare - app.py:69 - 文件监听器已停止
+2026-08-08 20:23:53 - INFO - werkzeug - _internal.py:97 -  * Restarting with watchdog (windowsapi)
+2026-08-08 20:23:54 - INFO - utils.data_parser - data_parser.py:24 - 数据管理器初始化
+2026-08-08 20:23:54 - INFO - utils.tool_manager - tool_manager.py:54 - 加载工具配置文件: E:\git\develop\monitor\monitor2.5\data\tools.json
+2026-08-08 20:23:54 - INFO - utils.tool_manager - tool_manager.py:45 - 工具管理器初始化完成
+2026-08-08 20:23:54 - INFO - utils.data_manager - data_manager.py:71 - 数据管理器初始化完成
+2026-08-08 20:23:54 - INFO - __main__ - app.py:92 - 启动性能监控平台后端服务
+2026-08-08 20:23:54 - WARN - werkzeug - _internal.py:97 -  * Debugger is active!
+2026-08-08 20:23:54 - INFO - werkzeug - _internal.py:97 -  * Debugger PIN: 644-902-559
+2026-08-08 20:23:57 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'e:\\git\\develop\\monitor\\monitor2.5\\utils\\file_scanner.py', reloading
+2026-08-08 20:23:57 - INFO - utils.data_manager - data_manager.py:356 - 文件监听器已停止
+2026-08-08 20:23:57 - INFO - __main__ - app.py:69 - 文件监听器已停止
+2026-08-08 20:23:57 - INFO - utils.data_manager - data_manager.py:356 - 文件监听器已停止
+2026-08-08 20:23:57 - INFO - api.compare - app.py:69 - 文件监听器已停止
+2026-08-08 20:23:57 - INFO - werkzeug - _internal.py:97 -  * Restarting with watchdog (windowsapi)
+2026-08-08 20:23:58 - INFO - utils.data_parser - data_parser.py:24 - 数据管理器初始化
+2026-08-08 20:23:58 - INFO - utils.tool_manager - tool_manager.py:54 - 加载工具配置文件: E:\git\develop\monitor\monitor2.5\data\tools.json
+2026-08-08 20:23:58 - INFO - utils.tool_manager - tool_manager.py:45 - 工具管理器初始化完成
+2026-08-08 20:23:58 - INFO - utils.data_manager - data_manager.py:71 - 数据管理器初始化完成
+2026-08-08 20:23:58 - INFO - __main__ - app.py:92 - 启动性能监控平台后端服务
+2026-08-08 20:23:58 - WARN - werkzeug - _internal.py:97 -  * Debugger is active!
+2026-08-08 20:23:58 - INFO - werkzeug - _internal.py:97 -  * Debugger PIN: 644-902-559
+2026-08-08 20:24:07 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'e:\\git\\develop\\monitor\\monitor2.5\\utils\\data_manager.py', reloading
+2026-08-08 20:24:07 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'e:\\git\\develop\\monitor\\monitor2.5\\utils\\data_manager.py', reloading
+2026-08-08 20:24:08 - INFO - utils.data_manager - data_manager.py:356 - 文件监听器已停止
+2026-08-08 20:24:08 - INFO - __main__ - app.py:69 - 文件监听器已停止
+2026-08-08 20:24:08 - INFO - utils.data_manager - data_manager.py:356 - 文件监听器已停止
+2026-08-08 20:24:08 - INFO - api.compare - app.py:69 - 文件监听器已停止
+2026-08-08 20:24:08 - INFO - werkzeug - _internal.py:97 -  * Restarting with watchdog (windowsapi)
+2026-08-08 20:24:09 - INFO - utils.data_parser - data_parser.py:24 - 数据管理器初始化
+2026-08-08 20:24:09 - INFO - utils.tool_manager - tool_manager.py:54 - 加载工具配置文件: E:\git\develop\monitor\monitor2.5\data\tools.json
+2026-08-08 20:24:09 - INFO - utils.tool_manager - tool_manager.py:45 - 工具管理器初始化完成
+2026-08-08 20:24:09 - INFO - utils.data_manager - data_manager.py:71 - 数据管理器初始化完成
+2026-08-08 20:24:09 - INFO - __main__ - app.py:92 - 启动性能监控平台后端服务
+2026-08-08 20:24:09 - WARN - werkzeug - _internal.py:97 -  * Debugger is active!
+2026-08-08 20:24:09 - INFO - werkzeug - _internal.py:97 -  * Debugger PIN: 644-902-559
+2026-08-08 20:24:09 - INFO - utils.file_watcher - file_watcher.py:131 - 文件监听器初始化: watch_paths=['E:\\git\\develop\\monitor\\test\\signal']
+2026-08-08 20:24:09 - INFO - utils.file_watcher - file_watcher.py:51 - 文件变更处理器初始化
+2026-08-08 20:24:09 - INFO - utils.file_watcher - file_watcher.py:148 - 添加监听路径: E:\git\develop\monitor\test\signal
+2026-08-08 20:24:09 - INFO - utils.file_watcher - file_watcher.py:155 - 文件监听器已启动，监听 1 个路径
+2026-08-08 20:24:09 - INFO - utils.data_manager - data_manager.py:348 - 文件监听器已启动，监听路径: ['E:\\git\\develop\\monitor\\test\\signal']
+2026-08-08 20:24:09 - INFO - api.compare - app.py:60 - 文件监听器初始化完成，监听 1 个工具
+2026-08-08 20:24:09 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:24:09] "GET /tool/elint/performance HTTP/1.1" 200 -
+2026-08-08 20:24:09 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:24:09] "[36mGET /static/js/echarts.min.js HTTP/1.1[0m" 304 -
+2026-08-08 20:24:09 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:24:09] "[36mGET /static/js/axios.min.js HTTP/1.1[0m" 304 -
+2026-08-08 20:24:09 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:24:09] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2026-08-08 20:24:09 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:24:09] "[36mGET /static/css/select.css HTTP/1.1[0m" 304 -
+2026-08-08 20:24:09 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:24:09] "[36mGET /static/css/compare.css HTTP/1.1[0m" 304 -
+2026-08-08 20:24:09 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:24:09] "[36mGET /static/js/select.js HTTP/1.1[0m" 304 -
+2026-08-08 20:24:09 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:24:09] "[36mGET /static/js/single_thread.js HTTP/1.1[0m" 304 -
+2026-08-08 20:24:09 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:24:09] "[36mGET /static/js/multi_thread.js HTTP/1.1[0m" 304 -
+2026-08-08 20:24:09 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:24:09] "[36mGET /static/js/thread_chart.js HTTP/1.1[0m" 304 -
+2026-08-08 20:24:09 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:24:09] "[36mGET /static/js/comparison.js HTTP/1.1[0m" 304 -
+2026-08-08 20:24:09 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:24:09] "[36mGET /static/js/tool.js HTTP/1.1[0m" 304 -
+2026-08-08 20:24:09 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:24:09] "[33mGET /static/js/axios.min.js.map HTTP/1.1[0m" 404 -
+2026-08-08 20:24:09 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:24:09] "GET /api/tools HTTP/1.1" 200 -
+2026-08-08 20:24:09 - INFO - utils.data_manager - data_manager.py:519 - 开始加载工具 elint 数据
+2026-08-08 20:24:09 - INFO - utils.common - common.py:97 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\elint.json
+2026-08-08 20:24:09 - INFO - utils.data_manager - data_manager.py:544 - 加载工具 elint 单线程数据
+2026-08-08 20:24:09 - INFO - utils.data_manager - data_manager.py:473 - 加载工具 elint 单线程数据
+2026-08-08 20:24:09 - INFO - utils.file_scanner - file_scanner.py:100 - 文件扫描器初始化: root=E:\git\develop\monitor\test\signal, max_depth=3
+2026-08-08 20:24:09 - INFO - utils.common - common.py:97 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\single_version.json
+2026-08-08 20:24:09 - INFO - utils.file_scanner - file_scanner.py:118 - 开始扫描目录: E:\git\develop\monitor\test\signal
+2026-08-08 20:24:09 - INFO - utils.file_scanner - file_scanner.py:126 - 扫描完成: 找到 6 个文件
+2026-08-08 20:24:09 - INFO - utils.data_manager - data_manager.py:577 - 更新了：['单线程']
+2026-08-08 20:24:09 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:24:09] "POST /api/tools/elint/data HTTP/1.1" 200 -
+2026-08-08 20:24:09 - INFO - utils.common - common.py:87 - 成功保存工具数据到 E:\git\develop\monitor\monitor2.5\data\elint\elint_parser.json
+2026-08-08 20:24:09 - INFO - utils.common - common.py:87 - 成功保存工具数据到 E:\git\develop\monitor\monitor2.5\data\elint\elint.json
+2026-08-08 20:24:09 - INFO - utils.common - common.py:87 - 成功保存工具数据到 E:\git\develop\monitor\monitor2.5\data\elint\single_version.json
+2026-08-08 20:24:09 - INFO - utils.common - common.py:87 - 成功保存工具数据到 E:\git\develop\monitor\monitor2.5\data\elint\multi_version.json
+2026-08-08 20:24:09 - INFO - utils.data_manager - data_manager.py:269 - 数据保存完成: E:\git\develop\monitor\monitor2.5\data\elint\elint.json
+2026-08-08 20:26:27 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'e:\\git\\develop\\monitor\\monitor2.5\\utils\\data_manager.py', reloading
+2026-08-08 20:26:27 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'e:\\git\\develop\\monitor\\monitor2.5\\utils\\data_manager.py', reloading
+2026-08-08 20:26:27 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'e:\\git\\develop\\monitor\\monitor2.5\\utils\\data_manager.py', reloading
+2026-08-08 20:26:28 - INFO - utils.file_watcher - file_watcher.py:167 - 文件监听器已停止
+2026-08-08 20:26:28 - INFO - utils.data_manager - data_manager.py:356 - 文件监听器已停止
+2026-08-08 20:26:28 - INFO - __main__ - app.py:69 - 文件监听器已停止
+2026-08-08 20:26:28 - INFO - utils.data_manager - data_manager.py:356 - 文件监听器已停止
+2026-08-08 20:26:28 - INFO - api.compare - app.py:69 - 文件监听器已停止
+2026-08-08 20:26:28 - INFO - werkzeug - _internal.py:97 -  * Restarting with watchdog (windowsapi)
+2026-08-08 20:26:29 - INFO - utils.data_parser - data_parser.py:24 - 数据管理器初始化
+2026-08-08 20:26:29 - INFO - utils.tool_manager - tool_manager.py:54 - 加载工具配置文件: E:\git\develop\monitor\monitor2.5\data\tools.json
+2026-08-08 20:26:29 - INFO - utils.tool_manager - tool_manager.py:45 - 工具管理器初始化完成
+2026-08-08 20:26:29 - INFO - utils.data_manager - data_manager.py:71 - 数据管理器初始化完成
+2026-08-08 20:26:29 - INFO - __main__ - app.py:92 - 启动性能监控平台后端服务
+2026-08-08 20:26:29 - WARN - werkzeug - _internal.py:97 -  * Debugger is active!
+2026-08-08 20:26:29 - INFO - werkzeug - _internal.py:97 -  * Debugger PIN: 644-902-559
+2026-08-08 20:26:30 - INFO - utils.file_watcher - file_watcher.py:131 - 文件监听器初始化: watch_paths=['E:\\git\\develop\\monitor\\test\\signal']
+2026-08-08 20:26:30 - INFO - utils.file_watcher - file_watcher.py:51 - 文件变更处理器初始化
+2026-08-08 20:26:30 - INFO - utils.file_watcher - file_watcher.py:148 - 添加监听路径: E:\git\develop\monitor\test\signal
+2026-08-08 20:26:30 - INFO - utils.file_watcher - file_watcher.py:155 - 文件监听器已启动，监听 1 个路径
+2026-08-08 20:26:30 - INFO - utils.data_manager - data_manager.py:348 - 文件监听器已启动，监听路径: ['E:\\git\\develop\\monitor\\test\\signal']
+2026-08-08 20:26:30 - INFO - api.compare - app.py:60 - 文件监听器初始化完成，监听 1 个工具
+2026-08-08 20:26:30 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:26:30] "GET /tool/elint/performance HTTP/1.1" 200 -
+2026-08-08 20:26:30 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:26:30] "[36mGET /static/js/echarts.min.js HTTP/1.1[0m" 304 -
+2026-08-08 20:26:30 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:26:30] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2026-08-08 20:26:30 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:26:30] "[36mGET /static/css/select.css HTTP/1.1[0m" 304 -
+2026-08-08 20:26:30 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:26:30] "[36mGET /static/js/axios.min.js HTTP/1.1[0m" 304 -
+2026-08-08 20:26:30 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:26:30] "[36mGET /static/css/compare.css HTTP/1.1[0m" 304 -
+2026-08-08 20:26:30 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:26:30] "[36mGET /static/js/select.js HTTP/1.1[0m" 304 -
+2026-08-08 20:26:30 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:26:30] "[36mGET /static/js/single_thread.js HTTP/1.1[0m" 304 -
+2026-08-08 20:26:30 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:26:30] "[36mGET /static/js/multi_thread.js HTTP/1.1[0m" 304 -
+2026-08-08 20:26:30 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:26:30] "[36mGET /static/js/thread_chart.js HTTP/1.1[0m" 304 -
+2026-08-08 20:26:30 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:26:30] "[36mGET /static/js/comparison.js HTTP/1.1[0m" 304 -
+2026-08-08 20:26:30 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:26:30] "[36mGET /static/js/tool.js HTTP/1.1[0m" 304 -
+2026-08-08 20:26:30 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:26:30] "[33mGET /static/js/axios.min.js.map HTTP/1.1[0m" 404 -
+2026-08-08 20:26:30 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:26:30] "GET /api/tools HTTP/1.1" 200 -
+2026-08-08 20:26:30 - INFO - utils.data_manager - data_manager.py:519 - 开始加载工具 elint 数据
+2026-08-08 20:26:30 - INFO - utils.common - common.py:97 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\elint.json
+2026-08-08 20:26:30 - INFO - utils.data_manager - data_manager.py:544 - 加载工具 elint 单线程数据
+2026-08-08 20:26:30 - INFO - utils.data_manager - data_manager.py:473 - 加载工具 elint 单线程数据
+2026-08-08 20:26:30 - INFO - utils.file_scanner - file_scanner.py:100 - 文件扫描器初始化: root=E:\git\develop\monitor\test\signal, max_depth=3
+2026-08-08 20:26:30 - INFO - utils.common - common.py:97 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\single_version.json
+2026-08-08 20:26:30 - INFO - utils.file_scanner - file_scanner.py:118 - 开始扫描目录: E:\git\develop\monitor\test\signal
+2026-08-08 20:26:30 - INFO - utils.file_scanner - file_scanner.py:126 - 扫描完成: 找到 6 个文件
+2026-08-08 20:26:30 - INFO - utils.data_manager - data_manager.py:577 - 更新了：['单线程']
+2026-08-08 20:26:30 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:26:30] "POST /api/tools/elint/data HTTP/1.1" 200 -
+2026-08-08 20:26:30 - INFO - utils.common - common.py:87 - 成功保存工具数据到 E:\git\develop\monitor\monitor2.5\data\elint\elint_parser.json
+2026-08-08 20:26:30 - INFO - utils.common - common.py:87 - 成功保存工具数据到 E:\git\develop\monitor\monitor2.5\data\elint\elint.json
+2026-08-08 20:26:30 - INFO - utils.common - common.py:87 - 成功保存工具数据到 E:\git\develop\monitor\monitor2.5\data\elint\single_version.json
+2026-08-08 20:26:30 - INFO - utils.common - common.py:87 - 成功保存工具数据到 E:\git\develop\monitor\monitor2.5\data\elint\multi_version.json
+2026-08-08 20:26:30 - INFO - utils.data_manager - data_manager.py:269 - 数据保存完成: E:\git\develop\monitor\monitor2.5\data\elint\elint.json
+2026-08-08 20:26:50 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'e:\\git\\develop\\monitor\\monitor2.5\\utils\\data_manager.py', reloading
+2026-08-08 20:26:50 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'e:\\git\\develop\\monitor\\monitor2.5\\utils\\data_manager.py', reloading
+2026-08-08 20:26:50 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'e:\\git\\develop\\monitor\\monitor2.5\\utils\\data_manager.py', reloading
+2026-08-08 20:26:50 - INFO - utils.file_watcher - file_watcher.py:167 - 文件监听器已停止
+2026-08-08 20:26:50 - INFO - utils.data_manager - data_manager.py:356 - 文件监听器已停止
+2026-08-08 20:26:50 - INFO - __main__ - app.py:69 - 文件监听器已停止
+2026-08-08 20:26:50 - INFO - utils.data_manager - data_manager.py:356 - 文件监听器已停止
+2026-08-08 20:26:50 - INFO - api.compare - app.py:69 - 文件监听器已停止
+2026-08-08 20:26:50 - INFO - werkzeug - _internal.py:97 -  * Restarting with watchdog (windowsapi)
+2026-08-08 20:26:51 - INFO - utils.data_parser - data_parser.py:24 - 数据管理器初始化
+2026-08-08 20:26:51 - INFO - utils.tool_manager - tool_manager.py:54 - 加载工具配置文件: E:\git\develop\monitor\monitor2.5\data\tools.json
+2026-08-08 20:26:51 - INFO - utils.tool_manager - tool_manager.py:45 - 工具管理器初始化完成
+2026-08-08 20:26:51 - INFO - utils.data_manager - data_manager.py:71 - 数据管理器初始化完成
+2026-08-08 20:26:51 - INFO - __main__ - app.py:92 - 启动性能监控平台后端服务
+2026-08-08 20:26:51 - WARN - werkzeug - _internal.py:97 -  * Debugger is active!
+2026-08-08 20:26:51 - INFO - werkzeug - _internal.py:97 -  * Debugger PIN: 644-902-559
+2026-08-08 20:26:53 - INFO - utils.file_watcher - file_watcher.py:131 - 文件监听器初始化: watch_paths=['E:\\git\\develop\\monitor\\test\\signal']
+2026-08-08 20:26:53 - INFO - utils.file_watcher - file_watcher.py:51 - 文件变更处理器初始化
+2026-08-08 20:26:53 - INFO - utils.file_watcher - file_watcher.py:148 - 添加监听路径: E:\git\develop\monitor\test\signal
+2026-08-08 20:26:53 - INFO - utils.file_watcher - file_watcher.py:155 - 文件监听器已启动，监听 1 个路径
+2026-08-08 20:26:53 - INFO - utils.data_manager - data_manager.py:348 - 文件监听器已启动，监听路径: ['E:\\git\\develop\\monitor\\test\\signal']
+2026-08-08 20:26:53 - INFO - api.compare - app.py:60 - 文件监听器初始化完成，监听 1 个工具
+2026-08-08 20:26:53 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:26:53] "GET /tool/elint/performance HTTP/1.1" 200 -
+2026-08-08 20:26:53 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:26:53] "[36mGET /static/js/echarts.min.js HTTP/1.1[0m" 304 -
+2026-08-08 20:26:53 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:26:53] "[36mGET /static/js/axios.min.js HTTP/1.1[0m" 304 -
+2026-08-08 20:26:53 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:26:53] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2026-08-08 20:26:53 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:26:53] "[36mGET /static/css/select.css HTTP/1.1[0m" 304 -
+2026-08-08 20:26:53 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:26:53] "[36mGET /static/css/compare.css HTTP/1.1[0m" 304 -
+2026-08-08 20:26:53 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:26:53] "[36mGET /static/js/select.js HTTP/1.1[0m" 304 -
+2026-08-08 20:26:53 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:26:53] "[36mGET /static/js/single_thread.js HTTP/1.1[0m" 304 -
+2026-08-08 20:26:53 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:26:53] "[36mGET /static/js/multi_thread.js HTTP/1.1[0m" 304 -
+2026-08-08 20:26:53 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:26:53] "[36mGET /static/js/thread_chart.js HTTP/1.1[0m" 304 -
+2026-08-08 20:26:53 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:26:53] "[36mGET /static/js/comparison.js HTTP/1.1[0m" 304 -
+2026-08-08 20:26:53 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:26:53] "[36mGET /static/js/tool.js HTTP/1.1[0m" 304 -
+2026-08-08 20:26:53 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:26:53] "[33mGET /static/js/axios.min.js.map HTTP/1.1[0m" 404 -
+2026-08-08 20:26:53 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:26:53] "GET /api/tools HTTP/1.1" 200 -
+2026-08-08 20:26:53 - INFO - utils.data_manager - data_manager.py:519 - 开始加载工具 elint 数据
+2026-08-08 20:26:53 - INFO - utils.common - common.py:97 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\elint.json
+2026-08-08 20:26:53 - INFO - utils.data_manager - data_manager.py:544 - 加载工具 elint 单线程数据
+2026-08-08 20:26:53 - INFO - utils.data_manager - data_manager.py:473 - 加载工具 elint 单线程数据
+2026-08-08 20:26:53 - INFO - utils.file_scanner - file_scanner.py:100 - 文件扫描器初始化: root=E:\git\develop\monitor\test\signal, max_depth=3
+2026-08-08 20:26:53 - INFO - utils.common - common.py:97 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\single_version.json
+2026-08-08 20:26:53 - INFO - utils.file_scanner - file_scanner.py:118 - 开始扫描目录: E:\git\develop\monitor\test\signal
+2026-08-08 20:26:53 - INFO - utils.file_scanner - file_scanner.py:126 - 扫描完成: 找到 6 个文件
+2026-08-08 20:26:53 - INFO - utils.data_manager - data_manager.py:577 - 更新了：['单线程']
+2026-08-08 20:26:53 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:26:53] "POST /api/tools/elint/data HTTP/1.1" 200 -
+2026-08-08 20:26:53 - INFO - utils.common - common.py:87 - 成功保存工具数据到 E:\git\develop\monitor\monitor2.5\data\elint\elint_parser.json
+2026-08-08 20:26:53 - INFO - utils.common - common.py:87 - 成功保存工具数据到 E:\git\develop\monitor\monitor2.5\data\elint\elint.json
+2026-08-08 20:26:53 - INFO - utils.common - common.py:87 - 成功保存工具数据到 E:\git\develop\monitor\monitor2.5\data\elint\single_version.json
+2026-08-08 20:26:53 - INFO - utils.common - common.py:87 - 成功保存工具数据到 E:\git\develop\monitor\monitor2.5\data\elint\multi_version.json
+2026-08-08 20:26:53 - INFO - utils.data_manager - data_manager.py:269 - 数据保存完成: E:\git\develop\monitor\monitor2.5\data\elint\elint.json
+2026-08-08 20:27:30 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'e:\\git\\develop\\monitor\\monitor2.5\\utils\\data_manager.py', reloading
+2026-08-08 20:27:30 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'e:\\git\\develop\\monitor\\monitor2.5\\utils\\data_manager.py', reloading
+2026-08-08 20:27:30 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'e:\\git\\develop\\monitor\\monitor2.5\\utils\\data_manager.py', reloading
+2026-08-08 20:27:30 - INFO - utils.file_watcher - file_watcher.py:167 - 文件监听器已停止
+2026-08-08 20:27:30 - INFO - utils.data_manager - data_manager.py:356 - 文件监听器已停止
+2026-08-08 20:27:30 - INFO - __main__ - app.py:69 - 文件监听器已停止
+2026-08-08 20:27:30 - INFO - utils.data_manager - data_manager.py:356 - 文件监听器已停止
+2026-08-08 20:27:30 - INFO - api.compare - app.py:69 - 文件监听器已停止
+2026-08-08 20:27:30 - INFO - werkzeug - _internal.py:97 -  * Restarting with watchdog (windowsapi)
+2026-08-08 20:27:30 - INFO - utils.data_parser - data_parser.py:24 - 数据管理器初始化
+2026-08-08 20:27:30 - INFO - utils.tool_manager - tool_manager.py:54 - 加载工具配置文件: E:\git\develop\monitor\monitor2.5\data\tools.json
+2026-08-08 20:27:30 - INFO - utils.tool_manager - tool_manager.py:45 - 工具管理器初始化完成
+2026-08-08 20:27:30 - INFO - utils.data_manager - data_manager.py:71 - 数据管理器初始化完成
+2026-08-08 20:27:31 - INFO - __main__ - app.py:92 - 启动性能监控平台后端服务
+2026-08-08 20:27:31 - WARN - werkzeug - _internal.py:97 -  * Debugger is active!
+2026-08-08 20:27:31 - INFO - werkzeug - _internal.py:97 -  * Debugger PIN: 644-902-559
+2026-08-08 20:27:35 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'e:\\git\\develop\\monitor\\monitor2.5\\utils\\data_manager.py', reloading
+2026-08-08 20:27:35 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'e:\\git\\develop\\monitor\\monitor2.5\\utils\\data_manager.py', reloading
+2026-08-08 20:27:36 - INFO - utils.data_manager - data_manager.py:356 - 文件监听器已停止
+2026-08-08 20:27:36 - INFO - __main__ - app.py:69 - 文件监听器已停止
+2026-08-08 20:27:36 - INFO - utils.data_manager - data_manager.py:356 - 文件监听器已停止
+2026-08-08 20:27:36 - INFO - api.compare - app.py:69 - 文件监听器已停止
+2026-08-08 20:27:36 - INFO - werkzeug - _internal.py:97 -  * Restarting with watchdog (windowsapi)
+2026-08-08 20:27:36 - INFO - utils.data_parser - data_parser.py:24 - 数据管理器初始化
+2026-08-08 20:27:36 - INFO - utils.tool_manager - tool_manager.py:54 - 加载工具配置文件: E:\git\develop\monitor\monitor2.5\data\tools.json
+2026-08-08 20:27:36 - INFO - utils.tool_manager - tool_manager.py:45 - 工具管理器初始化完成
+2026-08-08 20:27:36 - INFO - utils.data_manager - data_manager.py:71 - 数据管理器初始化完成
+2026-08-08 20:27:36 - INFO - __main__ - app.py:92 - 启动性能监控平台后端服务
+2026-08-08 20:27:36 - WARN - werkzeug - _internal.py:97 -  * Debugger is active!
+2026-08-08 20:27:36 - INFO - werkzeug - _internal.py:97 -  * Debugger PIN: 644-902-559
+2026-08-08 20:27:45 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'e:\\git\\develop\\monitor\\monitor2.5\\utils\\data_manager.py', reloading
+2026-08-08 20:27:45 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'e:\\git\\develop\\monitor\\monitor2.5\\utils\\data_manager.py', reloading
+2026-08-08 20:27:45 - INFO - utils.data_manager - data_manager.py:356 - 文件监听器已停止
+2026-08-08 20:27:45 - INFO - __main__ - app.py:69 - 文件监听器已停止
+2026-08-08 20:27:45 - INFO - utils.data_manager - data_manager.py:356 - 文件监听器已停止
+2026-08-08 20:27:45 - INFO - api.compare - app.py:69 - 文件监听器已停止
+2026-08-08 20:27:46 - INFO - werkzeug - _internal.py:97 -  * Restarting with watchdog (windowsapi)
+2026-08-08 20:27:46 - INFO - utils.data_parser - data_parser.py:24 - 数据管理器初始化
+2026-08-08 20:27:46 - INFO - utils.tool_manager - tool_manager.py:54 - 加载工具配置文件: E:\git\develop\monitor\monitor2.5\data\tools.json
+2026-08-08 20:27:46 - INFO - utils.tool_manager - tool_manager.py:45 - 工具管理器初始化完成
+2026-08-08 20:27:46 - INFO - utils.data_manager - data_manager.py:71 - 数据管理器初始化完成
+2026-08-08 20:27:46 - INFO - __main__ - app.py:92 - 启动性能监控平台后端服务
+2026-08-08 20:27:46 - WARN - werkzeug - _internal.py:97 -  * Debugger is active!
+2026-08-08 20:27:46 - INFO - werkzeug - _internal.py:97 -  * Debugger PIN: 644-902-559
+2026-08-08 20:28:18 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'e:\\git\\develop\\monitor\\monitor2.5\\utils\\data_manager.py', reloading
+2026-08-08 20:28:18 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'e:\\git\\develop\\monitor\\monitor2.5\\utils\\data_manager.py', reloading
+2026-08-08 20:28:19 - INFO - utils.data_manager - data_manager.py:356 - 文件监听器已停止
+2026-08-08 20:28:19 - INFO - __main__ - app.py:69 - 文件监听器已停止
+2026-08-08 20:28:19 - INFO - utils.data_manager - data_manager.py:356 - 文件监听器已停止
+2026-08-08 20:28:19 - INFO - api.compare - app.py:69 - 文件监听器已停止
+2026-08-08 20:28:19 - INFO - werkzeug - _internal.py:97 -  * Restarting with watchdog (windowsapi)
+2026-08-08 20:28:19 - INFO - utils.data_parser - data_parser.py:24 - 数据管理器初始化
+2026-08-08 20:28:19 - INFO - utils.tool_manager - tool_manager.py:54 - 加载工具配置文件: E:\git\develop\monitor\monitor2.5\data\tools.json
+2026-08-08 20:28:19 - INFO - utils.tool_manager - tool_manager.py:45 - 工具管理器初始化完成
+2026-08-08 20:28:19 - INFO - utils.data_manager - data_manager.py:71 - 数据管理器初始化完成
+2026-08-08 20:28:19 - INFO - __main__ - app.py:92 - 启动性能监控平台后端服务
+2026-08-08 20:28:19 - WARN - werkzeug - _internal.py:97 -  * Debugger is active!
+2026-08-08 20:28:19 - INFO - werkzeug - _internal.py:97 -  * Debugger PIN: 644-902-559
+2026-08-08 20:28:38 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'E:\\python\\3.8\\Lib\\site-packages\\flask\\__init__.py', reloading
+2026-08-08 20:28:38 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'E:\\python\\3.8\\Lib\\site-packages\\flask\\globals.py', reloading
+2026-08-08 20:28:39 - INFO - utils.data_manager - data_manager.py:356 - 文件监听器已停止
+2026-08-08 20:28:39 - INFO - __main__ - app.py:69 - 文件监听器已停止
+2026-08-08 20:28:39 - INFO - utils.data_manager - data_manager.py:356 - 文件监听器已停止
+2026-08-08 20:28:39 - INFO - api.compare - app.py:69 - 文件监听器已停止
+2026-08-08 20:28:39 - INFO - werkzeug - _internal.py:97 -  * Restarting with watchdog (windowsapi)
+2026-08-08 20:28:39 - INFO - utils.data_parser - data_parser.py:24 - 数据管理器初始化
+2026-08-08 20:28:39 - INFO - utils.tool_manager - tool_manager.py:54 - 加载工具配置文件: E:\git\develop\monitor\monitor2.5\data\tools.json
+2026-08-08 20:28:39 - INFO - utils.tool_manager - tool_manager.py:45 - 工具管理器初始化完成
+2026-08-08 20:28:39 - INFO - utils.data_manager - data_manager.py:71 - 数据管理器初始化完成
+2026-08-08 20:28:39 - INFO - __main__ - app.py:92 - 启动性能监控平台后端服务
+2026-08-08 20:28:39 - WARN - werkzeug - _internal.py:97 -  * Debugger is active!
+2026-08-08 20:28:39 - INFO - werkzeug - _internal.py:97 -  * Debugger PIN: 644-902-559
+2026-08-08 20:28:47 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'e:\\git\\develop\\monitor\\monitor2.5\\utils\\tool_manager.py', reloading
+2026-08-08 20:28:48 - INFO - utils.data_manager - data_manager.py:356 - 文件监听器已停止
+2026-08-08 20:28:48 - INFO - __main__ - app.py:69 - 文件监听器已停止
+2026-08-08 20:28:48 - INFO - utils.data_manager - data_manager.py:356 - 文件监听器已停止
+2026-08-08 20:28:48 - INFO - api.compare - app.py:69 - 文件监听器已停止
+2026-08-08 20:28:48 - INFO - werkzeug - _internal.py:97 -  * Restarting with watchdog (windowsapi)
+2026-08-08 20:28:48 - INFO - utils.data_parser - data_parser.py:24 - 数据管理器初始化
+2026-08-08 20:28:48 - INFO - utils.tool_manager - tool_manager.py:54 - 加载工具配置文件: E:\git\develop\monitor\monitor2.5\data\tools.json
+2026-08-08 20:28:48 - INFO - utils.tool_manager - tool_manager.py:45 - 工具管理器初始化完成
+2026-08-08 20:28:48 - INFO - utils.data_manager - data_manager.py:71 - 数据管理器初始化完成
+2026-08-08 20:28:48 - INFO - __main__ - app.py:92 - 启动性能监控平台后端服务
+2026-08-08 20:28:48 - WARN - werkzeug - _internal.py:97 -  * Debugger is active!
+2026-08-08 20:28:48 - INFO - werkzeug - _internal.py:97 -  * Debugger PIN: 644-902-559
+2026-08-08 20:28:52 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'e:\\git\\develop\\monitor\\monitor2.5\\utils\\data_manager.py', reloading
+2026-08-08 20:28:52 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'e:\\git\\develop\\monitor\\monitor2.5\\utils\\data_manager.py', reloading
+2026-08-08 20:28:53 - INFO - utils.data_manager - data_manager.py:356 - 文件监听器已停止
+2026-08-08 20:28:53 - INFO - __main__ - app.py:69 - 文件监听器已停止
+2026-08-08 20:28:53 - INFO - utils.data_manager - data_manager.py:356 - 文件监听器已停止
+2026-08-08 20:28:53 - INFO - api.compare - app.py:69 - 文件监听器已停止
+2026-08-08 20:28:53 - INFO - werkzeug - _internal.py:97 -  * Restarting with watchdog (windowsapi)
+2026-08-08 20:28:53 - INFO - utils.data_parser - data_parser.py:24 - 数据管理器初始化
+2026-08-08 20:28:53 - INFO - utils.tool_manager - tool_manager.py:54 - 加载工具配置文件: E:\git\develop\monitor\monitor2.5\data\tools.json
+2026-08-08 20:28:53 - INFO - utils.tool_manager - tool_manager.py:45 - 工具管理器初始化完成
+2026-08-08 20:28:53 - INFO - utils.data_manager - data_manager.py:71 - 数据管理器初始化完成
+2026-08-08 20:28:53 - INFO - __main__ - app.py:92 - 启动性能监控平台后端服务
+2026-08-08 20:28:53 - WARN - werkzeug - _internal.py:97 -  * Debugger is active!
+2026-08-08 20:28:53 - INFO - werkzeug - _internal.py:97 -  * Debugger PIN: 644-902-559
+2026-08-08 20:29:16 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'e:\\git\\develop\\monitor\\monitor2.5\\utils\\data_manager.py', reloading
+2026-08-08 20:29:16 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'e:\\git\\develop\\monitor\\monitor2.5\\utils\\data_manager.py', reloading
+2026-08-08 20:29:17 - INFO - utils.data_manager - data_manager.py:356 - 文件监听器已停止
+2026-08-08 20:29:17 - INFO - __main__ - app.py:69 - 文件监听器已停止
+2026-08-08 20:29:17 - INFO - utils.data_manager - data_manager.py:356 - 文件监听器已停止
+2026-08-08 20:29:17 - INFO - api.compare - app.py:69 - 文件监听器已停止
+2026-08-08 20:29:17 - INFO - werkzeug - _internal.py:97 -  * Restarting with watchdog (windowsapi)
+2026-08-08 20:29:17 - INFO - utils.data_parser - data_parser.py:24 - 数据管理器初始化
+2026-08-08 20:29:17 - INFO - utils.tool_manager - tool_manager.py:54 - 加载工具配置文件: E:\git\develop\monitor\monitor2.5\data\tools.json
+2026-08-08 20:29:17 - INFO - utils.tool_manager - tool_manager.py:45 - 工具管理器初始化完成
+2026-08-08 20:29:17 - INFO - utils.data_manager - data_manager.py:71 - 数据管理器初始化完成
+2026-08-08 20:29:17 - INFO - __main__ - app.py:92 - 启动性能监控平台后端服务
+2026-08-08 20:29:17 - WARN - werkzeug - _internal.py:97 -  * Debugger is active!
+2026-08-08 20:29:17 - INFO - werkzeug - _internal.py:97 -  * Debugger PIN: 644-902-559
+2026-08-08 20:29:20 - INFO - utils.file_watcher - file_watcher.py:131 - 文件监听器初始化: watch_paths=['E:\\git\\develop\\monitor\\test\\signal']
+2026-08-08 20:29:20 - INFO - utils.file_watcher - file_watcher.py:51 - 文件变更处理器初始化
+2026-08-08 20:29:20 - INFO - utils.file_watcher - file_watcher.py:148 - 添加监听路径: E:\git\develop\monitor\test\signal
+2026-08-08 20:29:20 - INFO - utils.file_watcher - file_watcher.py:155 - 文件监听器已启动，监听 1 个路径
+2026-08-08 20:29:20 - INFO - utils.data_manager - data_manager.py:348 - 文件监听器已启动，监听路径: ['E:\\git\\develop\\monitor\\test\\signal']
+2026-08-08 20:29:20 - INFO - api.compare - app.py:60 - 文件监听器初始化完成，监听 1 个工具
+2026-08-08 20:29:20 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:29:20] "GET /tool/elint/performance HTTP/1.1" 200 -
+2026-08-08 20:29:20 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:29:20] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2026-08-08 20:29:20 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:29:20] "[36mGET /static/css/select.css HTTP/1.1[0m" 304 -
+2026-08-08 20:29:20 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:29:20] "[36mGET /static/js/echarts.min.js HTTP/1.1[0m" 304 -
+2026-08-08 20:29:20 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:29:20] "[36mGET /static/js/axios.min.js HTTP/1.1[0m" 304 -
+2026-08-08 20:29:20 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:29:20] "[36mGET /static/css/compare.css HTTP/1.1[0m" 304 -
+2026-08-08 20:29:20 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:29:20] "[36mGET /static/js/select.js HTTP/1.1[0m" 304 -
+2026-08-08 20:29:20 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:29:20] "[36mGET /static/js/single_thread.js HTTP/1.1[0m" 304 -
+2026-08-08 20:29:20 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:29:20] "[36mGET /static/js/multi_thread.js HTTP/1.1[0m" 304 -
+2026-08-08 20:29:20 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:29:20] "[36mGET /static/js/thread_chart.js HTTP/1.1[0m" 304 -
+2026-08-08 20:29:20 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:29:20] "[36mGET /static/js/comparison.js HTTP/1.1[0m" 304 -
+2026-08-08 20:29:20 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:29:20] "[36mGET /static/js/tool.js HTTP/1.1[0m" 304 -
+2026-08-08 20:29:20 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:29:20] "[33mGET /static/js/axios.min.js.map HTTP/1.1[0m" 404 -
+2026-08-08 20:29:20 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:29:20] "GET /api/tools HTTP/1.1" 200 -
+2026-08-08 20:29:20 - INFO - utils.data_manager - data_manager.py:519 - 开始加载工具 elint 数据
+2026-08-08 20:29:20 - INFO - utils.common - common.py:97 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\elint.json
+2026-08-08 20:29:20 - INFO - utils.data_manager - data_manager.py:545 - 加载工具 elint 单线程数据
+2026-08-08 20:29:20 - INFO - utils.data_manager - data_manager.py:473 - 加载工具 elint 单线程数据
+2026-08-08 20:29:20 - INFO - utils.file_scanner - file_scanner.py:100 - 文件扫描器初始化: root=E:\git\develop\monitor\test\signal, max_depth=3
+2026-08-08 20:29:20 - INFO - utils.common - common.py:97 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\single_version.json
+2026-08-08 20:29:20 - INFO - utils.file_scanner - file_scanner.py:118 - 开始扫描目录: E:\git\develop\monitor\test\signal
+2026-08-08 20:29:20 - INFO - utils.file_scanner - file_scanner.py:126 - 扫描完成: 找到 6 个文件
+2026-08-08 20:29:20 - INFO - utils.data_manager - data_manager.py:587 - 未更新数据，加载工具 elint 解析数据
+2026-08-08 20:29:20 - INFO - utils.common - common.py:97 - 成功加载工具数据从 E:\git\develop\monitor\monitor2.5\data\elint\elint_parser.json
+2026-08-08 20:29:20 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:29:20] "POST /api/tools/elint/data HTTP/1.1" 200 -
+2026-08-08 20:29:20 - INFO - utils.common - common.py:87 - 成功保存工具数据到 E:\git\develop\monitor\monitor2.5\data\elint\elint.json
+2026-08-08 20:29:20 - INFO - utils.common - common.py:87 - 成功保存工具数据到 E:\git\develop\monitor\monitor2.5\data\elint\single_version.json
+2026-08-08 20:29:20 - INFO - utils.common - common.py:87 - 成功保存工具数据到 E:\git\develop\monitor\monitor2.5\data\elint\multi_version.json
+2026-08-08 20:29:20 - INFO - utils.data_manager - data_manager.py:269 - 数据保存完成: E:\git\develop\monitor\monitor2.5\data\elint\elint.json
+2026-08-08 20:29:33 - INFO - utils.file_watcher - file_watcher.py:167 - 文件监听器已停止
+2026-08-08 20:29:33 - INFO - utils.data_manager - data_manager.py:356 - 文件监听器已停止
+2026-08-08 20:29:33 - INFO - __main__ - app.py:69 - 文件监听器已停止
+2026-08-08 20:29:33 - INFO - utils.data_manager - data_manager.py:356 - 文件监听器已停止
+2026-08-08 20:29:33 - INFO - api.compare - app.py:69 - 文件监听器已停止
+2026-08-08 20:29:33 - INFO - utils.data_manager - data_manager.py:356 - 文件监听器已停止
+2026-08-08 20:29:33 - INFO - __main__ - app.py:69 - 文件监听器已停止
+2026-08-08 20:29:33 - INFO - utils.data_manager - data_manager.py:356 - 文件监听器已停止
+2026-08-08 20:29:33 - INFO - api.compare - app.py:69 - 文件监听器已停止
+2026-08-08 20:29:35 - INFO - utils.data_parser - data_parser.py:24 - 数据管理器初始化
+2026-08-08 20:29:35 - INFO - utils.tool_manager - tool_manager.py:54 - 加载工具配置文件: E:\git\develop\monitor\monitor2.5\data\tools.json
+2026-08-08 20:29:35 - INFO - utils.tool_manager - tool_manager.py:45 - 工具管理器初始化完成
+2026-08-08 20:29:35 - INFO - utils.data_manager - data_manager.py:71 - 数据管理器初始化完成
+2026-08-08 20:29:35 - INFO - __main__ - app.py:92 - 启动性能监控平台后端服务
+2026-08-08 20:29:35 - INFO - werkzeug - _internal.py:97 - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5020
+ * Running on http://192.168.1.33:5020
+2026-08-08 20:29:35 - INFO - werkzeug - _internal.py:97 - [33mPress CTRL+C to quit[0m
+2026-08-08 20:29:35 - INFO - werkzeug - _internal.py:97 -  * Restarting with watchdog (windowsapi)
+2026-08-08 20:29:36 - INFO - utils.data_parser - data_parser.py:24 - 数据管理器初始化
+2026-08-08 20:29:36 - INFO - utils.tool_manager - tool_manager.py:54 - 加载工具配置文件: E:\git\develop\monitor\monitor2.5\data\tools.json
+2026-08-08 20:29:36 - INFO - utils.tool_manager - tool_manager.py:45 - 工具管理器初始化完成
+2026-08-08 20:29:36 - INFO - utils.data_manager - data_manager.py:71 - 数据管理器初始化完成
+2026-08-08 20:29:36 - INFO - __main__ - app.py:92 - 启动性能监控平台后端服务
+2026-08-08 20:29:36 - WARN - werkzeug - _internal.py:97 -  * Debugger is active!
+2026-08-08 20:29:36 - INFO - werkzeug - _internal.py:97 -  * Debugger PIN: 644-902-559
+2026-08-08 20:29:37 - INFO - utils.file_watcher - file_watcher.py:131 - 文件监听器初始化: watch_paths=['E:\\git\\develop\\monitor\\test\\signal']
+2026-08-08 20:29:37 - INFO - utils.file_watcher - file_watcher.py:51 - 文件变更处理器初始化
+2026-08-08 20:29:37 - INFO - utils.file_watcher - file_watcher.py:148 - 添加监听路径: E:\git\develop\monitor\test\signal
+2026-08-08 20:29:37 - INFO - utils.file_watcher - file_watcher.py:155 - 文件监听器已启动，监听 1 个路径
+2026-08-08 20:29:37 - INFO - utils.data_manager - data_manager.py:348 - 文件监听器已启动，监听路径: ['E:\\git\\develop\\monitor\\test\\signal']
+2026-08-08 20:29:37 - INFO - api.compare - app.py:60 - 文件监听器初始化完成，监听 1 个工具
+2026-08-08 20:29:37 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:29:37] "GET /tool/elint/performance HTTP/1.1" 200 -
+2026-08-08 20:29:37 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:29:37] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2026-08-08 20:29:37 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:29:37] "[36mGET /static/js/echarts.min.js HTTP/1.1[0m" 304 -
+2026-08-08 20:29:37 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:29:37] "[36mGET /static/css/select.css HTTP/1.1[0m" 304 -
+2026-08-08 20:29:37 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:29:37] "[36mGET /static/js/axios.min.js HTTP/1.1[0m" 304 -
+2026-08-08 20:29:37 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:29:37] "[36mGET /static/css/compare.css HTTP/1.1[0m" 304 -
+2026-08-08 20:29:37 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:29:37] "[36mGET /static/js/select.js HTTP/1.1[0m" 304 -
+2026-08-08 20:29:37 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:29:37] "[36mGET /static/js/single_thread.js HTTP/1.1[0m" 304 -
+2026-08-08 20:29:37 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:29:37] "[36mGET /static/js/multi_thread.js HTTP/1.1[0m" 304 -
+2026-08-08 20:29:37 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:29:37] "[36mGET /static/js/thread_chart.js HTTP/1.1[0m" 304 -
+2026-08-08 20:29:37 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:29:37] "[36mGET /static/js/comparison.js HTTP/1.1[0m" 304 -
+2026-08-08 20:29:37 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:29:37] "[36mGET /static/js/tool.js HTTP/1.1[0m" 304 -
+2026-08-08 20:29:37 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:29:37] "[33mGET /static/js/axios.min.js.map HTTP/1.1[0m" 404 -
+2026-08-08 20:29:37 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:29:37] "GET /api/tools HTTP/1.1" 200 -
+2026-08-08 20:29:37 - INFO - utils.data_manager - data_manager.py:125 - 创建用户数据目录: E:\git\develop\monitor\monitor2.5\data\elint\2e2a6287-4324-4002-9716-96fa44df3240
+2026-08-08 20:29:37 - INFO - utils.data_manager - data_manager.py:519 - 开始加载工具 elint 数据
+2026-08-08 20:29:37 - INFO - utils.data_manager - data_manager.py:545 - 加载工具 elint 单线程数据
+2026-08-08 20:29:37 - INFO - utils.data_manager - data_manager.py:473 - 加载工具 elint 单线程数据
+2026-08-08 20:29:37 - INFO - utils.file_scanner - file_scanner.py:100 - 文件扫描器初始化: root=E:\git\develop\monitor\test\signal, max_depth=3
+2026-08-08 20:29:37 - WARN - utils.common - common.py:100 - 加载工具数据失败, 文件不存在: E:\git\develop\monitor\monitor2.5\data\elint\single_version.json
+2026-08-08 20:29:37 - INFO - utils.file_scanner - file_scanner.py:118 - 开始扫描目录: E:\git\develop\monitor\test\signal
+2026-08-08 20:29:37 - INFO - utils.file_scanner - file_scanner.py:126 - 扫描完成: 找到 6 个文件
+2026-08-08 20:29:37 - INFO - dynamic_module_elint_-8295261851661453608 - elint.py:588 - 从文件获取性能数据: E:\git\develop\monitor\test\signal\2026-05-10-06\performance\20260510_aes.txt
+2026-08-08 20:29:37 - INFO - dynamic_module_elint_-8295261851661453608 - elint.py:588 - 从文件获取性能数据: E:\git\develop\monitor\test\signal\2026-05-10-06\performance\20260510_nv.txt
+2026-08-08 20:29:37 - INFO - dynamic_module_elint_-8295261851661453608 - elint.py:588 - 从文件获取性能数据: E:\git\develop\monitor\test\signal\2026-05-11-06\performance\20260511_aes.txt
+2026-08-08 20:29:37 - INFO - dynamic_module_elint_-8295261851661453608 - elint.py:588 - 从文件获取性能数据: E:\git\develop\monitor\test\signal\2026-05-11-06\performance\20260511_nv.txt
+2026-08-08 20:29:37 - INFO - dynamic_module_elint_-8295261851661453608 - elint.py:588 - 从文件获取性能数据: E:\git\develop\monitor\test\signal\2026-05-12-06\performance\20260512_aes.txt
+2026-08-08 20:29:37 - INFO - dynamic_module_elint_-8295261851661453608 - elint.py:588 - 从文件获取性能数据: E:\git\develop\monitor\test\signal\2026-05-12-06\performance\20260512_nv.txt
+2026-08-08 20:29:37 - INFO - utils.data_manager - data_manager.py:578 - 更新了：['单线程']
+2026-08-08 20:29:37 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:29:37] "POST /api/tools/elint/data HTTP/1.1" 200 -
+2026-08-08 20:29:37 - INFO - utils.common - common.py:87 - 成功保存工具数据到 E:\git\develop\monitor\monitor2.5\data\elint\elint_parser.json
+2026-08-08 20:29:37 - INFO - utils.common - common.py:87 - 成功保存工具数据到 E:\git\develop\monitor\monitor2.5\data\elint\elint.json
+2026-08-08 20:29:37 - INFO - utils.common - common.py:87 - 成功保存工具数据到 E:\git\develop\monitor\monitor2.5\data\elint\single_version.json
+2026-08-08 20:29:37 - INFO - utils.common - common.py:87 - 成功保存工具数据到 E:\git\develop\monitor\monitor2.5\data\elint\multi_version.json
+2026-08-08 20:29:37 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:29:37] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-08 20:29:37 - INFO - utils.data_manager - data_manager.py:269 - 数据保存完成: E:\git\develop\monitor\monitor2.5\data\elint\elint.json
+2026-08-08 20:29:37 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:29:37] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-08 20:29:37 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:29:37] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-08 20:29:37 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:29:37] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-08 20:29:37 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:29:37] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-08 20:29:37 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:29:37] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-08 20:29:37 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:29:37] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-08 20:29:37 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:29:37] "POST /api/chart/data HTTP/1.1" 200 -
+2026-08-08 20:29:54 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:29:54] "GET /tool/elint/performance HTTP/1.1" 200 -
+2026-08-08 20:29:54 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:29:54] "[36mGET /static/js/echarts.min.js HTTP/1.1[0m" 304 -
+2026-08-08 20:29:54 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:29:54] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2026-08-08 20:29:54 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:29:54] "[36mGET /static/js/axios.min.js HTTP/1.1[0m" 304 -
+2026-08-08 20:29:54 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:29:54] "[36mGET /static/css/select.css HTTP/1.1[0m" 304 -
+2026-08-08 20:29:54 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:29:54] "[36mGET /static/css/compare.css HTTP/1.1[0m" 304 -
+2026-08-08 20:29:54 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:29:54] "[36mGET /static/js/select.js HTTP/1.1[0m" 304 -
+2026-08-08 20:29:54 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:29:54] "[36mGET /static/js/single_thread.js HTTP/1.1[0m" 304 -
+2026-08-08 20:29:54 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:29:54] "[36mGET /static/js/multi_thread.js HTTP/1.1[0m" 304 -
+2026-08-08 20:29:54 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:29:54] "[36mGET /static/js/thread_chart.js HTTP/1.1[0m" 304 -
+2026-08-08 20:29:54 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:29:54] "[36mGET /static/js/comparison.js HTTP/1.1[0m" 304 -
+2026-08-08 20:29:54 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:29:54] "[36mGET /static/js/tool.js HTTP/1.1[0m" 304 -
+2026-08-08 20:29:54 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:29:54] "[33mGET /static/js/axios.min.js.map HTTP/1.1[0m" 404 -
+2026-08-08 20:29:54 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:29:54] "GET /api/tools HTTP/1.1" 200 -
+2026-08-08 20:29:54 - INFO - utils.data_manager - data_manager.py:519 - 开始加载工具 elint 数据
+2026-08-08 20:29:54 - WARN - utils.data_manager - data_manager.py:527 - 缓存命中，数据已经是最新的
+2026-08-08 20:29:54 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:29:54] "POST /api/tools/elint/data HTTP/1.1" 200 -
+2026-08-08 20:29:58 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:29:58] "GET /tool/elint/performance HTTP/1.1" 200 -
+2026-08-08 20:29:58 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:29:58] "[36mGET /static/js/echarts.min.js HTTP/1.1[0m" 304 -
+2026-08-08 20:29:58 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:29:58] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2026-08-08 20:29:58 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:29:58] "[36mGET /static/css/select.css HTTP/1.1[0m" 304 -
+2026-08-08 20:29:58 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:29:58] "[36mGET /static/js/axios.min.js HTTP/1.1[0m" 304 -
+2026-08-08 20:29:58 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:29:58] "[36mGET /static/css/compare.css HTTP/1.1[0m" 304 -
+2026-08-08 20:29:58 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:29:58] "[36mGET /static/js/select.js HTTP/1.1[0m" 304 -
+2026-08-08 20:29:58 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:29:58] "[36mGET /static/js/single_thread.js HTTP/1.1[0m" 304 -
+2026-08-08 20:29:58 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:29:58] "[36mGET /static/js/multi_thread.js HTTP/1.1[0m" 304 -
+2026-08-08 20:29:58 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:29:58] "[36mGET /static/js/thread_chart.js HTTP/1.1[0m" 304 -
+2026-08-08 20:29:58 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:29:58] "[36mGET /static/js/comparison.js HTTP/1.1[0m" 304 -
+2026-08-08 20:29:58 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:29:58] "[36mGET /static/js/tool.js HTTP/1.1[0m" 304 -
+2026-08-08 20:29:58 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:29:58] "[33mGET /static/js/axios.min.js.map HTTP/1.1[0m" 404 -
+2026-08-08 20:29:58 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:29:58] "GET /api/tools HTTP/1.1" 200 -
+2026-08-08 20:29:58 - INFO - utils.data_manager - data_manager.py:519 - 开始加载工具 elint 数据
+2026-08-08 20:29:58 - WARN - utils.data_manager - data_manager.py:527 - 缓存命中，数据已经是最新的
+2026-08-08 20:29:58 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:29:58] "POST /api/tools/elint/data HTTP/1.1" 200 -
+2026-08-08 20:30:04 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:30:04] "GET /tool/elint/performance HTTP/1.1" 200 -
+2026-08-08 20:30:04 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:30:04] "[36mGET /static/js/echarts.min.js HTTP/1.1[0m" 304 -
+2026-08-08 20:30:04 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:30:04] "[36mGET /static/css/select.css HTTP/1.1[0m" 304 -
+2026-08-08 20:30:04 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:30:04] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2026-08-08 20:30:04 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:30:04] "[36mGET /static/js/axios.min.js HTTP/1.1[0m" 304 -
+2026-08-08 20:30:04 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:30:04] "[36mGET /static/css/compare.css HTTP/1.1[0m" 304 -
+2026-08-08 20:30:04 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:30:04] "[36mGET /static/js/select.js HTTP/1.1[0m" 304 -
+2026-08-08 20:30:04 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:30:04] "[36mGET /static/js/single_thread.js HTTP/1.1[0m" 304 -
+2026-08-08 20:30:04 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:30:04] "[36mGET /static/js/multi_thread.js HTTP/1.1[0m" 304 -
+2026-08-08 20:30:04 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:30:04] "[36mGET /static/js/thread_chart.js HTTP/1.1[0m" 304 -
+2026-08-08 20:30:04 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:30:04] "[36mGET /static/js/comparison.js HTTP/1.1[0m" 304 -
+2026-08-08 20:30:04 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:30:04] "[36mGET /static/js/tool.js HTTP/1.1[0m" 304 -
+2026-08-08 20:30:04 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:30:04] "[33mGET /static/js/axios.min.js.map HTTP/1.1[0m" 404 -
+2026-08-08 20:30:04 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:30:04] "GET /api/tools HTTP/1.1" 200 -
+2026-08-08 20:30:04 - INFO - utils.data_manager - data_manager.py:519 - 开始加载工具 elint 数据
+2026-08-08 20:30:04 - WARN - utils.data_manager - data_manager.py:527 - 缓存命中，数据已经是最新的
+2026-08-08 20:30:04 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:30:04] "POST /api/tools/elint/data HTTP/1.1" 200 -
+2026-08-08 20:30:04 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:30:04] "GET /tool/elint/performance HTTP/1.1" 200 -
+2026-08-08 20:30:04 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:30:04] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2026-08-08 20:30:04 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:30:04] "[36mGET /static/css/select.css HTTP/1.1[0m" 304 -
+2026-08-08 20:30:04 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:30:04] "[36mGET /static/js/echarts.min.js HTTP/1.1[0m" 304 -
+2026-08-08 20:30:04 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:30:04] "[36mGET /static/js/axios.min.js HTTP/1.1[0m" 304 -
+2026-08-08 20:30:04 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:30:04] "[36mGET /static/css/compare.css HTTP/1.1[0m" 304 -
+2026-08-08 20:30:04 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:30:04] "[36mGET /static/js/select.js HTTP/1.1[0m" 304 -
+2026-08-08 20:30:04 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:30:04] "[36mGET /static/js/single_thread.js HTTP/1.1[0m" 304 -
+2026-08-08 20:30:04 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:30:04] "[36mGET /static/js/multi_thread.js HTTP/1.1[0m" 304 -
+2026-08-08 20:30:04 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:30:04] "[36mGET /static/js/thread_chart.js HTTP/1.1[0m" 304 -
+2026-08-08 20:30:04 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:30:04] "[36mGET /static/js/comparison.js HTTP/1.1[0m" 304 -
+2026-08-08 20:30:04 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:30:04] "[36mGET /static/js/tool.js HTTP/1.1[0m" 304 -
+2026-08-08 20:30:04 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:30:04] "GET /api/tools HTTP/1.1" 200 -
+2026-08-08 20:30:04 - INFO - utils.data_manager - data_manager.py:519 - 开始加载工具 elint 数据
+2026-08-08 20:30:04 - WARN - utils.data_manager - data_manager.py:527 - 缓存命中，数据已经是最新的
+2026-08-08 20:30:04 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:30:04] "POST /api/tools/elint/data HTTP/1.1" 200 -
+2026-08-08 20:30:04 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:30:04] "[33mGET /static/js/axios.min.js.map HTTP/1.1[0m" 404 -
+2026-08-08 20:30:04 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:30:04] "GET /tool/elint/performance HTTP/1.1" 200 -
+2026-08-08 20:30:04 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:30:04] "[36mGET /static/js/echarts.min.js HTTP/1.1[0m" 304 -
+2026-08-08 20:30:04 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:30:04] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2026-08-08 20:30:04 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:30:04] "[36mGET /static/js/axios.min.js HTTP/1.1[0m" 304 -
+2026-08-08 20:30:04 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:30:04] "[36mGET /static/css/select.css HTTP/1.1[0m" 304 -
+2026-08-08 20:30:04 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:30:04] "[36mGET /static/css/compare.css HTTP/1.1[0m" 304 -
+2026-08-08 20:30:04 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:30:04] "[36mGET /static/js/multi_thread.js HTTP/1.1[0m" 304 -
+2026-08-08 20:30:04 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:30:04] "[36mGET /static/js/select.js HTTP/1.1[0m" 304 -
+2026-08-08 20:30:04 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:30:04] "[36mGET /static/js/single_thread.js HTTP/1.1[0m" 304 -
+2026-08-08 20:30:04 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:30:04] "[36mGET /static/js/thread_chart.js HTTP/1.1[0m" 304 -
+2026-08-08 20:30:04 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:30:04] "[36mGET /static/js/comparison.js HTTP/1.1[0m" 304 -
+2026-08-08 20:30:04 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:30:04] "[36mGET /static/js/tool.js HTTP/1.1[0m" 304 -
+2026-08-08 20:30:05 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:30:05] "[33mGET /static/js/axios.min.js.map HTTP/1.1[0m" 404 -
+2026-08-08 20:30:05 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:30:05] "GET /api/tools HTTP/1.1" 200 -
+2026-08-08 20:30:05 - INFO - utils.data_manager - data_manager.py:519 - 开始加载工具 elint 数据
+2026-08-08 20:30:05 - WARN - utils.data_manager - data_manager.py:527 - 缓存命中，数据已经是最新的
+2026-08-08 20:30:05 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:30:05] "POST /api/tools/elint/data HTTP/1.1" 200 -
+2026-08-08 20:30:05 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:30:05] "GET /tool/elint/performance HTTP/1.1" 200 -
+2026-08-08 20:30:05 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:30:05] "[36mGET /static/js/echarts.min.js HTTP/1.1[0m" 304 -
+2026-08-08 20:30:05 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:30:05] "[36mGET /static/css/select.css HTTP/1.1[0m" 304 -
+2026-08-08 20:30:05 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:30:05] "[36mGET /static/js/axios.min.js HTTP/1.1[0m" 304 -
+2026-08-08 20:30:05 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:30:05] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2026-08-08 20:30:05 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:30:05] "[36mGET /static/css/compare.css HTTP/1.1[0m" 304 -
+2026-08-08 20:30:05 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:30:05] "[36mGET /static/js/select.js HTTP/1.1[0m" 304 -
+2026-08-08 20:30:05 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:30:05] "[36mGET /static/js/single_thread.js HTTP/1.1[0m" 304 -
+2026-08-08 20:30:05 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:30:05] "[36mGET /static/js/multi_thread.js HTTP/1.1[0m" 304 -
+2026-08-08 20:30:05 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:30:05] "[36mGET /static/js/thread_chart.js HTTP/1.1[0m" 304 -
+2026-08-08 20:30:05 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:30:05] "[36mGET /static/js/comparison.js HTTP/1.1[0m" 304 -
+2026-08-08 20:30:05 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:30:05] "[36mGET /static/js/tool.js HTTP/1.1[0m" 304 -
+2026-08-08 20:30:05 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:30:05] "[33mGET /static/js/axios.min.js.map HTTP/1.1[0m" 404 -
+2026-08-08 20:30:05 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:30:05] "GET /api/tools HTTP/1.1" 200 -
+2026-08-08 20:30:05 - INFO - utils.data_manager - data_manager.py:519 - 开始加载工具 elint 数据
+2026-08-08 20:30:05 - WARN - utils.data_manager - data_manager.py:527 - 缓存命中，数据已经是最新的
+2026-08-08 20:30:05 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:30:05] "POST /api/tools/elint/data HTTP/1.1" 200 -
+2026-08-08 20:30:05 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:30:05] "GET /tool/elint/performance HTTP/1.1" 200 -
+2026-08-08 20:30:05 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:30:05] "[36mGET /static/js/echarts.min.js HTTP/1.1[0m" 304 -
+2026-08-08 20:30:05 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:30:05] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2026-08-08 20:30:05 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:30:05] "[36mGET /static/css/select.css HTTP/1.1[0m" 304 -
+2026-08-08 20:30:05 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:30:05] "[36mGET /static/css/compare.css HTTP/1.1[0m" 304 -
+2026-08-08 20:30:05 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:30:05] "[36mGET /static/js/axios.min.js HTTP/1.1[0m" 304 -
+2026-08-08 20:30:05 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:30:05] "[36mGET /static/js/select.js HTTP/1.1[0m" 304 -
+2026-08-08 20:30:05 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:30:05] "[36mGET /static/js/single_thread.js HTTP/1.1[0m" 304 -
+2026-08-08 20:30:05 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:30:05] "[36mGET /static/js/multi_thread.js HTTP/1.1[0m" 304 -
+2026-08-08 20:30:05 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:30:05] "[36mGET /static/js/thread_chart.js HTTP/1.1[0m" 304 -
+2026-08-08 20:30:05 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:30:05] "[36mGET /static/js/comparison.js HTTP/1.1[0m" 304 -
+2026-08-08 20:30:05 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:30:05] "[36mGET /static/js/tool.js HTTP/1.1[0m" 304 -
+2026-08-08 20:30:05 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:30:05] "[33mGET /static/js/axios.min.js.map HTTP/1.1[0m" 404 -
+2026-08-08 20:30:05 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:30:05] "GET /api/tools HTTP/1.1" 200 -
+2026-08-08 20:30:05 - INFO - utils.data_manager - data_manager.py:519 - 开始加载工具 elint 数据
+2026-08-08 20:30:05 - WARN - utils.data_manager - data_manager.py:527 - 缓存命中，数据已经是最新的
+2026-08-08 20:30:05 - INFO - werkzeug - _internal.py:97 - 192.168.1.33 - - [08/Aug/2026 20:30:05] "POST /api/tools/elint/data HTTP/1.1" 200 -
+2026-08-08 20:30:26 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'e:\\git\\develop\\monitor\\monitor2.5\\utils\\data_manager.py', reloading
+2026-08-08 20:30:26 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'e:\\git\\develop\\monitor\\monitor2.5\\utils\\data_manager.py', reloading
+2026-08-08 20:30:27 - INFO - utils.file_watcher - file_watcher.py:167 - 文件监听器已停止
+2026-08-08 20:30:27 - INFO - utils.data_manager - data_manager.py:356 - 文件监听器已停止
+2026-08-08 20:30:27 - INFO - __main__ - app.py:69 - 文件监听器已停止
+2026-08-08 20:30:27 - INFO - utils.data_manager - data_manager.py:356 - 文件监听器已停止
+2026-08-08 20:30:27 - INFO - api.compare - app.py:69 - 文件监听器已停止
+2026-08-08 20:30:27 - INFO - werkzeug - _internal.py:97 -  * Restarting with watchdog (windowsapi)
+2026-08-08 20:30:27 - INFO - utils.data_parser - data_parser.py:24 - 数据管理器初始化
+2026-08-08 20:30:27 - INFO - utils.tool_manager - tool_manager.py:54 - 加载工具配置文件: E:\git\develop\monitor\monitor2.5\data\tools.json
+2026-08-08 20:30:27 - INFO - utils.tool_manager - tool_manager.py:45 - 工具管理器初始化完成
+2026-08-08 20:30:27 - INFO - utils.data_manager - data_manager.py:71 - 数据管理器初始化完成
+2026-08-08 20:30:27 - INFO - __main__ - app.py:92 - 启动性能监控平台后端服务
+2026-08-08 20:30:27 - WARN - werkzeug - _internal.py:97 -  * Debugger is active!
+2026-08-08 20:30:27 - INFO - werkzeug - _internal.py:97 -  * Debugger PIN: 644-902-559
+2026-08-08 20:31:00 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'e:\\git\\develop\\monitor\\monitor2.5\\utils\\data_manager.py', reloading
+2026-08-08 20:31:00 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'e:\\git\\develop\\monitor\\monitor2.5\\utils\\data_manager.py', reloading
+2026-08-08 20:31:01 - INFO - utils.data_manager - data_manager.py:356 - 文件监听器已停止
+2026-08-08 20:31:01 - INFO - __main__ - app.py:69 - 文件监听器已停止
+2026-08-08 20:31:01 - INFO - utils.data_manager - data_manager.py:356 - 文件监听器已停止
+2026-08-08 20:31:01 - INFO - api.compare - app.py:69 - 文件监听器已停止
+2026-08-08 20:31:01 - INFO - werkzeug - _internal.py:97 -  * Restarting with watchdog (windowsapi)
+2026-08-08 20:31:02 - INFO - utils.data_parser - data_parser.py:24 - 数据管理器初始化
+2026-08-08 20:31:02 - INFO - utils.tool_manager - tool_manager.py:54 - 加载工具配置文件: E:\git\develop\monitor\monitor2.5\data\tools.json
+2026-08-08 20:31:02 - INFO - utils.tool_manager - tool_manager.py:45 - 工具管理器初始化完成
+2026-08-08 20:31:02 - INFO - utils.data_manager - data_manager.py:71 - 数据管理器初始化完成
+2026-08-08 20:31:02 - INFO - __main__ - app.py:92 - 启动性能监控平台后端服务
+2026-08-08 20:31:02 - WARN - werkzeug - _internal.py:97 -  * Debugger is active!
+2026-08-08 20:31:02 - INFO - werkzeug - _internal.py:97 -  * Debugger PIN: 644-902-559
+2026-08-08 20:31:04 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'e:\\git\\develop\\monitor\\monitor2.5\\utils\\data_manager.py', reloading
+2026-08-08 20:31:04 - INFO - werkzeug - _internal.py:97 -  * Detected change in 'e:\\git\\develop\\monitor\\monitor2.5\\utils\\data_manager.py', reloading
+2026-08-08 20:31:04 - INFO - utils.data_manager - data_manager.py:356 - 文件监听器已停止
+2026-08-08 20:31:04 - INFO - __main__ - app.py:69 - 文件监听器已停止
+2026-08-08 20:31:04 - INFO - utils.data_manager - data_manager.py:356 - 文件监听器已停止
+2026-08-08 20:31:04 - INFO - api.compare - app.py:69 - 文件监听器已停止
+2026-08-08 20:31:04 - INFO - werkzeug - _internal.py:97 -  * Restarting with watchdog (windowsapi)
+2026-08-08 20:31:04 - INFO - utils.data_parser - data_parser.py:24 - 数据管理器初始化
+2026-08-08 20:31:04 - INFO - utils.tool_manager - tool_manager.py:54 - 加载工具配置文件: E:\git\develop\monitor\monitor2.5\data\tools.json
+2026-08-08 20:31:04 - INFO - utils.tool_manager - tool_manager.py:45 - 工具管理器初始化完成
+2026-08-08 20:31:04 - INFO - utils.data_manager - data_manager.py:71 - 数据管理器初始化完成
+2026-08-08 20:31:04 - INFO - __main__ - app.py:92 - 启动性能监控平台后端服务
+2026-08-08 20:31:05 - WARN - werkzeug - _internal.py:97 -  * Debugger is active!
+2026-08-08 20:31:05 - INFO - werkzeug - _internal.py:97 -  * Debugger PIN: 644-902-559

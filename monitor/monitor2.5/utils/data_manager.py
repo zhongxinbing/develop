@@ -245,12 +245,12 @@ class DataManager:
             try:
                 all_data = self.duplicate_removal(func(all_data, files_to_process)) or {}
 
-                return [all_data, all_files]
+                return [all_data, files_to_process, all_files]
             except Exception as e:
                 self.logger.exception(f"解析数据失败: {e}")
-                return [all_data, all_files]
+                return [all_data, files_to_process, all_files]
         
-        return [all_data, all_files]
+        return [all_data, files_to_process, all_files]
 
     def _save_processed_data(self, tool_id: str, data: Dict, files: List[FileInfo]):
         """保存处理后的数据和版本信息"""
@@ -471,16 +471,16 @@ class DataManager:
     def load_single_chart(self, tool_id: str, all_data: Dict):
         """加载单线程数据"""
         self.logger.info(f"加载工具 {tool_id} 单线程数据")
-        single_data, filepaths = self.get_all_data(tool_id, all_data, "single")
+        single_data, filepaths, all_files = self.get_all_data(tool_id, all_data, "single")
 
-        return single_data, filepaths
+        return single_data, filepaths, all_files
 
     def load_multi_chart(self, tool_id: str, all_data: Dict):
         """加载多线程数据"""
         self.logger.info(f"加载工具 {tool_id} 多线程数据")
-        multi_data, filepaths = self.get_all_data(tool_id, all_data, "multi")
-        # message = '多线程数据已更新' if multi_data else '多线程数据加载完成'
-        return multi_data, filepaths
+        multi_data, filepaths, all_files = self.get_all_data(tool_id, all_data, "multi")
+
+        return multi_data, filepaths, all_files
 
     def load_extra_chart(self, tool_id: str, user_id: str):
         """加载额外数据"""
@@ -537,12 +537,13 @@ class DataManager:
         ############################################################################
         # 获取新数据
         filepaths = {'single': {}, 'multi': {}}
+        all_files = {'single': {}, 'multi': {}}
         tool_config = tool_manager.get_tool(tool_id) or {}
         # 单线程数据
         if Path(tool_config.get('single_path')):
             # 检查单线程路径是否为空，并且是否存在
             self.logger.info(f"加载工具 {tool_id} 单线程数据")
-            all_data, filepaths['single'] = self.load_single_chart(tool_id, all_data)
+            all_data, filepaths['single'], all_files['single'] = self.load_single_chart(tool_id, all_data)
         else:
             return {}, "单线程路径不存在"
 
@@ -551,7 +552,7 @@ class DataManager:
             # 检查多线程路径是否为空，并且是否存在
             if Path(tool_config.get('multi_path')):
                 self.logger.info(f"加载工具 {tool_id} 多线程数据")
-                all_data, filepaths['multi'] = self.load_multi_chart(tool_id, all_data)
+                all_data, filepaths['multi'], all_files['multi'] = self.load_multi_chart(tool_id, all_data)
             else:
                 return all_data, "多线程路径不存在"
 
@@ -588,7 +589,7 @@ class DataManager:
         # 异步保存数据 -> 保存总数据、文件路径
         self._executor.submit(
             self._save_processed_data,
-            tool_id, all_data, filepaths
+            tool_id, all_data, all_files
         )
 
         if not message:
