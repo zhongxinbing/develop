@@ -15,16 +15,6 @@ class ToolManager:
     _instance = None
     _lock = Lock()
     
-    # 数据类型常量
-    DATA_TYPE_SINGLE = 'single'   # 单线程数据
-    DATA_TYPE_MULTI = 'multi'     # 多线程数据
-    DATA_TYPE_EXTRA = 'extra'     # 用户添加数据
-    
-    # 数据文件命名常量
-    SINGLE_FILE_SUFFIX = '_single.json'   # 单线程数据文件后缀
-    MULTI_FILE_SUFFIX = '_multi.json'     # 多线程数据文件后缀
-    EXTRA_FILE_SUFFIX = '_extra.json'     # 用户添加数据文件后缀
-    
     def __new__(cls):
         if cls._instance is None:
             with cls._lock:
@@ -67,6 +57,7 @@ class ToolManager:
         from datetime import datetime
         tool_config['created_at'] = datetime.now().isoformat()
         tool_config['updated_at'] = datetime.now().isoformat()
+        tool_config = self.judge_tool_exists(tool_config)
         # 将工具配置保存到配置文件中
         tools[tool_config.get('tool_name')] = tool_config
         self._save_config()
@@ -98,6 +89,7 @@ class ToolManager:
         from datetime import datetime
         tool_config['created_at'] = tools[tool_id].get('created_at')
         tool_config['updated_at'] = datetime.now().isoformat()
+        tool_config = self.judge_tool_exists(tool_config)
         tools[tool_id] = tool_config
         self._save_config()
         
@@ -107,6 +99,16 @@ class ToolManager:
         """获取指定工具"""
         user_tools = self.get_tools().get(tool_id, {})
         return user_tools
+
+    def judge_tool_exists(self, tool_config):
+
+        if tool_config.get('single_path'):
+            tool_config['single_exists'] = 1
+        if tool_config.get('multi_path'):
+            tool_config['multi_exists'] = 1
+        if tool_config.get('extra_display_path'):
+            tool_config['extra_exists'] = 1
+        return tool_config
 
 
 # 全局实例

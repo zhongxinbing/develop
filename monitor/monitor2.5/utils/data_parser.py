@@ -24,12 +24,15 @@ class DataParser:
         self.logger.info("数据管理器初始化")
 
     # 解析工具的数据，并放在对应的目录下；方便用户直接获取数据
-    def parse_all_data(self, all_data: Dict):
+    def parse_all_data(self,data_parsers: Dict, all_data: Dict, single_exists: int, multi_exists: int):
         """"
-            解析工具的数据，并放在对应的目录下；方便用户直接获取数据
+            解析工具的数据，并放在对应的目录下；方便用户直接获取数据;
+            解析的同时进行增量更新，即只解析新增的数据，不解析已存在的数据
             参数:
+                data_parsers: 已存在的解析器，用于增量更新
                 all_data: 原始数据
-                flag: 标志位 - 0 单线程，1 多线程
+                single_exists: 单线程是否需要解析的标志位； 0 未解析，1 已解析
+                multi_exists: 多线程是否需要解析的标志位； 0 未解析，1 已解析
             返回数据结构：{
                     'single': { 
                         "casename": {
@@ -50,12 +53,17 @@ class DataParser:
                 }
         """
 
-        single = {}
-        multi = {}
+        if 'single' not in data_parsers:
+            single = {}
+        else:
+            single = data_parsers['single']
+        
+        if 'multi' not in data_parsers:
+            multi = {}
+        else:
+            multi = data_parsers['multi']
+        
         for casename, case_data in all_data.items():
-            if casename not in single:
-                single[casename] = {}
-                multi[casename] = {}
             types = case_data['metrics']
             rules = case_data['rules_data'].keys()
 
@@ -67,13 +75,17 @@ class DataParser:
                         for i in range(len(types)):
                             if float(data[i]) > 0:
                                 if date in dates:
-                                    if thread == -1:
+                                    if thread == -1 and single_exists == 1:
+                                        if casename not in single:
+                                            single[casename] = {}
                                         if types[i] not in single[casename]:
                                             single[casename][types[i]] = {}
                                         if rule not in single[casename][types[i]]:
                                             single[casename][types[i]][rule] = []
                                         single[casename][types[i]][rule].append(date)
-                                    else:
+                                    elif multi_exists == 1:
+                                        if casename not in multi:
+                                            multi[casename] = {}
                                         if types[i] not in multi[casename]:
                                             multi[casename][types[i]] = {}
                                         if rule not in multi[casename][types[i]]:

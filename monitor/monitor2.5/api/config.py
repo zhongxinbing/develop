@@ -7,6 +7,7 @@ from app import app
 from utils.tool_manager import tool_manager
 from utils.log import get_logger
 from utils.common import get_user_id
+from utils.common import *
 
 logger = get_logger(__name__)
 
@@ -35,15 +36,18 @@ def api_add_tool():
         'single_func': data.get('single_func', ''),
         'single_file_pattern': data.get('single_file_pattern', ''),
         'single_max_depth': data.get('single_max_depth', 3),
+        'single_exists': 0,
         # 多线程配置
         'multi_path': data.get('multi_path', ''),
         'multi_func': data.get('multi_func', ''),
         'multi_file_pattern': data.get('multi_file_pattern', ''),
         'multi_max_depth': data.get('multi_max_depth', 6),
+        'multi_exists': 0,
         # 额外显示配置
         'extra_display_path': data.get('extra_display_path', ''),
         'extra_display_func': data.get('extra_display_func', ''),
         'extra_file_pattern': data.get('extra_file_pattern', ''),
+        'extra_exists': 0,
         # 自定义曲线函数
         'custom_curve_func': data.get('custom_curve_func', '')
     }
@@ -76,21 +80,37 @@ def api_delete_tool(tool_id):
 def api_update_tool(tool_id):
     """更新工具"""
     data = request.json
+
+    # 验证路径是否存在
+    if data.get('single_path') is None or not Path(data.get('single_path')).exists():
+        return jsonify({'success': False, 'error': '单线程路径不能为空或者不存在'})
+    else:
+        if data.get('multi_path') and not Path(data.get('multi_path')).exists():
+            return jsonify({'success': False, 'error': '多线程路径不存在'})
+    
+    if data.get('extra_display_path') and not Path(data.get('extra_display_path')).exists():
+        return jsonify({'success': False, 'error': 'extra 路径不存在'})
     
     tool_config = {
         'tool_name': data.get('tool_name', tool_id),
         'description': data.get('description', ''),
+        # 单线程配置
         'single_path': data.get('single_path', ''),
         'single_func': data.get('single_func', ''),
         'single_file_pattern': data.get('single_file_pattern', ''),
         'single_max_depth': data.get('single_max_depth', 3),
+        'single_exists': 0,
+        # 多线程配置
         'multi_path': data.get('multi_path', ''),
         'multi_func': data.get('multi_func', ''),
         'multi_file_pattern': data.get('multi_file_pattern', ''),
         'multi_max_depth': data.get('multi_max_depth', 6),
+        'multi_exists': 0,
+        # 额外显示配置
         'extra_display_path': data.get('extra_display_path', ''),
         'extra_display_func': data.get('extra_display_func', ''),
         'extra_file_pattern': data.get('extra_file_pattern', ''),
+        'extra_exists': 0,
         'custom_curve_func': data.get('custom_curve_func', '')
     }
     
