@@ -213,6 +213,7 @@ class DataManager:
             解析后的数据
         """
         tool_config = tool_manager.get_tool(tool_id) or {}
+ 
         if not tool_config:
             self.logger.error(f"工具配置不存在: {tool_id}")
             return {}
@@ -226,30 +227,30 @@ class DataManager:
         if not func:
             self.logger.error(f"无法加载 {data_type} 数据处理函数")
             return {}
-
+        
         # 创建文件扫描器
         scanner = FileSystemScanner(
             data_root,
-            max_depth=6,
-            include_patterns=[r"^\d{8}_[^\s]+\.txt", r"elint\.log$"],
+            max_depth=tool_config.get(f'{data_type}_max_depth'),
+            include_patterns=[rf"{tool_config.get(f'{data_type}_file_pattern')}"],
             exclude_patterns=[r"\.tmp$", r"\.swp$"]
         )
 
         # 获取需要处理的文件
         files_to_process, all_files = self._get_files_to_process(tool_id, data_type, data_root, scanner)
-
+        
         # 如果有文件需要处理
         if files_to_process:
             # 解析增量数据
             try:
                 all_data = self.duplicate_removal(func(all_data, files_to_process)) or {}
 
-                return [all_data,files_to_process]
+                return [all_data, all_files]
             except Exception as e:
                 self.logger.exception(f"解析数据失败: {e}")
-                return [all_data,files_to_process]
+                return [all_data, all_files]
         
-        return [all_data, files_to_process]
+        return [all_data, all_files]
 
     def _save_processed_data(self, tool_id: str, data: Dict, files: List[FileInfo]):
         """保存处理后的数据和版本信息"""

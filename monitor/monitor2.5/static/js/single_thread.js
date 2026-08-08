@@ -117,7 +117,7 @@ class SingleThreadManager {
         }
         // console.log('updateRulesAndDates: ruleData', this.currentChartType);
         const rulesSet = new Set(Object.keys(ruleData[this.currentChartType] || {}));
-        console.warn('updateRulesAndDates: rulesSet', rulesSet);
+        
         this.allRules = Array.from(rulesSet).sort();
         if (this.allRules.includes('Overall')) {
             this.allRules = ['Overall', ...this.allRules.filter(r => r !== 'Overall')];
