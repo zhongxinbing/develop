@@ -240,3 +240,20 @@ def setup_logger(log_dir: str = 'logs', level: str = 'DEBUG'):
 def set_log_level(level: str):
     """便捷函数：设置日志等级"""
     logger_manager.set_level(level)
+
+
+def green(msg: str):
+    """打印绿色日志"""
+    print(f"\033[92m{msg}\033[0m")
+
+def red(msg: str):
+    """打印红色日志"""
+    print(f"\033[91m{msg}\033[0m")
+
+def yellow(msg: str):
+    """打印黄色日志"""
+    print(f"\033[93m{msg}\033[0m")
+
+def blue(msg: str):
+    """打印蓝色日志"""
+    print(f"\033[94m{msg}\033[0m")

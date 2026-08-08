@@ -7,16 +7,16 @@
       "single_func": "get_elint_data",
       "single_file_pattern": "^\\d{8}_[^\\s]+\\.txt",
       "single_max_depth": 3,
-      "multi_path": "E:\\git\\develop\\monitor\\test\\multi",
-      "multi_func": "get_elint_data",
-      "multi_file_pattern": "elint\\.log$",
+      "multi_path": "",
+      "multi_func": "",
+      "multi_file_pattern": "",
       "multi_max_depth": 6,
       "extra_display_path": "",
       "extra_display_func": "",
       "extra_file_pattern": "",
       "custom_curve_func": "",
       "created_at": "2026-07-16T09:12:45.156404",
-      "updated_at": "2026-08-08T19:31:36.500686"
+      "updated_at": "2026-08-08T19:42:09.812340"
     }
   }
 }
