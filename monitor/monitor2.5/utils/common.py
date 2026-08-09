@@ -9,7 +9,14 @@ import os
 from pathlib import Path
 from flask import session
 import uuid
-
+from deepmerge import Merger
+from deepmerge import always_merger
+# 自定义合并策略
+merger = Merger(
+    [(list, "append")],   # 列表合并策略：追加
+    [(dict, "update")],   # 字典合并策略：更新
+    [(object, "override")]  # 其他类型：覆盖
+)
 # 线程颜色映射（公共）
 THREAD_COLORS = {
     0: '#00E5FF', 2: '#A855F7', 4: '#10B981',
@@ -105,18 +112,25 @@ def load_tool_data(path: str) -> Dict[str, Any]:
     
 def deep_merge(dict1, dict2):
     """递归合并两个字典"""
-    result = dict1.copy()
-    for key, value in dict2.items():
-        if key in result:
-            if isinstance(result[key], dict) and isinstance(value, dict):
-                result[key] = deep_merge(result[key], value)
-            elif isinstance(result[key], list) and isinstance(value, list):
-                # 合并列表并去重（保持顺序）
-                result[key] = list(dict.fromkeys(result[key] + value))
-            else:
-                result[key] = value
-        else:
-            result[key] = value
+    # result = merger.merge(dict1, dict2)
+    if not dict1:
+        return dict2
+    if not dict2:
+        return dict1
+    return always_merger.merge(dict1, dict2)
+
+    # result = dict1.copy()
+    # for key, value in dict2.items():
+    #     if key in result:
+    #         if isinstance(result[key], dict) and isinstance(value, dict):
+    #             result[key] = deep_merge(result[key], value)
+    #         elif isinstance(result[key], list) and isinstance(value, list):
+    #             # 合并列表并去重（保持顺序）
+    #             result[key] = list(dict.fromkeys(result[key] + value))
+    #         else:
+    #             result[key] = value
+    #     else:
+    #         result[key] = value
     return result
 
 def get_user_id() -> str:

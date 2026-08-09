@@ -88,8 +88,11 @@ class SingleThreadManager {
         if (!this.casenameSelect) return;
         
         const casenames = Object.keys(this.allData).filter(name => {
-            const rule = this.allData[name];
-            return rule;
+            console.log('updateCasenameSelect: name', name);
+            if (name !== 'crash_dates') {
+                const rule = this.allData[name];
+                return rule;
+            }
         });
         
         const options = casenames.map(name => ({
@@ -126,7 +129,7 @@ class SingleThreadManager {
             this.selectedRules = ['Overall'];
         }
         
-        const  allDatesSet = new Set(ruleData[this.currentChartType][this.selectedRules[0]])
+        const  allDatesSet = new Set(ruleData[this.currentChartType][this.selectedRules[0]]["date"]);
         
         this.allDates = Array.from(allDatesSet).sort();
 
@@ -196,8 +199,9 @@ class SingleThreadManager {
                 chart_type: this.currentChartType,
                 selected_threads: [-1],
             };
-            const response = await axios.post('/api/chart/data', requestData);
             
+            const response = await axios.post('/api/chart/data', requestData);
+            console.warn('renderChart: response', response.data.data);
             if (response.data.success) {
                 let chartData = response.data.data;
                 if (typeof chartData === 'string') {

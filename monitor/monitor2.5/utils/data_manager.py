@@ -193,14 +193,18 @@ class DataManager:
     def duplicate_removal(self, data: Dict) -> Dict:
         """去重"""
         for casename,casedata in data.items():
-            rules_data = casedata["rules_data"]
-            for rule_name,ruledata in rules_data.items():
-                rules_data[rule_name]["thread"] = sorted(list(set(rules_data[rule_name]["thread"])))
-                rules_data[rule_name]["dates"] = sorted(list(set(rules_data[rule_name]["dates"])))
-            data[casename]["rules_data"] = rules_data
+            threads = sorted(list(set(casedata["threads"])))
+            dates = sorted(list(set(casedata["dates"])))
+            metrics = []
+            for item in casedata["metrics"]:
+                if item not in metrics:
+                    metrics.append(item)
+            casedata["threads"] = threads
+            casedata["dates"] = dates
+            casedata["metrics"] = metrics
         return data
 
-    def get_all_data(self, tool_id: str, all_data: Dict, data_type: str):
+    def get_all_data(self, tool_id: str, all_incremental_data: Dict, data_type: str):
         """
         加载工具数据，支持增量更新
         
@@ -238,20 +242,22 @@ class DataManager:
 
         # 获取需要处理的文件
         files_to_process, all_files = self._get_files_to_process(tool_id, data_type, data_root, scanner)
-        update_flag = 0
         
         # 如果有文件需要处理
+        incremental_data = {}
         if files_to_process:
             # 解析增量数据
             try:
-                all_data = self.duplicate_removal(func(all_data, files_to_process)) or {}
-                update_flag = 1
-                return [all_data, update_flag, all_files]
+
+                incremental_data = self.duplicate_removal(func(files_to_process)) or {}
+                all_incremental_data = deep_merge(all_incremental_data, incremental_data)
+            
+                return [all_incremental_data, incremental_data, all_files]
             except Exception as e:
-                self.logger.exception(f"解析数据失败: {e}")
-                return [all_data, update_flag, all_files]
+                self.logger.exception(f"{data_type} 解析数据失败: {e}")
+                return [all_incremental_data, incremental_data, all_files]
         
-        return [all_data, update_flag, all_files]
+        return [all_incremental_data, incremental_data, all_files]
 
     def _save_processed_data(self, tool_id: str, data: Dict, files: List[FileInfo], single_exists: int, multi_exists: int):
         """保存处理后的数据和版本信息"""
@@ -395,6 +401,28 @@ class DataManager:
             return 'memory'
         return key
 
+    def get_fronttend_data_for_single(self, front_data: Dict, cache_data: Dict):
+        """获取单线程图表数据"""
+        # 获取前端需要的详细信息数据
+        dates = front_data.get('dates', [])
+        casename = front_data.get('casename', '')
+        chart_type = front_data.get('chart_type', 'cputime')
+        rules = front_data.get('rules', [])
+        # 检查日期是否为空
+        if not dates:
+            return {"dates": dates, "rules": {}, "crash_dates": []}
+        # 检查用例是否存在
+        if casename not in cache_data:
+            return {"dates": dates, "rules": {}, "crash_dates": []}
+        # 获取图标类型在缓存中的索引位置
+        # green(json.dumps(cache_data, indent=2))
+        for rule in rules:
+            single_chart = cache_data[casename][chart_type][rule]
+            single_chart["date"] = list(single_chart["date"])
+
+        red(single_chart)
+        return single_chart
+
     def send_data_to_frontend_for_chart(self, front_data: Dict):
         """发送数据到前端渲染图表"""
         tool_id = front_data.get('toolID', '')
@@ -404,66 +432,82 @@ class DataManager:
         rules = front_data.get('rules', [])
         dates = front_data.get('dates', [])
         selected_threads = front_data.get('selected_threads', [])
+        self.logger.info(f"前端请求数据 -> 工具：{tool_id}，用例：{casename}，模式：{mode}，图表类型：{chart_type}，规则：{rules}，日期：{dates}，线程：{selected_threads}")
 
-        if not rules:
-            return {"dates": dates, "rules": {}, "crash_dates": [], "overall_data": {}, "selected_threads": []}
-
-        data_path = DATA_DIR / tool_id / "original" / mode / casename / chart_type / f'{rules[0]}.json'
-        if not data_path.exists():
-            fallback_path = DATA_DIR / tool_id / "original" / mode / casename / chart_type / f'{rules[0]}.json'
-            if fallback_path.exists():
-                data_path = fallback_path
-            else:
-                return {"dates": dates, "rules": {}, "crash_dates": [], "overall_data": {}, "selected_threads": []}
-
-        case_rule_data = load_tool_data(data_path) or {}
-        rules_data = case_rule_data.get("rules", {})
-        crash_dates = set()
-
+        # 需要发送到前端的数据结构
         choice_data = {
             "dates": dates,
             "rules": {},
-            "crash_dates": [],
-            "overall_data": case_rule_data.get("overall_data", {})
+            "crash_dates": []
         }
+        
+        # 获取缓存数据
+        cache_data = self._data_cache.get(f"{tool_id}_parser", {})[1]
+        # red(cache_data)
+        # red(json.dumps(cache_data, indent=2))
+        data = self.get_fronttend_data_for_single(front_data, cache_data[mode])
 
-        for thread in selected_threads:
-            rule_key = rules[0] if thread == -1 else f"{rules[0]}({thread})"
-            rule_info = rules_data.get(rule_key, {})
-            if not rule_info:
-                continue
 
-            rule_dates = rule_info.get("dates", [])
-            values = []
-            for date in dates:
-                if date not in rule_dates:
-                    values.append(None)
-                    crash_dates.add(date)
-                else:
-                    index = rule_dates.index(date)
-                    values.append(rule_info.get("values", [None])[index])
-                    if date in case_rule_data.get("crash_dates", []) and date not in crash_dates:
-                        crash_dates.add(date)
+        return data
+        # if not rules:
+        #     return {"dates": dates, "rules": {}, "crash_dates": [], "overall_data": {}, "selected_threads": []}
 
-            choice_data["rules"][rule_key] = {
-                "dates": dates,
-                "values": values,
-                "type": rule_info.get("type"),
-                "name": rule_info.get("name"),
-            }
-            if mode == "single":
-                choice_data["rules"][rule_key]["is_single"] = rule_info.get("is_single")
-            else:
-                choice_data["rules"][rule_key].update({
-                    "thread": rule_info.get("thread"),
-                    "color": rule_info.get("color"),
-                    "rule_name": rule_info.get("rule_name"),
-                    "is_multi": rule_info.get("is_multi"),
-                })
+        # data_path = DATA_DIR / tool_id / "original" / mode / casename / chart_type / f'{rules[0]}.json'
+        # if not data_path.exists():
+        #     fallback_path = DATA_DIR / tool_id / "original" / mode / casename / chart_type / f'{rules[0]}.json'
+        #     if fallback_path.exists():
+        #         data_path = fallback_path
+        #     else:
+        #         return {"dates": dates, "rules": {}, "crash_dates": [], "overall_data": {}, "selected_threads": []}
 
-        choice_data["crash_dates"] = list(crash_dates)
-        if mode == "multi":
-            choice_data["selected_threads"] = case_rule_data.get("all_threads", [])
+        # case_rule_data = load_tool_data(data_path) or {}
+        # rules_data = case_rule_data.get("rules", {})
+        # crash_dates = set()
+
+        # choice_data = {
+        #     "dates": dates,
+        #     "rules": {},
+        #     "crash_dates": [],
+        #     "overall_data": case_rule_data.get("overall_data", {})
+        # }
+
+        # for thread in selected_threads:
+        #     rule_key = rules[0] if thread == -1 else f"{rules[0]}({thread})"
+        #     rule_info = rules_data.get(rule_key, {})
+        #     if not rule_info:
+        #         continue
+
+        #     rule_dates = rule_info.get("dates", [])
+        #     values = []
+        #     for date in dates:
+        #         if date not in rule_dates:
+        #             values.append(None)
+        #             crash_dates.add(date)
+        #         else:
+        #             index = rule_dates.index(date)
+        #             values.append(rule_info.get("values", [None])[index])
+        #             if date in case_rule_data.get("crash_dates", []) and date not in crash_dates:
+        #                 crash_dates.add(date)
+
+        #     choice_data["rules"][rule_key] = {
+        #         "dates": dates,
+        #         "values": values,
+        #         "type": rule_info.get("type"),
+        #         "name": rule_info.get("name"),
+        #     }
+        #     if mode == "single":
+        #         choice_data["rules"][rule_key]["is_single"] = rule_info.get("is_single")
+        #     else:
+        #         choice_data["rules"][rule_key].update({
+        #             "thread": rule_info.get("thread"),
+        #             "color": rule_info.get("color"),
+        #             "rule_name": rule_info.get("rule_name"),
+        #             "is_multi": rule_info.get("is_multi"),
+        #         })
+
+        # choice_data["crash_dates"] = list(crash_dates)
+        # if mode == "multi":
+        #     choice_data["selected_threads"] = case_rule_data.get("all_threads", [])
 
         return choice_data
 
@@ -472,16 +516,16 @@ class DataManager:
     def load_single_chart(self, tool_id: str, all_data: Dict):
         """加载单线程数据"""
         self.logger.info(f"加载工具 {tool_id} 单线程数据")
-        single_data, update_flag, all_files = self.get_all_data(tool_id, all_data, "single")
+        single_data, incremental_data, all_files = self.get_all_data(tool_id, all_data, "single")
 
-        return single_data, update_flag, all_files
+        return single_data, incremental_data, all_files
 
     def load_multi_chart(self, tool_id: str, all_data: Dict):
         """加载多线程数据"""
         self.logger.info(f"加载工具 {tool_id} 多线程数据")
-        multi_data, update_flag, all_files = self.get_all_data(tool_id, all_data, "multi")
+        multi_data, incremental_data, all_files = self.get_all_data(tool_id, all_data, "multi")
         
-        return multi_data, update_flag, all_files
+        return multi_data, incremental_data, all_files
 
     def load_extra_chart(self, tool_id: str, user_id: str):
         """加载额外数据"""
@@ -508,6 +552,24 @@ class DataManager:
 
         return case_rule_data
 
+    def get_single_data(self, data_parsers: Dict):
+        """获取单线程数据"""
+        single = {}
+        for casename,case_data in data_parsers['single_multi_chart'].items():
+            for type_chart,chart_data in case_data.items():
+                if type_chart == "crash_dates":
+                    if 'crash_dates' not in single:
+                        single['crash_dates'] = []
+                    if -1 in chart_data:
+                        single[casename]['crash_dates'] = list(chart_data[-1])
+                    continue
+                for rule, rule_data in chart_data.items():
+                    for thread, thread_data in rule_data.items():
+                        if int(thread) == -1:
+                            single.setdefault(casename, {}).setdefault(type_chart, {}).setdefault(rule, {})["date"] = list(thread_data['date'])
+                            single.setdefault(casename, {}).setdefault(type_chart, {}).setdefault(rule, {})["data"] = list(thread_data['data'])
+        return single
+
     def load_single_or_multi_chart(self, tool_id: str, user_id: str):
         """加载单线程和多线程数据"""
         self.create_user_data_dir(user_id, tool_id)
@@ -516,49 +578,54 @@ class DataManager:
         self.init_file_watcher(tool_id)
         ############################################################################
         # 检查缓存是否在 TTL 内，命中则直接返回，实现快速响应
-        cache_key = (tool_id)
+        cache_key = (f"{tool_id}_all_data")
+        cache_paser = (f"{tool_id}_parser")
         self.logger.info(f"开始加载工具 {tool_id} 数据")
-            # 检查缓存
+        # 检查缓存
         with self._cache_lock:
-            cached_entry = self._data_cache.get(cache_key)
+            cached_entry = self._data_cache.get(cache_paser, None)
 
             if cached_entry is not None:
                 cached_at, cached_value = cached_entry
                 if time.time() - cached_at < self._cache_ttl_seconds:
                     self.logger.warning(f"缓存命中，数据已经是最新的")
                     return cached_value, "数据已经是最新的"
-                self._data_cache.pop(cache_key, None)
+                self._data_cache.pop(cache_paser, None)
         ############################################################################
         # 获取已有数据    工具以往保存的数据；如果存在则获取，否则返回空字典
         data_file = DATA_DIR / tool_id / f'{tool_id}.json'
-        if data_file.exists():
+        if cache_key in self._data_cache:
+            all_data = self._data_cache[cache_key][1]
+        elif data_file.exists():
             all_data = load_tool_data(data_file) or {}
         else:
             all_data = {}
         ############################################################################
-        # 获取新数据
-        # 标志位，用于判断是否有数据被更新
-        single_flag= 0
-        multi_flag= 0
         # 所有的数据
         all_files = {'single': {}, 'multi': {}}
         tool_config = tool_manager.get_tool(tool_id) or {}
+        # 新的增量的数据
+        incremental_data = {}
         # 单线程数据
+        single_incremental_flag = 0
         if tool_config.get('single_exists') == 1:
             # 检查单线程路径是否为空，并且是否存在
             self.logger.info(f"加载工具 {tool_id} 单线程数据")
-            all_data, single_flag, all_files['single'] = self.load_single_chart(tool_id, all_data)
+            all_incremental_data, incremental_data, all_files['single'] = self.load_single_chart(tool_id, incremental_data)
+            if incremental_data : single_incremental_flag = 1
         else:
             return {}, "单线程路径不存在"
 
         # 多线程数据
+        multi_incremental_flag = 0
         if tool_config.get('multi_exists') == 1:
             # 检查多线程路径是否为空，并且是否存在
             if Path(tool_config.get('multi_path')):
                 self.logger.info(f"加载工具 {tool_id} 多线程数据")
-                all_data, multi_flag, all_files['multi'] = self.load_multi_chart(tool_id, all_data)
+                all_incremental_data, incremental_data, all_files['multi'] = self.load_multi_chart(tool_id, all_incremental_data)
+                if incremental_data : multi_incremental_flag = 1
             else:
-                return all_data, "多线程路径不存在"
+                return {}, "多线程路径不存在"
 
         if tool_config.get('extra_exists') == 1:
             if Path(tool_config.get('extra_display_path')):
@@ -568,41 +635,54 @@ class DataManager:
                 message = ''
         else:
             message = ''
+        # 合并总的数据
+        all_data  = self.duplicate_removal(deep_merge(all_data, all_incremental_data))
         ############################################################################
         # 解析数据 -> 先判断数据是否被更新，如果更新在解析，否则直接加载缓存
         data_parser_path = DATA_DIR / tool_id / f"{tool_id}_parser.json"
-        data_parsers = load_tool_data(data_parser_path) or {}
+        if cache_paser in self._data_cache:
+            data_parsers = self._data_cache[cache_paser][1]['multi']
+        elif data_parser_path.exists():
+            data_parsers = load_tool_data(data_parser_path) or {}
+        else:
+            data_parsers = {}
         message = []
-        if single_flag or multi_flag:
-            if single_flag:
-                message.append('单线程')
-            if multi_flag:
-                message.append('多线程')
-            self.logger.info(f"更新了：{message}")
-            # 解析数据
-            data_parsers = data_parser.parse_all_data(data_parsers,all_data, tool_config.get('single_exists'), tool_config.get('multi_exists'))
+        if single_incremental_flag or multi_incremental_flag:
+            self.logger.info(f"开始解析工具 {tool_id} 数据")
+            # 只解析新的增量数据
+            # blue(incremental_data)
+            data_parsers = data_parser.parse_all_data(data_parsers, all_incremental_data, tool_config.get('single_exists'), tool_config.get('multi_exists'))
             # 异步保存数据
             self._executor.submit(save_tool_data, data_parser_path, data_parsers)
-            # 更新缓存
-            with self._cache_lock:
-                self._data_cache[cache_key] = (time.time(), all_data)
-        else:
-            red(f"未更新数据")
-            return data_parsers, "未更新数据"
-        
-        ############################################################################
-        # 异步保存数据 -> 保存总数据、文件路径
-        self._executor.submit(
-            self._save_processed_data,
-            tool_id, all_data, all_files, tool_config.get('single_exists'), tool_config.get('multi_exists')
-        )
+            ############################################################################
+            # 异步保存数据 -> 保存总数据、文件路径
+            self._executor.submit(
+                self._save_processed_data,
+                tool_id, all_data, all_files, tool_config.get('single_exists'), tool_config.get('multi_exists')
+            )
 
-        if message:
+        
+        all_data_paser = {
+            'single': self.get_single_data(data_parsers),
+            'multi': data_parsers['single_multi_chart'],
+            "thread": data_parsers['thread']
+        }
+
+        # 更新缓存
+        with self._cache_lock:
+            self._data_cache[cache_paser] = (time.time(), all_data_paser)
+            self._data_cache[cache_key] = (time.time(), all_data)
+
+        if single_incremental_flag or multi_incremental_flag:
+            if single_incremental_flag:
+                message.append('单线程')
+            if multi_incremental_flag:
+                message.append('多线程')
             message = "数据" + '[' + '、'.join(message) + ']'  + "已更新"
         else:
-            message = "数据已是最新"
+            message = '未更新数据'
 
-        return data_parsers, message
+        return all_data_paser, message
 
     # ==================== 对比功能 ====================
 

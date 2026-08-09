@@ -16,3 +16,136 @@
 2026-08-07 21:43:08 - ERROR - dynamic_module_elint_-2004892326444349363 - elint.py:532 - [('Analysis', '0.04', '0.69', '176.00', '0.00', '0.87'), ('Elaborate', '0.05', '0.09', '180.12', '2.75', '2.24'), ('DoUniquify', '0.01', '0.02', '193.88', '1.38', '1.37'), ('Overall', '0.02', '0.02', '195.25', '1.38', '1.28'), ('ltUtData', '0.00', '0.00', '195.25', '0.00', '0.03'), ('E0136', '0.00', '0.00', '195.25', '0.00', '0.00'), ('E0306', '0.01', '0.01', '195.25', '0.00', '0.00'), ('E0267', '0.01', '0.01', '195.25', '0.00', '0.01')]
 2026-08-07 21:43:08 - ERROR - dynamic_module_elint_-2004892326444349363 - elint.py:532 - [('Analysis', '0.04', '0.69', '176.00', '0.00', '0.87'), ('Overall', '30.0', '100.0', '180.12', '2.75', '2.24'), ('DoUniquify', '0.01', '0.02', '193.88', '1.38', '1.37'), ('astManager', '0.02', '0.02', '195.25', '1.38', '1.28'), ('ltUtData', '0.00', '0.00', '195.25', '0.00', '0.03'), ('E0136', '0.00', '0.00', '195.25', '0.00', '0.00'), ('E0306', '0.01', '0.01', '195.25', '0.00', '0.00'), ('E0267', '0.01', '0.01', '195.25', '0.00', '0.01')]
 2026-08-07 21:43:08 - ERROR - dynamic_module_elint_-2004892326444349363 - elint.py:532 - [('Analysis', '0.04', '0.69', '176.00', '0.00', '0.87'), ('Overall', '60', '0.09', '180.12', '2.75', '2.24'), ('DoUniquify', '0.01', '0.02', '193.88', '1.38', '1.37'), ('astManager', '0.02', '0.02', '195.25', '1.38', '1.28'), ('ltUtData', '0.00', '0.00', '195.25', '0.00', '0.03'), ('E0136', '0.00', '0.00', '195.25', '0.00', '0.00'), ('E0306', '0.01', '0.01', '195.25', '0.00', '0.00'), ('E0267', '0.01', '0.01', '195.25', '0.00', '0.01')]
+2026-08-08 22:31:47 - ERROR - utils.data_manager - data_manager.py:251 - 解析数据失败: 'tuple' object has no attribute 'add'
+Traceback (most recent call last):
+  File "e:\git\develop\monitor\monitor2.5\utils\data_manager.py", line 247, in get_all_data
+    all_data = self.duplicate_removal(func(all_data, files_to_process)) or {}
+  File "E:\git\develop\monitor\monitor2.5\tool\elint\elint.py", line 600, in get_elint_data
+    get_elint_data_from_txt(file_path, elint_data, thread)
+  File "E:\git\develop\monitor\monitor2.5\tool\elint\elint.py", line 510, in get_elint_data_from_txt
+    elint_data[casename]["threads"].add(thread)
+AttributeError: 'tuple' object has no attribute 'add'
+2026-08-08 22:31:47 - ERROR - dynamic_module_elint_7376924932694294889 - elint.py:576 - 读取日志文件失败 E:\git\develop\monitor\test\multi\2026-05-11-06\multi\case\thread_2\aes\elint.log: gen_data() takes 4 positional arguments but 5 were given
+2026-08-08 22:31:47 - ERROR - dynamic_module_elint_7376924932694294889 - elint.py:576 - 读取日志文件失败 E:\git\develop\monitor\test\multi\2026-05-11-06\multi\case\thread_2\pcie\elint.log: gen_data() takes 4 positional arguments but 5 were given
+2026-08-08 22:31:47 - ERROR - dynamic_module_elint_7376924932694294889 - elint.py:576 - 读取日志文件失败 E:\git\develop\monitor\test\multi\2026-05-11-06\multi\case\thread_4\aes\elint.log: gen_data() takes 4 positional arguments but 5 were given
+2026-08-08 22:31:47 - ERROR - dynamic_module_elint_7376924932694294889 - elint.py:576 - 读取日志文件失败 E:\git\develop\monitor\test\multi\2026-05-11-06\multi\case\thread_4\pcie\elint.log: gen_data() takes 4 positional arguments but 5 were given
+2026-08-08 22:31:47 - ERROR - dynamic_module_elint_7376924932694294889 - elint.py:576 - 读取日志文件失败 E:\git\develop\monitor\test\multi\2026-05-13-06\multi\case\thread_2\aes\elint.log: gen_data() takes 4 positional arguments but 5 were given
+2026-08-08 22:31:47 - ERROR - dynamic_module_elint_7376924932694294889 - elint.py:576 - 读取日志文件失败 E:\git\develop\monitor\test\multi\2026-05-13-06\multi\case\thread_2\pcie\elint.log: gen_data() takes 4 positional arguments but 5 were given
+2026-08-08 22:31:47 - ERROR - dynamic_module_elint_7376924932694294889 - elint.py:576 - 读取日志文件失败 E:\git\develop\monitor\test\multi\2026-05-13-06\multi\case\thread_4\aes\elint.log: gen_data() takes 4 positional arguments but 5 were given
+2026-08-08 22:31:47 - ERROR - dynamic_module_elint_7376924932694294889 - elint.py:576 - 读取日志文件失败 E:\git\develop\monitor\test\multi\2026-05-13-06\multi\case\thread_4\pcie\elint.log: gen_data() takes 4 positional arguments but 5 were given
+2026-08-08 22:31:47 - ERROR - dynamic_module_elint_7376924932694294889 - elint.py:576 - 读取日志文件失败 E:\git\develop\monitor\test\multi\2026-05-15-06\multi\case\thread_2\aes\elint.log: gen_data() takes 4 positional arguments but 5 were given
+2026-08-08 22:31:47 - ERROR - dynamic_module_elint_7376924932694294889 - elint.py:576 - 读取日志文件失败 E:\git\develop\monitor\test\multi\2026-05-15-06\multi\case\thread_2\pcie\elint.log: gen_data() takes 4 positional arguments but 5 were given
+2026-08-08 22:31:47 - ERROR - dynamic_module_elint_7376924932694294889 - elint.py:576 - 读取日志文件失败 E:\git\develop\monitor\test\multi\2026-05-15-06\multi\case\thread_4\aes\elint.log: gen_data() takes 4 positional arguments but 5 were given
+2026-08-08 22:31:47 - ERROR - dynamic_module_elint_7376924932694294889 - elint.py:576 - 读取日志文件失败 E:\git\develop\monitor\test\multi\2026-05-15-06\multi\case\thread_4\pcie\elint.log: gen_data() takes 4 positional arguments but 5 were given
+2026-08-08 22:32:44 - ERROR - utils.data_manager - data_manager.py:251 - 解析数据失败: 'tuple' object has no attribute 'add'
+Traceback (most recent call last):
+  File "e:\git\develop\monitor\monitor2.5\utils\data_manager.py", line 247, in get_all_data
+    all_data = self.duplicate_removal(func(all_data, files_to_process)) or {}
+  File "E:\git\develop\monitor\monitor2.5\tool\elint\elint.py", line 598, in get_elint_data
+    get_elint_data_from_txt(file_path, elint_data, thread)
+  File "E:\git\develop\monitor\monitor2.5\tool\elint\elint.py", line 510, in get_elint_data_from_txt
+    elint_data[casename]["threads"].add(thread)
+AttributeError: 'tuple' object has no attribute 'add'
+2026-08-08 22:32:44 - ERROR - utils.data_manager - data_manager.py:251 - 解析数据失败: 'thread'
+Traceback (most recent call last):
+  File "e:\git\develop\monitor\monitor2.5\utils\data_manager.py", line 247, in get_all_data
+    all_data = self.duplicate_removal(func(all_data, files_to_process)) or {}
+  File "e:\git\develop\monitor\monitor2.5\utils\data_manager.py", line 198, in duplicate_removal
+    rules_data[rule_name]["thread"] = sorted(list(set(rules_data[rule_name]["thread"])))
+KeyError: 'thread'
+2026-08-08 22:33:16 - ERROR - utils.data_manager - data_manager.py:251 - 解析数据失败: 'tuple' object has no attribute 'add'
+Traceback (most recent call last):
+  File "e:\git\develop\monitor\monitor2.5\utils\data_manager.py", line 247, in get_all_data
+    all_data = func(all_data, files_to_process) or {}
+  File "E:\git\develop\monitor\monitor2.5\tool\elint\elint.py", line 598, in get_elint_data
+    get_elint_data_from_txt(file_path, elint_data, thread)
+  File "E:\git\develop\monitor\monitor2.5\tool\elint\elint.py", line 510, in get_elint_data_from_txt
+    elint_data[casename]["threads"].add(thread)
+AttributeError: 'tuple' object has no attribute 'add'
+2026-08-08 22:33:51 - ERROR - utils.data_manager - data_manager.py:251 - 解析数据失败: 'tuple' object has no attribute 'add'
+Traceback (most recent call last):
+  File "e:\git\develop\monitor\monitor2.5\utils\data_manager.py", line 247, in get_all_data
+    all_data = func(all_data, files_to_process) or {}
+  File "E:\git\develop\monitor\monitor2.5\tool\elint\elint.py", line 598, in get_elint_data
+    get_elint_data_from_txt(file_path, elint_data, thread)
+  File "E:\git\develop\monitor\monitor2.5\tool\elint\elint.py", line 510, in get_elint_data_from_txt
+    elint_data[casename]["threads"].add(thread)
+AttributeError: 'tuple' object has no attribute 'add'
+2026-08-08 22:34:16 - ERROR - utils.data_manager - data_manager.py:251 - 解析数据失败: 'tuple' object has no attribute 'add'
+Traceback (most recent call last):
+  File "e:\git\develop\monitor\monitor2.5\utils\data_manager.py", line 247, in get_all_data
+    all_data = func(all_data, files_to_process) or {}
+  File "E:\git\develop\monitor\monitor2.5\tool\elint\elint.py", line 598, in get_elint_data
+    get_elint_data_from_txt(file_path, elint_data, thread)
+  File "E:\git\develop\monitor\monitor2.5\tool\elint\elint.py", line 510, in get_elint_data_from_txt
+    elint_data[casename]["threads"].add(thread)
+AttributeError: 'tuple' object has no attribute 'add'
+2026-08-08 22:35:49 - ERROR - utils.data_manager - data_manager.py:251 - 解析数据失败: 'tuple' object has no attribute 'update'
+Traceback (most recent call last):
+  File "e:\git\develop\monitor\monitor2.5\utils\data_manager.py", line 247, in get_all_data
+    all_data = func(all_data, files_to_process) or {}
+  File "E:\git\develop\monitor\monitor2.5\tool\elint\elint.py", line 598, in get_elint_data
+    get_elint_data_from_txt(file_path, elint_data, thread)
+  File "E:\git\develop\monitor\monitor2.5\tool\elint\elint.py", line 510, in get_elint_data_from_txt
+    elint_data[casename]["threads"].update([thread])
+AttributeError: 'tuple' object has no attribute 'update'
+2026-08-08 22:36:16 - ERROR - utils.data_manager - data_manager.py:251 - 解析数据失败: cannot convert dictionary update sequence element #0 to a sequence
+Traceback (most recent call last):
+  File "e:\git\develop\monitor\monitor2.5\utils\data_manager.py", line 247, in get_all_data
+    all_data = func(all_data, files_to_process) or {}
+  File "E:\git\develop\monitor\monitor2.5\tool\elint\elint.py", line 598, in get_elint_data
+    get_elint_data_from_txt(file_path, elint_data, thread)
+  File "E:\git\develop\monitor\monitor2.5\tool\elint\elint.py", line 510, in get_elint_data_from_txt
+    elint_data[casename]["threads"].update([thread])
+TypeError: cannot convert dictionary update sequence element #0 to a sequence
+2026-08-08 22:36:46 - ERROR - utils.data_manager - data_manager.py:251 - 解析数据失败: 'dict' object has no attribute 'add'
+Traceback (most recent call last):
+  File "e:\git\develop\monitor\monitor2.5\utils\data_manager.py", line 247, in get_all_data
+    all_data = func(all_data, files_to_process) or {}
+  File "E:\git\develop\monitor\monitor2.5\tool\elint\elint.py", line 598, in get_elint_data
+    get_elint_data_from_txt(file_path, elint_data, thread)
+  File "E:\git\develop\monitor\monitor2.5\tool\elint\elint.py", line 510, in get_elint_data_from_txt
+    elint_data[casename]["threads"].add(thread)
+AttributeError: 'dict' object has no attribute 'add'
+2026-08-08 22:37:06 - ERROR - utils.data_manager - data_manager.py:251 - 解析数据失败: 'list' object has no attribute 'add'
+Traceback (most recent call last):
+  File "e:\git\develop\monitor\monitor2.5\utils\data_manager.py", line 247, in get_all_data
+    all_data = func(all_data, files_to_process) or {}
+  File "E:\git\develop\monitor\monitor2.5\tool\elint\elint.py", line 598, in get_elint_data
+    get_elint_data_from_txt(file_path, elint_data, thread)
+  File "E:\git\develop\monitor\monitor2.5\tool\elint\elint.py", line 510, in get_elint_data_from_txt
+    elint_data[casename]["threads"].add(thread)
+AttributeError: 'list' object has no attribute 'add'
+2026-08-08 22:37:46 - ERROR - utils.common - common.py:89 - 保存工具数据失败: Object of type set is not JSON serializable
+Traceback (most recent call last):
+  File "e:\git\develop\monitor\monitor2.5\utils\common.py", line 85, in save_tool_data
+    json.dump(data, f, indent=4, ensure_ascii=False)
+  File "E:\python\3.8\lib\json\__init__.py", line 179, in dump
+    for chunk in iterable:
+  File "E:\python\3.8\lib\json\encoder.py", line 431, in _iterencode
+    yield from _iterencode_dict(o, _current_indent_level)
+  File "E:\python\3.8\lib\json\encoder.py", line 405, in _iterencode_dict
+    yield from chunks
+  File "E:\python\3.8\lib\json\encoder.py", line 405, in _iterencode_dict
+    yield from chunks
+  File "E:\python\3.8\lib\json\encoder.py", line 438, in _iterencode
+    o = _default(o)
+  File "E:\python\3.8\lib\json\encoder.py", line 179, in default
+    raise TypeError(f'Object of type {o.__class__.__name__} '
+TypeError: Object of type set is not JSON serializable
+2026-08-08 22:39:39 - ERROR - utils.data_manager - data_manager.py:250 - 解析数据失败: 'threads'
+Traceback (most recent call last):
+  File "e:\git\develop\monitor\monitor2.5\utils\data_manager.py", line 246, in get_all_data
+    all_data = self.duplicate_removal(func(all_data, files_to_process)) or {}
+  File "e:\git\develop\monitor\monitor2.5\utils\data_manager.py", line 196, in duplicate_removal
+    threads = casedata["threads"]
+KeyError: 'threads'
+2026-08-08 22:41:06 - ERROR - utils.data_manager - data_manager.py:250 - 解析数据失败: local variable 'date' referenced before assignment
+Traceback (most recent call last):
+  File "e:\git\develop\monitor\monitor2.5\utils\data_manager.py", line 246, in get_all_data
+    all_data = self.duplicate_removal(func(all_data, files_to_process)) or {}
+  File "E:\git\develop\monitor\monitor2.5\tool\elint\elint.py", line 596, in get_elint_data
+    get_elint_data_from_log(file_path, elint_data, thread)
+  File "E:\git\develop\monitor\monitor2.5\tool\elint\elint.py", line 542, in get_elint_data_from_log
+    elint_data[casename]["dates"].append(date)
+UnboundLocalError: local variable 'date' referenced before assignment
