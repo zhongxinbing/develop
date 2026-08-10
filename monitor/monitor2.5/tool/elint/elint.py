@@ -480,9 +480,9 @@ def gen_data(dataData: Dict, rule_datas: List[str], date: str, thread: int) -> D
 
         # 日期是否存在
         if date not in dataData[rule_name]:
-            dataData[rule_name][date] = {thread: [cputime, realtime, peakmem, incmem, realtimeincmem]}
+            dataData[rule_name][date] = {str(thread): [cputime, realtime, peakmem, incmem, realtimeincmem]}
         else:
-            dataData[rule_name][date].update({thread: [cputime, realtime, peakmem, incmem, realtimeincmem]})
+            dataData[rule_name][date].update({str(thread): [cputime, realtime, peakmem, incmem, realtimeincmem]})
 
     return dataData
 
@@ -505,7 +505,7 @@ def get_elint_data_from_txt(file_path: str, elint_data: Dict, thread: int) -> No
             "rules_data": {}
         }
 
-    elint_data[casename]["threads"].append(thread)
+    elint_data[casename]["threads"].append(str(thread))
     elint_data[casename]["dates"].append(date)
     # 获取所有数据
     try:
@@ -555,7 +555,7 @@ def get_elint_data_from_log(file_path: str, elint_data: Dict, thread: int) -> No
             date = datetime.fromtimestamp(mtime).strftime("%Y%m%d")
         except Exception:
             date = datetime.now().strftime("%Y%m%d")
-    elint_data[casename]["threads"].append(thread)
+    elint_data[casename]["threads"].append(str(thread))
     elint_data[casename]["dates"].append(date)
     try:
         with open(file_path, "r", errors='ignore') as f:

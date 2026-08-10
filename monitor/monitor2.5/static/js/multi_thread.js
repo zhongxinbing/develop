@@ -135,17 +135,22 @@ class MultiThreadManager {
         const allDatesSet = new Set();
         this.allRules.forEach(rule => {
             const ruleInfo = caseData[this.currentChartType]?.[rule];
-            if (ruleInfo && ruleInfo.dates) {
-                ruleInfo.dates.forEach(d => allDatesSet.add(d));
-            }
+            console.warn('updateRulesAndDates: ruleInfo', Object.prototype.toString.call(ruleInfo));
+            Object.keys(ruleInfo).forEach(thread => {
+                const dates = ruleInfo[thread];
+                if (dates && dates.date) {
+                    dates.date.forEach(d => allDatesSet.add(d));
+                }
+            });
         });
         this.allDates = Array.from(allDatesSet).sort();
-        
+        console.warn('updateRulesAndDates: allDates', caseData);
         const threadsSet = new Set();
         this.allRules.forEach(rule => {
             const ruleInfo = caseData[this.currentChartType]?.[rule];
-            if (ruleInfo && ruleInfo.all_threads) {
-                ruleInfo.all_threads.forEach(t => threadsSet.add(t));
+            const threads = Object.keys(ruleInfo || {});
+            if (threads && threads.length > 0) {
+                threads.forEach(t => threadsSet.add(t));
             }
         });
         this.availableThreads = Array.from(threadsSet).sort((a, b) => a - b);
@@ -313,7 +318,7 @@ class MultiThreadManager {
                 selected_threads: this.selectedThreads,
             };
             const response = await axios.post('/api/chart/data', requestData);
-
+            console.warn('renderChart: response', response.data.data);
             if (response.data.success) {
                 let chartData = response.data.data;
                 if (typeof chartData === 'string') {

@@ -401,38 +401,6 @@ class DataManager:
             return 'memory'
         return key
 
-    def get_fronttend_data_for_single(self, front_data: Dict, cache_data: Dict):
-        """获取单线程图表数据"""
-        # 获取前端需要的详细信息数据
-        dates = front_data.get('dates', [])
-        casename = front_data.get('casename', '')
-        chart_type = front_data.get('chart_type', 'cputime')
-        rules = front_data.get('rules', [])
-        # 检查日期是否为空
-        if not dates:
-            return {"dates": dates, "rules": {}, "crash_dates": []}
-        # 检查用例是否存在
-        if casename not in cache_data:
-            return {"dates": dates, "rules": {}, "crash_dates": []}
-        # 获取图标类型在缓存中的索引位置
-
-        rules_data = {"rules": {}, "crash_dates": [], "dates": dates}
-        
-        for rule in rules:
-            if rule not in rules_data["rules"]:
-                rules_data["rules"][rule] = {"dates": [], "values": [], "type": "line"}
-            for date in dates:
-                index = cache_data[casename][chart_type][rule]["date"].index(date)
-                rules_data["rules"][rule]["dates"].append(date)
-                rules_data["rules"][rule]["values"].append(cache_data[casename][chart_type][rule]["data"][index])
-                if 'crash_dates' not in cache_data[casename]:
-                    rules_data["crash_dates"] = []
-                else:
-                    if date in cache_data[casename]['crash_dates']:
-                        rules_data["crash_dates"].append(date)
-
-        return rules_data
-
     def send_data_to_frontend_for_chart(self, front_data: Dict):
         """发送数据到前端渲染图表"""
         tool_id = front_data.get('toolID', '')
@@ -444,20 +412,51 @@ class DataManager:
         selected_threads = front_data.get('selected_threads', [])
         self.logger.info(f"前端请求数据 -> 工具：{tool_id}，用例：{casename}，模式：{mode}，图表类型：{chart_type}，规则：{rules}，日期：{dates}，线程：{selected_threads}")
 
-        # 需要发送到前端的数据结构
-        choice_data = {
-            "dates": dates,
-            "rules": {},
-            "crash_dates": []
-        }
-        
         # 获取缓存数据
-        cache_data = self._data_cache.get(f"{tool_id}_parser", {})[1]
+        cache_data = self._data_cache.get(f"{tool_id}_parser", {})[1]['multi']
+
+        # 检查日期是否为空
+        if not dates:
+            return {"dates": dates, "rules": {}, "crash_dates": []}
+        # 检查用例是否存在
+
+        if casename not in cache_data:
+            return {"dates": dates, "rules": {}, "crash_dates": []}
+        # 获取图标类型在缓存中的索引位置
+
+        rules_data = {"rules": {}, "crash_dates": [], "dates": []}
         
-        data = self.get_fronttend_data_for_single(front_data, cache_data[mode])
+        for rule in rules:
+            if rule not in rules_data["rules"]:
+                if mode == 'single':
+                    rules_data["rules"][rule] = {"dates": [], "values": [], "type": "line", "color": ""}
+                if mode == 'multi':
+                    rules_data["rules"][rule] = {"dates": [], "values": {}, "type": "line", "color": ""}
+            for thread in selected_threads:
+                thread = str(thread)
+                for date in dates:
+                    if date not in cache_data[casename][chart_type][rule][thread]["date"]:
+                        continue
+                    index = cache_data[casename][chart_type][rule][thread]["date"].index(date)
+                    rules_data["dates"].append(date)
+                    if mode == 'single':
+                        rules_data["rules"][rule]["dates"].append(date)
+                        rules_data["rules"][rule]["values"].append(cache_data[casename][chart_type][rule][thread]["data"][index])
+                    elif mode == 'multi':
+                        rules_data["rules"][rule]["dates"].append(date)
+                        if thread not in rules_data["rules"][rule]["values"]:
+                            rules_data["rules"][rule]["values"][thread] = []
+                        rules_data["rules"][rule]["values"][thread].append(cache_data[casename][chart_type][rule][thread]["data"][index])
 
+                    rules_data["all_threads"] = selected_threads
+                    if 'crash_dates' not in cache_data[casename]:
+                        rules_data["crash_dates"] = []
+                    else:
+                        if date in cache_data[casename]['crash_dates']:
+                            rules_data["crash_dates"].append(date)
 
-        return data
+        red(f"rules_data: {rules_data}, mode: {mode}")
+        return rules_data
         
 
     # ==================== 数据加载接口 ====================

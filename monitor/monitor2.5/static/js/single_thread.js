@@ -201,7 +201,7 @@ class SingleThreadManager {
             };
             
             const response = await axios.post('/api/chart/data', requestData);
-            console.warn('renderChart: response', response.data.data);
+            console.log('renderChart: response', response);
             if (response.data.success) {
                 let chartData = response.data.data;
                 if (typeof chartData === 'string') {
@@ -267,7 +267,7 @@ class SingleThreadManager {
             const values = ruleData.values || [];
             const color = colors[colorIndex % colors.length];
             colorIndex++;
-            // console.warn('drawChart: ruleName', ruleName, values);
+            
             const validValues = values.filter(v => v !== null && v !== undefined);
             allValidValues = allValidValues.concat(validValues);
             
@@ -296,7 +296,7 @@ class SingleThreadManager {
 
         if (allValidValues.length > 0) {
             const avgValue = allValidValues.reduce((a, b) => a + Number(b), 0) / allValidValues.length;
-            console.warn('drawChart: avgValue', avgValue);
+
             const avgColor = isRuntime ? '#F59E0B' : '#EC4899';
             series.push({
                 name: '平均值',
