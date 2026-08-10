@@ -128,7 +128,7 @@ class SingleThreadManager {
         if (this.allRules.includes('Overall') && this.selectedRules.length === 0) {
             this.selectedRules = ['Overall'];
         }
-        
+
         const  allDatesSet = new Set(ruleData[this.currentChartType][this.selectedRules[0]]["date"]);
         
         this.allDates = Array.from(allDatesSet).sort();
@@ -230,7 +230,6 @@ class SingleThreadManager {
             console.error('drawChart: 图表实例无效');
             return;
         }
-
         const { dates, rules, crash_dates } = chartData;
         const normalizedType = (this.currentChartType || 'cputime').toLowerCase();
         const isRuntime = normalizedType === 'runtime' || normalizedType === 'cputime' || normalizedType === 'realtime';
@@ -248,7 +247,7 @@ class SingleThreadManager {
 
         const crashDatesSet = new Set(crash_dates || []);
         const formattedDates = dates.map(d => this.formatDate(d));
-
+        
         const getItemStyle = (date) => {
             if (this.extraData && this.extraData.cpu && this.extraData.cpu[date] && isRuntime) {
                 return { color: '#F59E0B', borderColor: '#D97706', borderWidth: 6 };
@@ -268,10 +267,10 @@ class SingleThreadManager {
             const values = ruleData.values || [];
             const color = colors[colorIndex % colors.length];
             colorIndex++;
-
+            // console.warn('drawChart: ruleName', ruleName, values);
             const validValues = values.filter(v => v !== null && v !== undefined);
             allValidValues = allValidValues.concat(validValues);
-
+            
             const dataWithStyle = values.map((val, idx) => {
                 const date = dates[idx];
                 const itemStyle = getItemStyle(date);
@@ -296,7 +295,8 @@ class SingleThreadManager {
         }
 
         if (allValidValues.length > 0) {
-            const avgValue = allValidValues.reduce((a, b) => a + b, 0) / allValidValues.length;
+            const avgValue = allValidValues.reduce((a, b) => a + Number(b), 0) / allValidValues.length;
+            console.warn('drawChart: avgValue', avgValue);
             const avgColor = isRuntime ? '#F59E0B' : '#EC4899';
             series.push({
                 name: '平均值',

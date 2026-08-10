@@ -259,3 +259,331 @@ Traceback (most recent call last):
   File "E:\python\3.8\lib\site-packages\deepmerge\strategy\core.py", line 48, in __call__
     ret_val = s(config, path, base, nxt)
 TypeError: 'tuple' object is not callable
+2026-08-10 09:14:23 - ERROR - utils.data_manager - data_manager.py:357 - 启动文件监听器失败: [WinError 3] 系统找不到指定的路径。: 'E:\\'
+Traceback (most recent call last):
+  File "c:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\utils\data_manager.py", line 354, in init_file_watcher
+    watcher.start()
+    ~~~~~~~~~~~~~^^
+  File "c:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\utils\file_watcher.py", line 146, in start
+    os.makedirs(path, exist_ok=True)
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen os>", line 218, in makedirs
+  File "<frozen os>", line 218, in makedirs
+  File "<frozen os>", line 218, in makedirs
+  [Previous line repeated 2 more times]
+  File "<frozen os>", line 228, in makedirs
+FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'E:\\'
+2026-08-10 09:14:24 - ERROR - utils.data_manager - data_manager.py:357 - 启动文件监听器失败: [WinError 3] 系统找不到指定的路径。: 'E:\\'
+Traceback (most recent call last):
+  File "c:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\utils\data_manager.py", line 354, in init_file_watcher
+    watcher.start()
+    ~~~~~~~~~~~~~^^
+  File "c:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\utils\file_watcher.py", line 146, in start
+    os.makedirs(path, exist_ok=True)
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen os>", line 218, in makedirs
+  File "<frozen os>", line 218, in makedirs
+  File "<frozen os>", line 218, in makedirs
+  [Previous line repeated 2 more times]
+  File "<frozen os>", line 228, in makedirs
+FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'E:\\'
+2026-08-10 09:14:24 - ERROR - utils.data_manager - data_manager.py:357 - 启动文件监听器失败: [WinError 3] 系统找不到指定的路径。: 'E:\\'
+Traceback (most recent call last):
+  File "c:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\utils\data_manager.py", line 354, in init_file_watcher
+    watcher.start()
+    ~~~~~~~~~~~~~^^
+  File "c:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\utils\file_watcher.py", line 146, in start
+    os.makedirs(path, exist_ok=True)
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen os>", line 218, in makedirs
+  File "<frozen os>", line 218, in makedirs
+  File "<frozen os>", line 218, in makedirs
+  [Previous line repeated 2 more times]
+  File "<frozen os>", line 228, in makedirs
+FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'E:\\'
+2026-08-10 09:14:26 - ERROR - utils.data_manager - data_manager.py:357 - 启动文件监听器失败: [WinError 3] 系统找不到指定的路径。: 'E:\\'
+Traceback (most recent call last):
+  File "c:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\utils\data_manager.py", line 354, in init_file_watcher
+    watcher.start()
+    ~~~~~~~~~~~~~^^
+  File "c:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\utils\file_watcher.py", line 146, in start
+    os.makedirs(path, exist_ok=True)
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen os>", line 218, in makedirs
+  File "<frozen os>", line 218, in makedirs
+  File "<frozen os>", line 218, in makedirs
+  [Previous line repeated 2 more times]
+  File "<frozen os>", line 228, in makedirs
+FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'E:\\'
+2026-08-10 09:15:05 - ERROR - utils.data_manager - data_manager.py:357 - 启动文件监听器失败: [WinError 3] 系统找不到指定的路径。: 'E:\\'
+Traceback (most recent call last):
+  File "c:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\utils\data_manager.py", line 354, in init_file_watcher
+    watcher.start()
+    ~~~~~~~~~~~~~^^
+  File "c:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\utils\file_watcher.py", line 146, in start
+    os.makedirs(path, exist_ok=True)
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen os>", line 218, in makedirs
+  File "<frozen os>", line 218, in makedirs
+  File "<frozen os>", line 218, in makedirs
+  [Previous line repeated 2 more times]
+  File "<frozen os>", line 228, in makedirs
+FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'E:\\'
+2026-08-10 10:26:21 - ERROR - utils.common - common.py:96 - 保存工具数据失败: [WinError 32] 另一个程序正在使用此文件，进程无法访问。: 'single.json.tmp' -> 'single.json'
+Traceback (most recent call last):
+  File "c:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\utils\common.py", line 93, in save_tool_data
+    os.replace(str(tmp), str(path))
+    ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+PermissionError: [WinError 32] 另一个程序正在使用此文件，进程无法访问。: 'single.json.tmp' -> 'single.json'
+2026-08-10 10:26:21 - ERROR - utils.common - common.py:96 - 保存工具数据失败: [WinError 32] 另一个程序正在使用此文件，进程无法访问。: 'single.json.tmp' -> 'single.json'
+Traceback (most recent call last):
+  File "c:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\utils\common.py", line 93, in save_tool_data
+    os.replace(str(tmp), str(path))
+    ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+PermissionError: [WinError 32] 另一个程序正在使用此文件，进程无法访问。: 'single.json.tmp' -> 'single.json'
+2026-08-10 10:26:21 - ERROR - utils.common - common.py:96 - 保存工具数据失败: [WinError 32] 另一个程序正在使用此文件，进程无法访问。: 'single.json.tmp' -> 'single.json'
+Traceback (most recent call last):
+  File "c:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\utils\common.py", line 93, in save_tool_data
+    os.replace(str(tmp), str(path))
+    ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+PermissionError: [WinError 32] 另一个程序正在使用此文件，进程无法访问。: 'single.json.tmp' -> 'single.json'
+2026-08-10 10:26:21 - ERROR - utils.common - common.py:96 - 保存工具数据失败: [WinError 32] 另一个程序正在使用此文件，进程无法访问。: 'single.json.tmp' -> 'single.json'
+Traceback (most recent call last):
+  File "c:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\utils\common.py", line 93, in save_tool_data
+    os.replace(str(tmp), str(path))
+    ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+PermissionError: [WinError 32] 另一个程序正在使用此文件，进程无法访问。: 'single.json.tmp' -> 'single.json'
+2026-08-10 10:27:54 - ERROR - utils.common - common.py:96 - 保存工具数据失败: [WinError 32] 另一个程序正在使用此文件，进程无法访问。: 'single.json.tmp' -> 'single.json'
+Traceback (most recent call last):
+  File "c:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\utils\common.py", line 93, in save_tool_data
+    os.replace(str(tmp), str(path))
+    ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+PermissionError: [WinError 32] 另一个程序正在使用此文件，进程无法访问。: 'single.json.tmp' -> 'single.json'
+2026-08-10 10:27:54 - ERROR - utils.common - common.py:96 - 保存工具数据失败: [WinError 32] 另一个程序正在使用此文件，进程无法访问。: 'single.json.tmp' -> 'single.json'
+Traceback (most recent call last):
+  File "c:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\utils\common.py", line 93, in save_tool_data
+    os.replace(str(tmp), str(path))
+    ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+PermissionError: [WinError 32] 另一个程序正在使用此文件，进程无法访问。: 'single.json.tmp' -> 'single.json'
+2026-08-10 10:27:54 - ERROR - utils.common - common.py:96 - 保存工具数据失败: [Errno 13] Permission denied: 'single.json.tmp'
+Traceback (most recent call last):
+  File "c:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\utils\common.py", line 91, in save_tool_data
+    with open(tmp, 'w', encoding='utf-8') as f:
+         ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+PermissionError: [Errno 13] Permission denied: 'single.json.tmp'
+2026-08-10 10:31:57 - ERROR - utils.common - common.py:96 - 保存工具数据失败: [WinError 32] 另一个程序正在使用此文件，进程无法访问。: 'single.json.tmp' -> 'single.json'
+Traceback (most recent call last):
+  File "c:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\utils\common.py", line 93, in save_tool_data
+    os.replace(str(tmp), str(path))
+    ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+PermissionError: [WinError 32] 另一个程序正在使用此文件，进程无法访问。: 'single.json.tmp' -> 'single.json'
+2026-08-10 10:31:57 - ERROR - utils.common - common.py:96 - 保存工具数据失败: [WinError 32] 另一个程序正在使用此文件，进程无法访问。: 'single.json.tmp' -> 'single.json'
+Traceback (most recent call last):
+  File "c:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\utils\common.py", line 93, in save_tool_data
+    os.replace(str(tmp), str(path))
+    ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+PermissionError: [WinError 32] 另一个程序正在使用此文件，进程无法访问。: 'single.json.tmp' -> 'single.json'
+2026-08-10 10:31:57 - ERROR - utils.common - common.py:96 - 保存工具数据失败: [WinError 32] 另一个程序正在使用此文件，进程无法访问。: 'single.json.tmp' -> 'single.json'
+Traceback (most recent call last):
+  File "c:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\utils\common.py", line 93, in save_tool_data
+    os.replace(str(tmp), str(path))
+    ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+PermissionError: [WinError 32] 另一个程序正在使用此文件，进程无法访问。: 'single.json.tmp' -> 'single.json'
+2026-08-10 10:31:57 - ERROR - utils.common - common.py:96 - 保存工具数据失败: [WinError 32] 另一个程序正在使用此文件，进程无法访问。: 'single.json.tmp' -> 'single.json'
+Traceback (most recent call last):
+  File "c:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\utils\common.py", line 93, in save_tool_data
+    os.replace(str(tmp), str(path))
+    ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+PermissionError: [WinError 32] 另一个程序正在使用此文件，进程无法访问。: 'single.json.tmp' -> 'single.json'
+2026-08-10 10:33:44 - ERROR - utils.common - common.py:96 - 保存工具数据失败: [WinError 32] 另一个程序正在使用此文件，进程无法访问。: 'single.json.tmp' -> 'single.json'
+Traceback (most recent call last):
+  File "c:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\utils\common.py", line 93, in save_tool_data
+    os.replace(str(tmp), str(path))
+    ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+PermissionError: [WinError 32] 另一个程序正在使用此文件，进程无法访问。: 'single.json.tmp' -> 'single.json'
+2026-08-10 10:33:44 - ERROR - utils.common - common.py:96 - 保存工具数据失败: [WinError 32] 另一个程序正在使用此文件，进程无法访问。: 'single.json.tmp' -> 'single.json'
+Traceback (most recent call last):
+  File "c:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\utils\common.py", line 93, in save_tool_data
+    os.replace(str(tmp), str(path))
+    ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+PermissionError: [WinError 32] 另一个程序正在使用此文件，进程无法访问。: 'single.json.tmp' -> 'single.json'
+2026-08-10 10:33:44 - ERROR - utils.common - common.py:96 - 保存工具数据失败: [WinError 32] 另一个程序正在使用此文件，进程无法访问。: 'single.json.tmp' -> 'single.json'
+Traceback (most recent call last):
+  File "c:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\utils\common.py", line 93, in save_tool_data
+    os.replace(str(tmp), str(path))
+    ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+PermissionError: [WinError 32] 另一个程序正在使用此文件，进程无法访问。: 'single.json.tmp' -> 'single.json'
+2026-08-10 10:33:44 - ERROR - utils.common - common.py:96 - 保存工具数据失败: [WinError 32] 另一个程序正在使用此文件，进程无法访问。: 'single.json.tmp' -> 'single.json'
+Traceback (most recent call last):
+  File "c:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\utils\common.py", line 93, in save_tool_data
+    os.replace(str(tmp), str(path))
+    ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+PermissionError: [WinError 32] 另一个程序正在使用此文件，进程无法访问。: 'single.json.tmp' -> 'single.json'
+2026-08-10 10:33:44 - ERROR - utils.common - common.py:96 - 保存工具数据失败: [WinError 32] 另一个程序正在使用此文件，进程无法访问。: 'single.json.tmp' -> 'single.json'
+Traceback (most recent call last):
+  File "c:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\utils\common.py", line 93, in save_tool_data
+    os.replace(str(tmp), str(path))
+    ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+PermissionError: [WinError 32] 另一个程序正在使用此文件，进程无法访问。: 'single.json.tmp' -> 'single.json'
+2026-08-10 10:34:00 - ERROR - utils.common - common.py:96 - 保存工具数据失败: [WinError 32] 另一个程序正在使用此文件，进程无法访问。: 'single.json.tmp' -> 'single.json'
+Traceback (most recent call last):
+  File "c:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\utils\common.py", line 93, in save_tool_data
+    os.replace(str(tmp), str(path))
+    ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+PermissionError: [WinError 32] 另一个程序正在使用此文件，进程无法访问。: 'single.json.tmp' -> 'single.json'
+2026-08-10 10:34:00 - ERROR - utils.common - common.py:96 - 保存工具数据失败: [WinError 32] 另一个程序正在使用此文件，进程无法访问。: 'single.json.tmp' -> 'single.json'
+Traceback (most recent call last):
+  File "c:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\utils\common.py", line 93, in save_tool_data
+    os.replace(str(tmp), str(path))
+    ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+PermissionError: [WinError 32] 另一个程序正在使用此文件，进程无法访问。: 'single.json.tmp' -> 'single.json'
+2026-08-10 10:34:00 - ERROR - utils.common - common.py:96 - 保存工具数据失败: [WinError 32] 另一个程序正在使用此文件，进程无法访问。: 'single.json.tmp' -> 'single.json'
+Traceback (most recent call last):
+  File "c:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\utils\common.py", line 93, in save_tool_data
+    os.replace(str(tmp), str(path))
+    ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+PermissionError: [WinError 32] 另一个程序正在使用此文件，进程无法访问。: 'single.json.tmp' -> 'single.json'
+2026-08-10 10:34:00 - ERROR - utils.common - common.py:96 - 保存工具数据失败: [WinError 32] 另一个程序正在使用此文件，进程无法访问。: 'single.json.tmp' -> 'single.json'
+Traceback (most recent call last):
+  File "c:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\utils\common.py", line 93, in save_tool_data
+    os.replace(str(tmp), str(path))
+    ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+PermissionError: [WinError 32] 另一个程序正在使用此文件，进程无法访问。: 'single.json.tmp' -> 'single.json'
+2026-08-10 10:34:00 - ERROR - utils.common - common.py:96 - 保存工具数据失败: [Errno 13] Permission denied: 'single.json.tmp'
+Traceback (most recent call last):
+  File "c:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\utils\common.py", line 91, in save_tool_data
+    with open(tmp, 'w', encoding='utf-8') as f:
+         ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+PermissionError: [Errno 13] Permission denied: 'single.json.tmp'
+2026-08-10 10:34:22 - ERROR - utils.common - common.py:96 - 保存工具数据失败: [WinError 32] 另一个程序正在使用此文件，进程无法访问。: 'single.json.tmp' -> 'single.json'
+Traceback (most recent call last):
+  File "c:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\utils\common.py", line 93, in save_tool_data
+    os.replace(str(tmp), str(path))
+    ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+PermissionError: [WinError 32] 另一个程序正在使用此文件，进程无法访问。: 'single.json.tmp' -> 'single.json'
+2026-08-10 10:34:22 - ERROR - utils.common - common.py:96 - 保存工具数据失败: [WinError 32] 另一个程序正在使用此文件，进程无法访问。: 'single.json.tmp' -> 'single.json'
+Traceback (most recent call last):
+  File "c:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\utils\common.py", line 93, in save_tool_data
+    os.replace(str(tmp), str(path))
+    ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+PermissionError: [WinError 32] 另一个程序正在使用此文件，进程无法访问。: 'single.json.tmp' -> 'single.json'
+2026-08-10 10:34:22 - ERROR - utils.common - common.py:96 - 保存工具数据失败: [WinError 32] 另一个程序正在使用此文件，进程无法访问。: 'single.json.tmp' -> 'single.json'
+Traceback (most recent call last):
+  File "c:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\utils\common.py", line 93, in save_tool_data
+    os.replace(str(tmp), str(path))
+    ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+PermissionError: [WinError 32] 另一个程序正在使用此文件，进程无法访问。: 'single.json.tmp' -> 'single.json'
+2026-08-10 10:34:22 - ERROR - utils.common - common.py:96 - 保存工具数据失败: [WinError 2] 系统找不到指定的文件。: 'single.json.tmp' -> 'single.json'
+Traceback (most recent call last):
+  File "c:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\utils\common.py", line 93, in save_tool_data
+    os.replace(str(tmp), str(path))
+    ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [WinError 2] 系统找不到指定的文件。: 'single.json.tmp' -> 'single.json'
+2026-08-10 10:34:22 - ERROR - utils.common - common.py:96 - 保存工具数据失败: [Errno 13] Permission denied: 'single.json.tmp'
+Traceback (most recent call last):
+  File "c:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\utils\common.py", line 91, in save_tool_data
+    with open(tmp, 'w', encoding='utf-8') as f:
+         ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+PermissionError: [Errno 13] Permission denied: 'single.json.tmp'
+2026-08-10 10:35:06 - ERROR - utils.common - common.py:96 - 保存工具数据失败: [WinError 32] 另一个程序正在使用此文件，进程无法访问。: 'single.json.tmp' -> 'single.json'
+Traceback (most recent call last):
+  File "c:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\utils\common.py", line 93, in save_tool_data
+    os.replace(str(tmp), str(path))
+    ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+PermissionError: [WinError 32] 另一个程序正在使用此文件，进程无法访问。: 'single.json.tmp' -> 'single.json'
+2026-08-10 10:35:06 - ERROR - utils.common - common.py:96 - 保存工具数据失败: [WinError 32] 另一个程序正在使用此文件，进程无法访问。: 'single.json.tmp' -> 'single.json'
+Traceback (most recent call last):
+  File "c:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\utils\common.py", line 93, in save_tool_data
+    os.replace(str(tmp), str(path))
+    ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+PermissionError: [WinError 32] 另一个程序正在使用此文件，进程无法访问。: 'single.json.tmp' -> 'single.json'
+2026-08-10 10:35:06 - ERROR - utils.common - common.py:96 - 保存工具数据失败: [WinError 32] 另一个程序正在使用此文件，进程无法访问。: 'single.json.tmp' -> 'single.json'
+Traceback (most recent call last):
+  File "c:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\utils\common.py", line 93, in save_tool_data
+    os.replace(str(tmp), str(path))
+    ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+PermissionError: [WinError 32] 另一个程序正在使用此文件，进程无法访问。: 'single.json.tmp' -> 'single.json'
+2026-08-10 10:35:06 - ERROR - utils.common - common.py:96 - 保存工具数据失败: [WinError 32] 另一个程序正在使用此文件，进程无法访问。: 'single.json.tmp' -> 'single.json'
+Traceback (most recent call last):
+  File "c:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\utils\common.py", line 93, in save_tool_data
+    os.replace(str(tmp), str(path))
+    ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+PermissionError: [WinError 32] 另一个程序正在使用此文件，进程无法访问。: 'single.json.tmp' -> 'single.json'
+2026-08-10 10:35:23 - ERROR - utils.common - common.py:96 - 保存工具数据失败: [WinError 2] 系统找不到指定的文件。: 'single.json.tmp' -> 'single.json'
+Traceback (most recent call last):
+  File "c:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\utils\common.py", line 93, in save_tool_data
+    os.replace(str(tmp), str(path))
+    ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [WinError 2] 系统找不到指定的文件。: 'single.json.tmp' -> 'single.json'
+2026-08-10 10:35:23 - ERROR - utils.common - common.py:96 - 保存工具数据失败: [WinError 32] 另一个程序正在使用此文件，进程无法访问。: 'single.json.tmp' -> 'single.json'
+Traceback (most recent call last):
+  File "c:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\utils\common.py", line 93, in save_tool_data
+    os.replace(str(tmp), str(path))
+    ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+PermissionError: [WinError 32] 另一个程序正在使用此文件，进程无法访问。: 'single.json.tmp' -> 'single.json'
+2026-08-10 10:35:23 - ERROR - utils.common - common.py:96 - 保存工具数据失败: [WinError 32] 另一个程序正在使用此文件，进程无法访问。: 'single.json.tmp' -> 'single.json'
+Traceback (most recent call last):
+  File "c:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\utils\common.py", line 93, in save_tool_data
+    os.replace(str(tmp), str(path))
+    ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+PermissionError: [WinError 32] 另一个程序正在使用此文件，进程无法访问。: 'single.json.tmp' -> 'single.json'
+2026-08-10 10:38:32 - ERROR - utils.common - common.py:96 - 保存工具数据失败: [WinError 32] 另一个程序正在使用此文件，进程无法访问。: 'single.json.tmp' -> 'single.json'
+Traceback (most recent call last):
+  File "c:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\utils\common.py", line 93, in save_tool_data
+    os.replace(str(tmp), str(path))
+    ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+PermissionError: [WinError 32] 另一个程序正在使用此文件，进程无法访问。: 'single.json.tmp' -> 'single.json'
+2026-08-10 10:38:32 - ERROR - utils.common - common.py:96 - 保存工具数据失败: [WinError 32] 另一个程序正在使用此文件，进程无法访问。: 'single.json.tmp' -> 'single.json'
+Traceback (most recent call last):
+  File "c:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\utils\common.py", line 93, in save_tool_data
+    os.replace(str(tmp), str(path))
+    ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+PermissionError: [WinError 32] 另一个程序正在使用此文件，进程无法访问。: 'single.json.tmp' -> 'single.json'
+2026-08-10 10:38:32 - ERROR - utils.common - common.py:96 - 保存工具数据失败: [WinError 32] 另一个程序正在使用此文件，进程无法访问。: 'single.json.tmp' -> 'single.json'
+Traceback (most recent call last):
+  File "c:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\utils\common.py", line 93, in save_tool_data
+    os.replace(str(tmp), str(path))
+    ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+PermissionError: [WinError 32] 另一个程序正在使用此文件，进程无法访问。: 'single.json.tmp' -> 'single.json'
+2026-08-10 10:38:32 - ERROR - utils.common - common.py:96 - 保存工具数据失败: [WinError 32] 另一个程序正在使用此文件，进程无法访问。: 'single.json.tmp' -> 'single.json'
+Traceback (most recent call last):
+  File "c:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\utils\common.py", line 93, in save_tool_data
+    os.replace(str(tmp), str(path))
+    ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+PermissionError: [WinError 32] 另一个程序正在使用此文件，进程无法访问。: 'single.json.tmp' -> 'single.json'
+2026-08-10 10:38:32 - ERROR - utils.common - common.py:96 - 保存工具数据失败: [WinError 32] 另一个程序正在使用此文件，进程无法访问。: 'single.json.tmp' -> 'single.json'
+Traceback (most recent call last):
+  File "c:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\utils\common.py", line 93, in save_tool_data
+    os.replace(str(tmp), str(path))
+    ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+PermissionError: [WinError 32] 另一个程序正在使用此文件，进程无法访问。: 'single.json.tmp' -> 'single.json'
+2026-08-10 10:52:00 - ERROR - utils.common - common.py:96 - 保存工具数据失败: [WinError 32] 另一个程序正在使用此文件，进程无法访问。: 'single.json.tmp' -> 'single.json'
+Traceback (most recent call last):
+  File "c:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\utils\common.py", line 93, in save_tool_data
+    os.replace(str(tmp), str(path))
+    ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+PermissionError: [WinError 32] 另一个程序正在使用此文件，进程无法访问。: 'single.json.tmp' -> 'single.json'
+2026-08-10 10:52:00 - ERROR - utils.common - common.py:96 - 保存工具数据失败: [WinError 32] 另一个程序正在使用此文件，进程无法访问。: 'single.json.tmp' -> 'single.json'
+Traceback (most recent call last):
+  File "c:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\utils\common.py", line 93, in save_tool_data
+    os.replace(str(tmp), str(path))
+    ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+PermissionError: [WinError 32] 另一个程序正在使用此文件，进程无法访问。: 'single.json.tmp' -> 'single.json'
+2026-08-10 10:52:00 - ERROR - utils.common - common.py:96 - 保存工具数据失败: [WinError 32] 另一个程序正在使用此文件，进程无法访问。: 'single.json.tmp' -> 'single.json'
+Traceback (most recent call last):
+  File "c:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\utils\common.py", line 93, in save_tool_data
+    os.replace(str(tmp), str(path))
+    ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+PermissionError: [WinError 32] 另一个程序正在使用此文件，进程无法访问。: 'single.json.tmp' -> 'single.json'
+2026-08-10 10:52:00 - ERROR - utils.common - common.py:96 - 保存工具数据失败: [WinError 32] 另一个程序正在使用此文件，进程无法访问。: 'single.json.tmp' -> 'single.json'
+Traceback (most recent call last):
+  File "c:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\utils\common.py", line 93, in save_tool_data
+    os.replace(str(tmp), str(path))
+    ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+PermissionError: [WinError 32] 另一个程序正在使用此文件，进程无法访问。: 'single.json.tmp' -> 'single.json'
+2026-08-10 10:52:00 - ERROR - utils.common - common.py:96 - 保存工具数据失败: [WinError 32] 另一个程序正在使用此文件，进程无法访问。: 'single.json.tmp' -> 'single.json'
+Traceback (most recent call last):
+  File "c:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\utils\common.py", line 93, in save_tool_data
+    os.replace(str(tmp), str(path))
+    ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+PermissionError: [WinError 32] 另一个程序正在使用此文件，进程无法访问。: 'single.json.tmp' -> 'single.json'

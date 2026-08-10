@@ -415,13 +415,23 @@ class DataManager:
         if casename not in cache_data:
             return {"dates": dates, "rules": {}, "crash_dates": []}
         # 获取图标类型在缓存中的索引位置
-        # green(json.dumps(cache_data, indent=2))
-        for rule in rules:
-            single_chart = cache_data[casename][chart_type][rule]
-            single_chart["date"] = list(single_chart["date"])
 
-        red(single_chart)
-        return single_chart
+        rules_data = {"rules": {}, "crash_dates": [], "dates": dates}
+        
+        for rule in rules:
+            if rule not in rules_data["rules"]:
+                rules_data["rules"][rule] = {"dates": [], "values": [], "type": "line"}
+            for date in dates:
+                index = cache_data[casename][chart_type][rule]["date"].index(date)
+                rules_data["rules"][rule]["dates"].append(date)
+                rules_data["rules"][rule]["values"].append(cache_data[casename][chart_type][rule]["data"][index])
+                if 'crash_dates' not in cache_data[casename]:
+                    rules_data["crash_dates"] = []
+                else:
+                    if date in cache_data[casename]['crash_dates']:
+                        rules_data["crash_dates"].append(date)
+
+        return rules_data
 
     def send_data_to_frontend_for_chart(self, front_data: Dict):
         """发送数据到前端渲染图表"""
@@ -443,73 +453,12 @@ class DataManager:
         
         # 获取缓存数据
         cache_data = self._data_cache.get(f"{tool_id}_parser", {})[1]
-        # red(cache_data)
-        # red(json.dumps(cache_data, indent=2))
+        
         data = self.get_fronttend_data_for_single(front_data, cache_data[mode])
 
 
         return data
-        # if not rules:
-        #     return {"dates": dates, "rules": {}, "crash_dates": [], "overall_data": {}, "selected_threads": []}
-
-        # data_path = DATA_DIR / tool_id / "original" / mode / casename / chart_type / f'{rules[0]}.json'
-        # if not data_path.exists():
-        #     fallback_path = DATA_DIR / tool_id / "original" / mode / casename / chart_type / f'{rules[0]}.json'
-        #     if fallback_path.exists():
-        #         data_path = fallback_path
-        #     else:
-        #         return {"dates": dates, "rules": {}, "crash_dates": [], "overall_data": {}, "selected_threads": []}
-
-        # case_rule_data = load_tool_data(data_path) or {}
-        # rules_data = case_rule_data.get("rules", {})
-        # crash_dates = set()
-
-        # choice_data = {
-        #     "dates": dates,
-        #     "rules": {},
-        #     "crash_dates": [],
-        #     "overall_data": case_rule_data.get("overall_data", {})
-        # }
-
-        # for thread in selected_threads:
-        #     rule_key = rules[0] if thread == -1 else f"{rules[0]}({thread})"
-        #     rule_info = rules_data.get(rule_key, {})
-        #     if not rule_info:
-        #         continue
-
-        #     rule_dates = rule_info.get("dates", [])
-        #     values = []
-        #     for date in dates:
-        #         if date not in rule_dates:
-        #             values.append(None)
-        #             crash_dates.add(date)
-        #         else:
-        #             index = rule_dates.index(date)
-        #             values.append(rule_info.get("values", [None])[index])
-        #             if date in case_rule_data.get("crash_dates", []) and date not in crash_dates:
-        #                 crash_dates.add(date)
-
-        #     choice_data["rules"][rule_key] = {
-        #         "dates": dates,
-        #         "values": values,
-        #         "type": rule_info.get("type"),
-        #         "name": rule_info.get("name"),
-        #     }
-        #     if mode == "single":
-        #         choice_data["rules"][rule_key]["is_single"] = rule_info.get("is_single")
-        #     else:
-        #         choice_data["rules"][rule_key].update({
-        #             "thread": rule_info.get("thread"),
-        #             "color": rule_info.get("color"),
-        #             "rule_name": rule_info.get("rule_name"),
-        #             "is_multi": rule_info.get("is_multi"),
-        #         })
-
-        # choice_data["crash_dates"] = list(crash_dates)
-        # if mode == "multi":
-        #     choice_data["selected_threads"] = case_rule_data.get("all_threads", [])
-
-        return choice_data
+        
 
     # ==================== 数据加载接口 ====================
 
@@ -558,9 +507,11 @@ class DataManager:
         for casename,case_data in data_parsers['single_multi_chart'].items():
             for type_chart,chart_data in case_data.items():
                 if type_chart == "crash_dates":
-                    if 'crash_dates' not in single:
-                        single['crash_dates'] = []
+                    if 'crash_dates' not in single.setdefault(casename, {}):
+                        single.setdefault(casename, {})['crash_dates'] = []
                     if -1 in chart_data:
+                        if 'crash_dates' not in single.setdefault(casename, {}):
+                            single.setdefault(casename, {})['crash_dates'] = []
                         single[casename]['crash_dates'] = list(chart_data[-1])
                     continue
                 for rule, rule_data in chart_data.items():

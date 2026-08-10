@@ -203,7 +203,7 @@ async function loadData() {
         if (response.data.success) {
             showSuccess('正在加载数据，请稍等...');
             const data = response.data.data || {};
-
+            console.log('原始数据:', data);
             let singleData = {};
             let multiData = {};
             let extraData = {};

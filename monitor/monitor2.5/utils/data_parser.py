@@ -4,7 +4,7 @@
 
 
 from typing import Dict, List, Any, Optional
-from unittest import result
+from unittest import case, result
 import json
 # from numpy import single_chart
 from utils.single_thread_parser import SingleThreadParser
@@ -101,8 +101,11 @@ class DataParser:
                                     # 解析数据
                                     single_multi_chart, thread_chart = self.get_single_multi_thread_chart(casename, single_multi_chart, thread_chart, thread_datas, types, rule, thread, date, multi_exists)
 
+            if 'crash_dates' not in single_multi_chart:
+                single_multi_chart[casename]['crash_dates'] = {}
         # 删除 casename 对应为空的值
         single_multi_chart = {k: v for k, v in single_multi_chart.items() if v not in (None, '')}
+
         thread_chart = {k: v for k, v in thread_chart.items() if v not in (None, '')}
         # blue(single_multi_chart)
         return {'single_multi_chart': single_multi_chart, 'thread': thread_chart}
