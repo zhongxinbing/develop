@@ -253,7 +253,7 @@ class ComparisonManager {
 
         const threadOptions = this.allThreads.map(t => ({
             value: String(t),
-            label: t === -1 ? '单线程' : `${t} 线程`
+            label: `${t} 线程`
         }));
 
         this.threadSelect.setOptions(threadOptions);
@@ -433,7 +433,7 @@ class ComparisonManager {
                 casename: this.selectedCasename,
                 date1: this.selectedDate1,
                 date2: isMultiThread ? '' : this.selectedDate2,
-                compare_mode: compareMode,
+                compare_mode: [compareMode],
                 dimension: dimension,
                 runtime_threshold: this.runtimeThresholdValue,
                 memory_threshold: this.memoryThresholdValue,
@@ -441,7 +441,7 @@ class ComparisonManager {
                 threads: this.selectedThreads,
                 compare_type: compareType
             };
-
+            console.warn('对比参数:', payload);
             const response = await axios.post('/api/comparison', payload);
 
             if (response.data.success) {
