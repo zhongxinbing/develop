@@ -53,7 +53,7 @@ class DataParser:
                         "casename": {
                             "cputime": {
                                 rule: {
-                                    "date": {
+                                    date: {
                                         thread: [threads]
                                         data: [datas]
                                     }
@@ -68,7 +68,7 @@ class DataParser:
             single_multi_chart = {}
         else:
             single_multi_chart = data_parsers['single_multi']
-
+        # 线程数的 parser
         if 'thread' not in data_parsers:
             thread_chart = {}
         else:
@@ -151,12 +151,14 @@ class DataParser:
                     thread_chart[casename][types[i]][rule] = {}
                 if date not in thread_chart[casename][types[i]][rule]:
                     thread_chart[casename][types[i]][rule][date] = {}
-                if "thread" not in thread_chart[casename][types[i]][rule][date]:
-                    thread_chart[casename][types[i]][rule][date]["thread"] = []
                 if "data" not in thread_chart[casename][types[i]][rule][date]:
                     thread_chart[casename][types[i]][rule][date]["data"] = []
-                thread_chart[casename][types[i]][rule][date]["thread"].append(thread)
-                thread_chart[casename][types[i]][rule][date]["data"].append(data[i])
+                if "threads" not in thread_chart[casename][types[i]][rule][date]:
+                    thread_chart[casename][types[i]][rule][date]["threads"] = []
+
+                if thread not in thread_chart[casename][types[i]][rule][date]["threads"]:
+                    thread_chart[casename][types[i]][rule][date]["threads"].append(thread)
+                    thread_chart[casename][types[i]][rule][date]["data"].append(data[i])
 
         return single_multi_chart, thread_chart
 # 全局实例  

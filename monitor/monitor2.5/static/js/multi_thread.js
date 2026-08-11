@@ -336,7 +336,7 @@ class MultiThreadManager {
                 selected_threads: this.selectedThreads,  // 传递选中的线程
             };
             const response = await axios.post('/api/chart/data', requestData);
-            console.warn('renderChart: response', response.data.data);
+            // console.warn('renderChart: response', response.data.data);
             if (response.data.success) {
                 let chartData = response.data.data;
                 if (typeof chartData === 'string') {

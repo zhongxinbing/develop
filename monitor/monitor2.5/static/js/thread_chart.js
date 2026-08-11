@@ -28,7 +28,7 @@ class ThreadChartManager {
         this.updateDates = this.updateDates.bind(this);
     }
 
-    async init(rawData, userAddedData, multiData) {
+    async init(rawData, userAddedData,) {
         console.log('线程曲线图模块 开始', rawData);
         
         this.ruleSearch = document.getElementById(`${this.idPrefix}RuleSearch`);
@@ -109,24 +109,35 @@ class ThreadChartManager {
     async updateCasenameSelect() {
         if (!this.casenameSelect) return;
         
+        // this.allCasenames = Object.keys(this.allData).filter(name => {
+        //     const caseData = this.allData[name];
+        //     if (!caseData || typeof caseData !== 'object') return false;
+        //     const caseTypeData = caseData[this.currentChartType];
+        //     if (!caseTypeData || typeof caseTypeData !== 'object') return false;
+        //     for (const rule of Object.keys(caseTypeData)) {
+        //         const ruleData = caseTypeData[rule];
+        //         if (ruleData && ruleData.threads && ruleData.threads.length > 0) {
+        //             return true;
+        //         }
+        //     }
+
+        //     // for (const type of ['cputime', 'peakmem', 'incmem', 'realtime', 'realtimeincmem']) {
+        //     //     if (caseData[type] && typeof caseData[type] === 'object') {
+        //     //         const rules = Object.keys(caseData[type]);
+        //     //         for (const rule of rules) {
+        //     //             const ruleData = caseData[type][rule];
+        //     //             if (ruleData && ruleData.all_threads && ruleData.all_threads.length > 0) {
+        //     //                 return true;
+        //     //             }
+        //     //         }
+        //     //     }
+        //     // }
+        //     return false;
+        // });
         this.allCasenames = Object.keys(this.allData).filter(name => {
-            const caseData = this.allData[name];
-            if (!caseData || typeof caseData !== 'object') return false;
-            
-            for (const type of ['cputime', 'peakmem', 'incmem', 'realtime', 'realtimeincmem']) {
-                if (caseData[type] && typeof caseData[type] === 'object') {
-                    const rules = Object.keys(caseData[type]);
-                    for (const rule of rules) {
-                        const ruleData = caseData[type][rule];
-                        if (ruleData && ruleData.all_threads && ruleData.all_threads.length > 0) {
-                            return true;
-                        }
-                    }
-                }
-            }
-            return false;
+            const rule_dates = this.allData[name];
+            return rule_dates;
         });
-        
         const options = this.allCasenames.map(name => ({
             value: name,
             label: name
@@ -144,21 +155,33 @@ class ThreadChartManager {
         if (!this.ruleSelect || !this.selectedCasename) return;
         
         const caseData = this.allData[this.selectedCasename];
+
         if (!caseData) return;
         
         const typeData = caseData[this.currentChartType];
+
         if (!typeData) {
             this.ruleSelect.setOptions([]);
             return;
         }
         
-        let allRules = Object.keys(typeData).filter(rule => {
-            const ruleData = typeData[rule];
-            return ruleData && ruleData.all_threads && ruleData.all_threads.length > 0;
-        });
-        
+        // let allRules = Object.keys(typeData).filter(rule => {
+        //     const ruleData = typeData[rule];
+        //     for (const date of Object.keys(ruleData)) {
+        //         const dateData = ruleData[date];
+        //         if (dateData && dateData.threads && dateData.threads.length > 0) {
+        //             return true;
+        //         }
+        //     }
+        //     return false;
+        // });
+        // 获取case name 下 type 中的所有rule
+        let allRules = Object.keys(typeData);
         this.allRules = allRules.sort();
-        
+        if (this.allRules.includes('Overall')) {
+            this.allRules = ['Overall', ...this.allRules.filter(r => r !== 'Overall')];
+        }
+
         if (this.allRules.includes('Overall')) {
             this.allRules = ['Overall', ...this.allRules.filter(r => r !== 'Overall')];
         }
@@ -190,10 +213,7 @@ class ThreadChartManager {
         const typeData = caseData[this.currentChartType];
         if (!typeData) return;
         
-        const ruleData = typeData[this.selectedRule];
-        if (!ruleData) return;
-        
-        this.allDates = (ruleData.dates || []).sort();
+        this.allDates = Object.keys(typeData[this.selectedRule]).sort();
         
         const options = this.allDates.map(date => ({
             value: date,
@@ -239,9 +259,10 @@ class ThreadChartManager {
                 rule: this.selectedRule,
                 date: this.selectedDate,
                 toolID: window.toolId,
-                mode: this.currentChartType
+                mode: "thread",
+                chart_type: this.currentChartType
             });
-            
+
             if (response.data.success) {
                 chart.hideLoading();
                 this.drawChart(chart, response.data.data);
@@ -262,7 +283,9 @@ class ThreadChartManager {
             return;
         }
 
-        const { threads, cputime, peakmem, realtime, incmem, realtimeincmem } = chartData;
+        // const { threads, cputime, peakmem, realtime, incmem, realtimeincmem } = chartData;
+        const { threads, data } = chartData;
+        // 判断 y 轴显示的是 runtime 还是 memory
         const normalizedType = (this.currentChartType || 'cputime').toLowerCase();
         const isRuntime = normalizedType === 'runtime' || normalizedType === 'cputime' || normalizedType === 'realtime';
         const yAxisName = isRuntime ? 'Runtime (s)' : 'Memory (MB)';
@@ -277,7 +300,7 @@ class ThreadChartManager {
         };
         const chartTitle = titleMap[this.currentChartType] || this.currentChartType;
 
-        const seriesData = chartData[normalizedType];
+        const seriesData = data
         const seriesName = isRuntime ? 'Runtime' : 'Memory';
         const color = isRuntime ? '#00E5FF' : '#A855F7';
         

@@ -210,21 +210,23 @@ async function loadData() {
             if (typeof data === 'string') {
                 try {
                     const parsed = JSON.parse(data);
-                    if (parsed.single) singleData = parsed.single;
+                    if (data.thread) threadData = data.thread;
+                    // if (parsed.single) singleData = parsed.single;
                     if (parsed.multi) multiData = parsed.single_multi || {};
                     if (parsed.extra) extraData = parsed.extra;
                     if (parsed.user) userData = parsed.user;
                 } catch (e) {
-                    singleData = data;
+                    multiData = data;
                 }
             } else {
-                if (data.single) singleData = data.single;
+                if (data.thread) threadData = data.thread;
                 if (data.single_multi) multiData = data.single_multi || {};
                 if (data.extra) extraData = data.extra;
                 if (data.user) userData = data.user;
             }
 
-            window.singleData = singleData;
+            // window.singleData = singleData;
+            window.threadData = threadData;
             window.multiData = multiData;
             window.extraData = extraData;
             window.userData = userData;
@@ -249,7 +251,7 @@ async function loadData() {
 
             if (window.ThreadChartManager) {
                 threadChartManager = new window.ThreadChartManager();
-                await threadChartManager.init(multiData, userData);
+                await threadChartManager.init(threadData, userData);
             }
 
             // 默认切换到单线程模式

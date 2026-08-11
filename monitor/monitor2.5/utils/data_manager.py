@@ -467,7 +467,29 @@ class DataManager:
                     if date in cache_data[casename]['crash_dates']:
                         rule_data["crash_dates"].append(date)
         return rule_data
+
+    def send_data_to_frontend_for_thread_chart(self, front_data: Dict):
+        """发送数据到前端渲染线程图表"""
+        casename = front_data.get('casename', '')
+        rule = front_data.get('rule', '')
+        date = front_data.get('date', '')
+        tool_id = front_data.get('toolID', '')
+        chart_type = front_data.get('chart_type', 'cputime')
+        mode = front_data.get('mode', 'thread')
+
+        self.logger.error(f"前端请求数据 -> 工具：{tool_id}，用例：{casename}，模式：{mode}，图表类型：{chart_type}，规则：{rule}，日期：{date}")
         
+        cache_data = self._data_cache.get(f"{tool_id}_parser", {})[1]['thread']
+
+        if casename not in cache_data:
+            return {}
+        if rule not in cache_data[casename][chart_type]:
+            return {}
+        if date not in cache_data[casename][chart_type][rule]:
+            return {}
+        rule_data = cache_data[casename][chart_type][rule][date]
+        
+        return rule_data
 
     # ==================== 数据加载接口 ====================
 
