@@ -3,23 +3,23 @@
     "elint": {
       "tool_name": "elint",
       "description": "9999",
-      "single_path": "E:\\git\\develop\\monitor\\test\\signal",
+      "single_path": "C:\\Users\\xbzhong\\Desktop\\lint\\script\\develop\\monitor\\test\\signal",
       "single_func": "get_elint_data",
       "single_file_pattern": "^\\d{8}_[^\\s]+\\.txt",
       "single_max_depth": 3,
       "single_exists": 1,
-      "multi_path": "",
+      "multi_path": "C:\\Users\\xbzhong\\Desktop\\lint\\script\\develop\\monitor\\test\\multi",
       "multi_func": "get_elint_data",
       "multi_file_pattern": "elint\\.log$",
       "multi_max_depth": 6,
-      "multi_exists": 0,
+      "multi_exists": 1,
       "extra_display_path": "",
       "extra_display_func": "",
       "extra_file_pattern": "",
       "extra_exists": 0,
       "custom_curve_func": "",
       "created_at": "2026-08-08T20:56:34.924604",
-      "updated_at": "2026-08-10T22:33:36.150270"
+      "updated_at": "2026-08-11T08:46:55.793207"
     }
   }
 }

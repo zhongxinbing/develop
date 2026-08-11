@@ -434,7 +434,10 @@ class DataManager:
                     rules_data["rules"][rule] = {"dates": [], "values": {}, "type": "line", "color": ""}
             for thread in selected_threads:
                 thread = str(thread)
+                if thread not in cache_data[casename][chart_type][rule]:
+                    continue
                 for date in dates:
+                    
                     if date not in cache_data[casename][chart_type][rule][thread]["date"]:
                         continue
                     index = cache_data[casename][chart_type][rule][thread]["date"].index(date)
@@ -613,8 +616,7 @@ class DataManager:
 
         
         all_data_paser = {
-            'single': self.get_single_data(data_parsers),
-            'multi': data_parsers['single_multi_chart'],
+            'single_multi': data_parsers['single_multi_chart'],
             "thread": data_parsers['thread']
         }
 
@@ -631,7 +633,7 @@ class DataManager:
             message = "数据" + '[' + '、'.join(message) + ']'  + "已更新"
         else:
             message = '未更新数据'
-
+        # 返回给前端的数据、显示 casename 选择框、日期选择框、rule选择框、线程选择框
         return all_data_paser, message
 
     # ==================== 对比功能 ====================

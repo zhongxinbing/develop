@@ -135,7 +135,6 @@ class MultiThreadManager {
         const allDatesSet = new Set();
         this.allRules.forEach(rule => {
             const ruleInfo = caseData[this.currentChartType]?.[rule];
-            console.warn('updateRulesAndDates: ruleInfo', Object.prototype.toString.call(ruleInfo));
             Object.keys(ruleInfo).forEach(thread => {
                 const dates = ruleInfo[thread];
                 if (dates && dates.date) {
