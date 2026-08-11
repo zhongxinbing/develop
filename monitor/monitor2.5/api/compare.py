@@ -3,11 +3,10 @@ API对比模块 - 数据对比接口
 """
 from flask import jsonify, request
 from app import app
-from utils.data_manager import data_manager
+from utils.compare import comparer
 from utils.log import get_logger
 
 logger = get_logger(__name__)
-
 
 
 @app.route('/api/compare', methods=['GET'])
@@ -18,11 +17,14 @@ def api_compare():
 
 @app.route('/api/comparison', methods=['POST'])
 def api_get_comparison():
-    """获取对比数据（单线程对比 & 多线程对比）"""
+    """
+    获取对比数据
+    支持单线程版本对比和多线程对比
+    """
     data = request.json
-    
+
     tool_id = data.get('tool_id', '')
-    mode = data.get('mode', 'single')  # single 或 multi
+    mode = data.get('mode', 'multi')
     casename = data.get('casename', '')
     date1 = data.get('date1', '')
     date2 = data.get('date2', '')
@@ -33,12 +35,13 @@ def api_get_comparison():
     error_mode = data.get('error_mode', 'absolute')
     threads = data.get('threads', [])
     compare_type = data.get('compare_type', 'single')
-    
-    logger.info(f"收到对比请求: tool_id={tool_id}, mode={mode}, casename={casename}, "
+
+    logger.info(f"收到对比请求: tool_id={tool_id}, casename={casename}, "
                 f"date1={date1}, date2={date2}, dimension={dimension}, "
-                f"error_mode={error_mode}, threads={threads}")
-    
-    result = data_manager.compare_data(
+                f"error_mode={error_mode}, threads={threads}, compare_type={compare_type}")
+
+    # 调用数据管理器的对比功能
+    result = comparer.compare_data(
         tool_id=tool_id,
         mode=mode,
         casename=casename,
@@ -52,5 +55,5 @@ def api_get_comparison():
         threads=threads,
         compare_type=compare_type
     )
-    
+
     return jsonify(result)
