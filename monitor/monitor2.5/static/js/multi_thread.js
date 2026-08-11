@@ -8,7 +8,7 @@ class MultiThreadManager {
         this.selectedCasename = '';
         this.selectedRules = ['Overall'];
         this.selectedDates = [];
-        this.selectedThreads = [2, 4];
+        this.selectedThreads = [];  // 默认空，表示显示所有线程
         this.availableThreads = [];
         this.allDates = [];
         this.allRules = [];
@@ -21,6 +21,8 @@ class MultiThreadManager {
         this.casenameSelect = null;
         this.ruleSelect = null;
         this.ruleSearch = null;
+        this.threadSelect = null;  // 新增：线程数选择器
+        this.threadSearch = null;  // 新增：线程数搜索框
         this.datePickerBtn = null;
         this.latest50Btn = null;
         this.addDataBtn = null;
@@ -34,12 +36,14 @@ class MultiThreadManager {
         this.toggleDropdown = this.toggleDropdown.bind(this);
         this.selectAllThreads = this.selectAllThreads.bind(this);
         this.clearAllThreads = this.clearAllThreads.bind(this);
+        this.updateThreadOptions = this.updateThreadOptions.bind(this);
     }
 
     async init(rawData, userAddedData, extraData) {
         console.log('MultiThreadManager.init 开始', rawData);
 
         this.ruleSearch = document.getElementById(`${this.idPrefix}RuleSearch`);
+        this.threadSearch = document.getElementById(`${this.idPrefix}ThreadSearch`);  // 新增
         this.datePickerBtn = document.getElementById(`${this.idPrefix}DatePickerBtn`);
         this.latest50Btn = document.getElementById(`${this.idPrefix}Latest50Btn`);
         this.addDataBtn = document.getElementById(`${this.idPrefix}AddDataBtn`);
@@ -54,6 +58,7 @@ class MultiThreadManager {
         this.allData = { ...this.rawData, ...this.userAddedData };
         this.extraData = extraData;
 
+        // ========== Casename 选择器 ==========
         this.casenameSelect = new SearchableSelect({
             container: document.getElementById(`${this.idPrefix}CasenameSelect`),
             options: [],
@@ -64,6 +69,11 @@ class MultiThreadManager {
                     await this.updateRulesAndDates();
                     this.selectedRules = ['Overall'];
                     this.selectedDates = this.allDates.slice(-50);
+                    // 默认选择所有线程
+                    if (this.availableThreads.length > 0) {
+                        this.selectedThreads = [...this.availableThreads];
+                        this.updateThreadSelectorUI();
+                    }
                     const chart = window.mainChart || echarts.getInstanceByDom(document.getElementById('mainChart'));
                     if (chart) {
                         await this.renderChart(chart);
@@ -73,6 +83,7 @@ class MultiThreadManager {
             }
         });
 
+        // ========== Rule 选择器 ==========
         this.ruleSelect = new SearchableSelect({
             container: document.getElementById(`${this.idPrefix}RuleSelect`),
             options: [],
@@ -86,11 +97,34 @@ class MultiThreadManager {
             }
         });
 
+        // ========== 新增：线程数选择器 ==========
+        this.threadSelect = new SearchableSelect({
+            container: document.getElementById(`${this.idPrefix}ThreadSelect`),
+            options: [],
+            multiple: true,
+            placeholder: '请选择线程数...',
+            onChange: (values) => {
+                this.selectedThreads = values && values.length > 0 
+                    ? values.map(v => parseInt(v)) 
+                    : [];
+                const chart = window.mainChart || echarts.getInstanceByDom(document.getElementById('mainChart'));
+                if (chart) {
+                    this.renderChart(chart);
+                }
+            }
+        });
+
         this.updateCasenameSelect();
         await this.updateRulesAndDates();
         this.initEventListeners();
         this.initDatePickerModal();
         this.initAddDataModal();
+
+        // 默认选择所有线程
+        if (this.availableThreads.length > 0) {
+            this.selectedThreads = [...this.availableThreads];
+            this.updateThreadSelectorUI();
+        }
 
         if (this.allDates.length > 0) {
             this.selectLatest50Days();
@@ -98,6 +132,7 @@ class MultiThreadManager {
         this.updateOverview();
     }
 
+    // ========== 更新 Casename 选项 ==========
     updateCasenameSelect() {
         if (!this.casenameSelect) return;
         
@@ -119,6 +154,7 @@ class MultiThreadManager {
         }
     }
 
+    // ========== 更新 Rules 和 Dates ==========
     async updateRulesAndDates() {
         if (!this.selectedCasename || !this.allData[this.selectedCasename]) {
             console.log('updateRulesAndDates: 无有效的 casename', this.selectedCasename);
@@ -132,6 +168,7 @@ class MultiThreadManager {
         }
         this.updateRuleSelect();
 
+        // 获取所有日期
         const allDatesSet = new Set();
         this.allRules.forEach(rule => {
             const ruleInfo = caseData[this.currentChartType]?.[rule];
@@ -143,7 +180,8 @@ class MultiThreadManager {
             });
         });
         this.allDates = Array.from(allDatesSet).sort();
-        console.warn('updateRulesAndDates: allDates', caseData);
+
+        // 获取所有线程
         const threadsSet = new Set();
         this.allRules.forEach(rule => {
             const ruleInfo = caseData[this.currentChartType]?.[rule];
@@ -152,13 +190,20 @@ class MultiThreadManager {
                 threads.forEach(t => threadsSet.add(t));
             }
         });
-        this.availableThreads = Array.from(threadsSet).sort((a, b) => a - b);
-        this.selectedThreads = this.availableThreads.slice(0, Math.min(2, this.availableThreads.length));
-        this.renderThreadOptions();
-
+        this.availableThreads = Array.from(threadsSet).sort((a, b) => parseInt(a) - parseInt(b));
+        
+        // 如果还没有选择线程，默认选择所有线程
+        if (this.selectedThreads.length === 0 && this.availableThreads.length > 0) {
+            this.selectedThreads = [...this.availableThreads];
+        }
+        
+        // 更新线程选择器
+        this.updateThreadOptions();
+        this.updateThreadSelectorUI();
         this.updateOverview();
     }
 
+    // ========== 更新 Rule 选择器 ==========
     updateRuleSelect() {
         if (!this.ruleSelect) return;
         
@@ -178,6 +223,39 @@ class MultiThreadManager {
         }
     }
 
+    // ========== 新增：更新线程选择器选项 ==========
+    updateThreadOptions() {
+        if (!this.threadSelect) return;
+        
+        const searchTerm = this.threadSearch ? this.threadSearch.value.toLowerCase() : '';
+        let filteredThreads = this.availableThreads;
+        
+        if (searchTerm) {
+            filteredThreads = this.availableThreads.filter(t => 
+                String(t).includes(searchTerm) || 
+                (t === -1 ? '单线程' : `${t}线程`).includes(searchTerm)
+            );
+        }
+        
+        const options = filteredThreads.map(thread => ({
+            value: String(thread),
+            label: thread === -1 ? '单线程' : `${thread} 线程`
+        }));
+        
+        this.threadSelect.setOptions(options);
+        
+        // 设置选中的值
+        if (this.selectedThreads.length > 0) {
+            const selectedValues = this.selectedThreads.map(t => String(t));
+            this.threadSelect.setValue(selectedValues);
+        } else if (this.availableThreads.length > 0) {
+            // 默认选择所有线程
+            this.selectedThreads = [...this.availableThreads];
+            this.threadSelect.setValue(this.availableThreads.map(t => String(t)));
+        }
+    }
+
+    // ========== 更新 Overview ==========
     updateOverview() {
         const totalCases = Object.keys(this.allData).length;
         const totalRules = this.allRules.length;
@@ -192,89 +270,28 @@ class MultiThreadManager {
         if (totalDaysEl) totalDaysEl.textContent = totalDays;
     }
 
-    renderThreadOptions() {
-        if (!this.threadOptions) return;
-        if (this.availableThreads.length === 0) {
-            this.threadOptions.innerHTML = '<div style="padding: 12px; text-align: center; color: #94A3B8;">暂无线程数据</div>';
-            return;
-        }
-        this.threadOptions.innerHTML = this.availableThreads.map(thread =>
-            `<label class="multi-select-option" style="display: flex; align-items: center; gap: 8px; padding: 8px 12px; cursor: pointer;">
-                <input type="checkbox" value="${thread}"
-                    ${this.selectedThreads.includes(thread) ? 'checked' : ''}
-                    onchange="window.multiThreadManager && window.multiThreadManager.toggleThreadSelection(${thread}, this.checked)">
-                <span>${thread} 线程</span>
-            </label>`
-        ).join('');
-        this.updateSelectedThreadsDisplay();
-    }
-
-    toggleThreadSelection(thread, isSelected) {
-        if (isSelected) {
-            if (!this.selectedThreads.includes(thread)) {
-                this.selectedThreads.push(thread);
-            }
-        } else {
-            this.selectedThreads = this.selectedThreads.filter(t => t !== thread);
-        }
-        this.selectedThreads.sort((a, b) => a - b);
-        this.updateSelectedThreadsDisplay();
-        this.renderChart();
-    }
-
-    updateSelectedThreadsDisplay() {
+    // ========== 更新线程选择器 UI ==========
+    updateThreadSelectorUI() {
         if (!this.selectedThreadsDisplay) return;
         if (this.selectedThreads.length === 0) {
             this.selectedThreadsDisplay.textContent = '未选择';
         } else if (this.selectedThreads.length <= 3) {
-            this.selectedThreadsDisplay.textContent = this.selectedThreads.map(t => `${t}线程`).join(', ');
+            this.selectedThreadsDisplay.textContent = this.selectedThreads.map(t => 
+                t === -1 ? '单线程' : `${t}线程`
+            ).join(', ');
         } else {
             this.selectedThreadsDisplay.textContent = `${this.selectedThreads.length}个线程`;
         }
     }
 
-    selectAllThreads() {
-        this.selectedThreads = [...this.availableThreads];
-        this.renderThreadOptions();
-        this.renderChart();
-    }
-
-    clearAllThreads() {
-        this.selectedThreads = [];
-        this.renderThreadOptions();
-        this.renderChart();
-    }
-
-    initThreadSelector() {
-        if (this.threadSelectorContainer) {
-            this.threadSelectorContainer.style.display = 'block';
-        }
-        if (this.threadSearchInput) {
-            this.threadSearchInput.addEventListener('input', (e) => {
-                this.filterThreadOptions(e.target.value);
-            });
-        }
-    }
-
-    filterThreadOptions(searchTerm) {
-        const options = document.querySelectorAll('.multi-select-option');
-        const term = searchTerm.toLowerCase();
-        options.forEach(option => {
-            const text = option.querySelector('span')?.textContent.toLowerCase() || '';
-            if (term === '' || text.includes(term)) {
-                option.style.display = '';
-            } else {
-                option.style.display = 'none';
-            }
-        });
-    }
-
+    // ========== 选择最新50天 ==========
     selectLatest50Days() {
         this.selectedDates = this.allDates.slice(-50);
         this.updateDatePickerModal();
         this.renderChart();
     }
 
+    // ========== 渲染图表 ==========
     async renderChart(chartInstance) {
         const chart = chartInstance || window.mainChart || echarts.getInstanceByDom(document.getElementById('mainChart'));
         
@@ -295,8 +312,10 @@ class MultiThreadManager {
         if (this.selectedDates.length === 0) {
             this.selectedDates = this.allDates.slice(-50);
         }
+        // 如果未选择线程，默认选择所有线程
         if (this.selectedThreads.length === 0 && this.availableThreads.length > 0) {
-            this.selectedThreads = [this.availableThreads[0]];
+            this.selectedThreads = [...this.availableThreads];
+            this.updateThreadSelectorUI();
         }
 
         chart.showLoading({
@@ -314,7 +333,7 @@ class MultiThreadManager {
                 dates: this.selectedDates,
                 mode: 'multi',
                 chart_type: this.currentChartType,
-                selected_threads: this.selectedThreads,
+                selected_threads: this.selectedThreads,  // 传递选中的线程
             };
             const response = await axios.post('/api/chart/data', requestData);
             console.warn('renderChart: response', response.data.data);
@@ -342,13 +361,15 @@ class MultiThreadManager {
         }
     }
 
+    // ========== 绘制图表 ==========
     drawChart(chart, chartData) {
         if (!chart || chart.isDisposed()) {
             console.error('drawChart: 图表实例无效');
             return;
         }
 
-        const { dates, rules, crash_dates, all_threads, selected_threads } = chartData;
+        // const { dates, rules, crash_dates, all_threads, selected_threads } = chartData;
+        const { dates, rules, crash_dates, } = chartData;
         const normalizedType = (this.currentChartType || 'runtime').toLowerCase();
         const isRuntime = normalizedType === 'runtime' || normalizedType === 'cputime' || normalizedType === 'realtime';
         const yAxisName = isRuntime ? 'Runtime (s)' : 'Memory (MB)';
@@ -377,22 +398,32 @@ class MultiThreadManager {
         };
 
         const threadColors = {
-            0: '#00E5FF', 2: '#A855F7', 4: '#10B981',
-            6: '#8d816b', 8: '#EF4444', 16: '#4102d3',
-            32: '#EC4899', 64: '#14B8A6', 128: '#F97316'
+            '-1': '#00E5FF',
+            0: '#00E5FF', 
+            2: '#A855F7', 
+            4: '#10B981',
+            6: '#8d816b', 
+            8: '#EF4444', 
+            16: '#4102d3',
+            32: '#EC4899', 
+            64: '#14B8A6', 
+            128: '#F97316'
         };
 
-        const visibleThreads = selected_threads || all_threads || [];
+        // 获取可见线程（选中的线程）
+        // const visibleThreads = selected_threads || all_threads || [];
         const series = [];
         let allValidValues = [];
 
-        for (const [seriesName, ruleData] of Object.entries(rules)) {
-            const values = ruleData.values || [];
-            const thread = ruleData.thread || 0;
+        let ruleName = Object.keys(rules)[0];
+        for (const [thread, datas] of Object.entries(rules[ruleName])) {
+            let seriesName = thread;
             const color = threadColors[thread] || '#A855F7';
+            const values = datas.values || {};
+            if (!values) {continue}
             const validValues = values.filter(v => v !== null && v !== undefined);
             allValidValues = allValidValues.concat(validValues);
-
+            
             const dataWithStyle = values.map((val, idx) => {
                 const date = dates[idx];
                 const itemStyle = getItemStyle(date);
@@ -401,7 +432,6 @@ class MultiThreadManager {
                 }
                 return val;
             });
-
             series.push({
                 name: seriesName,
                 type: 'line',
@@ -415,7 +445,37 @@ class MultiThreadManager {
                 emphasis: { focus: 'series' }
             });
         }
+        // for (const [seriesName, ruleData] of Object.entries(rules)) {
+        //     const values = ruleData.values || [];
+        //     const thread = ruleData.thread || 0;
+        //     const color = threadColors[thread] || '#A855F7';
+        //     const validValues = values.filter(v => v !== null && v !== undefined);
+        //     allValidValues = allValidValues.concat(validValues);
 
+        //     const dataWithStyle = values.map((val, idx) => {
+        //         const date = dates[idx];
+        //         const itemStyle = getItemStyle(date);
+        //         if (itemStyle && val !== null && val !== undefined) {
+        //             return { value: val, itemStyle: itemStyle };
+        //         }
+        //         return val;
+        //     });
+            
+        //     series.push({
+        //         name: seriesName,
+        //         type: 'line',
+        //         data: dataWithStyle,
+        //         smooth: false,
+        //         symbol: 'circle',
+        //         symbolSize: 6,
+        //         connectNulls: false,
+        //         lineStyle: { width: 2, color: color },
+        //         itemStyle: { color: color, borderColor: '#0F172A', borderWidth: 1, borderRadius: 4 },
+        //         emphasis: { focus: 'series' }
+        //     });
+        // }
+
+        // 添加平均值线
         if (allValidValues.length > 0) {
             const avgValue = allValidValues.reduce((a, b) => a + b, 0) / allValidValues.length;
             const avgColor = isRuntime ? '#F59E0B' : '#EC4899';
@@ -432,6 +492,7 @@ class MultiThreadManager {
             });
         }
 
+        // 标记崩溃日期
         const markAreas = [];
         if (crashDatesSet.size > 0) {
             let startIndex = -1;
@@ -588,6 +649,7 @@ class MultiThreadManager {
         }
     }
 
+    // ========== 更新统计信息 ==========
     updateStatistics(chartData) {
         const { dates, overall_data } = chartData;
         const normalizedType = (this.currentChartType || 'runtime').toLowerCase();
@@ -636,11 +698,13 @@ class MultiThreadManager {
         });
     }
 
+    // ========== 设置图表类型 ==========
     setChartType(type) {
         this.currentChartType = type;
         this.renderChart();
     }
 
+    // ========== 刷新数据 ==========
     async refreshWithData(rawData, userAddedData) {
         this.rawData = rawData || {};
         this.userAddedData = userAddedData || {};
@@ -649,6 +713,10 @@ class MultiThreadManager {
         this.updateCasenameSelect();
         await this.updateRulesAndDates();
         this.selectedDates = this.allDates.slice(-50);
+        if (this.availableThreads.length > 0) {
+            this.selectedThreads = [...this.availableThreads];
+            this.updateThreadSelectorUI();
+        }
         await this.renderChart();
         this.updateOverview();
     }
@@ -660,14 +728,114 @@ class MultiThreadManager {
         this.selectedDates = this.allDates.slice(-50);
         this.updateCasenameSelect();
         await this.updateRulesAndDates();
+        if (this.availableThreads.length > 0) {
+            this.selectedThreads = [...this.availableThreads];
+            this.updateThreadSelectorUI();
+        }
         await this.renderChart();
         this.updateOverview();
     }
 
+    // ========== 线程选择器辅助方法 ==========
+    renderThreadOptions() {
+        if (!this.threadOptions) return;
+        if (this.availableThreads.length === 0) {
+            this.threadOptions.innerHTML = '<div style="padding: 12px; text-align: center; color: #94A3B8;">暂无线程数据</div>';
+            return;
+        }
+        this.threadOptions.innerHTML = this.availableThreads.map(thread =>
+            `<label class="multi-select-option" style="display: flex; align-items: center; gap: 8px; padding: 8px 12px; cursor: pointer;">
+                <input type="checkbox" value="${thread}"
+                    ${this.selectedThreads.includes(thread) ? 'checked' : ''}
+                    onchange="window.multiThreadManager && window.multiThreadManager.toggleThreadSelection(${thread}, this.checked)">
+                <span>${thread === -1 ? '单线程' : thread + ' 线程'}</span>
+            </label>`
+        ).join('');
+        this.updateSelectedThreadsDisplay();
+    }
+
+    toggleThreadSelection(thread, isSelected) {
+        if (isSelected) {
+            if (!this.selectedThreads.includes(thread)) {
+                this.selectedThreads.push(thread);
+            }
+        } else {
+            this.selectedThreads = this.selectedThreads.filter(t => t !== thread);
+        }
+        this.selectedThreads.sort((a, b) => a - b);
+        this.updateSelectedThreadsDisplay();
+        // 同步更新 SearchableSelect 的选中状态
+        if (this.threadSelect) {
+            this.threadSelect.setValue(this.selectedThreads.map(t => String(t)));
+        }
+        this.renderChart();
+    }
+
+    updateSelectedThreadsDisplay() {
+        if (!this.selectedThreadsDisplay) return;
+        if (this.selectedThreads.length === 0) {
+            this.selectedThreadsDisplay.textContent = '未选择';
+        } else if (this.selectedThreads.length <= 3) {
+            this.selectedThreadsDisplay.textContent = this.selectedThreads.map(t => 
+                t === -1 ? '单线程' : `${t}线程`
+            ).join(', ');
+        } else {
+            this.selectedThreadsDisplay.textContent = `${this.selectedThreads.length}个线程`;
+        }
+    }
+
+    selectAllThreads() {
+        this.selectedThreads = [...this.availableThreads];
+        this.renderThreadOptions();
+        if (this.threadSelect) {
+            this.threadSelect.setValue(this.selectedThreads.map(t => String(t)));
+        }
+        this.renderChart();
+    }
+
+    clearAllThreads() {
+        this.selectedThreads = [];
+        this.renderThreadOptions();
+        if (this.threadSelect) {
+            this.threadSelect.setValue([]);
+        }
+        this.renderChart();
+    }
+
+    initThreadSelector() {
+        if (this.threadSelectorContainer) {
+            this.threadSelectorContainer.style.display = 'block';
+        }
+        if (this.threadSearchInput) {
+            this.threadSearchInput.addEventListener('input', (e) => {
+                this.filterThreadOptions(e.target.value);
+            });
+        }
+    }
+
+    filterThreadOptions(searchTerm) {
+        const options = document.querySelectorAll('.multi-select-option');
+        const term = searchTerm.toLowerCase();
+        options.forEach(option => {
+            const text = option.querySelector('span')?.textContent.toLowerCase() || '';
+            if (term === '' || text.includes(term)) {
+                option.style.display = '';
+            } else {
+                option.style.display = 'none';
+            }
+        });
+    }
+
+    // ========== 事件监听初始化 ==========
     initEventListeners() {
         if (this.ruleSearch) {
             this.ruleSearch.addEventListener('input', () => {
                 this.updateRuleSelect();
+            });
+        }
+        if (this.threadSearch) {
+            this.threadSearch.addEventListener('input', () => {
+                this.updateThreadOptions();
             });
         }
         if (this.latest50Btn) {
@@ -678,6 +846,7 @@ class MultiThreadManager {
         this.initThreadSelector();
     }
 
+    // ========== 日期选择弹窗 ==========
     initDatePickerModal() {
         const modal = document.getElementById('datePickerModal');
         const openBtn = this.datePickerBtn;
@@ -755,6 +924,7 @@ class MultiThreadManager {
         }
     }
 
+    // ========== 添加数据弹窗 ==========
     initAddDataModal() {
         const modal = document.getElementById('addDataModal');
         const openBtn = this.addDataBtn;
@@ -817,6 +987,7 @@ class MultiThreadManager {
         }
     }
 
+    // ========== 工具方法 ==========
     showNoDataMessage(chart) {
         if (chart && !chart.isDisposed()) {
             chart.clear();

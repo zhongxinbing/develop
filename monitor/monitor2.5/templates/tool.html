@@ -32,7 +32,7 @@
 
         <!-- 二级导航（新增“数据对比”） -->
         <div class="mode-nav">
-            <button class="mode-nav-item active" data-mode="single">🧵单线程</button>
+            <!-- <button class="mode-nav-item active" data-mode="single">🧵单线程</button> -->
             <button class="mode-nav-item" data-mode="multi">🌀多线程</button>
             <button class="mode-nav-item" data-mode="thread">⚡线程曲线图</button>
             <button class="mode-nav-item" data-mode="comparison">📊数据对比</button>
@@ -99,6 +99,15 @@
                             <label>📜 Rule</label>
                             <div id="multiRuleSelect" class="searchable-select"></div>
                         </div>
+                        <!-- ========== 新增：线程数选择框 ========== -->
+                        <div class="filter-group">
+                            <label>🧵 线程数（可多选）</label>
+                            <div id="multiThreadSelect" class="searchable-select multi-select"></div>
+                            <div class="form-hint" style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">
+                                支持多选，默认显示所有线程
+                            </div>
+                        </div>
+                        <!-- ========== 结束 ========== -->
                         <div class="filter-actions">
                             <button class="btn-icon" id="multiDatePickerBtn" title="选择日期">选择日期</button>
                             <button class="btn-icon" id="multiLatest50Btn" title="最新50天">最新50天</button>
@@ -147,9 +156,6 @@
             <!-- 中央内容区 -->
             <main class="content-area" id="contentArea">
                 <!-- ===== 对比容器（默认隐藏，由 tool.js 控制显示） ===== -->
-<!-- tool.html - 更新对比容器部分 -->
-
-                <!-- ===== 对比容器 ===== -->
                 <div id="comparisonContainer" style="display: none; width: 100%;">
                     <!-- 子选项卡 -->
                     <div class="comparison-tabs" style="display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 1px solid var(--border-subtle); padding-bottom: 10px;">

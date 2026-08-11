@@ -199,11 +199,9 @@ async function loadData() {
     try {
         showLoading(true);
         const response = await axios.post(`/api/tools/${toolId}/data`);
-
+        console.log('原始数据:', response.data.data);
         if (response.data.success) {
-            showSuccess('正在加载数据，请稍等...');
             const data = response.data.data || {};
-            console.log('原始数据:', data);
             let singleData = {};
             let multiData = {};
             let extraData = {};
@@ -213,7 +211,7 @@ async function loadData() {
                 try {
                     const parsed = JSON.parse(data);
                     if (parsed.single) singleData = parsed.single;
-                    if (parsed.multi) multiData = parsed.multi;
+                    if (parsed.multi) multiData = parsed.single_multi || {};
                     if (parsed.extra) extraData = parsed.extra;
                     if (parsed.user) userData = parsed.user;
                 } catch (e) {
@@ -221,7 +219,7 @@ async function loadData() {
                 }
             } else {
                 if (data.single) singleData = data.single;
-                if (data.multi) multiData = data.multi;
+                if (data.single_multi) multiData = data.single_multi || {};
                 if (data.extra) extraData = data.extra;
                 if (data.user) userData = data.user;
             }
@@ -237,11 +235,11 @@ async function loadData() {
             initMainChart();
 
             // 初始化各管理器（不再自己创建图表实例）
-            if (window.SingleThreadManager) {
-                singleThreadManager = new window.SingleThreadManager();
-                await singleThreadManager.init(singleData, userData, extraData);
-                singleThreadManager.updateOverview();
-            }
+            // if (window.SingleThreadManager) {
+            //     singleThreadManager = new window.SingleThreadManager();
+            //     await singleThreadManager.init(singleData, userData, extraData);
+            //     singleThreadManager.updateOverview();
+            // }
 
             if (window.MultiThreadManager) {
                 multiThreadManager = new window.MultiThreadManager();
@@ -255,7 +253,8 @@ async function loadData() {
             }
 
             // 默认切换到单线程模式
-            await switchToSingleMode();
+            // await switchToSingleMode();
+            await switchToMultiMode();
         } else {
             console.error('加载数据失败:', response.data.error);
             showError('加载数据失败: ' + (response.data.error || '未知错误'));

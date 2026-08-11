@@ -413,7 +413,7 @@ class DataManager:
         self.logger.info(f"前端请求数据 -> 工具：{tool_id}，用例：{casename}，模式：{mode}，图表类型：{chart_type}，规则：{rules}，日期：{dates}，线程：{selected_threads}")
 
         # 获取缓存数据
-        cache_data = self._data_cache.get(f"{tool_id}_parser", {})[1]['multi']
+        cache_data = self._data_cache.get(f"{tool_id}_parser", {})[1]['single_multi']
 
         # 检查日期是否为空
         if not dates:
@@ -424,42 +424,49 @@ class DataManager:
             return {"dates": dates, "rules": {}, "crash_dates": []}
         # 获取图标类型在缓存中的索引位置
 
-        rules_data = {"rules": {}, "crash_dates": [], "dates": []}
-        
-        for rule in rules:
-            if rule not in rules_data["rules"]:
-                if mode == 'single':
-                    rules_data["rules"][rule] = {"dates": [], "values": [], "type": "line", "color": ""}
-                if mode == 'multi':
-                    rules_data["rules"][rule] = {"dates": [], "values": {}, "type": "line", "color": ""}
-            for thread in selected_threads:
-                thread = str(thread)
-                if thread not in cache_data[casename][chart_type][rule]:
+        """"
+            rules_data = {
+                crash_dates: [],
+                dates: [],
+                rules: {
+                    rule: {
+                        thread: {
+                            color: ""
+                            values: []
+                            type: "line"
+                        }
+                    }
+                }
+            }
+        """
+
+        rule_data = {"rules": {}, "crash_dates": [], "dates": []}
+        rule = rules[0]
+
+        if rule not in cache_data[casename][chart_type]:
+            return {"dates": dates, "rules": {}, "crash_dates": []}
+
+        if rule not in rule_data["rules"]:
+            rule_data["rules"][rule] = {}
+
+        for thread in selected_threads:
+            thread = str(thread)
+            if thread not in cache_data[casename][chart_type][rule]:
+                continue
+            if thread not in rule_data["rules"][rule]:
+                rule_data["rules"][rule][thread] = {"color": "", "values": [], "type": "line"}
+            for date in dates:
+                if date not in cache_data[casename][chart_type][rule][thread]["date"]:
                     continue
-                for date in dates:
-                    
-                    if date not in cache_data[casename][chart_type][rule][thread]["date"]:
-                        continue
-                    index = cache_data[casename][chart_type][rule][thread]["date"].index(date)
-                    rules_data["dates"].append(date)
-                    if mode == 'single':
-                        rules_data["rules"][rule]["dates"].append(date)
-                        rules_data["rules"][rule]["values"].append(cache_data[casename][chart_type][rule][thread]["data"][index])
-                    elif mode == 'multi':
-                        rules_data["rules"][rule]["dates"].append(date)
-                        if thread not in rules_data["rules"][rule]["values"]:
-                            rules_data["rules"][rule]["values"][thread] = []
-                        rules_data["rules"][rule]["values"][thread].append(cache_data[casename][chart_type][rule][thread]["data"][index])
-
-                    rules_data["all_threads"] = selected_threads
-                    if 'crash_dates' not in cache_data[casename]:
-                        rules_data["crash_dates"] = []
-                    else:
-                        if date in cache_data[casename]['crash_dates']:
-                            rules_data["crash_dates"].append(date)
-
-        red(f"rules_data: {rules_data}, mode: {mode}")
-        return rules_data
+                rule_data["dates"].append(date)
+                index = cache_data[casename][chart_type][rule][thread]["date"].index(date)
+                rule_data["rules"][rule][thread]["values"].append(cache_data[casename][chart_type][rule][thread]["data"][index])
+                if 'crash_dates' not in cache_data[casename]:
+                    rule_data["crash_dates"] = []
+                else:
+                    if date in cache_data[casename]['crash_dates']:
+                        rule_data["crash_dates"].append(date)
+        return rule_data
         
 
     # ==================== 数据加载接口 ====================
