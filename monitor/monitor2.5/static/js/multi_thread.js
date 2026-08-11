@@ -71,7 +71,7 @@ class MultiThreadManager {
                     this.selectedDates = this.allDates.slice(-50);
                     // 默认选择所有线程
                     if (this.availableThreads.length > 0) {
-                        this.selectedThreads = [...this.availableThreads];
+                        this.selectedThreads = [-1];
                         this.updateThreadSelectorUI();
                     }
                     const chart = window.mainChart || echarts.getInstanceByDom(document.getElementById('mainChart'));
@@ -122,7 +122,7 @@ class MultiThreadManager {
 
         // 默认选择所有线程
         if (this.availableThreads.length > 0) {
-            this.selectedThreads = [...this.availableThreads];
+            this.selectedThreads = [-1];
             this.updateThreadSelectorUI();
         }
 
@@ -194,7 +194,7 @@ class MultiThreadManager {
         
         // 如果还没有选择线程，默认选择所有线程
         if (this.selectedThreads.length === 0 && this.availableThreads.length > 0) {
-            this.selectedThreads = [...this.availableThreads];
+            this.selectedThreads = [-1];
         }
         
         // 更新线程选择器
@@ -250,7 +250,8 @@ class MultiThreadManager {
             this.threadSelect.setValue(selectedValues);
         } else if (this.availableThreads.length > 0) {
             // 默认选择所有线程
-            this.selectedThreads = [...this.availableThreads];
+            // this.selectedThreads = [...this.availableThreads];
+            this.selectedThreads = [-1];
             this.threadSelect.setValue(this.availableThreads.map(t => String(t)));
         }
     }
@@ -314,7 +315,8 @@ class MultiThreadManager {
         }
         // 如果未选择线程，默认选择所有线程
         if (this.selectedThreads.length === 0 && this.availableThreads.length > 0) {
-            this.selectedThreads = [...this.availableThreads];
+            // this.selectedThreads = [...this.availableThreads];
+            this.selectedThreads = [-1];
             this.updateThreadSelectorUI();
         }
 
@@ -687,7 +689,9 @@ class MultiThreadManager {
         await this.updateRulesAndDates();
         this.selectedDates = this.allDates.slice(-50);
         if (this.availableThreads.length > 0) {
-            this.selectedThreads = [...this.availableThreads];
+            // this.selectedThreads = [...this.availableThreads];
+            this.selectedThreads = [-1];
+
             this.updateThreadSelectorUI();
         }
         await this.renderChart();
@@ -702,7 +706,7 @@ class MultiThreadManager {
         this.updateCasenameSelect();
         await this.updateRulesAndDates();
         if (this.availableThreads.length > 0) {
-            this.selectedThreads = [...this.availableThreads];
+            this.selectedThreads = [-1];
             this.updateThreadSelectorUI();
         }
         await this.renderChart();
