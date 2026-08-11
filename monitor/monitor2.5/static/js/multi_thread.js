@@ -398,16 +398,16 @@ class MultiThreadManager {
         };
 
         const threadColors = {
-            '-1': '#00E5FF',
-            0: '#00E5FF', 
-            2: '#A855F7', 
-            4: '#10B981',
-            6: '#8d816b', 
-            8: '#EF4444', 
-            16: '#4102d3',
-            32: '#EC4899', 
-            64: '#14B8A6', 
-            128: '#F97316'
+            '-1': '#00E5FF',   // 单线程 - 青色
+            0: '#00E5FF',      // 0线程 - 青色
+            2: '#A855F7',      // 2线程 - 紫色
+            4: '#10B981',      // 4线程 - 翠绿
+            6: '#F59E0B',      // 6线程 - 橙色
+            8: '#EF4444',      // 8线程 - 红色
+            16: '#EC4899',     // 16线程 - 粉色
+            32: '#14B8A6',     // 32线程 - 蓝绿
+            64: '#6366F1',     // 64线程 - 靛蓝
+            128: '#F97316',    // 128线程 - 橙红
         };
 
         // 获取可见线程（选中的线程）
@@ -416,9 +416,11 @@ class MultiThreadManager {
         let allValidValues = [];
 
         let ruleName = Object.keys(rules)[0];
+
         for (const [thread, datas] of Object.entries(rules[ruleName])) {
+        console.warn(datas);
             let seriesName = thread;
-            const color = threadColors[thread] || '#A855F7';
+            const color = datas.color || threadColors[thread];
             const values = datas.values || {};
             if (!values) {continue}
             const validValues = values.filter(v => v !== null && v !== undefined);
@@ -434,7 +436,7 @@ class MultiThreadManager {
             });
             series.push({
                 name: seriesName,
-                type: 'line',
+                type: datas.type || 'line',
                 data: dataWithStyle,
                 smooth: false,
                 symbol: 'circle',
@@ -445,39 +447,10 @@ class MultiThreadManager {
                 emphasis: { focus: 'series' }
             });
         }
-        // for (const [seriesName, ruleData] of Object.entries(rules)) {
-        //     const values = ruleData.values || [];
-        //     const thread = ruleData.thread || 0;
-        //     const color = threadColors[thread] || '#A855F7';
-        //     const validValues = values.filter(v => v !== null && v !== undefined);
-        //     allValidValues = allValidValues.concat(validValues);
-
-        //     const dataWithStyle = values.map((val, idx) => {
-        //         const date = dates[idx];
-        //         const itemStyle = getItemStyle(date);
-        //         if (itemStyle && val !== null && val !== undefined) {
-        //             return { value: val, itemStyle: itemStyle };
-        //         }
-        //         return val;
-        //     });
-            
-        //     series.push({
-        //         name: seriesName,
-        //         type: 'line',
-        //         data: dataWithStyle,
-        //         smooth: false,
-        //         symbol: 'circle',
-        //         symbolSize: 6,
-        //         connectNulls: false,
-        //         lineStyle: { width: 2, color: color },
-        //         itemStyle: { color: color, borderColor: '#0F172A', borderWidth: 1, borderRadius: 4 },
-        //         emphasis: { focus: 'series' }
-        //     });
-        // }
 
         // 添加平均值线
         if (allValidValues.length > 0) {
-            const avgValue = allValidValues.reduce((a, b) => a + b, 0) / allValidValues.length;
+            const avgValue = allValidValues.reduce((a, b) => a + Number(b), 0) / allValidValues.length;
             const avgColor = isRuntime ? '#F59E0B' : '#EC4899';
             series.push({
                 name: '平均值',

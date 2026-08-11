@@ -439,12 +439,13 @@ class DataManager:
                 }
             }
         """
+        colors = {'-1': '#00E5FF','0': '#00E5FF', '2': '#A855F7', '4': '#10B981', '6': '#F59E0B', '8': '#EF4444', '16': '#EC4899', '32': '#14B8A6', '64': '#6366F1', '128': '#F97316', };
 
         rule_data = {"rules": {}, "crash_dates": [], "dates": []}
         rule = rules[0]
 
         if rule not in cache_data[casename][chart_type]:
-            return {"dates": dates, "rules": {}, "crash_dates": []}
+            return {"dates": [], "rules": {}, "crash_dates": []}
 
         if rule not in rule_data["rules"]:
             rule_data["rules"][rule] = {}
@@ -454,7 +455,8 @@ class DataManager:
             if thread not in cache_data[casename][chart_type][rule]:
                 continue
             if thread not in rule_data["rules"][rule]:
-                rule_data["rules"][rule][thread] = {"color": "", "values": [], "type": "line"}
+                rule_data["rules"][rule][thread] = {"color": colors[thread], "values": [], "type": "line"}
+                print(thread, colors[thread])
             for date in dates:
                 if date not in cache_data[casename][chart_type][rule][thread]["date"]:
                     continue
