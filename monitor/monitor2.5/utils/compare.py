@@ -8,7 +8,8 @@ from datetime import datetime
 
 from config import DATA_DIR
 from utils.common import load_tool_data, save_tool_data, deep_merge
-from utils.log import get_logger
+from utils.log import *
+from utils.data_manager import data_manager
 
 logger = get_logger(__name__)
 
@@ -23,7 +24,7 @@ class DataComparer:
                 tool_id: str,
                 casename: str,
                 dimension: str = None,
-                rule: str = None,
+                rules: List[str] = None,
                 threads: List[int] = None,
                 date1: str = None,
                 date2: str = None,
@@ -63,23 +64,24 @@ class DataComparer:
             return {'success': False, 'error': '单线程对比需要选择两个日期'}
 
         # 获取数据路径
-        data_path = DATA_DIR / tool_id / "original" / "single_multi" / casename
-        if not data_path.exists():
+        case_data = data_manager._data_cache[f"{tool_id}_parser"][1]['single_multi'][casename]
+
+        if not case_data:
             return {'success': False, 'error': f'找不到用例数据: {casename}'}
 
         # 确定对比维度
-        dimensions = self._resolve_dimensions(dimension, data_path)
+        dimensions = self._resolve_dimensions(dimension, case_data)
         if not dimensions:
             return {'success': False, 'error': '没有可用的对比维度'}
 
         # 确定规则
-        all_rules = self._get_all_rules(data_path, dimensions)
-        rules = self._resolve_rules(rule, all_rules)
+        all_rules = self._get_all_rules(case_data, dimensions)
+        rules = self._resolve_rules(rules, all_rules)
         if not rules:
             return {'success': False, 'error': '没有可用的规则'}
 
         # 确定线程
-        all_threads = self._get_all_threads(data_path, dimensions, rules)
+        all_threads = self._get_all_threads(case_data, dimensions, rules)
         thread_list = self._resolve_threads(threads, all_threads)
         if not thread_list:
             return {'success': False, 'error': '没有可用的线程数据'}
@@ -87,12 +89,12 @@ class DataComparer:
         # 执行对比
         if is_multi_thread or len(thread_list) > 1:
             result = self._perform_thread_comparison(
-                data_path, casename, dimensions, rules, thread_list, date1,
+                case_data, casename, dimensions, rules, thread_list, date1,
                 runtime_threshold, memory_threshold, error_mode
             )
         else:
             result = self._perform_single_thread_comparison(
-                data_path, casename, dimensions, rules, thread_list[0], date1, date2,
+                case_data, casename, dimensions, rules, thread_list[0], date1, date2,
                 runtime_threshold, memory_threshold, error_mode
             )
 
@@ -100,49 +102,36 @@ class DataComparer:
 
     # ==================== 辅助方法 ====================
 
-    def _resolve_dimensions(self, dimension: Optional[str], data_path: Path) -> List[str]:
+    def _resolve_dimensions(self, dimension: Optional[str], case_data: Dict[str, Any]) -> List[str]:
         """解析对比维度"""
-        all_dimensions = ['cputime', 'realtime', 'peakmem', 'incmem', 'realtimeincmem']
-        available = [d for d in all_dimensions if (data_path / d).exists()]
 
-        if dimension and dimension in available:
+        if dimension in case_data:
             return [dimension]
-        return available
+        return {}
 
-    def _get_all_rules(self, data_path: Path, dimensions: List[str]) -> List[str]:
-        """获取所有规则"""
-        rules = set()
-        for dim in dimensions:
-            dim_path = data_path / dim
-            if dim_path.exists():
-                for file in dim_path.glob('*.json'):
-                    rules.add(file.stem)
+    def _get_all_rules(self, case_data: Path, dimensions: List[str]) -> List[str]:
+        """获取 dimensions 下的所有规则"""
+
+        rules = case_data[dimensions[0]].keys()
         return sorted(list(rules))
 
-    def _resolve_rules(self, rule: Optional[str], all_rules: List[str]) -> List[str]:
+    def _resolve_rules(self, rules: List[str], all_rules: Dict[str, Any]) -> List[str]:
         """解析规则"""
-        if rule and rule != 'all' and rule in all_rules:
-            return [rule]
-        return all_rules
 
-    def _get_all_threads(self, data_path: Path, dimensions: List[str], rules: List[str]) -> List[int]:
+        if rules[0] == 'all':
+            return [r for r in all_rules]
+        rule_names = []
+        for rule in rules:
+            if rule in all_rules:
+                rule_names.append(rule)
+
+        return rule_names
+
+    def _get_all_threads(self, case_data: Path, dimensions: List[str], rules: List[str]) -> List[int]:
         """获取所有线程数"""
         threads = set()
-        for dim in dimensions:
-            for rule in rules:
-                rule_file = data_path / dim / f"{rule}.json"
-                if rule_file.exists():
-                    data = load_tool_data(rule_file)
-                    if data and 'rules' in data:
-                        for rule_key in data['rules']:
-                            # 从规则名称中提取线程数
-                            if '(' in rule_key and ')' in rule_key:
-                                try:
-                                    thread_str = rule_key.split('(')[1].split(')')[0]
-                                    if thread_str.isdigit() or thread_str == '-1':
-                                        threads.add(int(thread_str))
-                                except (ValueError, IndexError):
-                                    pass
+        for rule in rules:
+            threads.update(case_data[dimensions[0]][rule].keys())
         return sorted(list(threads), key=lambda x: -1 if x == -1 else x)
 
     def _resolve_threads(self, threads: Optional[List[int]], all_threads: List[int]) -> List[int]:
@@ -150,8 +139,8 @@ class DataComparer:
         if threads:
             valid = [t for t in threads if t in all_threads]
             if valid:
-                return valid
-        return all_threads
+                return sorted(valid)
+        return sorted(all_threads)
 
     # ==================== 单线程对比 ====================
 
@@ -242,76 +231,133 @@ class DataComparer:
 
     # ==================== 多线程对比 ====================
 
-    def _perform_thread_comparison(self, data_path: Path, casename: str,
+    def _perform_thread_comparison(self, case_data: Dict, casename: str,
                                    dimensions: List[str], rules: List[str],
                                    thread_list: List[int], date: str,
                                    runtime_threshold: float, memory_threshold: float,
                                    error_mode: str) -> Dict:
-        """多线程对比 - 同一日期下不同线程的对比"""
+        """
+        多线程对比 - 同一日期下不同线程的对比
+        数据显示
+        rule | -1 | 2 | (-1)-2变化情况| 4 | “2-4”的变化情况 | 6 | 4-6变化情况 | 8 | 8-8变化情况 | 10 | 10-10变化情况
+        """
         comparison_results = []
         total_comparisons = 0
-
+        title_row = ["rule" ]
+        # 生成标题行
+        for thread in thread_list:
+            title_row.append(f"线程{thread}")
+        thread_num = len(title_row) - 1
+        add_num = thread_num - 1
+        title_len = thread_num + add_num + 1
+        index = 3
+        while len(title_row) < title_len:
+            if index == 3:
+                title_row.insert(index, f"{title_row[index-2]}->{title_row[index-1]}")
+            else:
+                title_row.insert(index, f"{title_row[index-3]}->{title_row[index-1]}")
+            index += 2
+        comparison_results.append(title_row)
+        # 生成对比行
         for rule in rules:
-            row = [rule]
-            has_data = False
-            thread_values = {}
+            rule_data = case_data[dimensions[0]][rule]
+            rule_comparison_results = [rule]
+            last_thread_data = None
+            for thread in thread_list:
+                # 获取到这个线程的数据
+                thread_data = rule_data.get(thread, {})
 
-            for dim in dimensions:
-                rule_file = data_path / dim / f"{rule}.json"
-                if not rule_file.exists():
-                    continue
+                if date not in thread_data:
+                    data = "NA"
+                else:
+                    date_index = thread_data.get(date, []).index(date)
+                    # 这个 rule 的这个 线程 这个date 的数据
+                    data = thread_data.get(data)[date_index]
+                rule_comparison_results.append(data)
+                if last_thread_data is not None:
+                    if data == "NA" or last_thread_data == "NA":
+                        diff = "NA"
+                    else:
+                        # 计算差值
+                        if error_mode == 'percentage':
+                            # 百分比
+                            diff = round((data - last_thread_data) / last_thread_data * 100, 2)
+                        else:
+                            # 绝对值
+                            diff = data - last_thread_data
+                    rule_comparison_results.append(diff)
+                else:
+                    # 第一个线程，直接添加数据
+                    rule_comparison_results.append(data)
+                last_thread_data = data
+            comparison_results.append(rule_comparison_results)
 
-                rule_data = load_tool_data(rule_file)
-                if not rule_data or 'rules' not in rule_data:
-                    continue
+        red(comparison_results)
 
-                for rule_key, rule_info in rule_data['rules'].items():
-                    thread_num = self._extract_thread_from_key(rule_key)
-                    if thread_num is None or thread_num not in thread_list:
-                        continue
 
-                    dates = rule_info.get('dates', [])
-                    values = rule_info.get('values', [])
 
-                    try:
-                        idx = dates.index(date)
-                        val = values[idx] if idx < len(values) else None
-                    except ValueError:
-                        continue
+        # for rule in rules:
+        #     row = [rule]
+        #     has_data = False
+        #     thread_values = {}
 
-                    if val is not None:
-                        thread_values[thread_num] = val
+        #     for dim in dimensions:
+        #         rule_file = data_path / dim / f"{rule}.json"
+        #         if not rule_file.exists():
+        #             continue
 
-            if not thread_values:
-                continue
+        #         rule_data = load_tool_data(rule_file)
 
-            # 计算平均值作为基准
-            avg_val = sum(thread_values.values()) / len(thread_values)
+        #         if not rule_data or 'rules' not in rule_data:
+        #             continue
 
-            # 对每个线程计算与平均值的差异
-            sorted_threads = sorted(thread_list, key=lambda x: -1 if x == -1 else x)
-            for t in sorted_threads:
-                val = thread_values.get(t)
-                if val is None:
-                    continue
+        #         for rule_key, rule_info in rule_data['rules'].items():
+        #             thread_num = self._extract_thread_from_key(rule_key)
+        #             if thread_num is None or thread_num not in thread_list:
+        #                 continue
 
-                diff = val - avg_val
-                diff_percent = 0 if avg_val == 0 else round((diff / avg_val) * 100, 2)
-                diff_value = diff_percent if error_mode == 'percentage' else diff
+        #             dates = rule_info.get('dates', [])
+        #             values = rule_info.get('values', [])
 
-                # 使用 Runtime 阈值判断状态（多线程对比使用 Runtime 阈值）
-                status = self._get_status(diff_value, True, runtime_threshold, memory_threshold)
+        #             try:
+        #                 idx = dates.index(date)
+        #                 val = values[idx] if idx < len(values) else None
+        #             except ValueError:
+        #                 continue
 
-                display_diff = diff_percent if error_mode == 'percentage' else diff
-                row.append(f"{t}线程")
-                row.append(round(val, 2))
-                row.append(round(display_diff, 2))
-                row.append(status)
-                has_data = True
-                total_comparisons += 1
+        #             if val is not None:
+        #                 thread_values[thread_num] = val
 
-            if has_data:
-                comparison_results.append(row)
+        #     if not thread_values:
+        #         continue
+
+        #     # 计算平均值作为基准
+        #     avg_val = sum(thread_values.values()) / len(thread_values)
+
+        #     # 对每个线程计算与平均值的差异
+        #     sorted_threads = sorted(thread_list, key=lambda x: -1 if x == -1 else x)
+        #     for t in sorted_threads:
+        #         val = thread_values.get(t)
+        #         if val is None:
+        #             continue
+
+        #         diff = val - avg_val
+        #         diff_percent = 0 if avg_val == 0 else round((diff / avg_val) * 100, 2)
+        #         diff_value = diff_percent if error_mode == 'percentage' else diff
+
+        #         # 使用 Runtime 阈值判断状态（多线程对比使用 Runtime 阈值）
+        #         status = self._get_status(diff_value, True, runtime_threshold, memory_threshold)
+
+        #         display_diff = diff_percent if error_mode == 'percentage' else diff
+        #         row.append(f"{t}线程")
+        #         row.append(round(val, 2))
+        #         row.append(round(display_diff, 2))
+        #         row.append(status)
+        #         has_data = True
+        #         total_comparisons += 1
+
+        #     if has_data:
+        #         comparison_results.append(row)
 
         return {
             'statistics': {
@@ -383,7 +429,7 @@ class DataComparer:
                     casename: str,
                     date1: str = None,
                     date2: str = None,
-                    compare_mode: str = 'all',
+                    compare_mode: List[str] = ['all'],
                     dimension: str = None,
                     runtime_threshold: float = 0,
                     memory_threshold: float = 0,
@@ -398,7 +444,7 @@ class DataComparer:
             tool_id=tool_id,
             casename=casename,
             dimension=dimension,
-            rule=compare_mode,
+            rules=compare_mode,
             threads=threads,
             date1=date1,
             date2=date2,
