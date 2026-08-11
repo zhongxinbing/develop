@@ -12571,3 +12571,59 @@ FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'E:\\'
 2026-08-07 08:55:31 - ERROR - dynamic_module_elint_-1802726744493771537 - elint.py:826 - 读取CSV文件失败 C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\test\lint_cpu.csv: [Errno 2] No such file or directory: 'C:\\Users\\xbzhong\\Desktop\\lint\\script\\monitor\\develop\\monitor\\test\\lint_cpu.csv'
 2026-08-07 08:55:54 - ERROR - dynamic_module_elint_-1512520303260192053 - elint.py:826 - 读取CSV文件失败 C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\test\lint_mem.csv: [Errno 2] No such file or directory: 'C:\\Users\\xbzhong\\Desktop\\lint\\script\\monitor\\develop\\monitor\\test\\lint_mem.csv'
 2026-08-07 08:55:54 - ERROR - dynamic_module_elint_-1512520303260192053 - elint.py:826 - 读取CSV文件失败 C:\Users\xbzhong\Desktop\lint\script\monitor\develop\monitor\test\lint_cpu.csv: [Errno 2] No such file or directory: 'C:\\Users\\xbzhong\\Desktop\\lint\\script\\monitor\\develop\\monitor\\test\\lint_cpu.csv'
+2026-08-11 08:46:35 - ERROR - utils.data_manager - data_manager.py:357 - 启动文件监听器失败: [WinError 3] 系统找不到指定的路径。: 'E:\\'
+Traceback (most recent call last):
+  File "c:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\utils\data_manager.py", line 354, in init_file_watcher
+    watcher.start()
+    ~~~~~~~~~~~~~^^
+  File "c:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\utils\file_watcher.py", line 146, in start
+    os.makedirs(path, exist_ok=True)
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen os>", line 218, in makedirs
+  File "<frozen os>", line 218, in makedirs
+  File "<frozen os>", line 218, in makedirs
+  [Previous line repeated 2 more times]
+  File "<frozen os>", line 228, in makedirs
+FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'E:\\'
+2026-08-11 08:46:36 - ERROR - utils.data_manager - data_manager.py:357 - 启动文件监听器失败: [WinError 3] 系统找不到指定的路径。: 'E:\\'
+Traceback (most recent call last):
+  File "c:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\utils\data_manager.py", line 354, in init_file_watcher
+    watcher.start()
+    ~~~~~~~~~~~~~^^
+  File "c:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\utils\file_watcher.py", line 146, in start
+    os.makedirs(path, exist_ok=True)
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen os>", line 218, in makedirs
+  File "<frozen os>", line 218, in makedirs
+  File "<frozen os>", line 218, in makedirs
+  [Previous line repeated 2 more times]
+  File "<frozen os>", line 228, in makedirs
+FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'E:\\'
+2026-08-11 08:46:37 - ERROR - utils.data_manager - data_manager.py:357 - 启动文件监听器失败: [WinError 3] 系统找不到指定的路径。: 'E:\\'
+Traceback (most recent call last):
+  File "c:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\utils\data_manager.py", line 354, in init_file_watcher
+    watcher.start()
+    ~~~~~~~~~~~~~^^
+  File "c:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\utils\file_watcher.py", line 146, in start
+    os.makedirs(path, exist_ok=True)
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen os>", line 218, in makedirs
+  File "<frozen os>", line 218, in makedirs
+  File "<frozen os>", line 218, in makedirs
+  [Previous line repeated 2 more times]
+  File "<frozen os>", line 228, in makedirs
+FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'E:\\'
+2026-08-11 08:46:57 - ERROR - utils.data_manager - data_manager.py:357 - 启动文件监听器失败: [WinError 3] 系统找不到指定的路径。: 'E:\\'
+Traceback (most recent call last):
+  File "c:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\utils\data_manager.py", line 354, in init_file_watcher
+    watcher.start()
+    ~~~~~~~~~~~~~^^
+  File "c:\Users\xbzhong\Desktop\lint\script\develop\monitor\monitor2.5\utils\file_watcher.py", line 146, in start
+    os.makedirs(path, exist_ok=True)
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen os>", line 218, in makedirs
+  File "<frozen os>", line 218, in makedirs
+  File "<frozen os>", line 218, in makedirs
+  [Previous line repeated 2 more times]
+  File "<frozen os>", line 228, in makedirs
+FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'E:\\'
