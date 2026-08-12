@@ -266,13 +266,14 @@ class DataComparer:
             for thread in thread_list:
                 # 获取到这个线程的数据
                 thread_data = rule_data.get(thread, {})
-
-                if date not in thread_data:
+                dates = thread_data['date']
+                datas = thread_data['data']
+                if date not in dates:
                     data = "NA"
                 else:
-                    date_index = thread_data.get(date, []).index(date)
+                    date_index = dates.index(date)
                     # 这个 rule 的这个 线程 这个date 的数据
-                    data = thread_data.get(data)[date_index]
+                    data = datas[date_index]
                 rule_comparison_results.append(data)
                 if last_thread_data is not None:
                     if data == "NA" or last_thread_data == "NA":
@@ -291,7 +292,7 @@ class DataComparer:
                     rule_comparison_results.append(data)
                 last_thread_data = data
             comparison_results.append(rule_comparison_results)
-
+            total_comparisons += 1
         red(comparison_results)
 
 
