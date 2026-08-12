@@ -67,12 +67,16 @@ class DataComparer:
 
         # 获取数据
         try:
-            cache_key = f"{tool_id}_parser"
-            cache_data = data_manager._data_cache.get(cache_key, (None, {}))[1]
+            # 缓存 key 必须与 data_manager 写入时一致（load_single_or_multi_chart 使用 tool_id）
+            cache_key = f"{tool_id}"
+            cache_entry = data_manager._data_cache.get(cache_key, None)
+            if not cache_entry:
+                return {'success': False, 'error': '数据未加载，请先刷新数据'}
+            cache_data = cache_entry[1]
             if not cache_data:
                 return {'success': False, 'error': '数据未加载，请先刷新数据'}
             
-            case_data = cache_data.get('single_multi', {}).get(casename)
+            case_data = cache_data.get('paser_data', {}).get('single_multi', {}).get(casename)
             if not case_data:
                 return {'success': False, 'error': f'找不到用例数据: {casename}'}
         except Exception as e:

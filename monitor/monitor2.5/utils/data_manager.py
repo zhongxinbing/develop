@@ -4,6 +4,8 @@
 """
 import concurrent.futures
 import importlib.util
+import json
+import os
 import time
 import threading
 from pathlib import Path
@@ -62,6 +64,10 @@ class DataManager:
         # 版本信息缓存
         self._version_cache: Dict[str, Dict] = {}
         
+        # 文件扫描器缓存（避免每次请求重复全量扫描文件系统）
+        self._scanner_cache: Dict[str, FileSystemScanner] = {}
+        self._scanner_cache_lock = threading.Lock()
+        
         # 文件监听器
         self._watcher: Optional[FileWatcher] = None
         self._watcher_paths: Set[str] = set()
@@ -97,7 +103,7 @@ class DataManager:
     def _save_version_info(self, tool_id: str, data_type: str, version_info: Dict):
         """保存版本信息"""
         version_file = self._get_version_file_path(tool_id, data_type)
-        cache_key = f"{tool_id}"
+        cache_key = f"{tool_id}:{data_type}"
         self._version_cache[cache_key] = version_info
         save_tool_data(version_file, version_info)
 
@@ -193,15 +199,25 @@ class DataManager:
     def duplicate_removal(self, data: Dict) -> Dict:
         """去重"""
         for casename,casedata in data.items():
-            threads = sorted(list(set(casedata["threads"])))
-            dates = sorted(list(set(casedata["dates"])))
+            threads = sorted(list(set(casedata.get("threads", []))))
+            dates = sorted(list(set(casedata.get("dates", []))))
             metrics = []
-            for item in casedata["metrics"]:
+            for item in casedata.get("metrics", []):
                 if item not in metrics:
                     metrics.append(item)
             casedata["threads"] = threads
             casedata["dates"] = dates
             casedata["metrics"] = metrics
+            # 修复 deep_merge 时 rules_data 中指标列表被 append 累积的问题：
+            # 同一 (rule, date, thread) 在增量合并时会被追加为旧值+新值，
+            # 这里保留最后一段（新值），保证数据长度与 metrics 一致。
+            n = len(metrics) or 5
+            rules_data = casedata.get("rules_data", {})
+            for rule, date_data in rules_data.items():
+                for date, thread_data in date_data.items():
+                    for thread, values in thread_data.items():
+                        if isinstance(values, list) and len(values) > n:
+                            thread_data[thread] = values[-n:]
         return data
 
     def get_all_data(self, tool_id: str, all_incremental_data: Dict, data_type: str):
@@ -232,13 +248,23 @@ class DataManager:
             self.logger.error(f"无法加载 {data_type} 数据处理函数")
             return {}
         
-        # 创建文件扫描器
-        scanner = FileSystemScanner(
-            data_root,
-            max_depth=tool_config.get(f'{data_type}_max_depth'),
-            include_patterns=[rf"{tool_config.get(f'{data_type}_file_pattern')}"],
-            exclude_patterns=[r"\.tmp$", r"\.swp$"]
-        )
+        # 创建文件扫描器（复用实例，FileSystemScanner 内部有 TTL 缓存，
+        # 避免数据量大时每次请求都递归扫描整个目录树）
+        max_depth = tool_config.get(f'{data_type}_max_depth')
+        file_pattern = tool_config.get(f'{data_type}_file_pattern')
+        scanner_key = f"{tool_id}:{data_type}:{data_root}:{max_depth}:{file_pattern}"
+        with self._scanner_cache_lock:
+            scanner = self._scanner_cache.get(scanner_key)
+        if scanner is None:
+            scanner = FileSystemScanner(
+                data_root,
+                max_depth=max_depth,
+                include_patterns=[rf"{file_pattern}"],
+                exclude_patterns=[r"\.tmp$", r"\.swp$"],
+                cache_ttl=self._cache_ttl_seconds
+            )
+            with self._scanner_cache_lock:
+                self._scanner_cache[scanner_key] = scanner
 
         # 获取需要处理的文件
         files_to_process, all_files = self._get_files_to_process(tool_id, data_type, data_root, scanner)
@@ -277,6 +303,23 @@ class DataManager:
         except Exception as e:
             self.logger.exception(f"保存数据失败: {e}")
 
+    def _save_paser_data(self, tool_id: str, data_parsers: Dict):
+        """保存解析结果到磁盘，供服务重启后直接加载，避免大数据量全量重建"""
+        try:
+            paser_file = DATA_DIR / tool_id / f'{tool_id}_paser.json'
+            paser_file.parent.mkdir(parents=True, exist_ok=True)
+            payload = {
+                'single_multi': data_parsers.get('single_multi', {}),
+                'thread': data_parsers.get('thread', {}),
+            }
+            tmp = paser_file.with_suffix(paser_file.suffix + '.tmp')
+            with open(tmp, 'w', encoding='utf-8') as f:
+                json.dump(payload, f, ensure_ascii=False, separators=(',', ':'))
+            os.replace(str(tmp), str(paser_file))
+            self.logger.info(f"解析结果保存完成: {paser_file}")
+        except Exception as e:
+            self.logger.exception(f"保存解析结果失败: {e}")
+
     # ==================== 文件监听集成 ====================
 
     def _on_file_change(self, events: List[FileChangeEvent]):
@@ -313,6 +356,9 @@ class DataManager:
         # 简化实现：清除所有缓存
         with self._cache_lock:
             self._data_cache.clear()
+        # 文件已变更，文件系统扫描器缓存同步失效，避免读到旧的文件列表
+        with self._scanner_cache_lock:
+            self._scanner_cache.clear()
         
         self.logger.info("缓存已清除，等待下次请求时重新加载")
 
@@ -412,8 +458,11 @@ class DataManager:
         selected_threads = front_data.get('selected_threads', [])
         self.logger.info(f"前端请求数据 -> 工具：{tool_id}，用例：{casename}，模式：{mode}，图表类型：{chart_type}，规则：{rules}，日期：{dates}，线程：{selected_threads}")
 
-        # 获取缓存数据
-        cache_data = self._data_cache.get(f"{tool_id}", {})[1]['paser_data']['single_multi']
+        # 获取缓存数据（缓存未命中时安全返回，避免 IndexError）
+        cached_entry = self._data_cache.get(tool_id, None)
+        if not cached_entry:
+            return {"dates": dates, "rules": {}, "crash_dates": []}
+        cache_data = cached_entry[1].get('paser_data', {}).get('single_multi', {})
 
         # 检查日期是否为空
         if not dates:
@@ -442,6 +491,8 @@ class DataManager:
         colors = {'-1': '#00E5FF','0': '#00E5FF', '2': '#A855F7', '4': '#10B981', '6': '#F59E0B', '8': '#EF4444', '16': '#EC4899', '32': '#14B8A6', '64': '#6366F1', '128': '#F97316', };
 
         rule_data = {"rules": {}, "crash_dates": [], "dates": []}
+        if not rules:
+            return rule_data
         rule = rules[0]
 
         if rule not in cache_data[casename][chart_type]:
@@ -450,24 +501,56 @@ class DataManager:
         if rule not in rule_data["rules"]:
             rule_data["rules"][rule] = {}
 
+        # 请求日期去重，保持前端传入顺序，避免多线程时 x 轴重复
+        ordered_dates = []
+        for date in dates:
+            if date not in ordered_dates:
+                ordered_dates.append(date)
+
+        # crash 日期集合：取当前选中线程对应的 crash 日期（值为日期列表）
+        crash_map = cache_data[casename].get('crash_dates', {})
+        if not isinstance(crash_map, dict):
+            crash_map = {}
+        crash_set = set()
+        for th in selected_threads:
+            crash_set.update(crash_map.get(str(th), []) or [])
+
+        # 为每个线程构建 date->value 映射，避免 O(N^2) 的 index() 查找
+        thread_series = {}
         for thread in selected_threads:
             thread = str(thread)
             if thread not in cache_data[casename][chart_type][rule]:
                 continue
-            if thread not in rule_data["rules"][rule]:
-                rule_data["rules"][rule][thread] = {"color": colors[thread], "values": [], "type": "line"}
-                print(thread, colors[thread])
-            for date in dates:
-                if date not in cache_data[casename][chart_type][rule][thread]["date"]:
-                    continue
-                rule_data["dates"].append(date)
-                index = cache_data[casename][chart_type][rule][thread]["date"].index(date)
-                rule_data["rules"][rule][thread]["values"].append(cache_data[casename][chart_type][rule][thread]["data"][index])
-                if 'crash_dates' not in cache_data[casename]:
-                    rule_data["crash_dates"] = []
-                else:
-                    if date in cache_data[casename]['crash_dates']:
-                        rule_data["crash_dates"].append(date)
+            thread_info = cache_data[casename][chart_type][rule][thread]
+            date_list = thread_info.get('date', [])
+            data_list = thread_info.get('data', [])
+            if len(date_list) != len(data_list):
+                continue
+            value_map = dict(zip(date_list, data_list))
+            if not value_map:
+                continue
+            thread_series[thread] = value_map
+
+        if not thread_series:
+            return rule_data
+
+        # 统一 x 轴日期：任一选中线程在该日期有数据才保留（保持请求顺序）
+        final_dates = []
+        for d in ordered_dates:
+            if any(d in m for m in thread_series.values()):
+                final_dates.append(d)
+
+        rule_data["dates"] = final_dates
+        for thread, value_map in thread_series.items():
+            aligned = [value_map.get(d, None) for d in final_dates]
+            rule_data["rules"][rule][thread] = {
+                "color": colors.get(thread, '#A855F7'),
+                "values": aligned,
+                "type": "line"
+            }
+            for d in final_dates:
+                if d in crash_set and d not in rule_data["crash_dates"]:
+                    rule_data["crash_dates"].append(d)
         return rule_data
 
     def send_data_to_frontend_for_thread_chart(self, front_data: Dict):
@@ -481,7 +564,10 @@ class DataManager:
 
         self.logger.error(f"前端请求数据 -> 工具：{tool_id}，用例：{casename}，模式：{mode}，图表类型：{chart_type}，规则：{rule}，日期：{date}")
         
-        cache_data = self._data_cache.get(f"{tool_id}", {})[1]['paser_data']['thread']
+        cached_entry = self._data_cache.get(tool_id, None)
+        if not cached_entry:
+            return {}
+        cache_data = cached_entry[1].get('paser_data', {}).get('thread', {})
 
         if casename not in cache_data:
             return {}
@@ -585,6 +671,15 @@ class DataManager:
         elif data_file.exists():
             all_data = load_tool_data(data_file) or {}
             data_parsers = {}
+            # 尝试加载上次保存的解析结果，避免服务重启后对大数据量全量重建解析
+            paser_file = DATA_DIR / tool_id / f'{tool_id}_paser.json'
+            try:
+                if paser_file.exists() and paser_file.stat().st_mtime >= data_file.stat().st_mtime:
+                    paser_data = load_tool_data(paser_file) or {}
+                    if paser_data and 'single_multi' in paser_data and 'thread' in paser_data:
+                        data_parsers = paser_data
+            except Exception as e:
+                self.logger.exception(f"加载解析结果缓存失败: {e}")
         else:
             all_data = {}
             data_parsers = {}
@@ -624,29 +719,44 @@ class DataManager:
                 message = ''
         else:
             message = ''
-        # 合并总的数据
-        all_data  = self.duplicate_removal(deep_merge(all_data, all_incremental_data))
+        # 合并总的数据：仅在存在增量时合并并去重。
+        # 无增量时 all_data 已是从缓存/磁盘读取的去重数据，跳过可避免大数据量下
+        # 每次请求都重复遍历全量数据。
+        if all_incremental_data:
+            all_data = self.duplicate_removal(deep_merge(all_data, all_incremental_data))
         ############################################################################
         # 解析数据 -> 先判断数据是否被更新，如果更新在解析，否则直接加载缓存
 
         message = []
-        if single_incremental_flag or multi_incremental_flag:
+        has_incremental = single_incremental_flag or multi_incremental_flag
+        # 有增量时必须解析；无增量但内存中没有解析结果（例如服务重启后）
+        # 时，必须基于全量数据重建解析结果，否则返回空数据或触发 KeyError
+        need_parse = has_incremental or not data_parsers or 'single_multi' not in data_parsers or 'thread' not in data_parsers
+        if need_parse:
             self.logger.info(f"开始解析工具 {tool_id} 数据")
-            # 只解析新的增量数据
-            data_parsers = data_parser.parse_all_data(data_parsers, all_incremental_data, tool_config.get('single_exists'), tool_config.get('multi_exists'))
+            if data_parsers and has_incremental and 'single_multi' in data_parsers:
+                # 增量解析：只解析新增数据
+                parse_source = all_incremental_data
+            else:
+                # 全量解析：内存中无可用解析结果时，基于合并后的完整数据重建
+                parse_source = all_data
+                data_parsers = {}
+            data_parsers = data_parser.parse_all_data(data_parsers, parse_source, tool_config.get('single_exists'), tool_config.get('multi_exists'))
             ############################################################################
             # 异步保存数据 -> 保存总数据、文件路径
             self._executor.submit(
                 self._save_processed_data,
                 tool_id, all_data, all_files, tool_config.get('single_exists'), tool_config.get('multi_exists')
             )
+            # 异步保存解析结果，服务重启后可直接加载，避免大数据量全量重建
+            self._executor.submit(self._save_paser_data, tool_id, data_parsers)
 
         all_data_and_paser_data = {"all_data": all_data, "paser_data": {'single_multi': data_parsers['single_multi'], 'thread': data_parsers['thread']}}
         # 更新缓存
         with self._cache_lock:
             self._data_cache[cache_key] = (time.time(), all_data_and_paser_data)
 
-        if single_incremental_flag or multi_incremental_flag:
+        if has_incremental:
             if single_incremental_flag:
                 message.append('单线程')
             if multi_incremental_flag:

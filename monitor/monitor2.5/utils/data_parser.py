@@ -6,9 +6,6 @@
 from typing import Dict, List, Any, Optional
 from unittest import case, result
 import json
-# from numpy import single_chart
-from utils.single_thread_parser import SingleThreadParser
-from utils.multi_thread_parser import MultiThreadParser
 from utils.common import log
 from utils.log import *
 from config import DATA_DIR, BASE_DIR
@@ -79,8 +76,20 @@ class DataParser:
             threads = case_data['threads']
             dates = case_data['dates']
             rules_datas = case_data['rules_data']
+            smc_case = single_multi_chart.setdefault(casename, {})
+            # 仅在多线程模式下初始化 thread_chart，避免污染 single 模式的输出
+            tc_case = thread_chart.setdefault(casename, {}) if multi_exists == 1 else None
 
             for rule, date_data in rules_datas.items():
+                # 预取每个 (thread) 的 date/value 列表引用，避免逐日期重复嵌套导航
+                thread_maps = {}
+                for thread in threads:
+                    entry = {}
+                    for type_name in types:
+                        thread_map = smc_case.setdefault(type_name, {}).setdefault(rule, {}).setdefault(thread, {})
+                        entry[type_name] = (thread_map.setdefault("date", []), thread_map.setdefault("data", []))
+                    thread_maps[thread] = entry
+
                 # 遍历这个 rule 的所有的日期
                 for date in dates:
                     if date not in date_data and rule == 'Overall':
@@ -98,11 +107,38 @@ class DataParser:
                                     # 获取该日期或者该日期中的thread是否crash了
                                     single_multi_chart = self.get_crash_dates(single_multi_chart, casename, date, thread)
                                 else:
-                                    # 解析数据
-                                    single_multi_chart, thread_chart = self.get_single_multi_thread_chart(casename, single_multi_chart, thread_chart, thread_datas, types, rule, thread, date, multi_exists)
+                                    data = thread_datas[thread]
+                                    entry = thread_maps[thread]
+                                    for i, type_name in enumerate(types):
+                                        date_list, value_list = entry[type_name]
 
-            if 'crash_dates' not in single_multi_chart:
-                single_multi_chart[casename]['crash_dates'] = {}
+                                        if date_list and date_list[-1] == date:
+                                            # 增量合并时该日期已存在且是末尾：覆盖为新值，避免重复数据点
+                                            value_list[-1] = data[i]
+                                        elif date_list and date < date_list[-1] and date in date_list:
+                                            # 已存在但位于历史位置（增量重跑旧日期）：覆盖为新值
+                                            # 日期列表保持升序，仅当小于末尾时才有必要做线性查找
+                                            value_list[date_list.index(date)] = data[i]
+                                        else:
+                                            date_list.append(date)
+                                            value_list.append(data[i])
+
+                                        if multi_exists == 1:
+                                            date_map = tc_case.setdefault(type_name, {}).setdefault(rule, {}).setdefault(date, {})
+                                            thread_list = date_map.setdefault("threads", [])
+                                            thread_values = date_map.setdefault("data", [])
+
+                                            if thread_list and thread_list[-1] == thread:
+                                                # 增量合并时该线程已存在且是末尾：覆盖为新值
+                                                thread_values[-1] = data[i]
+                                            elif thread_list and thread < thread_list[-1] and thread in thread_list:
+                                                # 已存在但位于历史位置（增量重跑）：覆盖为新值
+                                                thread_values[thread_list.index(thread)] = data[i]
+                                            else:
+                                                thread_list.append(thread)
+                                                thread_values.append(data[i])
+
+            single_multi_chart.setdefault(casename, {}).setdefault('crash_dates', {})
         # 删除 casename 对应为空的值
         single_multi_chart = {k: v for k, v in single_multi_chart.items() if v not in (None, '')}
 
@@ -123,43 +159,5 @@ class DataParser:
 
         return single_multi_chart
 
-    def get_single_multi_thread_chart(self, casename: str, single_multi_chart: dict,thread_chart: dict, thread_datas: dict, types: list, rule: str, thread: str, date: str, multi_exists: int):
-        data = thread_datas[thread]
-        for i in range(len(types)):
-            if casename not in single_multi_chart:
-                single_multi_chart[casename] = {}
-            if types[i] not in single_multi_chart[casename]:
-                single_multi_chart[casename][types[i]] = {}
-            if rule not in single_multi_chart[casename][types[i]]:
-                single_multi_chart[casename][types[i]][rule] = {}
-            if thread not in single_multi_chart[casename][types[i]][rule]:
-                single_multi_chart[casename][types[i]][rule][thread] = {}
-            if "date" not in single_multi_chart[casename][types[i]][rule][thread]:
-                single_multi_chart[casename][types[i]][rule][thread]["date"] = []
-            if "data" not in single_multi_chart[casename][types[i]][rule][thread]:
-                single_multi_chart[casename][types[i]][rule][thread]["data"] = []
-
-            single_multi_chart[casename][types[i]][rule][thread]["date"].append(date)
-            single_multi_chart[casename][types[i]][rule][thread]["data"].append(data[i])    
-
-            if multi_exists == 1:
-                if casename not in thread_chart:
-                    thread_chart[casename] = {}
-                if types[i] not in thread_chart[casename]:
-                    thread_chart[casename][types[i]] = {}
-                if rule not in thread_chart[casename][types[i]]:
-                    thread_chart[casename][types[i]][rule] = {}
-                if date not in thread_chart[casename][types[i]][rule]:
-                    thread_chart[casename][types[i]][rule][date] = {}
-                if "data" not in thread_chart[casename][types[i]][rule][date]:
-                    thread_chart[casename][types[i]][rule][date]["data"] = []
-                if "threads" not in thread_chart[casename][types[i]][rule][date]:
-                    thread_chart[casename][types[i]][rule][date]["threads"] = []
-
-                if thread not in thread_chart[casename][types[i]][rule][date]["threads"]:
-                    thread_chart[casename][types[i]][rule][date]["threads"].append(thread)
-                    thread_chart[casename][types[i]][rule][date]["data"].append(data[i])
-
-        return single_multi_chart, thread_chart
 # 全局实例  
 data_parser = DataParser()

@@ -530,6 +530,8 @@ def get_elint_data_from_log(file_path: str, elint_data: Dict, thread: int) -> No
     # 获取 casename
     parts = Path(file_path).parts
     casename = parts[-2] if len(parts) >= 2 else "unknown"
+    if re.match(r"[^\s]+_thread_\d+$", casename):
+        casename = casename.split("_thread_")[0]
     if casename not in elint_data:
         elint_data[casename] = {
                 "casename": casename,
