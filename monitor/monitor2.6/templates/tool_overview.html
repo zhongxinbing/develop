@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>工具入口 - EDA QOR</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/select.css') }}">
+</head>
+<body>
+    <div class="app-container">
+        <header class="header">
+            <button class="back-btn" id="backBtn">
+                <div class="logo-icon">📈 </div>
+                <div class="logo-text">
+                    <h1>EDA QOR</h1>
+                    <span>性能监控平台</span>
+                </div>
+            </button>
+        </header>
+
+        <main class="main-content" style="justify-content: center;">
+            <div class="stats-card" style="width: min(520px, 90vw);">
+                <div class="stats-number" style="font-size: 32px;">工具入口</div>
+                <div class="stats-label" style="font-size: 15px; margin-bottom: 20px;">请选择查看内容</div>
+
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 18px; margin-top: 12px;">
+                    <a class="tool-view-card" href="/tool/{{ tool_id }}/feature">
+                        <div class="tool-card-icon">📋</div>
+                        <h3>功能</h3>
+                        <p>查看工具功能说明与主要入口</p>
+                    </a>
+                    <a class="tool-view-card" href="/tool/{{ tool_id }}/performance">
+                        <div class="tool-card-icon">📈</div>
+                        <h3>性能</h3>
+                        <p>查看单线程、多线程和线程曲线图</p>
+                    </a>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        document.getElementById('backBtn').addEventListener('click', function () {
+            window.location.href = '/';
+        });
+    </script>
+</body>
+</html>

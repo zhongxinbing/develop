@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>工具配置中心 - EDA QOR</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/select.css') }}">
+</head>
+<body>
+    <div class="app-container">
+        <!-- 顶部导航栏 -->
+        <header class="header">
+            <button class="back-btn" id="backBtn">
+                <div class="logo-icon">📈 </div>
+                <div class="logo-text">
+                    <h1>EDA QOR</h1>
+                    <span>性能监控平台</span>
+                </div>
+            </button>
+            <div class="logo-area small">
+                <span>🔧工具配置中心</span>
+            </div>
+        </header>
+
+        <!-- 主内容区 -->
+        <main class="config-main">
+            <!-- 已配置工具列表 -->
+            <div class="config-section">
+                <div class="section-header">
+                    <h2>已注册工具</h2>
+                    <span class="section-count" id="toolCount">0</span>
+                </div>
+                <div class="tools-list" id="toolsList">
+                    <div class="loading-spinner">
+                        <span>加载中...</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 添加工具按钮 -->
+            <div class="add-tool-btn-wrapper">
+                <button class="btn-primary btn-large" id="addToolBtn">
+                    <span>添加工具</span>
+                </button>
+            </div>
+        </main>
+    </div>
+
+    <!-- 工具配置弹窗 -->
+    <div class="modal" id="toolModal">
+        <div class="modal-overlay"></div>
+        <div class="modal-container" style="max-width: 800px;">
+            <div class="modal-header">
+                <h3 id="modalTitle">添加工具</h3>
+                <button class="modal-close" id="closeModalBtn">
+                    ✕
+                </button>
+            </div>
+            <div class="modal-body" style="max-height: 70vh; overflow-y: auto;">
+                <form id="toolForm">
+                    <!-- 基础信息 -->
+                    <div class="form-group">
+                        <label for="toolName">工具名称 <span class="required">*</span></label>
+                        <input type="text" id="toolName" name="toolName" placeholder="例如: elint" required>
+                        <div class="form-hint">工具名称必须唯一</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="toolDesc">工具描述</label>
+                        <textarea id="toolDesc" name="toolDesc" rows="2" placeholder="描述该工具的功能和用途..."></textarea>
+                    </div>
+
+                    <!-- 数据路径配置 -->
+                    <div class="form-divider">
+                        <span>数据源配置</span>
+                    </div>
+
+                    <!-- ============ 单线程配置 ============ -->
+                    <div style="background: var(--bg-elevated); border-radius: var(--radius-lg); padding: 16px; margin-bottom: 16px; border: 1px solid var(--border-subtle);">
+                        <h4 style="margin-bottom: 12px; color: var(--primary); font-size: 14px;">🧵 单线程配置</h4>
+                        
+                        <div class="form-group">
+                            <label for="singlePath">数据路径 <span class="required">*</span></label>
+                            <input type="text" id="singlePath" name="singlePath" placeholder="/data/single/">
+                            <div class="form-hint">数据文件所在的根目录路径</div>
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px;">
+                            <div class="form-group" style="margin-bottom: 0;">
+                                <label for="singleFunc">接口函数 <span class="required">*</span></label>
+                                <input type="text" id="singleFunc" name="singleFunc" placeholder="get_single_data">
+                                <div class="form-hint">格式: module.function</div>
+                            </div>
+                            <div class="form-group" style="margin-bottom: 0;">
+                                <label for="singleFilePattern">文件名匹配</label>
+                                <input type="text" id="singleFilePattern" name="singleFilePattern" placeholder='例如: ^\d{8}_[^/]+\.txt$'>
+                                <div class="form-hint">支持正则表达式，留空则匹配所有文件</div>
+                            </div>
+                            <div class="form-group" style="margin-bottom: 0;">
+                                <label for="singleMaxDepth">路径深度</label>
+                                <input type="number" id="singleMaxDepth" name="singleMaxDepth" placeholder="3" value="3" min="1" max="10">
+                                <div class="form-hint">递归扫描的最大目录深度，默认3</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ============ 多线程配置 ============ -->
+                    <div style="background: var(--bg-elevated); border-radius: var(--radius-lg); padding: 16px; margin-bottom: 16px; border: 1px solid var(--border-subtle);">
+                        <h4 style="margin-bottom: 12px; color: var(--secondary); font-size: 14px;">🌀 多线程配置</h4>
+                        
+                        <div class="form-group">
+                            <label for="multiPath">数据路径</label>
+                            <input type="text" id="multiPath" name="multiPath" placeholder="/data/multi/ (可选)">
+                            <div class="form-hint">多线程数据文件所在的根目录路径</div>
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px;">
+                            <div class="form-group" style="margin-bottom: 0;">
+                                <label for="multiFunc">接口函数</label>
+                                <input type="text" id="multiFunc" name="multiFunc" placeholder="get_multi_data">
+                                <div class="form-hint">格式: module.function</div>
+                            </div>
+                            <div class="form-group" style="margin-bottom: 0;">
+                                <label for="multiFilePattern">文件名匹配</label>
+                                <input type="text" id="multiFilePattern" name="multiFilePattern" placeholder='例如: elint\.log$'>
+                                <div class="form-hint">支持正则表达式，留空则匹配所有文件</div>
+                            </div>
+                            <div class="form-group" style="margin-bottom: 0;">
+                                <label for="multiMaxDepth">路径深度</label>
+                                <input type="number" id="multiMaxDepth" name="multiMaxDepth" placeholder="6" value="6" min="1" max="10">
+                                <div class="form-hint">递归扫描的最大目录深度，默认6</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 额外显示配置 -->
+                    <div class="form-divider">
+                        <span>额外显示配置 (可选)</span>
+                    </div>
+
+                    <div style="background: var(--bg-elevated); border-radius: var(--radius-lg); padding: 16px; margin-bottom: 16px; border: 1px solid var(--border-subtle);">
+                        <div class="form-group">
+                            <label for="extraPath">额外数据路径</label>
+                            <input type="text" id="extraPath" name="extraPath" placeholder="/data/extra/">
+                            <div class="form-hint">额外数据文件所在的根目录路径</div>
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                            <div class="form-group" style="margin-bottom: 0;">
+                                <label for="extraFunc">额外数据函数</label>
+                                <input type="text" id="extraFunc" name="extraFunc" placeholder="fetch_extra_data" disabled>
+                                <div class="form-hint">格式: module.function</div>
+                            </div>
+                            <div class="form-group" style="margin-bottom: 0;">
+                                <label for="extraFilePattern">文件名匹配</label>
+                                <input type="text" id="extraFilePattern" name="extraFilePattern" placeholder="可选">
+                                <div class="form-hint">支持正则表达式</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 自定义曲线函数 -->
+                    <div class="form-group">
+                        <label for="customFunc">自定义曲线函数</label>
+                        <input type="text" id="customFunc" name="customFunc" placeholder="get_custom_curve_data">
+                        <div class="form-hint">用于生成自定义图表曲线的函数</div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" id="cancelModalBtn">取消</button>
+                <button class="btn-primary" id="saveModalBtn">保存</button>
+                <button class="btn-primary btn-save-jump" id="saveAndJumpBtn">保存并跳转</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 删除确认弹窗 -->
+    <div class="modal confirm-modal" id="deleteModal">
+        <div class="modal-overlay"></div>
+        <div class="modal-container small">
+            <div class="modal-header">
+                <h3>确认删除</h3>
+            </div>
+            <div class="modal-body">
+                <p>确定要删除工具 <strong id="deleteToolName"></strong> 吗？</p>
+                <p class="text-muted small">此操作不可恢复，所有相关数据将被清除。</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" id="cancelDeleteBtn">取消</button>
+                <button class="btn-danger" id="confirmDeleteBtn">确认删除</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/axios.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/config.js') }}"></script>
+</body>
+</html>

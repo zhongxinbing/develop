@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>工具页面 - EDA QOR</title>
+    <script src="{{ url_for('static', filename='js/echarts.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/axios.min.js') }}"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/select.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/compare.css') }}">
+</head>
+<body>
+    <div class="app-container tool-page">
+        <!-- 顶部导航栏 -->
+        <header class="tool-header">
+            <button class="back-btn" id="backBtn">
+                <div class="logo-icon">📈 </div>
+                <div class="logo-text">
+                    <h1>EDA QOR</h1>
+                    <span>性能监控平台</span>
+                </div>
+            </button>
+            <div class="tool-info">
+                <h2 id="toolName">加载中...</h2>
+                <span class="tool-desc" id="toolDesc"></span>
+            </div>
+            <button class="refresh-btn" id="refreshBtn" title="刷新数据">
+                <span>↩刷新</span>
+            </button>
+        </header>
+
+        <!-- 二级导航（新增“数据对比”） -->
+        <div class="mode-nav">
+            <!-- <button class="mode-nav-item active" data-mode="single">🧵单线程</button> -->
+            <button class="mode-nav-item" data-mode="multi">🌀多线程</button>
+            <button class="mode-nav-item" data-mode="thread">⚡线程曲线图</button>
+            <button class="mode-nav-item" data-mode="comparison">📊数据对比</button>
+        </div>
+
+        <!-- 主内容区域 -->
+        <div class="tool-main">
+            <!-- ==================== 单线程侧边栏 ==================== -->
+            <aside class="sidebar" id="singleSidebar">
+                <div class="sidebar-content">
+                    <div class="sidebar-menu">
+                        <button class="menu-item active" data-chart="runtime">⏱️ Runtime</button>
+                        <div class="sub-menu">
+                            <button class="sub-menu-item active" data-chart="cputime">CPU Time</button>
+                            <button class="sub-menu-item" data-chart="realtime">Real Time</button>
+                        </div>
+                        <button class="menu-item" data-chart="memory">🧠 Memory</button>
+                        <div class="sub-menu">
+                            <button class="sub-menu-item" data-chart="peakmem">峰值内存</button>
+                            <button class="sub-menu-item" data-chart="incmem">增量内存</button>
+                            <button class="sub-menu-item" data-chart="realtimeincmem">实时增量内存</button>
+                        </div>
+                    </div>
+                    <div class="filters-panel" id="singleFiltersPanel">
+                        <div class="filter-group">
+                            <label>🏷 Casename</label>
+                            <div id="singleCasenameSelect" class="searchable-select"></div>
+                        </div>
+                        <div class="filter-group">
+                            <label>📜 Rule</label>
+                            <div id="singleRuleSelect" class="searchable-select"></div>
+                        </div>
+                        <div class="filter-actions">
+                            <button class="btn-icon" id="singleDatePickerBtn" title="选择日期">选择日期</button>
+                            <button class="btn-icon" id="singleLatest50Btn" title="最新50天">最新50天</button>
+                            <button class="btn-icon btn-success" id="singleAddDataBtn" title="添加数据">添加数据</button>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- ==================== 多线程侧边栏 ==================== -->
+            <aside class="sidebar" id="multiSidebar" style="display: none;">
+                <div class="sidebar-content">
+                    <div class="sidebar-menu">
+                        <button class="menu-item active" data-chart="runtime">⏱️ Runtime</button>
+                        <div class="sub-menu">
+                            <button class="sub-menu-item active" data-chart="cputime">CPU Time</button>
+                            <button class="sub-menu-item" data-chart="realtime">Real Time</button>
+                        </div>
+                        <button class="menu-item" data-chart="memory">🧠 Memory</button>
+                        <div class="sub-menu">
+                            <button class="sub-menu-item" data-chart="peakmem">峰值内存</button>
+                            <button class="sub-menu-item" data-chart="incmem">增量内存</button>
+                            <button class="sub-menu-item" data-chart="realtimeincmem">实时增量内存</button>
+                        </div>
+                    </div>
+                    <div class="filters-panel" id="multiFiltersPanel">
+                        <div class="filter-group">
+                            <label>🏷 Casename</label>
+                            <div id="multiCasenameSelect" class="searchable-select"></div>
+                        </div>
+                        <div class="filter-group">
+                            <label>📜 Rule</label>
+                            <div id="multiRuleSelect" class="searchable-select"></div>
+                        </div>
+                        <!-- ========== 新增：线程数选择框 ========== -->
+                        <div class="filter-group">
+                            <label>🧵 线程数（可多选）</label>
+                            <div id="multiThreadSelect" class="searchable-select multi-select"></div>
+                            <div class="form-hint" style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">
+                                支持多选，默认显示所有线程
+                            </div>
+                        </div>
+                        <!-- ========== 结束 ========== -->
+                        <div class="filter-actions">
+                            <button class="btn-icon" id="multiDatePickerBtn" title="选择日期">选择日期</button>
+                            <button class="btn-icon" id="multiLatest50Btn" title="最新50天">最新50天</button>
+                            <button class="btn-icon btn-success" id="multiAddDataBtn" title="添加数据">添加数据</button>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- ==================== 线程曲线图侧边栏 ==================== -->
+            <aside class="sidebar" id="threadSidebar" style="display: none;">
+                <div class="sidebar-content">
+                    <div class="sidebar-menu">
+                        <button class="menu-item active" data-thread-chart="runtime">⏱️ Runtime</button>
+                        <div class="sub-menu">
+                            <button class="sub-menu-item active" data-thread-chart="cputime">CPU Time</button>
+                            <button class="sub-menu-item" data-thread-chart="realtime">Real Time</button>
+                        </div>
+                        <button class="menu-item" data-thread-chart="memory">🧠 Memory</button>
+                        <div class="sub-menu">
+                            <button class="sub-menu-item" data-thread-chart="peakmem">峰值内存</button>
+                            <button class="sub-menu-item" data-thread-chart="incmem">增量内存</button>
+                            <button class="sub-menu-item" data-thread-chart="realtimeincmem">实时增量内存</button>
+                        </div>
+                    </div>
+                    <div class="filters-panel" id="threadFiltersPanel">
+                        <div class="filter-group">
+                            <label>🏷 Casename</label>
+                            <div id="threadCasenameSelect" class="searchable-select"></div>
+                        </div>
+                        <div class="filter-group">
+                            <label>📜 Rule</label>
+                            <div id="threadRuleSelect" class="searchable-select"></div>
+                        </div>
+                        <div class="filter-group">
+                            <label>📅 选择日期</label>
+                            <div id="threadDateSelect" class="searchable-select"></div>
+                        </div>
+                        <div class="filter-actions">
+                            <button class="btn-primary" id="refreshThreadChartBtn">更新图表</button>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- 中央内容区 -->
+            <main class="content-area" id="contentArea">
+                <!-- ===== 对比容器（默认隐藏，由 tool.js 控制显示） ===== -->
+                <div id="comparisonContainer" style="display: none; width: 100%;">
+                    <!-- 对比表单 -->
+                    <div class="comparison-form" style="display: flex; flex-direction: column; gap: 16px; background: var(--bg-surface); padding: 20px 24px; border-radius: var(--radius-lg); margin-bottom: 20px;">
+                        <!-- 第一行 -->
+                        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr; gap: 14px; align-items: start;">
+                            <div class="filter-group" style="margin-bottom: 0;">
+                                <label style="font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 4px;">🏷 Casename <span style="color: var(--danger);">*</span></label>
+                                <div id="compCasenameSelect" class="searchable-select"></div>
+                            </div>
+                            <!-- 对比维度 - 已支持多选 -->
+<div class="filter-group" style="margin-bottom: 0;">
+    <label style="font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 4px;">📊 对比维度</label>
+    <div id="compDimensionSelect" class="searchable-select multi-select"></div>
+</div>
+                            <div class="filter-group" style="margin-bottom: 0;">
+                                <label style="font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 4px;">🧵 线程数</label>
+                                <div id="compThreadSelect" class="searchable-select multi-select"></div>
+                            </div>
+                            <div class="filter-group" style="margin-bottom: 0;">
+                                <label style="font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 4px;">📜 Rule</label>
+                                <div id="compRuleSelect" class="searchable-select"></div>
+                            </div>
+                            <div class="filter-group" style="margin-bottom: 0;">
+                                <label style="font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 4px;">📅 日期1 <span style="color: var(--danger);">*</span></label>
+                                <div id="compDate1Select" class="searchable-select"></div>
+                            </div>
+                            <div class="filter-group" style="margin-bottom: 0;" id="compDate2Group">
+                                <label style="font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 4px;">📅 日期2 <span style="color: var(--danger);">*</span></label>
+                                <div id="compDate2Select" class="searchable-select"></div>
+                            </div>
+                        </div>
+                        <!-- 第二行 -->
+                        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr 1fr; gap: 14px; align-items: end;">
+                            <div class="filter-group" style="margin-bottom: 0;">
+                                <label style="font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 4px;">📊 误差模式</label>
+                                <div id="compErrorModeSelect" class="searchable-select"></div>
+                            </div>
+                            <div class="filter-group" style="margin-bottom: 0;">
+                                <label style="font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 4px;">⏱️ Runtime 阈值</label>
+                                <input type="number" id="compRuntimeThreshold" class="filter-input" value="0" step="0.01" style="width:100%; height: 36px; padding: 4px 10px; font-size: 13px;">
+                            </div>
+                            <div class="filter-group" style="margin-bottom: 0;">
+                                <label style="font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 4px;">🧠 Memory 阈值</label>
+                                <input type="number" id="compMemoryThreshold" class="filter-input" value="0" step="0.01" style="width:100%; height: 36px; padding: 4px 10px; font-size: 13px;">
+                            </div>
+                            <button class="btn-primary" id="compConfirmBtn" style="height: 36px; white-space: nowrap; padding: 0 16px; font-size: 13px; border-radius: var(--radius-sm); width: 100%;">确认对比</button>
+                            <button class="btn-secondary" id="compExportBtn" style="height: 36px; white-space: nowrap; padding: 0 16px; font-size: 13px; border-radius: var(--radius-sm); width: 100%;">导出结果</button>
+                        </div>
+                    </div>
+
+                    <!-- 结果展示 -->
+                    <div id="comparisonResults">
+                        <div class="comparison-stats-grid" id="comparisonStatsGrid"></div>
+                        <div class="comparison-table-container">
+                            <div class="table-header">
+                                <input type="text" id="comparisonSearch" placeholder="搜索 rule..." class="filter-input">
+                                <span class="result-count" id="comparisonResultCount">共 0 条</span>
+                            </div>
+                            <div class="table-wrapper">
+                                <table class="comparison-table">
+                                    <thead id="comparisonTableHead"></thead>
+                                    <tbody id="comparisonTableBody"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ===== 原有内容（非对比模式） ===== -->
+                <div id="normalContent">
+                    <div class="chart-container" id="chartContainer">
+                        <div id="mainChart" style="width: 100%; height: 400px;"></div>
+                        <div id="chartLoadingOverlay" class="chart-loading-overlay" aria-live="polite" aria-busy="true">
+                            <div class="chart-loading-content">
+                                <div class="chart-loading-spinner"></div>
+                                <div class="chart-loading-text">加载中...</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="stats-grid" id="statsGrid">
+                        <div class="stat-card">
+                            <div class="stat-value" id="dateRange">-</div>
+                            <div class="stat-label">日期范围</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="totalValue">-</div>
+                            <div class="stat-label" id="totalLabel">Total Runtime</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="avgValue">-</div>
+                            <div class="stat-label" id="avgLabel">Average</div>
+                        </div>
+                        <div class="stat-card tooltip-card">
+                            <div class="stat-value" id="maxValue">-</div>
+                            <div class="stat-label">Maximum</div>
+                            <div class="tooltip-content" id="maxTooltipContent"></div>
+                        </div>
+                        <div class="stat-card tooltip-card">
+                            <div class="stat-value" id="minValue">-</div>
+                            <div class="stat-label">Minimum</div>
+                            <div class="tooltip-content" id="minTooltipContent"></div>
+                        </div>
+                    </div>
+
+                    <div class="overview-card">
+                        <h4>项目概况</h4>
+                        <div class="overview-stats" id="overviewStats">
+                            <div class="overview-item">
+                                <span class="overview-value" id="totalCases">-</span>
+                                <span class="overview-label">总 case 数</span>
+                            </div>
+                            <div class="overview-item">
+                                <span class="overview-value" id="totalRules">-</span>
+                                <span class="overview-label">总阶段数</span>
+                            </div>
+                            <div class="overview-item">
+                                <span class="overview-value" id="totalDays">-</span>
+                                <span class="overview-label">总天数</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- 日期选择弹窗（共用） -->
+    <div class="modal" id="datePickerModal">
+        <div class="modal-overlay"></div>
+        <div class="modal-container medium">
+            <div class="modal-header">
+                <h3>选择日期</h3>
+                <button class="modal-close" id="closeDateModalBtn">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="date-search">
+                    🔍 <input type="text" id="dateSearch" placeholder="搜索日期..." class="filter-input">
+                </div>
+                <div class="date-actions">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="selectAllDates">
+                        <span>全选</span>
+                    </label>
+                </div>
+                <div class="date-list" id="dateList">
+                    <!-- 动态生成，每个 .date-item 可点击切换 checkbox -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" id="cancelDateBtn">取消</button>
+                <button class="btn-primary" id="confirmDateBtn">确认</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 添加数据弹窗（共用） -->
+    <div class="modal" id="addDataModal">
+        <div class="modal-overlay"></div>
+        <div class="modal-container medium">
+            <div class="modal-header">
+                <h3>添加自定义数据</h3>
+                <button class="modal-close" id="closeAddDataModalBtn">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>数据路径</label>
+                    <textarea id="dataPaths" rows="6" placeholder="每行输入一个数据路径" class="filter-input"></textarea>
+                    <div class="form-hint">支持 JSON 文件路径或目录路径</div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" id="cancelAddDataBtn">取消</button>
+                <button class="btn-primary" id="confirmAddDataBtn" disabled>确认</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 全局函数供多线程选择器使用（保留，因为多线程模块可能用到）
+        window.mainChart = null;
+        window.toggleMultiThreadDropdown = function() {
+            const dropdown = document.getElementById('multiThreadDropdown');
+            if (dropdown) {
+                dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
+            }
+        };
+        document.addEventListener('click', function(e) {
+            const container = document.getElementById('multiThreadMultiSelect');
+            const dropdown = document.getElementById('multiThreadDropdown');
+            if (container && dropdown && !container.contains(e.target)) {
+                dropdown.style.display = 'none';
+            }
+        });
+    </script>
+    <script src="{{ url_for('static', filename='js/select.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/single_thread.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/multi_thread.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/thread_chart.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/comparison.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/tool.js') }}"></script>
+</body>
+</html>

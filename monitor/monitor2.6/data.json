@@ -1,0 +1,370 @@
+{
+    "aes": {
+        "casename": "aes",
+        "daily_metrics": {
+            "20260510": {
+                "Analysis": {
+                    "cputime": 0.04,
+                    "peakmem": 176.0,
+                    "realtime": 0.69,
+                    "incmem": 0.0,
+                    "realtimeincmem": 0.87
+                },
+                "Elaborate": {
+                    "cputime": 0.05,
+                    "peakmem": 180.12,
+                    "realtime": 0.09,
+                    "incmem": 2.75,
+                    "realtimeincmem": 2.24
+                },
+                "DoUniquify": {
+                    "cputime": 0.01,
+                    "peakmem": 193.88,
+                    "realtime": 0.02,
+                    "incmem": 1.38,
+                    "realtimeincmem": 1.37
+                },
+                "astManager": {
+                    "cputime": 0.02,
+                    "peakmem": 195.25,
+                    "realtime": 0.02,
+                    "incmem": 1.38,
+                    "realtimeincmem": 1.28
+                },
+                "ltUtData": {
+                    "cputime": 0.0,
+                    "peakmem": 195.25,
+                    "realtime": 0.0,
+                    "incmem": 0.0,
+                    "realtimeincmem": 0.03
+                },
+                "E0136": {
+                    "cputime": 0.0,
+                    "peakmem": 195.25,
+                    "realtime": 0.0,
+                    "incmem": 0.0,
+                    "realtimeincmem": 0.0
+                },
+                "E0306": {
+                    "cputime": 0.01,
+                    "peakmem": 195.25,
+                    "realtime": 0.01,
+                    "incmem": 0.0,
+                    "realtimeincmem": 0.0
+                },
+                "E0267": {
+                    "cputime": 0.01,
+                    "peakmem": 195.25,
+                    "realtime": 0.01,
+                    "incmem": 0.0,
+                    "realtimeincmem": 0.01
+                }
+            },
+            "20260511": {
+                "Analysis": {
+                    "cputime": 0.04,
+                    "peakmem": 176.0,
+                    "realtime": 0.69,
+                    "incmem": 0.0,
+                    "realtimeincmem": 0.87
+                },
+                "Elaborate": {
+                    "cputime": 0.05,
+                    "peakmem": 180.12,
+                    "realtime": 0.09,
+                    "incmem": 2.75,
+                    "realtimeincmem": 2.24
+                },
+                "DoUniquify": {
+                    "cputime": 0.01,
+                    "peakmem": 193.88,
+                    "realtime": 0.02,
+                    "incmem": 1.38,
+                    "realtimeincmem": 1.37
+                },
+                "Overall": {
+                    "cputime": 0.02,
+                    "peakmem": 195.25,
+                    "realtime": 50.0,
+                    "incmem": 1.38,
+                    "realtimeincmem": 1.28
+                },
+                "ltUtData": {
+                    "cputime": 0.0,
+                    "peakmem": 195.25,
+                    "realtime": 0.0,
+                    "incmem": 0.0,
+                    "realtimeincmem": 0.03
+                },
+                "E0136": {
+                    "cputime": 0.0,
+                    "peakmem": 195.25,
+                    "realtime": 0.0,
+                    "incmem": 0.0,
+                    "realtimeincmem": 0.0
+                },
+                "E0306": {
+                    "cputime": 0.01,
+                    "peakmem": 195.25,
+                    "realtime": 0.01,
+                    "incmem": 0.0,
+                    "realtimeincmem": 0.0
+                },
+                "E0267": {
+                    "cputime": 0.01,
+                    "peakmem": 195.25,
+                    "realtime": 0.01,
+                    "incmem": 0.0,
+                    "realtimeincmem": 0.01
+                }
+            },
+            "20260512": {
+                "Analysis": {
+                    "cputime": 0.04,
+                    "peakmem": 176.0,
+                    "realtime": 0.69,
+                    "incmem": 0.0,
+                    "realtimeincmem": 0.87
+                },
+                "Overall": {
+                    "cputime": 30.0,
+                    "peakmem": 180.12,
+                    "realtime": 100.0,
+                    "incmem": 2.75,
+                    "realtimeincmem": 2.24
+                },
+                "DoUniquify": {
+                    "cputime": 0.01,
+                    "peakmem": 193.88,
+                    "realtime": 0.02,
+                    "incmem": 1.38,
+                    "realtimeincmem": 1.37
+                },
+                "astManager": {
+                    "cputime": 0.02,
+                    "peakmem": 195.25,
+                    "realtime": 0.02,
+                    "incmem": 1.38,
+                    "realtimeincmem": 1.28
+                },
+                "ltUtData": {
+                    "cputime": 0.0,
+                    "peakmem": 195.25,
+                    "realtime": 0.0,
+                    "incmem": 0.0,
+                    "realtimeincmem": 0.03
+                },
+                "E0136": {
+                    "cputime": 0.0,
+                    "peakmem": 195.25,
+                    "realtime": 0.0,
+                    "incmem": 0.0,
+                    "realtimeincmem": 0.0
+                },
+                "E0306": {
+                    "cputime": 0.01,
+                    "peakmem": 195.25,
+                    "realtime": 0.01,
+                    "incmem": 0.0,
+                    "realtimeincmem": 0.0
+                },
+                "E0267": {
+                    "cputime": 0.01,
+                    "peakmem": 195.25,
+                    "realtime": 0.01,
+                    "incmem": 0.0,
+                    "realtimeincmem": 0.01
+                }
+            }
+        },
+        "available_dates": [
+            "20260510",
+            "20260511",
+            "20260512"
+        ]
+    },
+    "nv": {
+        "casename": "nv",
+        "daily_metrics": {
+            "20260510": {
+                "Analysis": {
+                    "cputime": 0.04,
+                    "peakmem": 176.0,
+                    "realtime": 0.69,
+                    "incmem": 0.0,
+                    "realtimeincmem": 0.87
+                },
+                "Elaborate": {
+                    "cputime": 0.05,
+                    "peakmem": 180.12,
+                    "realtime": 0.09,
+                    "incmem": 2.75,
+                    "realtimeincmem": 2.24
+                },
+                "DoUniquify": {
+                    "cputime": 0.01,
+                    "peakmem": 193.88,
+                    "realtime": 0.02,
+                    "incmem": 1.38,
+                    "realtimeincmem": 1.37
+                },
+                "astManager": {
+                    "cputime": 0.02,
+                    "peakmem": 195.25,
+                    "realtime": 0.02,
+                    "incmem": 1.38,
+                    "realtimeincmem": 1.28
+                },
+                "ltUtData": {
+                    "cputime": 0.0,
+                    "peakmem": 195.25,
+                    "realtime": 0.0,
+                    "incmem": 0.0,
+                    "realtimeincmem": 0.03
+                },
+                "E0136": {
+                    "cputime": 0.0,
+                    "peakmem": 195.25,
+                    "realtime": 0.0,
+                    "incmem": 0.0,
+                    "realtimeincmem": 0.0
+                },
+                "E0306": {
+                    "cputime": 0.01,
+                    "peakmem": 195.25,
+                    "realtime": 0.01,
+                    "incmem": 0.0,
+                    "realtimeincmem": 0.0
+                },
+                "E0267": {
+                    "cputime": 0.01,
+                    "peakmem": 195.25,
+                    "realtime": 0.01,
+                    "incmem": 0.0,
+                    "realtimeincmem": 0.01
+                }
+            },
+            "20260511": {
+                "Analysis": {
+                    "cputime": 0.04,
+                    "peakmem": 176.0,
+                    "realtime": 0.69,
+                    "incmem": 0.0,
+                    "realtimeincmem": 0.87
+                },
+                "Elaborate": {
+                    "cputime": 0.05,
+                    "peakmem": 180.12,
+                    "realtime": 0.09,
+                    "incmem": 2.75,
+                    "realtimeincmem": 2.24
+                },
+                "DoUniquify": {
+                    "cputime": 0.01,
+                    "peakmem": 193.88,
+                    "realtime": 0.02,
+                    "incmem": 1.38,
+                    "realtimeincmem": 1.37
+                },
+                "Overall": {
+                    "cputime": 0.02,
+                    "peakmem": 195.25,
+                    "realtime": 0.02,
+                    "incmem": 1.38,
+                    "realtimeincmem": 1.28
+                },
+                "ltUtData": {
+                    "cputime": 0.0,
+                    "peakmem": 195.25,
+                    "realtime": 0.0,
+                    "incmem": 0.0,
+                    "realtimeincmem": 0.03
+                },
+                "E0136": {
+                    "cputime": 0.0,
+                    "peakmem": 195.25,
+                    "realtime": 0.0,
+                    "incmem": 0.0,
+                    "realtimeincmem": 0.0
+                },
+                "E0306": {
+                    "cputime": 0.01,
+                    "peakmem": 195.25,
+                    "realtime": 0.01,
+                    "incmem": 0.0,
+                    "realtimeincmem": 0.0
+                },
+                "E0267": {
+                    "cputime": 0.01,
+                    "peakmem": 195.25,
+                    "realtime": 0.01,
+                    "incmem": 0.0,
+                    "realtimeincmem": 0.01
+                }
+            },
+            "20260512": {
+                "Analysis": {
+                    "cputime": 0.04,
+                    "peakmem": 176.0,
+                    "realtime": 0.69,
+                    "incmem": 0.0,
+                    "realtimeincmem": 0.87
+                },
+                "Overall": {
+                    "cputime": 60.0,
+                    "peakmem": 180.12,
+                    "realtime": 0.09,
+                    "incmem": 2.75,
+                    "realtimeincmem": 2.24
+                },
+                "DoUniquify": {
+                    "cputime": 0.01,
+                    "peakmem": 193.88,
+                    "realtime": 0.02,
+                    "incmem": 1.38,
+                    "realtimeincmem": 1.37
+                },
+                "astManager": {
+                    "cputime": 0.02,
+                    "peakmem": 195.25,
+                    "realtime": 0.02,
+                    "incmem": 1.38,
+                    "realtimeincmem": 1.28
+                },
+                "ltUtData": {
+                    "cputime": 0.0,
+                    "peakmem": 195.25,
+                    "realtime": 0.0,
+                    "incmem": 0.0,
+                    "realtimeincmem": 0.03
+                },
+                "E0136": {
+                    "cputime": 0.0,
+                    "peakmem": 195.25,
+                    "realtime": 0.0,
+                    "incmem": 0.0,
+                    "realtimeincmem": 0.0
+                },
+                "E0306": {
+                    "cputime": 0.01,
+                    "peakmem": 195.25,
+                    "realtime": 0.01,
+                    "incmem": 0.0,
+                    "realtimeincmem": 0.0
+                },
+                "E0267": {
+                    "cputime": 0.01,
+                    "peakmem": 195.25,
+                    "realtime": 0.01,
+                    "incmem": 0.0,
+                    "realtimeincmem": 0.01
+                }
+            }
+        },
+        "available_dates": [
+            "20260510",
+            "20260511",
+            "20260512"
+        ]
+    }
+}
