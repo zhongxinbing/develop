@@ -108,7 +108,7 @@ class DataParser:
 
         thread_chart = {k: v for k, v in thread_chart.items() if v not in (None, '')}
         # blue(single_multi_chart)
-        return {'single_multi_chart': single_multi_chart, 'thread': thread_chart}
+        return {'single_multi': single_multi_chart, 'thread': thread_chart}
 
 
     def get_crash_dates(self, single_multi_chart: dict, casename: str, date: str, thread: str):

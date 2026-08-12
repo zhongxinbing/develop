@@ -57,7 +57,9 @@ def ensure_watcher_initialized():
 
 # 注册应用关闭时的清理函数
 atexit.register(shutdown_watcher)
-
+# 降低 watchdog 的日志级别
+# logging.getLogger('watchdog').setLevel(logging.WARNING)
+# logging.getLogger('watchdog.observers.inotify_buffer').setLevel(logging.WARNING)
 
 # ==================== 启动入口 ====================
 

@@ -413,7 +413,7 @@ class DataManager:
         self.logger.info(f"前端请求数据 -> 工具：{tool_id}，用例：{casename}，模式：{mode}，图表类型：{chart_type}，规则：{rules}，日期：{dates}，线程：{selected_threads}")
 
         # 获取缓存数据
-        cache_data = self._data_cache.get(f"{tool_id}_parser", {})[1]['single_multi']
+        cache_data = self._data_cache.get(f"{tool_id}", {})[1]['paser_data']['single_multi']
 
         # 检查日期是否为空
         if not dates:
@@ -481,7 +481,7 @@ class DataManager:
 
         self.logger.error(f"前端请求数据 -> 工具：{tool_id}，用例：{casename}，模式：{mode}，图表类型：{chart_type}，规则：{rule}，日期：{date}")
         
-        cache_data = self._data_cache.get(f"{tool_id}_parser", {})[1]['thread']
+        cache_data = self._data_cache.get(f"{tool_id}", {})[1]['paser_data']['thread']
 
         if casename not in cache_data:
             return {}
@@ -562,28 +562,33 @@ class DataManager:
         self.init_file_watcher(tool_id)
         ############################################################################
         # 检查缓存是否在 TTL 内，命中则直接返回，实现快速响应
-        cache_key = (f"{tool_id}_all_data")
-        cache_paser = (f"{tool_id}_parser")
+        cache_key = (f"{tool_id}")
         self.logger.info(f"开始加载工具 {tool_id} 数据")
         # 检查缓存
         with self._cache_lock:
-            cached_entry = self._data_cache.get(cache_paser, None)
+            cached_entry = self._data_cache.get(cache_key, None)
 
             if cached_entry is not None:
                 cached_at, cached_value = cached_entry
                 if time.time() - cached_at < self._cache_ttl_seconds:
                     self.logger.warning(f"缓存命中，数据已经是最新的")
-                    return cached_value, "数据已经是最新的"
-                self._data_cache.pop(cache_paser, None)
+                    return cached_value['paser_data'], "数据已经是最新的"
+                # _cache_ttl_seconds 过期，删除缓存
+                # self._data_cache.pop(cache_key, None)
         ############################################################################
         # 获取已有数据    工具以往保存的数据；如果存在则获取，否则返回空字典
         data_file = DATA_DIR / tool_id / f'{tool_id}.json'
         if cache_key in self._data_cache:
-            all_data = self._data_cache[cache_key][1]
+            yellow(f"获取{cache_key} 之前的缓存的数据: {self._data_cache[cache_key][1].keys()}")
+            all_data = self._data_cache[cache_key][1]['all_data']
+            data_parsers = self._data_cache[cache_key][1]['paser_data']
         elif data_file.exists():
             all_data = load_tool_data(data_file) or {}
+            data_parsers = {}
         else:
             all_data = {}
+            data_parsers = {}
+
         ############################################################################
         # 所有的数据
         all_files = {'single': {}, 'multi': {}}
@@ -623,21 +628,12 @@ class DataManager:
         all_data  = self.duplicate_removal(deep_merge(all_data, all_incremental_data))
         ############################################################################
         # 解析数据 -> 先判断数据是否被更新，如果更新在解析，否则直接加载缓存
-        data_parser_path = DATA_DIR / tool_id / f"{tool_id}_parser.json"
-        if cache_paser in self._data_cache:
-            data_parsers = self._data_cache[cache_paser][1]['multi']
-        elif data_parser_path.exists():
-            data_parsers = load_tool_data(data_parser_path) or {}
-        else:
-            data_parsers = {}
+
         message = []
         if single_incremental_flag or multi_incremental_flag:
             self.logger.info(f"开始解析工具 {tool_id} 数据")
             # 只解析新的增量数据
-            # blue(incremental_data)
             data_parsers = data_parser.parse_all_data(data_parsers, all_incremental_data, tool_config.get('single_exists'), tool_config.get('multi_exists'))
-            # 异步保存数据
-            self._executor.submit(save_tool_data, data_parser_path, data_parsers)
             ############################################################################
             # 异步保存数据 -> 保存总数据、文件路径
             self._executor.submit(
@@ -645,16 +641,10 @@ class DataManager:
                 tool_id, all_data, all_files, tool_config.get('single_exists'), tool_config.get('multi_exists')
             )
 
-        
-        all_data_paser = {
-            'single_multi': data_parsers['single_multi_chart'],
-            "thread": data_parsers['thread']
-        }
-
+        all_data_and_paser_data = {"all_data": all_data, "paser_data": {'single_multi': data_parsers['single_multi'], 'thread': data_parsers['thread']}}
         # 更新缓存
         with self._cache_lock:
-            self._data_cache[cache_paser] = (time.time(), all_data_paser)
-            self._data_cache[cache_key] = (time.time(), all_data)
+            self._data_cache[cache_key] = (time.time(), all_data_and_paser_data)
 
         if single_incremental_flag or multi_incremental_flag:
             if single_incremental_flag:
@@ -665,7 +655,7 @@ class DataManager:
         else:
             message = '未更新数据'
         # 返回给前端的数据、显示 casename 选择框、日期选择框、rule选择框、线程选择框
-        return all_data_paser, message
+        return {'single_multi': data_parsers['single_multi'], 'thread': data_parsers['thread']}, message
 
     # ==================== 清理 ====================
 

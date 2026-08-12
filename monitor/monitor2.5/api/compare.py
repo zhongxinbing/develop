@@ -19,7 +19,7 @@ def api_compare():
 def api_get_comparison():
     """
     获取对比数据
-    支持单线程版本对比和多线程对比
+    支持单线程版本对比、多线程对比和多维度对比
     """
     data = request.json
 
@@ -28,17 +28,29 @@ def api_get_comparison():
     casename = data.get('casename', '')
     date1 = data.get('date1', '')
     date2 = data.get('date2', '')
-    compare_mode = data.get('compare_mode', 'all')
+    compare_mode = data.get('compare_mode', ['all'])
     dimension = data.get('dimension', None)
+    dimensions = data.get('dimensions', [])
     runtime_threshold = float(data.get('runtime_threshold', 0))
     memory_threshold = float(data.get('memory_threshold', 0))
     error_mode = data.get('error_mode', 'absolute')
     threads = data.get('threads', [])
     compare_type = data.get('compare_type', 'single')
+    is_multi_dimension = data.get('is_multi_dimension', False)
 
     logger.info(f"收到对比请求: tool_id={tool_id}, casename={casename}, "
                 f"date1={date1}, date2={date2}, dimension={dimension}, "
-                f"error_mode={error_mode}, threads={threads}, compare_type={compare_type}")
+                f"dimensions={dimensions}, error_mode={error_mode}, "
+                f"threads={threads}, compare_type={compare_type}, "
+                f"is_multi_dimension={is_multi_dimension}")
+
+    # 确保 compare_mode 是列表
+    if isinstance(compare_mode, str):
+        compare_mode = [compare_mode]
+
+    # 确保 dimensions 是列表
+    if not dimensions and dimension:
+        dimensions = [dimension]
 
     # 调用数据管理器的对比功能
     result = comparer.compare_data(
@@ -49,11 +61,13 @@ def api_get_comparison():
         date2=date2,
         compare_mode=compare_mode,
         dimension=dimension,
+        dimensions=dimensions,
         runtime_threshold=runtime_threshold,
         memory_threshold=memory_threshold,
         error_mode=error_mode,
         threads=threads,
-        compare_type=compare_type
+        compare_type=compare_type,
+        is_multi_dimension=is_multi_dimension
     )
 
     return jsonify(result)

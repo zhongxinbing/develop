@@ -29,7 +29,7 @@ class ComparisonManager {
         this.allDates = [];
 
         this.selectedCasename = '';
-        this.selectedDimension = '';
+        this.selectedDimensions = [];  // 改为数组，支持多维度
         this.selectedThreads = [];
         this.selectedRule = '';
         this.selectedDate1 = '';
@@ -65,10 +65,11 @@ class ComparisonManager {
             onChange: this._onCasenameChange
         });
 
-        // 初始化对比维度选择器
+        // 初始化对比维度选择器 - 支持多选
         this.dimensionSelect = new SearchableSelect({
             container: document.getElementById('compDimensionSelect'),
             options: [],
+            multiple: true,
             placeholder: '请选择对比维度...',
             onChange: this._onDimensionChange
         });
@@ -115,7 +116,7 @@ class ComparisonManager {
             ],
             placeholder: '请选择误差模式...',
             onChange: (value) => {
-                this.selectedErrorMode = value;
+                this.selectedErrorMode = value || 'absolute';
             }
         });
 
@@ -131,6 +132,12 @@ class ComparisonManager {
 
         this.isInitialized = true;
         this._populateCasenameOptions();
+        
+        // 默认选择误差模式
+        if (this.errorModeSelect) {
+            this.errorModeSelect.setValue('absolute');
+            this.selectedErrorMode = 'absolute';
+        }
     }
 
     // ==================== 事件处理方法 ====================
@@ -142,25 +149,25 @@ class ComparisonManager {
         }
     }
 
-    _onDimensionChange(value) {
-        this.selectedDimension = value;
-        if (value && this.selectedCasename) {
-            this._loadRulesAndThreads(value);
+    _onDimensionChange(values) {
+        this.selectedDimensions = values || [];
+        if (values && values.length > 0 && this.selectedCasename) {
+            this._loadRulesAndThreads(values[0]);  // 使用第一个维度加载
         }
     }
 
     _onThreadChange(values) {
-        this.selectedThreads = values || [];
+        this.selectedThreads = values ? values.map(v => parseInt(v)) : [];
         this._updateDateVisibility();
         // 更新布局后，重新调整日期选项
-        if (this.selectedCasename && this.selectedDimension) {
+        if (this.selectedCasename && this.selectedDimensions.length > 0) {
             this._loadDates();
         }
     }
 
     _onRuleChange(value) {
         this.selectedRule = value;
-        if (this.selectedCasename && this.selectedDimension) {
+        if (this.selectedCasename && this.selectedDimensions.length > 0) {
             this._loadDates();
         }
     }
@@ -208,6 +215,13 @@ class ComparisonManager {
         }
 
         this.dimensionSelect.setOptions(availableDimensions);
+        
+        // 默认全选所有维度
+        if (availableDimensions.length > 0) {
+            const allValues = availableDimensions.map(d => d.value);
+            this.dimensionSelect.setValue(allValues);
+            this.selectedDimensions = allValues;
+        }
     }
 
     _loadRulesAndThreads(dimension) {
@@ -253,15 +267,21 @@ class ComparisonManager {
 
         const threadOptions = this.allThreads.map(t => ({
             value: String(t),
-            label: `${t} 线程`
+            label: t === -1 ? '单线程' : `${t} 线程`
         }));
 
         this.threadSelect.setOptions(threadOptions);
 
-        // 默认选中所有线程
+        // 默认选中单线程
         if (threadOptions.length > 0) {
-            this.threadSelect.setValue(threadOptions.map(o => o.value));
-            this.selectedThreads = threadOptions.map(o => parseInt(o.value));
+            const singleThread = threadOptions.find(o => o.value === '-1');
+            if (singleThread) {
+                this.threadSelect.setValue(['-1']);
+                this.selectedThreads = [-1];
+            } else {
+                this.threadSelect.setValue([threadOptions[0].value]);
+                this.selectedThreads = [parseInt(threadOptions[0].value)];
+            }
         }
 
         this._loadDates();
@@ -271,11 +291,11 @@ class ComparisonManager {
     _loadDates() {
         const data = window.multiData || {};
         const caseData = data[this.selectedCasename];
-        if (!caseData || !caseData[this.selectedDimension]) {
+        if (!caseData || !this.selectedDimensions.length) {
             return;
         }
 
-        const dimData = caseData[this.selectedDimension];
+        const dimData = caseData[this.selectedDimensions[0]];
         const dateSet = new Set();
         const selectedThreads = this.selectedThreads.map(t => String(t));
 
@@ -320,7 +340,6 @@ class ComparisonManager {
 
     // ==================== UI 更新方法 ====================
 
-    // 在 comparison.js 中修改 _updateDateVisibility 方法
     _updateDateVisibility() {
         const date2Group = document.getElementById('compDate2Group');
         const formContainer = document.querySelector('#comparisonContainer .comparison-form > div:first-child');
@@ -329,24 +348,25 @@ class ComparisonManager {
         const threadCount = this.selectedThreads ? this.selectedThreads.length : 0;
         const date1Label = document.querySelector('#comparisonContainer .filter-group label[for="compDate1Select"]');
 
+        // 判断是否多维度
+        const dimCount = this.selectedDimensions ? this.selectedDimensions.length : 0;
+
         if (threadCount <= 1) {
-            // 单线程：显示日期2，恢复6列布局
+            // 单线程：显示日期2
             date2Group.style.display = '';
             if (date1Label) {
                 date1Label.textContent = '📅 日期1 *';
             }
-            // 恢复为6列
             if (formContainer) {
                 formContainer.style.gridTemplateColumns = '1fr 1fr 1fr 1fr 1fr 1fr';
             }
         } else {
-            // 多线程：隐藏日期2，改为5列布局
+            // 多线程：隐藏日期2
             date2Group.style.display = 'none';
             if (date1Label) {
                 date1Label.textContent = '📅 日期 *';
             }
             this.selectedDate2 = '';
-            // 改为5列，让其他元素自适应
             if (formContainer) {
                 formContainer.style.gridTemplateColumns = '1fr 1fr 1fr 1fr 1fr';
             }
@@ -392,6 +412,7 @@ class ComparisonManager {
         }
 
         const isMultiThread = this.selectedThreads.length > 1;
+        const isMultiDimension = this.selectedDimensions.length > 1;
 
         if (!isMultiThread && !this.selectedDate2) {
             this._showToast('单线程对比需要选择两个日期', 'error');
@@ -403,23 +424,15 @@ class ComparisonManager {
         this.memoryThresholdValue = parseFloat(this.memoryThreshold?.value || 0);
 
         // 构建参数
-        const dimension = this.selectedDimension || null;
+        const dimensions = this.selectedDimensions.length > 0 ? this.selectedDimensions : null;
         const compareMode = (this.selectedRule === 'all' || !this.selectedRule) ? 'all' : this.selectedRule;
         const errorMode = this.selectedErrorMode || 'absolute';
         const compareType = isMultiThread ? 'thread' : 'single';
 
         // 提示信息
-        if (!this.selectedDimension) {
-            this._showToast('将对比所有维度', 'info');
-        }
-        if (!this.selectedRule || this.selectedRule === 'all') {
-            this._showToast('将对比所有 Rule', 'info');
-        }
-        if (!this.selectedErrorMode) {
-            this._showToast('将使用默认误差模式: 绝对值', 'info');
-        }
-        if (this.selectedThreads.length === 0) {
-            this._showToast('将对比所有线程', 'info');
+        if (!this.selectedDimensions.length) {
+            this._showToast('请选择至少一个对比维度', 'error');
+            return;
         }
 
         // 按钮加载状态
@@ -434,19 +447,21 @@ class ComparisonManager {
                 date1: this.selectedDate1,
                 date2: isMultiThread ? '' : this.selectedDate2,
                 compare_mode: [compareMode],
-                dimension: dimension,
+                dimensions: dimensions,  // 传递维度数组
                 runtime_threshold: this.runtimeThresholdValue,
                 memory_threshold: this.memoryThresholdValue,
                 error_mode: errorMode,
                 threads: this.selectedThreads,
-                compare_type: compareType
+                compare_type: compareType,
+                is_multi_dimension: isMultiDimension
             };
-            console.warn('对比参数:', payload);
+            
+            console.log('对比参数:', payload);
             const response = await axios.post('/api/comparison', payload);
-
+            console.warn('对比响应:', response.data.data);
             if (response.data.success) {
                 this.comparisonData = response.data.data;
-                this._renderResults(response.data.data);
+                this._renderResults(response.data.data, isMultiDimension, isMultiThread);
                 this._showToast('对比完成', 'success');
             } else {
                 this._showToast(response.data.error || '对比失败', 'error');
@@ -462,12 +477,12 @@ class ComparisonManager {
 
     // ==================== 渲染结果 ====================
 
-    _renderResults(result) {
+    _renderResults(result, isMultiDimension, isMultiThread) {
         const stats = result.statistics || {};
         const comparisons = result.comparisons || [];
 
-        this._renderStatsCards(stats);
-        this._renderComparisonTable(comparisons);
+        this._renderStatsCards(stats, isMultiDimension, isMultiThread);
+        this._renderComparisonTable(comparisons, isMultiDimension, isMultiThread);
 
         const countEl = document.getElementById('comparisonResultCount');
         if (countEl) {
@@ -477,13 +492,30 @@ class ComparisonManager {
         this._initSearch();
     }
 
-    _renderStatsCards(stats) {
+    _renderStatsCards(stats, isMultiDimension, isMultiThread) {
         const container = document.getElementById('comparisonStatsGrid');
         if (!container) return;
 
-        const isThreadCompare = stats && Object.keys(stats).length === 0;
+        // 多维度对比显示不同的统计卡片
+        if (isMultiDimension) {
+            container.innerHTML = `
+                <div class="comparison-stat-card">
+                    <h4>对比模式</h4>
+                    <div class="comparison-stat-value">多维度对比</div>
+                </div>
+                <div class="comparison-stat-card">
+                    <h4>对比项数</h4>
+                    <div class="comparison-stat-value">${stats.totalComparisons || 0}</div>
+                </div>
+                <div class="comparison-stat-card">
+                    <h4>维度数量</h4>
+                    <div class="comparison-stat-value">${this.selectedDimensions.length}</div>
+                </div>
+            `;
+            return;
+        }
 
-        if (isThreadCompare) {
+        if (isMultiThread) {
             container.innerHTML = `
                 <div class="comparison-stat-card">
                     <h4>对比模式</h4>
@@ -497,6 +529,7 @@ class ComparisonManager {
             return;
         }
 
+        // 单维度单线程对比统计
         const runtimeIncreased = stats.runtime_increased || [];
         const runtimeDecreased = stats.runtime_decreased || [];
         const memoryIncreased = stats.memory_increased || [];
@@ -557,22 +590,44 @@ class ComparisonManager {
     }
 
     _generateTooltipItems(items, label, unit) {
-        if (!items || items.length === 0) {
-            return '<div class="tooltip-item"><div class="tooltip-item-name">暂无数据</div></div>';
+        // 处理 items 可能是对象的情况
+    if (!items) {
+        return '<div class="tooltip-item"><div class="tooltip-item-name">暂无数据</div></div>';
+    }
+    
+    // 如果是对象，转换为数组
+    let itemArray = items;
+    if (typeof items === 'object' && !Array.isArray(items)) {
+        // 对象格式: { ruleName: diffValue, ... }
+        itemArray = Object.entries(items).map(([name, value]) => [name, value]);
+    }
+    
+    if (!Array.isArray(itemArray) || itemArray.length === 0) {
+        return '<div class="tooltip-item"><div class="tooltip-item-name">暂无数据</div></div>';
+    }
+    
+    return itemArray.slice(0, 10).map(item => {
+        // 处理 item 可能是数组或对象
+        let name, value;
+        if (Array.isArray(item)) {
+            name = item[0];
+            value = item[1];
+        } else if (typeof item === 'object' && item !== null) {
+            name = item.name || '未知';
+            value = item.value || 0;
+        } else {
+            return '';
         }
-        return items.slice(0, 10).map(item => {
-            const name = Array.isArray(item) ? item[0] : (item.name || '未知');
-            const value = Array.isArray(item) ? item[1] : (item.value || 0);
-            return `
-                <div class="tooltip-item">
-                    <div class="tooltip-item-name">${this._escapeHtml(name)}</div>
-                    <div class="tooltip-item-desc">${label}: ${value.toFixed(2)}${unit}</div>
-                </div>
-            `;
-        }).join('');
+        return `
+            <div class="tooltip-item">
+                <div class="tooltip-item-name">${this._escapeHtml(String(name))}</div>
+                <div class="tooltip-item-desc">${label}: ${typeof value === 'number' ? value.toFixed(2) : String(value)}${unit}</div>
+            </div>
+        `;
+    }).join('');
     }
 
-    _renderComparisonTable(comparisons) {
+    _renderComparisonTable(comparisons, isMultiDimension, isMultiThread) {
         const headEl = document.getElementById('comparisonTableHead');
         const bodyEl = document.getElementById('comparisonTableBody');
         if (!headEl || !bodyEl) return;
@@ -582,17 +637,46 @@ class ComparisonManager {
             bodyEl.innerHTML = '<tr><td style="text-align:center;padding:20px;color:#94A3B8;">暂无对比数据</td></tr>';
             return;
         }
-
+        console.warn('对比数据:', comparisons);
         const firstRow = comparisons[0];
+        
+        // 判断对比类型
+        const isThreadCompare = firstRow.length > 1 && typeof firstRow[1] === 'string' && /-1|^\d+线程$/.test(firstRow[1]);
+        console.warn('对比类型:', isThreadCompare);
+        console.warn('对比类型:', firstRow.length );
+        console.warn('对比类型:', typeof firstRow[1] );
+        console.warn('对比类型:', firstRow[1] );
         let headers = ['Rule'];
-        const isThreadCompare = firstRow.length > 1 && typeof firstRow[1] === 'string' && /^\d+线程$/.test(firstRow[1]);
+        let colGroups = [];
 
-        if (isThreadCompare) {
+        if (isMultiDimension) {
+            // 多维度对比：每个维度占4列
+            const dimensions = this.selectedDimensions;
+            const dimNames = {
+                'cputime': 'CPU Time',
+                'realtime': 'Real Time',
+                'peakmem': '峰值内存',
+                'incmem': '增量内存',
+                'realtimeincmem': '实时增量内存'
+            };
+            
+            for (const dim of dimensions) {
+                const dimLabel = dimNames[dim] || dim;
+                headers.push(`${dimLabel}(日期1)`, `${dimLabel}(日期2)`, `${dimLabel}差值`, `${dimLabel}状态`);
+            }
+        } else if (isThreadCompare) {
+            // 多线程对比
             for (let i = 1; i < firstRow.length; i += 2) {
                 const threadName = firstRow[i] || `线程${(i-1)/2+1}`;
-                headers.push(threadName, `${threadName} 值`);
+                const nextThread = i + 2 < firstRow.length ? firstRow[i+2] : null;
+                if (nextThread) {
+                    headers.push(threadName, `${threadName}->${nextThread}`);
+                } else {
+                    headers.push(threadName);
+                }
             }
         } else {
+            // 单维度单线程对比
             const hasRuntime = firstRow.length >= 5;
             const hasMemory = firstRow.length >= 9;
 
@@ -612,14 +696,32 @@ class ComparisonManager {
             let idx = 0;
             rowHtml += `<td>${this._escapeHtml(row[idx++])}</td>`;
 
-            if (isThreadCompare) {
+            if (isMultiDimension) {
+                // 多维度：每个维度4列
+                for (let d = 0; d < this.selectedDimensions.length; d++) {
+                    if (idx + 3 < row.length) {
+                        const val1 = row[idx++];
+                        const val2 = row[idx++];
+                        const diff = row[idx++];
+                        const status = row[idx++];
+                        
+                        rowHtml += `<td>${val1 !== undefined && val1 !== null ? Number(val1).toFixed(2) : '-'}</td>`;
+                        rowHtml += `<td>${val2 !== undefined && val2 !== null ? Number(val2).toFixed(2) : '-'}</td>`;
+                        rowHtml += `<td>${diff !== undefined && diff !== null && !isNaN(diff) ? Number(diff).toFixed(2) : diff}</td>`;
+                        const statusClass = status === '⬆️增加' ? 'increased' : (status === '⬇️减少' ? 'decreased' : '');
+                        rowHtml += `<td><span class="status-badge ${statusClass}">${this._escapeHtml(status)}</span></td>`;
+                    }
+                }
+            } else if (isThreadCompare) {
+                // 多线程
                 for (let i = idx; i < row.length; i += 2) {
                     const threadName = row[i] || '';
                     const value = row[i + 1] !== undefined ? row[i + 1] : '-';
                     rowHtml += `<td>${this._escapeHtml(threadName)}</td>`;
-                    rowHtml += `<td>${value !== null && value !== undefined ? Number(value).toFixed(2) : '-'}</td>`;
+                    rowHtml += `<td>${value !== null && value !== undefined && !isNaN(value) ? Number(value).toFixed(2) : value}</td>`;
                 }
             } else {
+                // 单维度单线程
                 if (row.length >= 5) {
                     for (let i = 0; i < 4; i++) {
                         const val = row[idx++];
