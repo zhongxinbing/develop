@@ -220,7 +220,7 @@ class DataManager:
                             thread_data[thread] = values[-n:]
         return data
 
-    def get_all_data(self, tool_id: str, all_incremental_data: Dict, data_type: str):
+    def get_all_data(self, tool_id: str, incremental_data: Dict, data_type: str):
         """
         加载工具数据，支持增量更新
         
@@ -269,21 +269,17 @@ class DataManager:
         # 获取需要处理的文件
         files_to_process, all_files = self._get_files_to_process(tool_id, data_type, data_root, scanner)
         
-        # 如果有文件需要处理
-        incremental_data = {}
         if files_to_process:
             # 解析增量数据
             try:
-
-                incremental_data = self.duplicate_removal(func(files_to_process)) or {}
-                all_incremental_data = deep_merge(all_incremental_data, incremental_data)
-            
-                return [all_incremental_data, incremental_data, all_files]
+                incremental_data = func(incremental_data,files_to_process) or {}
+                # 返回增量的数据和所有文件列表
+                return [incremental_data, all_files]
             except Exception as e:
                 self.logger.exception(f"{data_type} 解析数据失败: {e}")
-                return [all_incremental_data, incremental_data, all_files]
+                return [incremental_data, all_files]
         
-        return [all_incremental_data, incremental_data, all_files]
+        return [incremental_data, all_files]
 
     def _save_processed_data(self, tool_id: str, data: Dict, files: List[FileInfo], single_exists: int, multi_exists: int):
         """保存处理后的数据和版本信息"""
@@ -584,16 +580,16 @@ class DataManager:
     def load_single_chart(self, tool_id: str, all_data: Dict):
         """加载单线程数据"""
         self.logger.info(f"加载工具 {tool_id} 单线程数据")
-        single_data, incremental_data, all_files = self.get_all_data(tool_id, all_data, "single")
-
-        return single_data, incremental_data, all_files
+        single_incremental_data, all_files = self.get_all_data(tool_id, all_data, "single")
+        save_tool_data("single_incremental_data.json", single_incremental_data)
+        return single_incremental_data, all_files
 
     def load_multi_chart(self, tool_id: str, all_data: Dict):
         """加载多线程数据"""
         self.logger.info(f"加载工具 {tool_id} 多线程数据")
-        multi_data, incremental_data, all_files = self.get_all_data(tool_id, all_data, "multi")
+        multi_incremental_data, all_files = self.get_all_data(tool_id, all_data, "multi")
         
-        return multi_data, incremental_data, all_files
+        return multi_incremental_data, all_files
 
     def load_extra_chart(self, tool_id: str, user_id: str):
         """加载额外数据"""
@@ -695,8 +691,8 @@ class DataManager:
         if tool_config.get('single_exists') == 1:
             # 检查单线程路径是否为空，并且是否存在
             self.logger.info(f"加载工具 {tool_id} 单线程数据")
-            all_incremental_data, incremental_data, all_files['single'] = self.load_single_chart(tool_id, incremental_data)
-            if incremental_data : single_incremental_flag = 1
+            single_incremental_data, all_files['single'] = self.load_single_chart(tool_id, incremental_data)
+            if single_incremental_data : single_incremental_flag = 1
         else:
             return {}, "单线程路径不存在"
 
@@ -706,8 +702,8 @@ class DataManager:
             # 检查多线程路径是否为空，并且是否存在
             if Path(tool_config.get('multi_path')):
                 self.logger.info(f"加载工具 {tool_id} 多线程数据")
-                all_incremental_data, incremental_data, all_files['multi'] = self.load_multi_chart(tool_id, all_incremental_data)
-                if incremental_data : multi_incremental_flag = 1
+                multi_incremental_data, all_files['multi'] = self.load_multi_chart(tool_id, single_incremental_data)
+                if multi_incremental_data : multi_incremental_flag = 1
             else:
                 return {}, "多线程路径不存在"
 
@@ -722,11 +718,10 @@ class DataManager:
         # 合并总的数据：仅在存在增量时合并并去重。
         # 无增量时 all_data 已是从缓存/磁盘读取的去重数据，跳过可避免大数据量下
         # 每次请求都重复遍历全量数据。
-        if all_incremental_data:
-            all_data = self.duplicate_removal(deep_merge(all_data, all_incremental_data))
+        if multi_incremental_data:
+            all_data = self.duplicate_removal(deep_merge(all_data, multi_incremental_data))
         ############################################################################
         # 解析数据 -> 先判断数据是否被更新，如果更新在解析，否则直接加载缓存
-
         message = []
         has_incremental = single_incremental_flag or multi_incremental_flag
         # 有增量时必须解析；无增量但内存中没有解析结果（例如服务重启后）
@@ -736,7 +731,7 @@ class DataManager:
             self.logger.info(f"开始解析工具 {tool_id} 数据")
             if data_parsers and has_incremental and 'single_multi' in data_parsers:
                 # 增量解析：只解析新增数据
-                parse_source = all_incremental_data
+                parse_source = multi_incremental_data
             else:
                 # 全量解析：内存中无可用解析结果时，基于合并后的完整数据重建
                 parse_source = all_data

@@ -485,7 +485,7 @@ def gen_data(dataData: Dict, rule_datas: List[str], date: str, thread: int) -> D
             dataData[rule_name][date].update({str(thread): [cputime, realtime, peakmem, incmem, realtimeincmem]})
 
     return dataData
-
+#########################################################################################################################################################
 # 从 txt 中获取数据
 def get_elint_data_from_txt(file_path: str, elint_data: Dict, thread: int) -> None:
     """从 txt 中获取数据"""
@@ -504,9 +504,10 @@ def get_elint_data_from_txt(file_path: str, elint_data: Dict, thread: int) -> No
             "dates": [],
             "rules_data": {}
         }
-
-    elint_data[casename]["threads"].append(str(thread))
-    elint_data[casename]["dates"].append(date)
+    if str(thread) not in elint_data[casename]["threads"]:
+        elint_data[casename]["threads"].append(str(thread))
+    if date not in elint_data[casename]["dates"]:
+        elint_data[casename]["dates"].append(date)
     # 获取所有数据
     try:
         with open(file_path, 'r', encoding='utf-8') as f:
@@ -557,8 +558,10 @@ def get_elint_data_from_log(file_path: str, elint_data: Dict, thread: int) -> No
             date = datetime.fromtimestamp(mtime).strftime("%Y%m%d")
         except Exception:
             date = datetime.now().strftime("%Y%m%d")
-    elint_data[casename]["threads"].append(str(thread))
-    elint_data[casename]["dates"].append(date)
+    if str(thread) not in elint_data[casename]["threads"]:
+        elint_data[casename]["threads"].append(str(thread))
+    if date not in elint_data[casename]["dates"]:
+        elint_data[casename]["dates"].append(date)
     try:
         with open(file_path, "r", errors='ignore') as f:
             content = f.read()
@@ -571,6 +574,7 @@ def get_elint_data_from_log(file_path: str, elint_data: Dict, thread: int) -> No
                                 r' ([^\s\]]+) done: CpuTime\(([0-9.,]+)s\); RealTime\(([0-9.,]+)s\); PeakMem\(([0-9.,]+)M\); IncMem\(([0-9.,]+)M\)',
                                 content
                             )
+            
             elint_data[casename]["rules_data"] = gen_data(elint_data[casename]["rules_data"], rule_datas, date, thread)
 
     except Exception as e:
@@ -578,10 +582,10 @@ def get_elint_data_from_log(file_path: str, elint_data: Dict, thread: int) -> No
         return
 
 # 获取elint工具的数据
-def get_elint_data(filepaths: str) -> Dict:
+def get_elint_data(elint_data: Dict, filepaths: str) -> Dict:
     """获取elint数据"""
     filepaths = [info.path for info in filepaths if info.path.endswith('.txt') or info.path.endswith('.log')]
-    elint_data = {}
+
     for file_path in filepaths:
         logger.info(f"从文件获取性能数据: {file_path}")
         # 获取是几线程的
@@ -597,7 +601,7 @@ def get_elint_data(filepaths: str) -> Dict:
             # 从 log 中读取数据
             get_elint_data_from_log(file_path, elint_data, thread)
         elif re.match(r'\d{8}_[^\s]+\.txt', filename):
-            # 从 txt 中获取
+            # 从 txt 中获取数据
             get_elint_data_from_txt(file_path, elint_data, thread)
 
     return elint_data

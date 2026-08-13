@@ -5,7 +5,8 @@ from pathlib import Path
 from datetime import datetime, timedelta
 
 # 路径定义
-base = Path(r"E:\git\develop\monitor\test")
+# base = Path(r"E:\git\develop\monitor\test")
+base = Path(r"C:\Users\xbzhong\Desktop\lint\script\develop\monitor\test")
 multi = base / "multi"
 single = base / "single"
 signal = base / "signal"
@@ -15,8 +16,12 @@ start_date = datetime(2026, 5, 1, 6, 0)
 end_date = datetime(2026, 5, 2, 6, 0)
 
 # 线程列表
-threads = [2, 4, 6, 8, 16, 32, 64, 128]
-
+# threads = [2, 4, 6, 8, 16, 32, 64, 128]
+threads = [2, 4]
+# 模块数量
+num_modules = 4
+# rule 数量
+num_rules = 5
 
 def random_string(length=10):
     return ''.join(random.choices(string.ascii_lowercase, k=length))
@@ -31,17 +36,16 @@ def generate_multi():
     while d <= end_date:
         date_str = d.strftime("%Y-%m-%d-%H")
         for thread in threads:
-            for module in range(0,100):
+            for module in range(0,num_modules):
                 log_dir = base / date_str / "case" / f"{module:03d}_thread_{thread:03d}" 
                 log_dir.mkdir(parents=True, exist_ok=True)
                 log_file = log_dir / "elint.log"
                 with open(log_file, "w", encoding="utf-8") as f:
                     f.write(f"# ELINT log for thread_{thread} / {module}\n")
                     f.write(f"# Generated: {d.isoformat()}\n")
-                    for i in range(10000):
+                    for i in range(num_rules):
                         ts = d + timedelta(minutes=i * 3)
-                        level = random.choice(["INFO", "WARN", "ERROR", "DEBUG"])
-                        f.write(f"{ts.strftime('%Y-%m-%d %H:%M:%S')} Checking lint rule E{i:04d} CpuTime({round(random.uniform(0, 100), 2)}s); RealTime({round(random.uniform(0, 100), 2)}s); PeakMem({round(random.uniform(0, 100), 2)}M); IncMem({round(random.uniform(0, 100), 2)}M); RealTimeIncMem({round(random.uniform(-100, 100), 2)}M)\n")
+                        f.write(f"{ts.strftime('%Y-%m-%d %H:%M:%S')} Checking lint rule E{i:04d} done: CpuTime({round(random.uniform(0, 100), 2)}s); RealTime({round(random.uniform(0, 100), 2)}s); PeakMem({round(random.uniform(0, 100), 2)}M); IncMem({round(random.uniform(0, 100), 2)}M); RealTimeIncMem({round(random.uniform(-100, 100), 2)}M)\n")
                     overall= f" \
 +--------------+-----------------------+-----------------------+------------------+-------------+------------+------------+\n \
 | Command      | Elapse Time (H:M:S)   | CPU Time (H:M:S)      | Peak Memory (MB) | ERROR Count | WARN Count | INFO Count |\n \
@@ -70,14 +74,14 @@ def generate_single():
     d = start_date
     while d <= end_date:
         date_str = d.strftime("%Y-%m-%d-%H")
-        for module in range(0,100):
+        for module in range(0,num_modules):
             log_dir = base / date_str / "case" / f"{module:03d}" 
             log_dir.mkdir(parents=True, exist_ok=True)
             log_file = log_dir / f"{d.strftime('%Y%m%d')}_{module:03d}.txt"
             with open(log_file, "w", encoding="utf-8") as f:
                 f.write(f"# ELINT log for thread_1 / {module}\n")
                 f.write(f"# Generated: {d.isoformat()}\n")
-                for i in range(300):
+                for i in range(num_rules):
                     ts = d + timedelta(minutes=i * 3)
                     f.write(f"dict set {d.strftime('%Y%m%d')} E{i:04d} {{{round(random.uniform(0, 100), 2)} {round(random.uniform(0, 100), 2)} {round(random.uniform(0, 100), 2)} {round(random.uniform(0, 1000), 2)} {round(random.uniform(-100, 1000), 3)}}}\n")
                 f.write(f"dict set {d.strftime('%Y%m%d')} Overall {{{round(random.uniform(0, 100), 2)} {round(random.uniform(0, 100), 2)} {round(random.uniform(0, 100), 2)} NA NA}}\n")
@@ -168,7 +172,7 @@ if __name__ == "__main__":
     print("=" * 50)
 
     generate_multi()
-    # generate_single()
+    generate_single()
     # generate_signal()
     # generate_lint_csv()
 
