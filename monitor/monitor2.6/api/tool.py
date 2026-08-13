@@ -6,7 +6,8 @@ from flask import jsonify, request
 from app import app
 from utils.data_manager import data_manager
 from utils.log import get_logger
-from utils.common import get_user_id
+from utils.common import *
+from config import DATA_DIR
 
 logger = get_logger(__name__)
 
@@ -38,10 +39,25 @@ def api_get_thread_chart_data():
 
     # chart_data = data_manager.load_thread_chart(data)
     chart_data = data_manager.send_data_to_frontend_for_thread_chart(data)
-
-
-
+    print(chart_data)
     if not chart_data:
         return jsonify({'success': False, 'error': '线程数据为空'})
 
     return jsonify({'success': True, 'data': chart_data})
+
+
+@app.route('/api/chart/parsers', methods=['POST'])
+def api_get_chart_parsers():
+    """获取图表解析器数据"""
+    data = request.json
+    casename = data.get('casename')
+    tool_id = data.get('toolId')
+
+    parsers_path = DATA_DIR / tool_id / 'parser' /'single_multi' / f'{int(casename):03d}.json'
+    if not parsers_path.exists():
+        print("解析器数据不存在",parsers_path)
+        return jsonify({'success': False, 'error': '解析器数据不存在'})
+    parser = load_tool_data(parsers_path)
+
+    return jsonify({'success': True, 'data': parser})
+

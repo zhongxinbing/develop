@@ -53,7 +53,7 @@ class DataManager:
         # 数据缓存
         self._cache_lock = threading.Lock()
         self._data_cache: Dict[tuple, tuple[float, Any]] = {}
-        self._cache_ttl_seconds = 30
+        self._cache_ttl_seconds = 60 *5
         
         # 解析任务线程池
         self._executor = concurrent.futures.ThreadPoolExecutor(max_workers=2)
@@ -207,7 +207,7 @@ class DataManager:
             casedata["metrics"] = metrics
         return data
 
-    def get_all_data(self, tool_id: str, all_incremental_data: Dict, data_type: str):
+    def get_all_data(self, tool_id: str, incremental_data: Dict, data_type: str):
         """
         加载工具数据，支持增量更新
         
@@ -247,20 +247,19 @@ class DataManager:
         files_to_process, all_files = self._get_files_to_process(tool_id, data_type, data_root, scanner)
         
         # 如果有文件需要处理
-        incremental_data = {}
+
         if files_to_process:
             # 解析增量数据
             try:
 
-                incremental_data = self.duplicate_removal(func(files_to_process)) or {}
-                all_incremental_data = deep_merge(all_incremental_data, incremental_data)
+                incremental_data = func(incremental_data,files_to_process) or {}
             
-                return [all_incremental_data, incremental_data, all_files]
+                return incremental_data, all_files
             except Exception as e:
                 self.logger.exception(f"{data_type} 解析数据失败: {e}")
-                return [all_incremental_data, incremental_data, all_files]
+                return incremental_data, all_files
         
-        return [all_incremental_data, incremental_data, all_files]
+        return incremental_data, all_files
 
     def _save_processed_data(self, tool_id: str, data: Dict, files: List[FileInfo], single_exists: int, multi_exists: int):
         """保存处理后的数据和版本信息"""
@@ -502,16 +501,16 @@ class DataManager:
     def load_single_chart(self, tool_id: str, all_data: Dict):
         """加载单线程数据"""
         self.logger.info(f"加载工具 {tool_id} 单线程数据")
-        single_data, incremental_data, all_files = self.get_all_data(tool_id, all_data, "single")
+        incremental_data, all_files = self.get_all_data(tool_id, all_data, "single")
 
-        return single_data, incremental_data, all_files
+        return incremental_data, all_files
 
     def load_multi_chart(self, tool_id: str, all_data: Dict):
         """加载多线程数据"""
         self.logger.info(f"加载工具 {tool_id} 多线程数据")
-        multi_data, incremental_data, all_files = self.get_all_data(tool_id, all_data, "multi")
+        incremental_data, all_files = self.get_all_data(tool_id, all_data, "multi")
         
-        return multi_data, incremental_data, all_files
+        return incremental_data, all_files
 
     def load_extra_chart(self, tool_id: str, user_id: str):
         """加载额外数据"""
@@ -568,6 +567,7 @@ class DataManager:
         # 检查缓存是否在 TTL 内，命中则直接返回，实现快速响应
         cache_key = (f"{tool_id}")
         self.logger.info(f"开始加载工具 {tool_id} 数据")
+        paraser = DATA_DIR / tool_id / f'paserer.json'
         # 检查缓存
         with self._cache_lock:
             cached_entry = self._data_cache.get(cache_key, None)
@@ -578,7 +578,7 @@ class DataManager:
                     self.logger.warning(f"缓存命中，数据已经是最新的")
                     return cached_value['paser_data'], "数据已经是最新的"
                 # _cache_ttl_seconds 过期，删除缓存
-                # self._data_cache.pop(cache_key, None)
+                self._data_cache.pop(cache_key, None)
         ############################################################################
         # 获取已有数据    工具以往保存的数据；如果存在则获取，否则返回空字典
         data_file = DATA_DIR / tool_id / f'{tool_id}.json'
@@ -593,7 +593,7 @@ class DataManager:
                 data_parsers = {}
         elif data_file.exists():
             all_data = load_tool_data(data_file) or {}
-            data_parsers = {}
+            data_parsers = load_tool_data(paraser) or {}
         else:
             all_data = {}
             data_parsers = {}
@@ -609,8 +609,8 @@ class DataManager:
         if tool_config.get('single_exists') == 1:
             # 检查单线程路径是否为空，并且是否存在
             self.logger.info(f"加载工具 {tool_id} 单线程数据")
-            all_incremental_data, incremental_data, all_files['single'] = self.load_single_chart(tool_id, incremental_data)
-            if incremental_data : single_incremental_flag = 1
+            single_incremental_data, all_files['single'] = self.load_single_chart(tool_id, incremental_data)
+            if single_incremental_data : single_incremental_flag = 1
         else:
             return {}, "单线程路径不存在"
 
@@ -620,8 +620,8 @@ class DataManager:
             # 检查多线程路径是否为空，并且是否存在
             if Path(tool_config.get('multi_path')):
                 self.logger.info(f"加载工具 {tool_id} 多线程数据")
-                all_incremental_data, incremental_data, all_files['multi'] = self.load_multi_chart(tool_id, all_incremental_data)
-                if incremental_data : multi_incremental_flag = 1
+                multi_incremental_data, all_files['multi'] = self.load_multi_chart(tool_id, single_incremental_data)
+                if multi_incremental_data : multi_incremental_flag = 1
             else:
                 return {}, "多线程路径不存在"
 
@@ -634,7 +634,7 @@ class DataManager:
         else:
             message = ''
         # 合并总的数据
-        all_data  = self.duplicate_removal(deep_merge(all_data, all_incremental_data))
+        all_data  = self.duplicate_removal(deep_merge(all_data, multi_incremental_data))
         ############################################################################
         # 解析数据 -> 先判断数据是否被更新，如果更新在解析，否则直接加载缓存
 
@@ -642,8 +642,8 @@ class DataManager:
         if single_incremental_flag or multi_incremental_flag:
             self.logger.info(f"开始解析工具 {tool_id} 数据")
             # 只解析新的增量数据
-            data_parsers = data_parser.parse_all_data(data_parsers, all_incremental_data, tool_config.get('single_exists'), tool_config.get('multi_exists'))
-            paraser = DATA_DIR / tool_id / f'paserer.json'
+            data_parsers = data_parser.parse_all_data(data_parsers, multi_incremental_data, tool_id, tool_config.get('multi_exists'))
+            
             save_tool_data(paraser, data_parsers, 4)
             ############################################################################
             # 异步保存数据 -> 保存总数据、文件路径
@@ -666,6 +666,7 @@ class DataManager:
         else:
             message = '未更新数据'
         # 返回给前端的数据、显示 casename 选择框、日期选择框、rule选择框、线程选择框
+        
         return data_parsers, message
 
     # ==================== 清理 ====================

@@ -160,6 +160,20 @@ class MultiThreadManager {
             console.log('updateRulesAndDates: 无有效的 casename', this.selectedCasename);
             return;
         }
+                
+        const response = await axios.post('/api/chart/parsers', {
+            toolId: window.toolId,
+            casename: this.selectedCasename
+        });
+
+        if (response.data.success) {
+            this.allData = {};
+            const caseData = response.data.data;
+            this.allData[this.selectedCasename] = caseData;
+        } else {
+            this.showErrorMessage(chart, response.data.error || '获取数据失败');
+        }
+        
         const caseData = this.allData[this.selectedCasename] || {};
         const rulesSet = new Set(Object.keys(caseData[this.currentChartType] || {}));
         this.allRules = Array.from(rulesSet).sort();
@@ -337,8 +351,9 @@ class MultiThreadManager {
                 chart_type: this.currentChartType,
                 selected_threads: this.selectedThreads,  // 传递选中的线程
             };
+            
             const response = await axios.post('/api/chart/data', requestData);
-            // console.warn('renderChart: response', response.data.data);
+            
             if (response.data.success) {
                 let chartData = response.data.data;
                 if (typeof chartData === 'string') {

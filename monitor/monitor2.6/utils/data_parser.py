@@ -5,7 +5,7 @@
 
 from typing import Dict, List, Any, Optional
 import json
-from utils.common import log
+from utils.common import *
 from utils.log import *
 from config import DATA_DIR, BASE_DIR
 
@@ -20,7 +20,7 @@ class DataParser:
         self.logger.info("数据管理器初始化")
 
     # 解析工具的数据，并放在对应的目录下；方便用户直接获取数据
-    def parse_all_data(self,data_parsers: Dict, all_data: Dict, single_exists: int, multi_exists: int):
+    def parse_all_data(self,data_parsers: Dict, all_data: Dict, tool_id: str, multi_exists: int):
         """"
             解析工具的数据，并放在对应的目录下；方便用户直接获取数据;
             解析的同时进行增量更新，即只解析新增的数据，不解析已存在的数据
@@ -90,10 +90,13 @@ class DataParser:
 
             if 'crash_dates' not in single_multi_chart[casename]:
                 single_multi_chart[casename]['crash_dates'] = {}
-
-        single_multi_chart = {k: v for k, v in single_multi_chart.items() if v not in (None, '')}
+            case_parser_path = DATA_DIR / tool_id / "parser" / "single_multi" / f"{casename}.json"
+            save_tool_data(case_parser_path, single_multi_chart[casename])
+            case_thread_parser_path = DATA_DIR / tool_id / "parser" / "thread" / f"{casename}.json"
+            save_tool_data(case_thread_parser_path, thread_chart[casename])
+        
         thread_chart = {k: v for k, v in thread_chart.items() if v not in (None, '')}
-        return {'single_multi': single_multi_chart, 'thread': thread_chart}
+        return {'single_multi': list(single_multi_chart.keys()), 'thread': list(thread_chart.keys())}
 
     def _mark_crash(self, single_multi_chart: dict, casename: str, date: str, thread: str):
         if casename not in single_multi_chart:
