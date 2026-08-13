@@ -590,3 +590,8 @@ Current Threads : 2
                     2.1.3.1.1 表头：| rule | dimension1(date1) | dimension1(date2) | dimension1结果 | dimension2(date1) | dimension2(date2) | dimension2结果 | ... |
                     2.1.3.1.2 如果 case 的维度下rule 的 这个线程 没有这个日期，那么在表格中对应的rule的日期显示"无数据"，结果显示NA
     3. 请修改前端和后端的代码，实现对比功能的实现
+
+
+
+################################################
+由于数据量会非常的大，所以解析后的数据只能将 casename 的名字给前端

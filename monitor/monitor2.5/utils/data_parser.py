@@ -6,7 +6,7 @@
 from typing import Dict, List, Any, Optional
 from unittest import case, result
 import json
-from utils.common import log
+from utils.common import *
 from utils.log import *
 from config import DATA_DIR, BASE_DIR
 
@@ -139,6 +139,9 @@ class DataParser:
                                                 thread_values.append(data[i])
 
             single_multi_chart.setdefault(casename, {}).setdefault('crash_dates', {})
+
+            case_paser_data_path = DATA_DIR / 'parser'/ f"{casename}.json"
+            save_tool_data(case_paser_data_path, single_multi_chart[casename])
         # 删除 casename 对应为空的值
         single_multi_chart = {k: v for k, v in single_multi_chart.items() if v not in (None, '')}
 
