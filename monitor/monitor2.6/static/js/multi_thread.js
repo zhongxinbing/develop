@@ -500,11 +500,10 @@ class MultiThreadManager {
 
         // 标记崩溃日期
         const markAreas = [];
-        console.warn(crashDatesSet);
+
         if (crashDatesSet.size > 0) {
             let startIndex = -1;
             for (let i = 0; i < dates.length; i++) {
-                console.log(dates[i]);
                 if (crashDatesSet.has(dates[i])) {
                     if (startIndex === -1) startIndex = i;
                 } else {
@@ -518,7 +517,7 @@ class MultiThreadManager {
                 markAreas.push([{ xAxis: startIndex }, { xAxis: dates.length - 1 }]);
             }
         }
-
+        console.warn(markAreas);
         const option = {
             title: {
                 text: chartTitle,
@@ -632,7 +631,7 @@ class MultiThreadManager {
                 emphasis: { iconStyle: { borderColor: '#00E5FF' } }
             }
         };
-
+        
         if (markAreas.length > 0 && series.length > 0) {
             option.series[0].markArea = {
                 silent: true,

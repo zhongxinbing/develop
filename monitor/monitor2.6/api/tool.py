@@ -29,7 +29,7 @@ def api_get_chart_data():
     data = request.json
     # red(data)
     chioce_data = data_manager.send_data_to_frontend_for_chart(data)
-    
+    red(chioce_data)
     return jsonify({'success': True, 'data': chioce_data})
 
 # 从前端获取图需要显示数据，解析后返回图表数据   ->>>>>  线程数
