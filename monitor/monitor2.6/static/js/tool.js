@@ -249,14 +249,15 @@ async function loadData() {
                 multiThreadManager.updateOverview();
             }
 
-            // if (window.ThreadChartManager) {
-            //     threadChartManager = new window.ThreadChartManager();
-            //     await threadChartManager.init(threadData, userData);
-            // }
+            if (window.ThreadChartManager) {
+                threadChartManager = new window.ThreadChartManager();
+                await threadChartManager.init(threadData, userData);
+            }
 
             // 默认切换到单线程模式
             // await switchToSingleMode();
-            await switchToMultiMode();
+            // await switchToMultiMode();
+            await switchToThreadMode();
         } else {
             console.error('加载数据失败:', response.data.error);
             showError('加载数据失败: ' + (response.data.error || '未知错误'));

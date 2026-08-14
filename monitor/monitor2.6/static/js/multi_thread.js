@@ -178,7 +178,8 @@ class MultiThreadManager {
         // 从服务器获取数据
         const response = await axios.post('/api/chart/parsers', {
             toolId: window.toolId,
-            casename: this.selectedCasename
+            casename: this.selectedCasename,
+            chartType: this.idPrefix,
         });
 
         if (response.data.success) {

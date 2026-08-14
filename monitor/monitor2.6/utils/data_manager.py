@@ -479,11 +479,10 @@ class DataManager:
         tool_id = front_data.get('toolID', '')
         chart_type = front_data.get('chart_type', 'cputime')
         mode = front_data.get('mode', 'thread')
-
-        cache_entry = self._data_cache.get(f"{tool_id}")
-        if not cache_entry or len(cache_entry) < 2:
-            return {}
-        cache_data = cache_entry[1].get('paser_data', {}).get('thread', {})
+        # 从文件中读取数据
+        cache_data = {}
+        cache_data_path = DATA_DIR / tool_id / 'parser' / 'thread' / f'{casename}.json'
+        cache_data[casename] = load_tool_data(cache_data_path)
 
         if casename not in cache_data:
             return {}

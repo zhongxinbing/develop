@@ -14,7 +14,7 @@ class ThreadChartManager {
         this.rawData = {};
         this.userAddedData = {};
         this.allData = {};
-        
+
         this.idPrefix = 'thread';
         
         this.casenameSelect = null;
@@ -34,9 +34,14 @@ class ThreadChartManager {
         this.ruleSearch = document.getElementById(`${this.idPrefix}RuleSearch`);
         this.refreshBtn = document.getElementById(`refreshThreadChartBtn`);
         
-        this.rawData = rawData || {};
-        this.userAddedData = userAddedData || {};
-        this.allData = { ...this.rawData, ...this.userAddedData };
+        // this.rawData = rawData || {};
+        // this.userAddedData = userAddedData || {};
+        // this.allData = { ...this.rawData, ...this.userAddedData };
+        if (userAddedData.length > 0) {
+            this.allCasenames = userAddedData.map(item => item.casename);
+        } else {
+            this.allCasenames = rawData;
+        }
         
         this.casenameSelect = new SearchableSelect({
             container: document.getElementById(`${this.idPrefix}CasenameSelect`),
@@ -109,39 +114,13 @@ class ThreadChartManager {
     async updateCasenameSelect() {
         if (!this.casenameSelect) return;
         
-        // this.allCasenames = Object.keys(this.allData).filter(name => {
-        //     const caseData = this.allData[name];
-        //     if (!caseData || typeof caseData !== 'object') return false;
-        //     const caseTypeData = caseData[this.currentChartType];
-        //     if (!caseTypeData || typeof caseTypeData !== 'object') return false;
-        //     for (const rule of Object.keys(caseTypeData)) {
-        //         const ruleData = caseTypeData[rule];
-        //         if (ruleData && ruleData.threads && ruleData.threads.length > 0) {
-        //             return true;
-        //         }
-        //     }
-
-        //     // for (const type of ['cputime', 'peakmem', 'incmem', 'realtime', 'realtimeincmem']) {
-        //     //     if (caseData[type] && typeof caseData[type] === 'object') {
-        //     //         const rules = Object.keys(caseData[type]);
-        //     //         for (const rule of rules) {
-        //     //             const ruleData = caseData[type][rule];
-        //     //             if (ruleData && ruleData.all_threads && ruleData.all_threads.length > 0) {
-        //     //                 return true;
-        //     //             }
-        //     //         }
-        //     //     }
-        //     // }
-        //     return false;
-        // });
-        this.allCasenames = Object.keys(this.allData).filter(name => {
-            const rule_dates = this.allData[name];
-            return rule_dates;
+        const options = [];
+        this.allCasenames.forEach(name => {
+            options.push({
+                value: name,
+                label: name
+            });
         });
-        const options = this.allCasenames.map(name => ({
-            value: name,
-            label: name
-        }));
         
         this.casenameSelect.setOptions(options);
         
@@ -154,6 +133,21 @@ class ThreadChartManager {
     async updateRules() {
         if (!this.ruleSelect || !this.selectedCasename) return;
         
+        // 从服务器获取数据
+        const response = await axios.post('/api/chart/parsers', {
+            toolId: window.toolId,
+            casename: this.selectedCasename,
+            chartType: this.idPrefix,
+        });
+
+        if (response.data.success) {
+            this.allData = {};
+            const caseData = response.data.data;
+            this.allData[this.selectedCasename] = caseData;
+        } else {
+            this.showErrorMessage(chart, response.data.error || '获取数据失败');
+        }
+
         const caseData = this.allData[this.selectedCasename];
 
         if (!caseData) return;
