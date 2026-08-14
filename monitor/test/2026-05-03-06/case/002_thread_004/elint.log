@@ -1,0 +1,24 @@
+# ELINT log for thread_4 / 2
+# Generated: 2026-05-03T06:00:00
+2026-05-03 06:00:00 Checking lint rule E0000 done: CpuTime(32.32s); RealTime(85.59s); PeakMem(99.82M); IncMem(41.26M); RealTimeIncMem(5.8M)
+2026-05-03 06:03:00 Checking lint rule E0001 done: CpuTime(69.82s); RealTime(64.12s); PeakMem(87.34M); IncMem(61.64M); RealTimeIncMem(25.31M)
+2026-05-03 06:06:00 Checking lint rule E0002 done: CpuTime(2.78s); RealTime(36.83s); PeakMem(2.18M); IncMem(63.42M); RealTimeIncMem(61.58M)
+2026-05-03 06:09:00 Checking lint rule E0003 done: CpuTime(13.36s); RealTime(70.34s); PeakMem(32.27M); IncMem(18.45M); RealTimeIncMem(-5.79M)
+2026-05-03 06:12:00 Checking lint rule E0004 done: CpuTime(7.94s); RealTime(41.81s); PeakMem(66.05M); IncMem(40.21M); RealTimeIncMem(39.24M)
+2026-05-03 06:15:00 Checking lint rule E0005 done: CpuTime(32.14s); RealTime(60.29s); PeakMem(67.35M); IncMem(57.45M); RealTimeIncMem(95.8M)
+2026-05-03 06:18:00 Checking lint rule E0006 done: CpuTime(0.12s); RealTime(77.3s); PeakMem(80.74M); IncMem(15.61M); RealTimeIncMem(-73.27M)
+2026-05-03 06:21:00 Checking lint rule E0007 done: CpuTime(39.92s); RealTime(51.75s); PeakMem(24.72M); IncMem(88.83M); RealTimeIncMem(5.75M)
+2026-05-03 06:24:00 Checking lint rule E0008 done: CpuTime(67.71s); RealTime(87.68s); PeakMem(54.02M); IncMem(15.71M); RealTimeIncMem(-40.65M)
+2026-05-03 06:27:00 Checking lint rule E0009 done: CpuTime(4.4s); RealTime(80.08s); PeakMem(15.34M); IncMem(28.72M); RealTimeIncMem(3.24M)
+ +--------------+-----------------------+-----------------------+------------------+-------------+------------+------------+
+ | Command      | Elapse Time (H:M:S)   | CPU Time (H:M:S)      | Peak Memory (MB) | ERROR Count | WARN Count | INFO Count |
+ +--------------+-----------------------+-----------------------+------------------+-------------+------------+------------+
+ | read_design  | 74 mins : 63.483 secs  | 34 mins : 98.582 secs  | 98042.613        | 12          | 4          | 1          |
+ +--------------+-----------------------+-----------------------+------------------+-------------+------------+------------+
+ | check_lint   | 60 mins : 96.963 secs  | 84  mins : 35.42 secs | 39960.179        | 72826       | 268778     | 76282      |
+ +--------------+-----------------------+-----------------------+------------------+-------------+------------+------------+
+ | save_session | 69 mins : 54.715 secs  | 39  mins : 25.118 secs | 71667.815        | 0           | 0          | 0          |
+ +--------------+-----------------------+-----------------------+------------------+-------------+------------+------------+
+ | Overall      | 26 mins : 65.975 secs  | 1  mins : 72.054 secs | 77806.393        | 72838       | 268782     | 76283      |
+ +--------------+-----------------------+-----------------------+------------------+-------------+------------+------------+
+ 

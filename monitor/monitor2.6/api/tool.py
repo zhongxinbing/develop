@@ -38,9 +38,8 @@ def api_get_thread_chart_data():
     """获取线程曲线图数据（X轴为线程数）"""
     data = request.json
 
-    # chart_data = data_manager.load_thread_chart(data)
     chart_data = data_manager.send_data_to_frontend_for_thread_chart(data)
-    print(chart_data)
+    
     if not chart_data:
         return jsonify({'success': False, 'error': '线程数据为空'})
 
@@ -54,7 +53,7 @@ def api_get_chart_parsers():
     casename = data.get('casename')
     tool_id = data.get('toolId')
     chartType = data.get('chartType')
-    red(data)
+    
     # 单线程和多线程数据
     if chartType == 'multi' or chartType == 'comparison':
         parsers_path = DATA_DIR / tool_id / 'parser' /'single_multi' / f'{casename}.json'

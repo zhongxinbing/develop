@@ -256,9 +256,9 @@ async function loadData() {
 
             // 默认切换到单线程模式
             // await switchToSingleMode();
-            // await switchToMultiMode();
+            await switchToMultiMode();
             // await switchToThreadMode();
-            await switchToComparisonMode();
+            // await switchToComparisonMode();
         } else {
             console.error('加载数据失败:', response.data.error);
             showError('加载数据失败: ' + (response.data.error || '未知错误'));

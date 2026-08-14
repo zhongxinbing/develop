@@ -68,12 +68,14 @@ class DataComparer:
 
         # 获取数据
         try:
-            cache_key = f"{tool_id}_parser"
-            cache_data = data_manager._data_cache.get(cache_key, (None, {}))[1]
+            cache_data = {}
+
+            cache_data_path = DATA_DIR / tool_id / 'parser' /'single_multi' / f'{casename}.json'
+            cache_data[casename] = load_tool_data(cache_data_path)
             if not cache_data:
                 return {'success': False, 'error': '数据未加载，请先刷新数据'}
             
-            case_data = cache_data.get('single_multi', {}).get(casename)
+            case_data = cache_data.get(casename)
             if not case_data:
                 return {'success': False, 'error': f'找不到用例数据: {casename}'}
         except Exception as e:

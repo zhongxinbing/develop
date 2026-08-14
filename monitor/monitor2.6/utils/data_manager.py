@@ -412,28 +412,30 @@ class DataManager:
         rules = front_data.get('rules', [])
         dates = front_data.get('dates', [])
         selected_threads = front_data.get('selected_threads', [])
+        
         self.logger.info(f"前端请求数据 -> 工具：{tool_id}，用例：{casename}，模式：{mode}，图表类型：{chart_type}，规则：{rules}，日期：{dates}，线程：{selected_threads}")
+        
         cache_data = {}
         cache_data_path = DATA_DIR / tool_id / 'parser' / 'single_multi' / f'{casename}.json'
         cache_data[casename] = load_tool_data(cache_data_path)
-        # green(cache_data)
-        if not dates:
+        
+        if not dates or casename not in cache_data:
             return {"dates": dates, "rules": {}, "crash_dates": []}
 
-        if casename not in cache_data:
-            return {"dates": dates, "rules": {}, "crash_dates": []}
+        colors = {
+            '-1': '#00E5FF', '0': '#00E5FF', '2': '#A855F7', '4': '#10B981',
+            '6': '#F59E0B', '8': '#EF4444', '16': '#EC4899', '32': '#14B8A6',
+            '64': '#6366F1', '128': '#F97316',
+        }
 
-        colors = {'-1': '#00E5FF','0': '#00E5FF', '2': '#A855F7', '4': '#10B981', '6': '#F59E0B', '8': '#EF4444', '16': '#EC4899', '32': '#14B8A6', '64': '#6366F1', '128': '#F97316', }
-
-        rule_data = {"rules": {}, "crash_dates": [], "dates": []}
         rule = rules[0]
-
         if rule not in cache_data[casename].get(chart_type, {}):
             return {"dates": [], "rules": {}, "crash_dates": []}
 
-        if rule not in rule_data["rules"]:
-            rule_data["rules"][rule] = {}
+        rule_data = {"rules": {}, "crash_dates": [], "dates": []}
+        rule_data["rules"][rule] = {}
 
+        # 获取 crash_dates
         crash_dates_set = set()
         crash_dict = cache_data[casename].get('crash_dates', {})
         if isinstance(crash_dict, dict):
@@ -441,36 +443,60 @@ class DataManager:
                 if isinstance(thread_dates, list):
                     crash_dates_set.update(thread_dates)
 
+        # 获取所有线程的数据，并收集实际存在的日期
+        thread_date_values = {}
+        all_valid_dates = set()
+        
         for thread in selected_threads:
             thread = str(thread)
             thread_rules = cache_data[casename][chart_type][rule]
             if thread not in thread_rules:
                 continue
 
-            if thread not in rule_data["rules"][rule]:
-                rule_data["rules"][rule][thread] = {
-                    "color": colors.get(thread, '#A855F7'),
-                    "values": [],
-                    "type": "line"
-                }
-
             thread_entry = thread_rules[thread]
             date_list = thread_entry.get("date", [])
             data_list = thread_entry.get("data", [])
-            date_index_map = {d: i for i, d in enumerate(date_list)}
+            
+            # 构建该线程的日期到值的映射
+            date_value_map = {}
+            for i, d in enumerate(date_list):
+                if i < len(data_list):
+                    date_value_map[d] = data_list[i]
+                    all_valid_dates.add(d)
+            thread_date_values[thread] = date_value_map
 
-            for date in dates:
-                idx = date_index_map.get(date)
-                if idx is None:
-                    continue
-                if date not in rule_data["dates"]:
-                    rule_data["dates"].append(date)
-                rule_data["rules"][rule][thread]["values"].append(data_list[idx])
-                if date in crash_dates_set:
-                    rule_data["crash_dates"].append(date)
-        
+        # 确定最终的日期列表：所有线程有数据的日期的并集，并按用户选择的日期过滤
+        if dates:
+            final_dates = [d for d in dates if d in all_valid_dates]
+        else:
+            final_dates = sorted(all_valid_dates)
+
+        if not final_dates:
+            return {"dates": [], "rules": {}, "crash_dates": []}
+
+        # 为每个线程生成数据序列（缺失值用 None 填充）
+        for thread, date_value_map in thread_date_values.items():
+            color = colors.get(thread, '#A855F7')
+            values = []
+            
+            for date in final_dates:
+                if date in date_value_map:
+                    values.append(date_value_map[date])
+                else:
+                    values.append(None)  # 用 None 表示缺失数据
+
+            rule_data["rules"][rule][thread] = {
+                "color": color,
+                "values": values,
+                "type": "line"
+            }
+
+        # 设置 crash_dates（只保留在最终日期列表中的）
+        rule_data["crash_dates"] = [d for d in final_dates if d in crash_dates_set]
+        rule_data["dates"] = final_dates
+
         return rule_data
-
+    
     def send_data_to_frontend_for_thread_chart(self, front_data: Dict):
         """发送数据到前端渲染线程图表"""
         casename = front_data.get('casename', '')

@@ -12,16 +12,16 @@ single = base / "single"
 signal = base / "signal"
 
 # 日期范围（可调整）
-start_date = datetime(2026, 5, 1, 6, 0)
-end_date = datetime(2026, 5, 2, 6, 0)
+start_date = datetime(2026, 5, 3, 6, 0)
+end_date = datetime(2026, 5, 4, 6, 0)
 
 # 线程列表
 # threads = [2, 4, 6, 8, 16, 32, 64, 128]
 threads = [2, 4]
 # 模块数量
-num_modules = 4
+num_modules = 3
 # rule 数量
-num_rules = 5
+num_rules = 10
 
 def random_string(length=10):
     return ''.join(random.choices(string.ascii_lowercase, k=length))
@@ -172,7 +172,7 @@ if __name__ == "__main__":
     print("=" * 50)
 
     generate_multi()
-    generate_single()
+    # generate_single()
     # generate_signal()
     # generate_lint_csv()
 

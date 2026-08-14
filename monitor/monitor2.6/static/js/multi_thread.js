@@ -369,7 +369,7 @@ class MultiThreadManager {
             };
 
             const response = await axios.post('/api/chart/data', requestData);
-
+            console.log('获取图表数据响应:', response.data);
             if (response.data.success) {
                 let chartData = response.data.data;
                 if (typeof chartData === 'string') {
@@ -474,7 +474,7 @@ class MultiThreadManager {
                 smooth: false,
                 symbol: 'circle',
                 symbolSize: 6,
-                connectNulls: false,
+                connectNulls: true,
                 lineStyle: { width: 2, color: color },
                 itemStyle: { color: color, borderColor: '#0F172A', borderWidth: 1, borderRadius: 4 },
                 emphasis: { focus: 'series' }
