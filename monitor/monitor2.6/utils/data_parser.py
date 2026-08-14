@@ -32,14 +32,35 @@ class DataParser:
             返回数据结构：请查看 Data_sducture.py
         """
 
-        single_multi_chart = data_parsers.get('single_multi', {})
-        thread_chart = data_parsers.get('thread', {})
+        single_multi_chart_casename = data_parsers.get('single_multi', [])
+        thread_chart_casename = data_parsers.get('thread', [])
+
+        single_multi_chart = {}
+        thread_chart = {}
+
 
         for casename, case_data in all_data.items():
+            # 从已存在的解析器中获取多线程的数据
+            single_multi_parser_path = DATA_DIR / tool_id / "parser" / "single_multi" / f"{casename}.json"
+            single_multi_chart[casename] = {}
+            if single_multi_parser_path.exists():
+                single_multi_chart[casename] = load_tool_data(single_multi_parser_path)
+            # 从已存在的解析器中获取线程数的数据
+            thread_parser_path = DATA_DIR / tool_id / "parser" / "thread" / f"{casename}.json"
+            thread_chart[casename] = {}
+            if thread_parser_path.exists():
+                thread_chart[casename] = load_tool_data(thread_parser_path)
+
             types = case_data['metrics']
             threads = case_data['threads']
             dates = case_data['dates']
             rules_datas = case_data['rules_data']
+
+            if casename not in single_multi_chart_casename:
+                single_multi_chart_casename.append(casename)
+
+            if casename not in thread_chart_casename:
+                thread_chart_casename.append(casename)
 
             if casename not in single_multi_chart:
                 single_multi_chart[casename] = {}
@@ -72,7 +93,7 @@ class DataParser:
             save_tool_data(case_thread_parser_path, thread_chart[casename])
         
         thread_chart = {k: v for k, v in thread_chart.items() if v not in (None, '')}
-        return {'single_multi': list(single_multi_chart.keys()), 'thread': list(thread_chart.keys())}
+        return {'single_multi': list(single_multi_chart_casename), 'thread': list(thread_chart_casename)}
 
     def _mark_crash(self, single_multi_chart: dict, casename: str, date: str, thread: str):
         if casename not in single_multi_chart:
