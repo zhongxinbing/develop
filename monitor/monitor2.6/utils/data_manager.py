@@ -435,18 +435,10 @@ class DataManager:
         rule_data = {"rules": {}, "crash_dates": [], "dates": []}
         rule_data["rules"][rule] = {}
 
-        # 获取 crash_dates
-        crash_dates_set = set()
-        crash_dict = cache_data[casename].get('crash_dates', {})
-        if isinstance(crash_dict, dict):
-            for thread_dates in crash_dict.values():
-                if isinstance(thread_dates, list):
-                    crash_dates_set.update(thread_dates)
-
         # 获取所有线程的数据，并收集实际存在的日期
         thread_date_values = {}
         all_valid_dates = set()
-        
+        crash_datas = set()
         for thread in selected_threads:
             thread = str(thread)
             thread_rules = cache_data[casename][chart_type][rule]
@@ -464,6 +456,11 @@ class DataManager:
                     date_value_map[d] = data_list[i]
                     all_valid_dates.add(d)
             thread_date_values[thread] = date_value_map
+
+            for crash_date in cache_data[casename].get('crash_dates', {}).get(thread, []):
+                if crash_date not in crash_datas:
+                    crash_datas.add(crash_date)
+            
 
         # 确定最终的日期列表：所有线程有数据的日期的并集，并按用户选择的日期过滤
         if dates:
@@ -492,7 +489,8 @@ class DataManager:
             }
 
         # 设置 crash_dates（只保留在最终日期列表中的）
-        rule_data["crash_dates"] = [d for d in final_dates if d in crash_dates_set]
+        rule_data["crash_dates"] = list(crash_datas)
+
         rule_data["dates"] = final_dates
 
         return rule_data
