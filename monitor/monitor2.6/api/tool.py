@@ -54,9 +54,9 @@ def api_get_chart_parsers():
     casename = data.get('casename')
     tool_id = data.get('toolId')
     chartType = data.get('chartType')
-
+    red(data)
     # 单线程和多线程数据
-    if chartType == 'multi':
+    if chartType == 'multi' or chartType == 'comparison':
         parsers_path = DATA_DIR / tool_id / 'parser' /'single_multi' / f'{casename}.json'
     # 线程数曲线图数据
     if chartType == 'thread':
@@ -66,6 +66,6 @@ def api_get_chart_parsers():
         return jsonify({'success': False, 'error': '解析器数据不存在'})
     
     parser = load_tool_data(parsers_path)
-
+    
     return jsonify({'success': True, 'data': parser})
 

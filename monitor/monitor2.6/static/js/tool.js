@@ -167,7 +167,7 @@ async function init() {
     initEventListeners();
     
     comparisonManager = new ComparisonManager();
-    comparisonManager.init(toolId, () => currentMode);
+    comparisonManager.init(toolId);
     
     console.log('页面初始化完成');
 }
@@ -257,7 +257,8 @@ async function loadData() {
             // 默认切换到单线程模式
             // await switchToSingleMode();
             // await switchToMultiMode();
-            await switchToThreadMode();
+            // await switchToThreadMode();
+            await switchToComparisonMode();
         } else {
             console.error('加载数据失败:', response.data.error);
             showError('加载数据失败: ' + (response.data.error || '未知错误'));

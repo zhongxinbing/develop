@@ -27,6 +27,7 @@ class ComparisonManager {
         this.allThreads = [];
         this.allRules = [];
         this.allDates = [];
+        this.caseData = {};
 
         this.selectedCasename = '';
         this.selectedDimensions = [];  // 改为数组，支持多维度
@@ -184,16 +185,31 @@ class ComparisonManager {
 
     // ==================== 数据加载方法 ====================
 
-    _populateCasenameOptions() {
+    async _populateCasenameOptions() {
         const data = window.multiData || {};
-        this.allCasenames = Object.keys(data);
+        this.allCasenames = data;
         const options = this.allCasenames.map(name => ({ value: name, label: name }));
         this.casenameSelect.setOptions(options);
+        
     }
 
-    _loadDimensions(casename) {
-        const data = window.multiData || {};
-        const caseData = data[casename];
+    async _loadDimensions(casename) {
+        // const caseData = this.caseData[casename] || {};
+
+        // 加载case的数据
+        const response = await axios.post('/api/chart/parsers', {
+            toolId: window.toolId,
+            casename: this.selectedCasename,
+            chartType: 'comparison',
+        });
+        
+        if (response.data.success) {
+            const caseData = response.data.data;
+            this.caseData[this.selectedCasename] = caseData;
+        } else {
+            this.showErrorMessage(chart, response.data.error || '获取数据失败');
+        }
+        const caseData = this.caseData[casename] || {};
         if (!caseData) {
             this.dimensionSelect.setOptions([]);
             return;
@@ -225,7 +241,7 @@ class ComparisonManager {
     }
 
     _loadRulesAndThreads(dimension) {
-        const data = window.multiData || {};
+        const data = this.caseData || {};
         const caseData = data[this.selectedCasename];
         if (!caseData || !caseData[dimension]) {
             this.ruleSelect.setOptions([]);
@@ -289,7 +305,7 @@ class ComparisonManager {
     }
 
     _loadDates() {
-        const data = window.multiData || {};
+        const data = this.caseData || {};
         const caseData = data[this.selectedCasename];
         if (!caseData || !this.selectedDimensions.length) {
             return;
