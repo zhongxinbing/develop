@@ -67,6 +67,7 @@ class SearchableSelect {
      * 设置选中值
      */
     setValue(value, silent = false) {
+        
         if (this.multiple) {
             this._selectedValues = Array.isArray(value) ? value : (value ? [value] : []);
         } else {
@@ -78,6 +79,7 @@ class SearchableSelect {
         if (!silent) {
             this._triggerChange();
         }
+
     }
 
     /**

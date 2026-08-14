@@ -375,7 +375,7 @@ class MultiThreadManager {
         const normalizedType = (this.currentChartType || 'runtime').toLowerCase();
         const isRuntime = normalizedType === 'runtime' || normalizedType === 'cputime' || normalizedType === 'realtime';
         const yAxisName = isRuntime ? 'Runtime (s)' : 'Memory (MB)';
-
+        
         // 图表标题映射
         const titleMap = {
             'cputime': 'CPU Time',

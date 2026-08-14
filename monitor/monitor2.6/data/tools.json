@@ -3,12 +3,12 @@
     "elint": {
       "tool_name": "elint",
       "description": "9999",
-      "single_path": "E:\\git\\develop\\monitor\\test",
+      "single_path": "C:\\Users\\xbzhong\\Desktop\\lint\\script\\develop\\monitor\\test",
       "single_func": "get_elint_data",
       "single_file_pattern": "^\\d{8}_[^\\s]+\\.txt",
-      "single_max_depth": 3,
+      "single_max_depth": 5,
       "single_exists": 1,
-      "multi_path": "E:\\git\\develop\\monitor\\test",
+      "multi_path": "C:\\Users\\xbzhong\\Desktop\\lint\\script\\develop\\monitor\\test",
       "multi_func": "get_elint_data",
       "multi_file_pattern": "elint\\.log$",
       "multi_max_depth": 6,
@@ -19,7 +19,7 @@
       "extra_exists": 0,
       "custom_curve_func": "",
       "created_at": "2026-08-08T20:56:34.924604",
-      "updated_at": "2026-08-13T20:02:03.074999"
+      "updated_at": "2026-08-14T10:07:23.835767"
     }
   }
 }

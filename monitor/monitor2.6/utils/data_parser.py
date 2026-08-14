@@ -27,37 +27,9 @@ class DataParser:
             参数:
                 data_parsers: 已存在的解析器，用于增量更新
                 all_data: 原始数据
-                single_exists: 单线程是否需要解析的标志位； 0 未解析，1 已解析
+                tool_id: 工具ID
                 multi_exists: 多线程是否需要解析的标志位； 0 未解析，1 已解析
-            返回数据结构：{
-                    'single_multi_chart': {
-                        "casename": {
-                            "cputime" : {
-                                rule: {
-                                    thread: {
-                                        date: [dates]
-                                        data: [datas]
-                                    }
-                                }
-                            }
-                        },
-                        "crash_dates": {
-                            thread: [dates]
-                        }
-                    },
-                    "thread": {
-                        "casename": {
-                            "cputime": {
-                                rule: {
-                                    date: {
-                                        thread: [threads]
-                                        data: [datas]
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
+            返回数据结构：请查看 Data_sducture.py
         """
 
         single_multi_chart = data_parsers.get('single_multi', {})
@@ -74,14 +46,17 @@ class DataParser:
 
             for rule, date_data in rules_datas.items():
                 for date in dates:
-                    if date not in date_data and rule == 'Overall':
-                        for thread in threads:
-                            single_multi_chart = self._mark_crash(single_multi_chart, casename, date, thread)
+                    if date not in date_data:
+                        if rule == 'Overall':
+                            # 只有 Overall 规则，如果不存在该日期，所有线程都为crash
+                            for thread in threads:
+                                single_multi_chart = self._mark_crash(single_multi_chart, casename, date, thread)
                     elif date in date_data:
                         thread_datas = date_data[date]
                         for thread in threads:
                             if thread not in thread_datas:
-                                single_multi_chart = self._mark_crash(single_multi_chart, casename, date, thread)
+                                if rule == "Overall":
+                                    single_multi_chart = self._mark_crash(single_multi_chart, casename, date, thread)
                             else:
                                 single_multi_chart, thread_chart = self._parse_thread_metrics(
                                     casename, single_multi_chart, thread_chart,
@@ -90,6 +65,7 @@ class DataParser:
 
             if 'crash_dates' not in single_multi_chart[casename]:
                 single_multi_chart[casename]['crash_dates'] = {}
+            
             case_parser_path = DATA_DIR / tool_id / "parser" / "single_multi" / f"{casename}.json"
             save_tool_data(case_parser_path, single_multi_chart[casename])
             case_thread_parser_path = DATA_DIR / tool_id / "parser" / "thread" / f"{casename}.json"

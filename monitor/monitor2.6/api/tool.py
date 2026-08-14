@@ -27,8 +27,9 @@ def api_load_tool_data(tool_id):
 def api_get_chart_data():
     """获取图表数据（支持Runtime和Memory）"""
     data = request.json
-
+    # red(data)
     chioce_data = data_manager.send_data_to_frontend_for_chart(data)
+
     return jsonify({'success': True, 'data': chioce_data})
 
 # 从前端获取图需要显示数据，解析后返回图表数据   ->>>>>  线程数

@@ -474,7 +474,6 @@ def gen_data(dataData: Dict, rule_datas: List[str], date: str, thread: int) -> D
         elif len(rule_data) == 6:
             rule_name, cputime, realtime, peakmem, incmem, realtimeincmem = rule_data
 
-        # rule
         if rule_name not in dataData:
             dataData[rule_name] = {}
 
@@ -526,7 +525,22 @@ def get_elint_data_from_txt(file_path: str, elint_data: Dict, thread: int) -> No
 
     except Exception as e:
         logger.error(f"解析文件失败 {file_path}: {e}")
-    
+
+def get_runtime(content: str) -> List[tuple]:
+    """从日志内容中提取运行时数据"""
+    overall = re.findall(
+        r'(Overall|read_design|check_lint|save_session)\s+\|\s([^|]+)\s\|\s([^|]+)\s\|\s([^|]+)\s\|',
+        content
+    )
+    new = []
+    for command in overall:
+        name = command[0]
+        elapse = time_to_seconds(command[1])
+        cpu = time_to_seconds(command[2])
+        peak = command[3].strip()
+        new.append((name, f"{cpu}", f"{elapse}", f"{peak}", "null"))
+    return new
+
 def get_elint_data_from_log(file_path: str, elint_data: Dict, thread: int) -> None:
     # 获取 casename
     parts = Path(file_path).parts
@@ -574,7 +588,7 @@ def get_elint_data_from_log(file_path: str, elint_data: Dict, thread: int) -> No
                                 r' ([^\s\]]+) done: CpuTime\(([0-9.,]+)s\); RealTime\(([0-9.,]+)s\); PeakMem\(([0-9.,]+)M\); IncMem\(([0-9.,]+)M\)',
                                 content
                             )
-            
+            rule_datas = get_runtime(content) + rule_datas
             elint_data[casename]["rules_data"] = gen_data(elint_data[casename]["rules_data"], rule_datas, date, thread)
 
     except Exception as e:

@@ -15,6 +15,7 @@ class MultiThreadManager {
         this.rawData = {};
         this.userAddedData = {};
         this.allData = {};
+        this.casenames = [];
 
         this.idPrefix = 'multi';
 
@@ -31,6 +32,7 @@ class MultiThreadManager {
         this.selectedThreadsDisplay = null;
         this.threadSearchInput = null;
 
+        // 强制将 renderChart 方法内的 this 关键字永远指向当前类的实例
         this.renderChart = this.renderChart.bind(this);
         this.updateRulesAndDates = this.updateRulesAndDates.bind(this);
         this.toggleDropdown = this.toggleDropdown.bind(this);
@@ -55,7 +57,13 @@ class MultiThreadManager {
 
         this.rawData = rawData;
         this.userAddedData = userAddedData || {};
-        this.allData = { ...this.rawData, ...this.userAddedData };
+        // this.allData = { ...this.rawData, ...this.userAddedData }
+        if (this.userAddedData.length > 0) {
+            this.casenames = this.rawData.concat(this.userAddedData);
+        } else {
+            this.casenames = this.rawData;
+        }
+
         this.extraData = extraData;
 
         // ========== Casename 选择器 ==========
@@ -96,7 +104,7 @@ class MultiThreadManager {
                 }
             }
         });
-
+        
         // ========== 新增：线程数选择器 ==========
         this.threadSelect = new SearchableSelect({
             container: document.getElementById(`${this.idPrefix}ThreadSelect`),
@@ -136,31 +144,38 @@ class MultiThreadManager {
     updateCasenameSelect() {
         if (!this.casenameSelect) return;
         
-        const casenames = Object.keys(this.allData).filter(name => {
-            const rule_dates = this.allData[name];
-            return rule_dates;
+        // const casenames = Object.keys(this.allData).filter(name => {
+        //     const rule_dates = this.allData[name];
+        //     return rule_dates;
+        // });
+        // const casenames = this.casenames;
+        // console.log('casenames', casenames);
+        // const options = casenames.map(name => ({
+        //     value: name,
+        //     label: name
+        // }));
+        const options = [];
+        this.casenames.forEach(name => {
+            options.push({
+                value: name,
+                label: name
+            });
         });
-        
-        const options = casenames.map(name => ({
-            value: name,
-            label: name
-        }));
-        
         this.casenameSelect.setOptions(options);
-        
-        if (casenames.length > 0 && !this.selectedCasename) {
-            this.selectedCasename = casenames[0];
+
+        if (this.casenames.length > 0 && !this.selectedCasename) {
+            this.selectedCasename = this.casenames[0];
             this.casenameSelect.setValue(this.selectedCasename);
         }
     }
 
     // ========== 更新 Rules 和 Dates ==========
-    async updateRulesAndDates() {
-        if (!this.selectedCasename || !this.allData[this.selectedCasename]) {
+    async updateRulesAndDates(flag = false) {
+        if (!this.selectedCasename || !this.casenames.includes(this.selectedCasename)) {
             console.log('updateRulesAndDates: 无有效的 casename', this.selectedCasename);
             return;
         }
-                
+        // 从服务器获取数据
         const response = await axios.post('/api/chart/parsers', {
             toolId: window.toolId,
             casename: this.selectedCasename
@@ -180,7 +195,6 @@ class MultiThreadManager {
         if (this.allRules.includes('Overall')) {
             this.allRules = ['Overall', ...this.allRules.filter(r => r !== 'Overall')];
         }
-        this.updateRuleSelect();
 
         // 获取所有日期
         const allDatesSet = new Set();
@@ -210,8 +224,9 @@ class MultiThreadManager {
         if (this.selectedThreads.length === 0 && this.availableThreads.length > 0) {
             this.selectedThreads = [-1];
         }
-        
+
         // 更新线程选择器
+        this.updateRuleSelect();
         this.updateThreadOptions();
         this.updateThreadSelectorUI();
         this.updateOverview();
@@ -220,7 +235,7 @@ class MultiThreadManager {
     // ========== 更新 Rule 选择器 ==========
     updateRuleSelect() {
         if (!this.ruleSelect) return;
-        
+
         const searchTerm = this.ruleSearch ? this.ruleSearch.value.toLowerCase() : '';
         const filteredRules = searchTerm
             ? this.allRules.filter(rule => rule.toLowerCase().includes(searchTerm))
@@ -351,9 +366,9 @@ class MultiThreadManager {
                 chart_type: this.currentChartType,
                 selected_threads: this.selectedThreads,  // 传递选中的线程
             };
-            
+
             const response = await axios.post('/api/chart/data', requestData);
-            
+
             if (response.data.success) {
                 let chartData = response.data.data;
                 if (typeof chartData === 'string') {
@@ -390,7 +405,7 @@ class MultiThreadManager {
         const normalizedType = (this.currentChartType || 'runtime').toLowerCase();
         const isRuntime = normalizedType === 'runtime' || normalizedType === 'cputime' || normalizedType === 'realtime';
         const yAxisName = isRuntime ? 'Runtime (s)' : 'Memory (MB)';
-
+        
         // 图表标题映射
         const titleMap = {
             'cputime': 'CPU Time',
@@ -435,7 +450,7 @@ class MultiThreadManager {
         let ruleName = Object.keys(rules)[0];
 
         for (const [thread, datas] of Object.entries(rules[ruleName])) {
-        console.warn(datas);
+        // console.warn(datas);
             let seriesName = thread;
             const color = datas.color || threadColors[thread];
             const values = datas.values || {};
@@ -896,6 +911,7 @@ class MultiThreadManager {
                 });
             });
         }
+        
     }
 
     updateDatePickerModal() {
@@ -918,6 +934,7 @@ class MultiThreadManager {
 
     // ========== 添加数据弹窗 ==========
     initAddDataModal() {
+        
         const modal = document.getElementById('addDataModal');
         const openBtn = this.addDataBtn;
         const closeBtn = document.getElementById('closeAddDataModalBtn');
@@ -958,6 +975,7 @@ class MultiThreadManager {
                 }
             });
         }
+
     }
 
     async addUserData(paths) {

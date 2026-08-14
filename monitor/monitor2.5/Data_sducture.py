@@ -4,30 +4,41 @@ from streamlit import metric
 
 paserer = {
     'single_multi': {
+        'crash_dates':{
+            'thread1': [],
+        },
         'casename': {
             'rulename1': {
                 'thread1': {
                     'dates': [],
-                    'datas': [],
-                    'crash_dates':[]
+                    'datas': []
                 },
                 'thread2': {
                     'dates': [],
-                    'datas': [],
-                    'crash_dates':[]
+                    'datas': []
                 }
             },
             'rulename2': {
                 'thread1': {
                     'dates': [],
-                    'datas': [],
-                    'crash_dates':[]
+                    'datas': []
 
                 },
                 'thread2': {
                     'dates': [],
-                    'datas': [],
-                    'crash_dates':[]
+                    'datas': []
+                }
+            }
+        }
+    },
+    'thread':{
+        'casename':{
+            'cputime': {
+                'rule': {
+                    'date': {
+                        'thread': [],
+                        'data':[]
+                    }
                 }
             }
         }

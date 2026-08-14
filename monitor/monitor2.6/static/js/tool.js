@@ -249,10 +249,10 @@ async function loadData() {
                 multiThreadManager.updateOverview();
             }
 
-            if (window.ThreadChartManager) {
-                threadChartManager = new window.ThreadChartManager();
-                await threadChartManager.init(threadData, userData);
-            }
+            // if (window.ThreadChartManager) {
+            //     threadChartManager = new window.ThreadChartManager();
+            //     await threadChartManager.init(threadData, userData);
+            // }
 
             // 默认切换到单线程模式
             // await switchToSingleMode();

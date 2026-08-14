@@ -67,4 +67,4 @@ if __name__ == '__main__':
     setup_logger(log_dir='logs', level='DEBUG')
     logger = get_logger(__name__)
     logger.info("启动性能监控平台后端服务")
-    app.run(debug=True, host='0.0.0.0', port=5020)
+    app.run(debug=True, host='0.0.0.0', port=5030)

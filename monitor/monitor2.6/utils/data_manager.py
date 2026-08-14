@@ -413,12 +413,10 @@ class DataManager:
         dates = front_data.get('dates', [])
         selected_threads = front_data.get('selected_threads', [])
         self.logger.info(f"前端请求数据 -> 工具：{tool_id}，用例：{casename}，模式：{mode}，图表类型：{chart_type}，规则：{rules}，日期：{dates}，线程：{selected_threads}")
-
-        cache_entry = self._data_cache.get(f"{tool_id}")
-        if not cache_entry or len(cache_entry) < 2:
-            return {"dates": dates, "rules": {}, "crash_dates": []}
-        cache_data = cache_entry[1].get('paser_data', {}).get('single_multi', {})
-
+        cache_data = {}
+        cache_data_path = DATA_DIR / tool_id / 'parser' / 'single_multi' / f'{casename}.json'
+        cache_data[casename] = load_tool_data(cache_data_path)
+        # green(cache_data)
         if not dates:
             return {"dates": dates, "rules": {}, "crash_dates": []}
 
@@ -465,11 +463,12 @@ class DataManager:
                 idx = date_index_map.get(date)
                 if idx is None:
                     continue
-                rule_data["dates"].append(date)
+                if date not in rule_data["dates"]:
+                    rule_data["dates"].append(date)
                 rule_data["rules"][rule][thread]["values"].append(data_list[idx])
                 if date in crash_dates_set:
                     rule_data["crash_dates"].append(date)
-
+        
         return rule_data
 
     def send_data_to_frontend_for_thread_chart(self, front_data: Dict):
