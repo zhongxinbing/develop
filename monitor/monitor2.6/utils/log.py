@@ -9,7 +9,7 @@ import os
 from logging.handlers import RotatingFileHandler
 from datetime import datetime
 from pathlib import Path
-
+from logging.handlers import TimedRotatingFileHandler
 # ANSI 颜色代码
 class Colors:
     """终端颜色定义"""
@@ -161,20 +161,18 @@ class LoggerManager:
         return handler
     
     def _create_file_handler(self, filename: str, level: int = None):
-        """创建文件处理器（支持日志轮转）"""
+        """创建文件处理器（按天轮转）"""
         filepath = self.log_dir / filename
         
-        # 使用 RotatingFileHandler 实现日志轮转
-        handler = RotatingFileHandler(
+        handler = TimedRotatingFileHandler(
             filepath,
-            maxBytes=10 * 1024 * 1024,  # 10MB
-            backupCount=5,               # 保留5个备份
+            when='midnight',
+            interval=1,
+            backupCount=7,  # 保留7天
             encoding='utf-8'
         )
-        
         handler.setLevel(level if level is not None else self.default_level)
         
-        # 文件日志格式（无颜色）
         formatter = PlainFormatter(
             '%(asctime)s - %(levelname)s - %(name)s - %(filename)s:%(lineno)d - %(message)s',
             datefmt='%Y-%m-%d %H:%M:%S'

@@ -517,7 +517,7 @@ class MultiThreadManager {
                 markAreas.push([{ xAxis: startIndex }, { xAxis: dates.length - 1 }]);
             }
         }
-        console.warn(markAreas);
+
         const option = {
             title: {
                 text: chartTitle,
