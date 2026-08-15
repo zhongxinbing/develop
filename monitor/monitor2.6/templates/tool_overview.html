@@ -25,15 +25,21 @@
                 <div class="stats-label" style="font-size: 15px; margin-bottom: 20px;">请选择查看内容</div>
 
                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 18px; margin-top: 12px;">
-                    <a class="tool-view-card" href="/tool/{{ tool_id }}/feature">
+
+                    <a id="regressionBtn" class="tool-view-card" href="/tool/{{ tool_id }}/regression">
                         <div class="tool-card-icon">📋</div>
-                        <h3>功能</h3>
-                        <p>查看工具功能说明与主要入口</p>
+                        <h3> regression</h3>
+                        <p>每日回归结果</p>
                     </a>
-                    <a class="tool-view-card" href="/tool/{{ tool_id }}/performance">
+                    <a id="performanceBtn" class="tool-view-card" href="/tool/{{ tool_id }}/performance">
                         <div class="tool-card-icon">📈</div>
-                        <h3>性能</h3>
-                        <p>查看单线程、多线程和线程曲线图</p>
+                        <h3> QOR 性能 </h3>
+                        <p>查看性能变化和性能数据的曲线图</p>
+                    </a>
+                    <a id="caseBtn" class="tool-view-card" href="/tool/{{ tool_id }}/bigcase">
+                        <div class="tool-card-icon">📈</div>
+                        <h3> Qor Case 功能 </h3>
+                        <p>查看性能变化和性能数据的曲线图</p>
                     </a>
                 </div>
             </div>
@@ -45,5 +51,6 @@
             window.location.href = '/';
         });
     </script>
+    <script src="{{ url_for('static', filename='js/regression.js') }}"></script>
 </body>
 </html>

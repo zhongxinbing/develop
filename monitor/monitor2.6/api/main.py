@@ -17,10 +17,17 @@ def config_page():
     """配置页面"""
     return render_template('config.html')
 
-@app.route('/tool/<tool_id>/feature')
-def tool_feature(tool_id):
-    """功能页"""
-    return render_template('tool_feature.html', tool_id=tool_id)
+@app.route('/tool/<tool_id>/regression')
+def tool_regression(tool_id):
+    """回归页"""
+    return render_template('regression.html', tool_id=tool_id)
+
+@app.route('/tool/<tool_id>/bigcase')
+def tool_bigcase(tool_id):
+    """大案例页"""
+    return render_template('bigcase.html', tool_id=tool_id)
+
+
 
 @app.route('/tool/<tool_id>/performance')
 def tool_page(tool_id):
