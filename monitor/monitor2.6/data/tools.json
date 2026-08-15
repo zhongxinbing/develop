@@ -2,7 +2,7 @@
   "tools": {
     "elint": {
       "tool_name": "elint",
-      "description": "9999",
+      "description": "静态检查",
       "single_path": "E:\\git\\develop\\monitor\\test",
       "single_func": "get_elint_data",
       "single_file_pattern": "^\\d{8}_[^\\s]+\\.txt",
@@ -19,7 +19,7 @@
       "extra_exists": 0,
       "custom_curve_func": "",
       "created_at": "2026-08-08T20:56:34.924604",
-      "updated_at": "2026-08-14T20:57:38.052278"
+      "updated_at": "2026-08-15T16:34:06.703228"
     }
   }
 }

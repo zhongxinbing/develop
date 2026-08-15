@@ -21,10 +21,10 @@ let multiThreadManager = null;
 let threadChartManager = null;
 let comparisonManager = null;
 
-// ========== 暴露当前模式到全局，供子模块使用 ==========
+// ========== 暴露当前模式到全局 ==========
 window.currentMode = currentMode;
 
-// ========== 新增：全局图表实例 ==========
+// ========== 全局图表实例 ==========
 let mainChart = null;
 
 /**
@@ -111,13 +111,9 @@ function syncGroupNavigation(sidebarId, expandedGroup) {
 }
 
 function initializeDefaultSidebarState() {
-    syncGroupNavigation('singleSidebar', 'runtime');
     syncGroupNavigation('multiSidebar', 'runtime');
     syncGroupNavigation('threadSidebar', 'runtime');
 
-    document.querySelectorAll('#singleSidebar .sub-menu-item').forEach(item => {
-        item.classList.toggle('active', item.dataset.chart === 'cputime');
-    });
     document.querySelectorAll('#multiSidebar .sub-menu-item').forEach(item => {
         item.classList.toggle('active', item.dataset.chart === 'cputime');
     });
@@ -130,10 +126,11 @@ function initializeDefaultSidebarState() {
 const toolNameEl = document.getElementById('toolName');
 const toolDescEl = document.getElementById('toolDesc');
 const backBtn = document.getElementById('backBtn');
-const refreshBtn = document.getElementById('refreshBtn');
+// 修改：refreshBtn 改为 configBtn
+const configBtn = document.getElementById('configBtn');
 const modeNavItems = document.querySelectorAll('.mode-nav-item');
 
-// ========== 新增：初始化全局图表实例 ==========
+// ========== 初始化全局图表实例 ==========
 function initMainChart() {
     const container = document.getElementById('mainChart');
     if (!container) {
@@ -141,12 +138,10 @@ function initMainChart() {
         return null;
     }
     
-    // 如果已有实例且未被销毁，直接返回
     if (mainChart && !mainChart.isDisposed()) {
         return mainChart;
     }
     
-    // 创建新实例
     if (mainChart) {
         mainChart.dispose();
     }
@@ -210,8 +205,7 @@ async function loadData() {
             if (typeof data === 'string') {
                 try {
                     const parsed = JSON.parse(data);
-                    if (data.thread) threadData = data.thread;
-                    // if (parsed.single) singleData = parsed.single;
+                    if (parsed.thread) threadData = parsed.thread || {};
                     if (parsed.multi) multiData = parsed.single_multi || {};
                     if (parsed.extra) extraData = parsed.extra;
                     if (parsed.user) userData = parsed.user;
@@ -219,13 +213,12 @@ async function loadData() {
                     multiData = data;
                 }
             } else {
-                if (data.thread) threadData = data.thread;
+                if (data.thread) threadData = data.thread || {};
                 if (data.single_multi) multiData = data.single_multi || {};
                 if (data.extra) extraData = data.extra;
                 if (data.user) userData = data.user;
             }
 
-            // window.singleData = singleData;
             window.threadData = threadData;
             window.multiData = multiData;
             window.extraData = extraData;
@@ -233,15 +226,7 @@ async function loadData() {
 
             showSuccess(response.data.message);
 
-            // ========== 初始化全局图表实例 ==========
             initMainChart();
-
-            // 初始化各管理器（不再自己创建图表实例）
-            // if (window.SingleThreadManager) {
-            //     singleThreadManager = new window.SingleThreadManager();
-            //     await singleThreadManager.init(singleData, userData, extraData);
-            //     singleThreadManager.updateOverview();
-            // }
 
             if (window.MultiThreadManager) {
                 multiThreadManager = new window.MultiThreadManager();
@@ -254,11 +239,7 @@ async function loadData() {
                 await threadChartManager.init(threadData, userData);
             }
 
-            // 默认切换到单线程模式
-            // await switchToSingleMode();
             await switchToMultiMode();
-            // await switchToThreadMode();
-            // await switchToComparisonMode();
         } else {
             console.error('加载数据失败:', response.data.error);
             showError('加载数据失败: ' + (response.data.error || '未知错误'));
@@ -280,11 +261,9 @@ function updateModeNav(mode) {
 }
 
 function toggleSidebars(mode) {
-    const singleSidebar = document.getElementById('singleSidebar');
     const multiSidebar = document.getElementById('multiSidebar');
     const threadSidebar = document.getElementById('threadSidebar');
 
-    singleSidebar.style.display = (mode === 'single') ? 'flex' : 'none';
     multiSidebar.style.display = (mode === 'multi') ? 'flex' : 'none';
     threadSidebar.style.display = (mode === 'thread') ? 'flex' : 'none';
 }
@@ -310,46 +289,21 @@ function showComparisonContainer(show) {
 
 // ==================== 模式切换具体实现 ====================
 
-async function switchToSingleMode() {
-    currentMode = 'single';
-    window.currentMode = 'single';  // 暴露到全局
-    updateModeNav('single');
-    toggleSidebars('single');
-    hideThreadSelector();
-    showNormalContent(true);
-    showComparisonContainer(false);
-
-    // ========== 确保图表实例有效 ==========
-    const chart = initMainChart();
-    if (!chart) return;
-
-    const currentChartType = getActiveChartFromSidebar('singleSidebar');
-    if (currentChartType !== 'comparison') {
-        if (singleThreadManager) {
-            // ========== 传入图表实例 ==========
-            await singleThreadManager.renderChart(chart);
-        }
-    }
-    if (singleThreadManager) singleThreadManager.updateOverview();
-}
-
 async function switchToMultiMode() {
     currentMode = 'multi';
-    window.currentMode = 'multi';  // 暴露到全局
+    window.currentMode = 'multi';
     updateModeNav('multi');
     toggleSidebars('multi');
     showThreadSelector(true);
     showNormalContent(true);
     showComparisonContainer(false);
 
-    // ========== 确保图表实例有效 ==========
     const chart = initMainChart();
     if (!chart) return;
 
     const currentChartType = getActiveChartFromSidebar('multiSidebar');
     if (currentChartType !== 'comparison') {
         if (multiThreadManager) {
-            // ========== 传入图表实例 ==========
             await multiThreadManager.renderChart(chart);
         }
     }
@@ -358,14 +312,13 @@ async function switchToMultiMode() {
 
 async function switchToThreadMode() {
     currentMode = 'thread';
-    window.currentMode = 'thread';  // 暴露到全局
+    window.currentMode = 'thread';
     updateModeNav('thread');
     toggleSidebars('thread');
     hideThreadSelector();
     showNormalContent(true);
     showComparisonContainer(false);
 
-    // ========== 确保图表实例有效 ==========
     const chart = initMainChart();
     if (!chart) return;
 
@@ -373,37 +326,18 @@ async function switchToThreadMode() {
         const activeSub = document.querySelector('#threadSidebar .sub-menu-item.active');
         const chartType = activeSub ? activeSub.dataset.threadChart : 'cputime';
         threadChartManager.setChartType(chartType);
-        // ========== 传入图表实例 ==========
         await threadChartManager.renderChart(chart);
     }
 }
 
 async function switchToComparisonMode() {
     currentMode = 'comparison';
-    window.currentMode = 'comparison';  // 暴露到全局
+    window.currentMode = 'comparison';
     updateModeNav('comparison');
     toggleSidebars(null);
     hideThreadSelector();
     showNormalContent(false);
     showComparisonContainer(true);
-}
-
-async function renderSingleChart() {
-    if (singleThreadManager) {
-        const chart = initMainChart();
-        if (chart) {
-            await singleThreadManager.renderChart(chart);
-        }
-    }
-}
-
-async function renderMultiChart() {
-    if (multiThreadManager) {
-        const chart = initMainChart();
-        if (chart) {
-            await multiThreadManager.renderChart(chart);
-        }
-    }
 }
 
 // ==================== 通用工具函数 ====================
@@ -451,17 +385,6 @@ function escapeHtml(text) {
     return div.innerHTML;
 }
 
-function formatDate(dateStr) {
-    if (!dateStr) return '';
-    if (dateStr.includes('_user')) {
-        return dateStr.replace('_user', ' (用户)');
-    }
-    if (dateStr.length === 8 && /^\d+$/.test(dateStr)) {
-        return `${dateStr.slice(0,4)}-${dateStr.slice(4,6)}-${dateStr.slice(6,8)}`;
-    }
-    return dateStr;
-}
-
 // ==================== 事件监听初始化 ====================
 
 function initEventListeners() {
@@ -469,69 +392,15 @@ function initEventListeners() {
         window.location.href = '/';
     });
 
-    refreshBtn.addEventListener('click', refreshData);
+    // ========== 修改：配置按钮点击事件 ==========
+    configBtn.addEventListener('click', openToolConfigModal);
 
     modeNavItems.forEach(item => {
         item.addEventListener('click', async () => {
             const mode = item.dataset.mode;
-            if (mode === 'single') await switchToSingleMode();
-            else if (mode === 'multi') await switchToMultiMode();
+            if (mode === 'multi') await switchToMultiMode();
             else if (mode === 'thread') await switchToThreadMode();
             else if (mode === 'comparison') await switchToComparisonMode();
-        });
-    });
-
-    // ---------- 单线程侧边栏菜单切换 ----------
-    const singleMenuItems = document.querySelectorAll('#singleSidebar .menu-item');
-    singleMenuItems.forEach(item => {
-        item.addEventListener('click', () => {
-            const chartType = item.dataset.chart;
-            const subMenu = item.nextElementSibling;
-
-            if (chartType === 'runtime' || chartType === 'memory') {
-                const defaultSubChart = getDefaultSubChart(resolveChartGroup(chartType));
-                document.querySelectorAll('#singleSidebar .sub-menu-item').forEach(subItem => {
-                    subItem.classList.toggle('active', subItem.dataset.chart === defaultSubChart);
-                });
-                syncGroupNavigation('singleSidebar', chartType);
-                currentChartType = defaultSubChart;
-                if (subMenu) {
-                    subMenu.classList.remove('collapsed');
-                }
-            } else {
-                document.querySelectorAll('#singleSidebar .sub-menu-item').forEach(subItem => {
-                    subItem.classList.remove('active');
-                });
-                syncGroupNavigation('singleSidebar', chartType);
-                currentChartType = chartType;
-            }
-
-            if (chartType !== 'comparison') {
-                if (singleThreadManager) {
-                    singleThreadManager.setChartType(currentChartType);
-                    // ========== 使用全局图表实例 ==========
-                    const chart = initMainChart();
-                    if (chart) {
-                        singleThreadManager.renderChart(chart);
-                    }
-                }
-            }
-        });
-    });
-
-    const singleSubMenuItems = document.querySelectorAll('#singleSidebar .sub-menu-item');
-    singleSubMenuItems.forEach(item => {
-        item.addEventListener('click', () => {
-            const targetChart = item.dataset.chart || 'cputime';
-            syncSidebarSelection('singleSidebar', targetChart);
-            currentChartType = targetChart;
-            if (singleThreadManager) {
-                singleThreadManager.setChartType(targetChart);
-                const chart = initMainChart();
-                if (chart) {
-                    singleThreadManager.renderChart(chart);
-                }
-            }
         });
     });
 
@@ -622,7 +491,139 @@ function initEventListeners() {
             }
         });
     });
+
+    // ========== 工具配置弹窗事件 ==========
+    initToolConfigModalEvents();
 }
+
+// ==================== 工具配置弹窗 ====================
+
+function initToolConfigModalEvents() {
+    const modal = document.getElementById('toolConfigModal');
+    const closeBtn = document.getElementById('closeConfigModalBtn');
+    const cancelBtn = document.getElementById('cancelConfigBtn');
+    const saveBtn = document.getElementById('saveConfigBtn');
+    const overlay = modal.querySelector('.modal-overlay');
+
+    // 关闭弹窗
+    const closeModal = () => {
+        modal.classList.remove('active');
+        document.body.style.overflow = '';
+    };
+
+    closeBtn.addEventListener('click', closeModal);
+    cancelBtn.addEventListener('click', closeModal);
+    overlay.addEventListener('click', closeModal);
+
+    // 保存配置
+    saveBtn.addEventListener('click', saveToolConfig);
+}
+
+function openToolConfigModal() {
+    if (!toolConfig) {
+        showError('工具配置未加载');
+        return;
+    }
+
+    // 填充表单
+    document.getElementById('configToolName').value = toolConfig.tool_name || '';
+    document.getElementById('configToolDesc').value = toolConfig.description || '';
+
+    // 单线程
+    document.getElementById('configSinglePath').value = toolConfig.single_path || '';
+    document.getElementById('configSingleFunc').value = toolConfig.single_func || '';
+    document.getElementById('configSingleFilePattern').value = toolConfig.single_file_pattern || '';
+    document.getElementById('configSingleMaxDepth').value = toolConfig.single_max_depth || 3;
+
+    // 多线程
+    document.getElementById('configMultiPath').value = toolConfig.multi_path || '';
+    document.getElementById('configMultiFunc').value = toolConfig.multi_func || '';
+    document.getElementById('configMultiFilePattern').value = toolConfig.multi_file_pattern || '';
+    document.getElementById('configMultiMaxDepth').value = toolConfig.multi_max_depth || 6;
+
+    // 额外显示
+    document.getElementById('configExtraPath').value = toolConfig.extra_display_path || '';
+    document.getElementById('configExtraFunc').value = toolConfig.extra_display_func || '';
+    document.getElementById('configExtraFilePattern').value = toolConfig.extra_file_pattern || '';
+
+    // 自定义曲线
+    document.getElementById('configCustomFunc').value = toolConfig.custom_curve_func || '';
+
+    // 显示弹窗
+    const modal = document.getElementById('toolConfigModal');
+    modal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+
+async function saveToolConfig() {
+    const toolName = document.getElementById('configToolName').value.trim();
+    if (!toolName) {
+        showError('请输入工具名称');
+        return;
+    }
+
+    const configData = {
+        tool_name: toolName,
+        description: document.getElementById('configToolDesc').value.trim(),
+        single_path: document.getElementById('configSinglePath').value.trim(),
+        single_func: document.getElementById('configSingleFunc').value.trim(),
+        single_file_pattern: document.getElementById('configSingleFilePattern').value.trim(),
+        single_max_depth: parseInt(document.getElementById('configSingleMaxDepth').value) || 3,
+        multi_path: document.getElementById('configMultiPath').value.trim(),
+        multi_func: document.getElementById('configMultiFunc').value.trim(),
+        multi_file_pattern: document.getElementById('configMultiFilePattern').value.trim(),
+        multi_max_depth: parseInt(document.getElementById('configMultiMaxDepth').value) || 6,
+        extra_display_path: document.getElementById('configExtraPath').value.trim(),
+        extra_display_func: document.getElementById('configExtraFunc').value.trim(),
+        extra_file_pattern: document.getElementById('configExtraFilePattern').value.trim(),
+        custom_curve_func: document.getElementById('configCustomFunc').value.trim()
+    };
+
+    // 验证：单线程必须配置
+    if (!configData.single_path) {
+        showError('单线程数据路径不能为空');
+        return;
+    }
+    if (configData.single_path && !configData.single_func) {
+        showError('请填写单线程接口函数');
+        return;
+    }
+    if (configData.multi_path && !configData.multi_func) {
+        showError('配置了多线程数据路径，请填写多线程接口函数');
+        return;
+    }
+
+    try {
+        showLoading(true);
+        const response = await axios.put(`/api/tools/${encodeURIComponent(toolId)}`, configData);
+        
+        if (response.data.success) {
+            // 更新本地配置
+            toolConfig = { ...toolConfig, ...configData };
+            // 更新页面显示
+            toolNameEl.textContent = toolName;
+            toolDescEl.textContent = configData.description || '';
+
+            // 关闭弹窗
+            document.getElementById('toolConfigModal').classList.remove('active');
+            document.body.style.overflow = '';
+            
+            showSuccess('工具配置已更新');
+            
+            // 刷新数据
+            // await refreshData();
+        } else {
+            showError(response.data.error || '保存配置失败');
+        }
+    } catch (error) {
+        console.error('保存工具配置失败:', error);
+        showError('保存配置失败: ' + (error.response?.data?.error || error.message));
+    } finally {
+        showLoading(false);
+    }
+}
+
+// ========== 刷新数据 ==========
 
 async function refreshData() {
     try {
@@ -630,7 +631,6 @@ async function refreshData() {
         const response = await axios.post(`/api/tools/${toolId}/refresh`);
         if (response.data.success) {
             const data = response.data.data || {};
-            let singleData = {};
             let multiData = {};
             let extraData = {};
             let userData = {};
@@ -638,34 +638,24 @@ async function refreshData() {
             if (typeof data === 'string') {
                 try {
                     const parsed = JSON.parse(data);
-                    if (parsed.single) singleData = parsed.single;
                     if (parsed.multi) multiData = parsed.multi;
                     if (parsed.extra) extraData = parsed.extra;
                     if (parsed.user) userData = parsed.user;
                 } catch (e) {
-                    singleData = data;
+                    multiData = data;
                 }
             } else {
-                if (data.single) singleData = data.single;
                 if (data.multi) multiData = data.multi;
                 if (data.extra) extraData = data.extra;
                 if (data.user) userData = data.user;
             }
 
-            window.singleData = singleData;
             window.multiData = multiData;
             window.extraData = extraData;
             window.userData = userData;
 
-            // ========== 确保图表实例有效 ==========
             const chart = initMainChart();
 
-            if (singleThreadManager) {
-                await singleThreadManager.refreshWithData(singleData, userData);
-                if (chart && currentMode === 'single') {
-                    await singleThreadManager.renderChart(chart);
-                }
-            }
             if (multiThreadManager) {
                 await multiThreadManager.refreshWithData(multiData, userData);
                 if (chart && currentMode === 'multi') {

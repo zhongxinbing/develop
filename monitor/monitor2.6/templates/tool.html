@@ -25,14 +25,14 @@
                 <h2 id="toolName">加载中...</h2>
                 <span class="tool-desc" id="toolDesc"></span>
             </div>
-            <button class="refresh-btn" id="refreshBtn" title="刷新数据">
-                <span>↩刷新</span>
+            <!-- 修改：刷新按钮改为配置按钮 -->
+            <button class="refresh-btn" id="configBtn" title="工具配置">
+                <span>⚙️ 配置</span>
             </button>
         </header>
 
-        <!-- 二级导航（新增“数据对比”） -->
+        <!-- 二级导航 -->
         <div class="mode-nav">
-            <!-- <button class="mode-nav-item active" data-mode="single">🧵单线程</button> -->
             <button class="mode-nav-item" data-mode="multi">🌀多线程</button>
             <button class="mode-nav-item" data-mode="thread">⚡线程曲线图</button>
             <button class="mode-nav-item" data-mode="comparison">📊数据对比</button>
@@ -40,42 +40,8 @@
 
         <!-- 主内容区域 -->
         <div class="tool-main">
-            <!-- ==================== 单线程侧边栏 ==================== -->
-            <aside class="sidebar" id="singleSidebar">
-                <div class="sidebar-content">
-                    <div class="sidebar-menu">
-                        <button class="menu-item active" data-chart="runtime">⏱️ Runtime</button>
-                        <div class="sub-menu">
-                            <button class="sub-menu-item active" data-chart="cputime">CPU Time</button>
-                            <button class="sub-menu-item" data-chart="realtime">Real Time</button>
-                        </div>
-                        <button class="menu-item" data-chart="memory">🧠 Memory</button>
-                        <div class="sub-menu">
-                            <button class="sub-menu-item" data-chart="peakmem">峰值内存</button>
-                            <button class="sub-menu-item" data-chart="incmem">增量内存</button>
-                            <button class="sub-menu-item" data-chart="realtimeincmem">实时增量内存</button>
-                        </div>
-                    </div>
-                    <div class="filters-panel" id="singleFiltersPanel">
-                        <div class="filter-group">
-                            <label>🏷 Casename</label>
-                            <div id="singleCasenameSelect" class="searchable-select"></div>
-                        </div>
-                        <div class="filter-group">
-                            <label>📜 Rule</label>
-                            <div id="singleRuleSelect" class="searchable-select"></div>
-                        </div>
-                        <div class="filter-actions">
-                            <button class="btn-icon" id="singleDatePickerBtn" title="选择日期">选择日期</button>
-                            <button class="btn-icon" id="singleLatest50Btn" title="最新50天">最新50天</button>
-                            <button class="btn-icon btn-success" id="singleAddDataBtn" title="添加数据">添加数据</button>
-                        </div>
-                    </div>
-                </div>
-            </aside>
-
             <!-- ==================== 多线程侧边栏 ==================== -->
-            <aside class="sidebar" id="multiSidebar" style="display: none;">
+            <aside class="sidebar" id="multiSidebar">
                 <div class="sidebar-content">
                     <div class="sidebar-menu">
                         <button class="menu-item active" data-chart="runtime">⏱️ Runtime</button>
@@ -99,7 +65,6 @@
                             <label>📜 Rule</label>
                             <div id="multiRuleSelect" class="searchable-select"></div>
                         </div>
-                        <!-- ========== 新增：线程数选择框 ========== -->
                         <div class="filter-group">
                             <label>🧵 线程数（可多选）</label>
                             <div id="multiThreadSelect" class="searchable-select multi-select"></div>
@@ -107,7 +72,6 @@
                                 支持多选，默认显示所有线程
                             </div>
                         </div>
-                        <!-- ========== 结束 ========== -->
                         <div class="filter-actions">
                             <button class="btn-icon" id="multiDatePickerBtn" title="选择日期">选择日期</button>
                             <button class="btn-icon" id="multiLatest50Btn" title="最新50天">最新50天</button>
@@ -155,7 +119,7 @@
 
             <!-- 中央内容区 -->
             <main class="content-area" id="contentArea">
-                <!-- ===== 对比容器（默认隐藏，由 tool.js 控制显示） ===== -->
+                <!-- ===== 对比容器 ===== -->
                 <div id="comparisonContainer" style="display: none; width: 100%;">
                     <!-- 对比表单 -->
                     <div class="comparison-form" style="display: flex; flex-direction: column; gap: 16px; background: var(--bg-surface); padding: 20px 24px; border-radius: var(--radius-lg); margin-bottom: 20px;">
@@ -165,11 +129,10 @@
                                 <label style="font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 4px;">🏷 Casename <span style="color: var(--danger);">*</span></label>
                                 <div id="compCasenameSelect" class="searchable-select"></div>
                             </div>
-                            <!-- 对比维度 - 已支持多选 -->
-<div class="filter-group" style="margin-bottom: 0;">
-    <label style="font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 4px;">📊 对比维度</label>
-    <div id="compDimensionSelect" class="searchable-select multi-select"></div>
-</div>
+                            <div class="filter-group" style="margin-bottom: 0;">
+                                <label style="font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 4px;">📊 对比维度</label>
+                                <div id="compDimensionSelect" class="searchable-select multi-select"></div>
+                            </div>
                             <div class="filter-group" style="margin-bottom: 0;">
                                 <label style="font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 4px;">🧵 线程数</label>
                                 <div id="compThreadSelect" class="searchable-select multi-select"></div>
@@ -224,7 +187,7 @@
                     </div>
                 </div>
 
-                <!-- ===== 原有内容（非对比模式） ===== -->
+                <!-- ===== 原有内容 ===== -->
                 <div id="normalContent">
                     <div class="chart-container" id="chartContainer">
                         <div id="mainChart" style="width: 100%; height: 400px;"></div>
@@ -283,7 +246,7 @@
         </div>
     </div>
 
-    <!-- 日期选择弹窗（共用） -->
+    <!-- 日期选择弹窗 -->
     <div class="modal" id="datePickerModal">
         <div class="modal-overlay"></div>
         <div class="modal-container medium">
@@ -301,9 +264,7 @@
                         <span>全选</span>
                     </label>
                 </div>
-                <div class="date-list" id="dateList">
-                    <!-- 动态生成，每个 .date-item 可点击切换 checkbox -->
-                </div>
+                <div class="date-list" id="dateList"></div>
             </div>
             <div class="modal-footer">
                 <button class="btn-secondary" id="cancelDateBtn">取消</button>
@@ -312,7 +273,7 @@
         </div>
     </div>
 
-    <!-- 添加数据弹窗（共用） -->
+    <!-- 添加数据弹窗 -->
     <div class="modal" id="addDataModal">
         <div class="modal-overlay"></div>
         <div class="modal-container medium">
@@ -334,8 +295,109 @@
         </div>
     </div>
 
+    <!-- ========== 新增：工具配置弹窗 ========== -->
+    <div class="modal" id="toolConfigModal">
+        <div class="modal-overlay"></div>
+        <div class="modal-container" style="max-width: 800px;">
+            <div class="modal-header">
+                <h3>⚙️ 工具配置</h3>
+                <button class="modal-close" id="closeConfigModalBtn">✕</button>
+            </div>
+            <div class="modal-body" style="max-height: 70vh; overflow-y: auto;">
+                <form id="toolConfigForm">
+                    <!-- 基础信息 -->
+                    <div class="form-group">
+                        <label for="configToolName">工具名称 <span class="required">*</span></label>
+                        <input type="text" id="configToolName" name="toolName" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="configToolDesc">工具描述</label>
+                        <textarea id="configToolDesc" name="toolDesc" rows="2" placeholder="描述该工具的功能和用途..."></textarea>
+                    </div>
+
+                    <div class="form-divider"><span>数据源配置</span></div>
+
+                    <!-- 单线程配置 -->
+                    <div style="background: var(--bg-elevated); border-radius: var(--radius-lg); padding: 16px; margin-bottom: 16px; border: 1px solid var(--border-subtle);">
+                        <h4 style="margin-bottom: 12px; color: var(--primary); font-size: 14px;">🧵 单线程配置</h4>
+                        <div class="form-group">
+                            <label for="configSinglePath">数据路径 <span class="required">*</span></label>
+                            <input type="text" id="configSinglePath" name="singlePath" placeholder="/data/single/">
+                        </div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px;">
+                            <div class="form-group" style="margin-bottom: 0;">
+                                <label for="configSingleFunc">接口函数 <span class="required">*</span></label>
+                                <input type="text" id="configSingleFunc" name="singleFunc" placeholder="module.function">
+                            </div>
+                            <div class="form-group" style="margin-bottom: 0;">
+                                <label for="configSingleFilePattern">文件名匹配</label>
+                                <input type="text" id="configSingleFilePattern" name="singleFilePattern" placeholder='例如: ^\d{8}_[^/]+\.txt$'>
+                            </div>
+                            <div class="form-group" style="margin-bottom: 0;">
+                                <label for="configSingleMaxDepth">路径深度</label>
+                                <input type="number" id="configSingleMaxDepth" name="singleMaxDepth" value="3" min="1" max="10">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 多线程配置 -->
+                    <div style="background: var(--bg-elevated); border-radius: var(--radius-lg); padding: 16px; margin-bottom: 16px; border: 1px solid var(--border-subtle);">
+                        <h4 style="margin-bottom: 12px; color: var(--secondary); font-size: 14px;">🌀 多线程配置</h4>
+                        <div class="form-group">
+                            <label for="configMultiPath">数据路径</label>
+                            <input type="text" id="configMultiPath" name="multiPath" placeholder="/data/multi/ (可选)">
+                        </div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px;">
+                            <div class="form-group" style="margin-bottom: 0;">
+                                <label for="configMultiFunc">接口函数</label>
+                                <input type="text" id="configMultiFunc" name="multiFunc" placeholder="module.function">
+                            </div>
+                            <div class="form-group" style="margin-bottom: 0;">
+                                <label for="configMultiFilePattern">文件名匹配</label>
+                                <input type="text" id="configMultiFilePattern" name="multiFilePattern" placeholder='例如: elint\.log$'>
+                            </div>
+                            <div class="form-group" style="margin-bottom: 0;">
+                                <label for="configMultiMaxDepth">路径深度</label>
+                                <input type="number" id="configMultiMaxDepth" name="multiMaxDepth" value="6" min="1" max="10">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 额外显示配置 -->
+                    <div class="form-divider"><span>额外显示配置 (可选)</span></div>
+                    <div style="background: var(--bg-elevated); border-radius: var(--radius-lg); padding: 16px; margin-bottom: 16px; border: 1px solid var(--border-subtle);">
+                        <div class="form-group">
+                            <label for="configExtraPath">额外数据路径</label>
+                            <input type="text" id="configExtraPath" name="extraPath" placeholder="/data/extra/">
+                        </div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                            <div class="form-group" style="margin-bottom: 0;">
+                                <label for="configExtraFunc">额外数据函数</label>
+                                <input type="text" id="configExtraFunc" name="extraFunc" placeholder="module.function">
+                            </div>
+                            <div class="form-group" style="margin-bottom: 0;">
+                                <label for="configExtraFilePattern">文件名匹配</label>
+                                <input type="text" id="configExtraFilePattern" name="extraFilePattern" placeholder="可选">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 自定义曲线函数 -->
+                    <div class="form-group">
+                        <label for="configCustomFunc">自定义曲线函数</label>
+                        <input type="text" id="configCustomFunc" name="customFunc" placeholder="get_custom_curve_data">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" id="cancelConfigBtn">取消</button>
+                <button class="btn-primary" id="saveConfigBtn">💾 保存配置</button>
+            </div>
+        </div>
+    </div>
+
     <script>
-        // 全局函数供多线程选择器使用（保留，因为多线程模块可能用到）
         window.mainChart = null;
         window.toggleMultiThreadDropdown = function() {
             const dropdown = document.getElementById('multiThreadDropdown');
