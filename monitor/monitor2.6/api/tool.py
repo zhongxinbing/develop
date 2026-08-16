@@ -68,3 +68,11 @@ def api_get_chart_parsers():
     
     return jsonify({'success': True, 'data': parser})
 
+# 
+@app.route('/api/tools/<tool_id>/extra', methods=['POST'])
+def api_performance_compare(tool_id):
+    """性能对比"""
+    data = request.json
+    # red(data)
+    red(data)
+    return jsonify({'success': True, 'data': data})

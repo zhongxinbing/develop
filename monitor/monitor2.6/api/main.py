@@ -27,6 +27,10 @@ def tool_bigcase(tool_id):
     """大案例页"""
     return render_template('bigcase.html', tool_id=tool_id)
 
+@app.route('/tool/<tool_id>/performanceCimoarison')
+def tool_performanceCimoarison(tool_id):
+    """性能对比页"""
+    return render_template('performanceCimoarison.html', tool_id=tool_id)
 
 
 @app.route('/tool/<tool_id>/performance')
